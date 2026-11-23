@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "kind": "circuit",
+  "id": "binary-gate-challenge",
+  "order": 1409,
+  "unit": {
+    "id": "computer",
+    "order": 80,
+    "title": {
+      "zh": "计算机原理",
+      "en": "Computer Systems"
+    }
+  },
+  "stage": "challenge",
+  "title": {
+    "zh": "发送数值并控制信号灯",
+    "en": "Send a Number and Control the Signal Light"
+  },
+  "concept": {
+    "zh": "用同一组开关完成两个目标",
+    "en": "Meet two goals with the same switches"
+  },
+  "brief": {
+    "zh": "整排灯用来显示二进制数，最左两位还接到信号门上。设置开关和逻辑门，让十进制读数和信号灯同时符合要求。",
+    "en": "The whole row displays a binary number. Its two leftmost bits also connect to a signal gate. Set the switches and gate so the decimal display and the signal light both match the goal."
+  },
+  "hints": [
+    {
+      "zh": "先用位权拼出目标数。再只看最左两位，预测选好的门会输出什么。",
+      "en": "Build the target number using place values. Then look at the two leftmost bits and predict the selected gate’s output."
+    },
+    {
+      "zh": "最后一轮可以任选逻辑门。不同的门有时会得到相同的输出。",
+      "en": "In the last round, you may choose any gate. Different gates can sometimes give the same result."
+    }
+  ],
+  "mode": "combined",
+  "gateChoices": [
+    "AND",
+    "OR",
+    "NOT",
+    "XOR"
+  ],
+  "cases": [
+    {
+      "label": {
+        "zh": "显示 10，AND 信号灯保持熄灭",
+        "en": "Display 10 with the AND signal off"
+      },
+      "bits": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "gate": "OR",
+      "goal": {
+        "value": 10,
+        "gate": "AND",
+        "output": 0
+      },
+      "solution": {
+        "bits": [
+          1,
+          0,
+          1,
+          0
+        ],
+        "gate": "AND"
+      }
+    },
+    {
+      "label": {
+        "zh": "显示 13，OR 信号灯亮起来",
+        "en": "Display 13 with the OR signal on"
+      },
+      "bits": [
+        0,
+        1,
+        0,
+        1
+      ],
+      "gate": "AND",
+      "goal": {
+        "value": 13,
+        "gate": "OR",
+        "output": 1
+      },
+      "solution": {
+        "bits": [
+          1,
+          1,
+          0,
+          1
+        ],
+        "gate": "OR"
+      }
+    },
+    {
+      "label": {
+        "zh": "显示 25，并任选一个会让信号灯熄灭的门",
+        "en": "Display 25 and choose any gate that keeps the signal off"
+      },
+      "bits": [
+        1,
+        0,
+        0,
+        0,
+        1
+      ],
+      "gate": "OR",
+      "goal": {
+        "value": 25,
+        "output": 0
+      },
+      "solution": {
+        "bits": [
+          1,
+          1,
+          0,
+          0,
+          1
+        ],
+        "gate": "XOR"
+      }
+    }
+  ]
+}

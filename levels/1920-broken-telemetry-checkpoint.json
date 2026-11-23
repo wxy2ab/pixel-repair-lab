@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "challenge-broken-telemetry-checkpoint",
+  "order": 1920,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "prerequisites": [{"unit": "architecture", "topic": "memory"}, {"unit": "architecture", "topic": "registers"}, {"unit": "architecture", "topic": "instructions"}],
+  "title": {"zh": "断点遥测的交叉校验", "en": "Cross-Check a Broken Telemetry Packet"},
+  "concept": {"zh": "断点恢复、差分解码与加权核验", "en": "Recover a missing sample, decode deltas and audit a weighted check"},
+  "brief": {"zh": "遥测有五个原始数 A 到 E。地址 0 的 A 完好，地址 1 的 B 损坏了，地址 2、3、4 只剩 C−B、D−C、E−D。地址 5 有可信的 A+B，地址 6 是可能出错的加权校验。把五个原始数写回 0 到 4，保留两份凭据。停机时 ACC 应为地址 6 减去 A+2B+3C+4D+5E 的总和。", "en": "Five samples A through E were transmitted. Address 0 holds A; 1 contains a damaged B. Addresses 2, 3 and 4 carry only C−B, D−C and E−D. Address 5 has a trusted A+B, while 6 holds a possibly faulty weighted check. Restore the samples to 0 through 4, preserve both receipts, and halt with the reported check minus (A+2B+3C+4D+5E) in ACC."},
+  "hints": [],
+  "allowedOps": ["LOAD", "ADD", "SUB", "STORE", "HALT"],
+  "starterCode": "HALT\n",
+  "solutionCode": "LOAD 5\nSUB 0\nSTORE 1\nADD 2\nSTORE 2\nADD 3\nSTORE 3\nADD 4\nSTORE 4\nLOAD 6\nSUB 0\nSUB 1\nSUB 1\nSUB 2\nSUB 2\nSUB 2\nSUB 3\nSUB 3\nSUB 3\nSUB 3\nSUB 4\nSUB 4\nSUB 4\nSUB 4\nSUB 4\nHALT\n",
+  "cases": [
+    {"label": {"zh": "验收样本 1", "en": "Acceptance sample 1"}, "memory": [2, -99, 2, -1, 3, 5, 73], "accumulator": 10, "goal": {"memory": [{"address": 0, "value": 2}, {"address": 1, "value": 3}, {"address": 2, "value": 5}, {"address": 3, "value": 4}, {"address": 4, "value": 7}, {"address": 5, "value": 5}, {"address": 6, "value": 73}], "accumulator": -1}},
+    {"label": {"zh": "验收样本 2", "en": "Acceptance sample 2"}, "memory": [0, 25, -8, 1, -1, 4, -20], "accumulator": 0, "goal": {"memory": [{"address": 0, "value": 0}, {"address": 1, "value": 4}, {"address": 2, "value": -4}, {"address": 3, "value": -3}, {"address": 4, "value": -4}, {"address": 5, "value": 4}, {"address": 6, "value": -20}], "accumulator": 16}},
+    {"label": {"zh": "验收样本 3", "en": "Acceptance sample 3"}, "memory": [3, 3, 0, 0, 0, 6, 45], "accumulator": -5, "goal": {"memory": [{"address": 0, "value": 3}, {"address": 1, "value": 3}, {"address": 2, "value": 3}, {"address": 3, "value": 3}, {"address": 4, "value": 3}, {"address": 5, "value": 6}, {"address": 6, "value": 45}], "accumulator": 0}},
+    {"label": {"zh": "验收样本 4", "en": "Acceptance sample 4"}, "memory": [-2, 9, 7, 0, -8, -7, -19], "accumulator": 99, "goal": {"memory": [{"address": 0, "value": -2}, {"address": 1, "value": -5}, {"address": 2, "value": 2}, {"address": 3, "value": 2}, {"address": 4, "value": -6}, {"address": 5, "value": -7}, {"address": 6, "value": -19}], "accumulator": 9}},
+    {"label": {"zh": "验收样本 5", "en": "Acceptance sample 5"}, "memory": [10, 10, 0, 0, 0, 10, 11], "accumulator": -10, "goal": {"memory": [{"address": 0, "value": 10}, {"address": 1, "value": 0}, {"address": 2, "value": 0}, {"address": 3, "value": 0}, {"address": 4, "value": 0}, {"address": 5, "value": 10}, {"address": 6, "value": 11}], "accumulator": 1}}
+  ]
+}

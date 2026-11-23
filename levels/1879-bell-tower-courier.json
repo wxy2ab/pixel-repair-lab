@@ -1,0 +1,604 @@
+{
+  "version": 1,
+  "id": "challenge-bell-tower-courier",
+  "order": 1879,
+  "kind": "grid",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": {
+    "zh": "钟楼封签接力",
+    "en": "Bell Tower Seal Relay"
+  },
+  "concept": {
+    "zh": "四枚封签、顺序签收、两条巡线",
+    "en": "Four seals, ordered receipts and two patrols"
+  },
+  "brief": {
+    "zh": "收齐四枚封签并到出口。验收清单按 amber、slate、pearl、jade 排列。按清单顺序提交四个签收号，每个都要查同一份 stamps 字典。 限 30 回合，避开巡逻。scan() 列出巡线、目标坐标和 compass 方向表。第二张地图将图纸旋转半圈。",
+    "en": "Recover all four seals and reach the exit. The receipt manifest lists amber, slate, pearl and jade in that order. Submit their four receipt numbers in manifest order, looking each up in the same stamps dictionary. Avoid patrols within 30 turns. scan() lists patrol cycles, goal locations and the compass for plan directions. The second map rotates the plan by 180 degrees."
+  },
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    },
+    {
+      "unit": "structures",
+      "topic": "dictionaries"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "###########",
+    "#.#.......#",
+    "#.##.#..#.#",
+    "#.....#.#.#",
+    "####..###.#",
+    "#.........#",
+    "###########"
+  ],
+  "start": {
+    "x": 1,
+    "y": 5
+  },
+  "items": [
+    {
+      "id": "amber",
+      "x": 3,
+      "y": 1
+    },
+    {
+      "id": "slate",
+      "x": 5,
+      "y": 3
+    },
+    {
+      "id": "pearl",
+      "x": 4,
+      "y": 5
+    },
+    {
+      "id": "jade",
+      "x": 7,
+      "y": 5
+    }
+  ],
+  "enemies": [
+    {
+      "path": [
+        {
+          "x": 1,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 2
+        },
+        {
+          "x": 1,
+          "y": 3
+        },
+        {
+          "x": 1,
+          "y": 2
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 6,
+          "y": 5
+        },
+        {
+          "x": 5,
+          "y": 5
+        },
+        {
+          "x": 5,
+          "y": 4
+        },
+        {
+          "x": 5,
+          "y": 3
+        },
+        {
+          "x": 5,
+          "y": 4
+        },
+        {
+          "x": 5,
+          "y": 5
+        }
+      ]
+    }
+  ],
+  "turnLimit": 30,
+  "input": {
+    "stamps": {
+      "amber": 17,
+      "slate": 4,
+      "pearl": 8,
+      "jade": 21
+    },
+    "compass": {
+      "N": "up",
+      "E": "right",
+      "S": "down",
+      "W": "left"
+    },
+    "parts": {
+      "amber": [
+        3,
+        1
+      ],
+      "slate": [
+        5,
+        3
+      ],
+      "pearl": [
+        4,
+        5
+      ],
+      "jade": [
+        7,
+        5
+      ]
+    },
+    "exit": [
+      9,
+      1
+    ],
+    "patrols": [
+      [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      [
+        [
+          6,
+          5
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          5,
+          5
+        ]
+      ]
+    ]
+  },
+  "objectives": [
+    {
+      "type": "collect",
+      "itemIds": [
+        "amber",
+        "slate",
+        "pearl",
+        "jade"
+      ]
+    },
+    {
+      "type": "submit",
+      "values": [
+        17,
+        4,
+        8,
+        21
+      ],
+      "origin": "dict-index",
+      "sameContainer": true
+    },
+    {
+      "type": "exit",
+      "x": 9,
+      "y": 1
+    }
+  ],
+  "allowedApi": [
+    "move",
+    "pick",
+    "scan",
+    "submit"
+  ],
+  "cards": [
+    {
+      "id": "read",
+      "label": {
+        "zh": "读取图纸和工单",
+        "en": "Read plan and work order"
+      },
+      "template": "board = scan()"
+    },
+    {
+      "id": "N",
+      "label": {
+        "zh": "图纸北",
+        "en": "Plan north"
+      },
+      "template": "move(board[\"compass\"][\"N\"])"
+    },
+    {
+      "id": "E",
+      "label": {
+        "zh": "图纸东",
+        "en": "Plan east"
+      },
+      "template": "move(board[\"compass\"][\"E\"])"
+    },
+    {
+      "id": "S",
+      "label": {
+        "zh": "图纸南",
+        "en": "Plan south"
+      },
+      "template": "move(board[\"compass\"][\"S\"])"
+    },
+    {
+      "id": "W",
+      "label": {
+        "zh": "图纸西",
+        "en": "Plan west"
+      },
+      "template": "move(board[\"compass\"][\"W\"])"
+    },
+    {
+      "id": "grab",
+      "label": {
+        "zh": "拾取并读取件名",
+        "en": "Pick up and read the ID"
+      },
+      "template": "part = pick()"
+    },
+    {
+      "id": "receipt",
+      "label": {
+        "zh": "提交此件的签收号",
+        "en": "Submit this receipt"
+      },
+      "template": "submit(board[\"stamps\"][part])"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "receipt"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "receipt"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "receipt"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "receipt"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "###########",
+        "#.........#",
+        "#.###..####",
+        "#.#.#.....#",
+        "#.#..#.##.#",
+        "#.......#.#",
+        "###########"
+      ],
+      "start": {
+        "x": 9,
+        "y": 1
+      },
+      "items": [
+        {
+          "id": "amber",
+          "x": 7,
+          "y": 5
+        },
+        {
+          "id": "slate",
+          "x": 5,
+          "y": 3
+        },
+        {
+          "id": "pearl",
+          "x": 6,
+          "y": 1
+        },
+        {
+          "id": "jade",
+          "x": 3,
+          "y": 1
+        }
+      ],
+      "enemies": [
+        {
+          "path": [
+            {
+              "x": 9,
+              "y": 5
+            },
+            {
+              "x": 9,
+              "y": 4
+            },
+            {
+              "x": 9,
+              "y": 3
+            },
+            {
+              "x": 9,
+              "y": 4
+            }
+          ]
+        },
+        {
+          "path": [
+            {
+              "x": 4,
+              "y": 1
+            },
+            {
+              "x": 5,
+              "y": 1
+            },
+            {
+              "x": 5,
+              "y": 2
+            },
+            {
+              "x": 5,
+              "y": 3
+            },
+            {
+              "x": 5,
+              "y": 2
+            },
+            {
+              "x": 5,
+              "y": 1
+            }
+          ]
+        }
+      ],
+      "turnLimit": 30,
+      "input": {
+        "stamps": {
+          "amber": 12,
+          "slate": 7,
+          "pearl": 25,
+          "jade": 3
+        },
+        "compass": {
+          "N": "down",
+          "E": "left",
+          "S": "up",
+          "W": "right"
+        },
+        "parts": {
+          "amber": [
+            7,
+            5
+          ],
+          "slate": [
+            5,
+            3
+          ],
+          "pearl": [
+            6,
+            1
+          ],
+          "jade": [
+            3,
+            1
+          ]
+        },
+        "exit": [
+          1,
+          5
+        ],
+        "patrols": [
+          [
+            [
+              9,
+              5
+            ],
+            [
+              9,
+              4
+            ],
+            [
+              9,
+              3
+            ],
+            [
+              9,
+              4
+            ]
+          ],
+          [
+            [
+              4,
+              1
+            ],
+            [
+              5,
+              1
+            ],
+            [
+              5,
+              2
+            ],
+            [
+              5,
+              3
+            ],
+            [
+              5,
+              2
+            ],
+            [
+              5,
+              1
+            ]
+          ]
+        ]
+      },
+      "objectives": [
+        {
+          "type": "collect",
+          "itemIds": [
+            "amber",
+            "slate",
+            "pearl",
+            "jade"
+          ]
+        },
+        {
+          "type": "submit",
+          "values": [
+            12,
+            7,
+            25,
+            3
+          ],
+          "origin": "dict-index",
+          "sameContainer": true
+        },
+        {
+          "type": "exit",
+          "x": 1,
+          "y": 5
+        }
+      ]
+    }
+  ]
+}

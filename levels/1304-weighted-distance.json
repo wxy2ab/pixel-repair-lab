@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "weighted-distance",
+  "order": 1304,
+  "unit": { "id": "algorithm-advanced", "order": 70, "title": { "zh": "算法高级", "en": "Advanced Algorithms" } },
+  "topic": { "id": "weighted-path", "order": 2, "title": { "zh": "带权路径", "en": "Weighted Paths" } },
+  "stage": "exercise",
+  "title": { "zh": "找到最省电的路线", "en": "Find the Minimum-Energy Route" },
+  "brief": { "zh": "完成 weighted_distance(costs, start, goal)。从 [x, y] 起点走到终点，只能上下左右走。0 是墙，正数是进入该格的耗电量。返回最小总耗电量，走不到时返回 None。", "en": "Complete weighted_distance(costs, start, goal). Move up, down, left, or right from the [x, y] start to the goal. Zero tiles are walls and positive tiles charge their entry cost. Return the minimum energy or None if there is no route." },
+  "concept": { "zh": "Dijkstra 按累积代价而不是发现顺序处理待选格", "en": "Dijkstra expands frontier tiles in order of total cost" },
+  "hints": [
+    { "zh": "frontier 里每项是 [当前代价, x, y]。每轮取出代价最小的一项。", "en": "Store [cost, x, y] in frontier. Pop the entry with the lowest cost each round." },
+    { "zh": "用 y * width + x 作格子的键。发现更低代价才加入候选列表。", "en": "Use y * width + x as the tile key. Add a candidate only when you improve its known cost." },
+    { "zh": "列表里可能还留着旧的、代价较大的记录。取出后和 best 比一下，就能跳过这些旧记录。", "en": "The frontier may still contain old, costlier entries. Compare a popped entry with best to skip stale work." }
+  ],
+  "functionName": "weighted_distance",
+  "starterCode": "def weighted_distance(costs, start, goal):\n    width = len(costs[0])\n    height = len(costs)\n    frontier = [[0, start[0], start[1]]]\n    best = {start[1] * width + start[0]: 0}\n    return None\n",
+  "solutionCode": "def weighted_distance(costs, start, goal):\n    width = len(costs[0])\n    height = len(costs)\n    frontier = [[0, start[0], start[1]]]\n    best = {start[1] * width + start[0]: 0}\n    while len(frontier) > 0:\n        index = 0\n        for candidate in range(1, len(frontier)):\n            if frontier[candidate][0] < frontier[index][0]:\n                index = candidate\n        cell = frontier.pop(index)\n        cost = cell[0]\n        if cost != best[cell[2] * width + cell[1]]:\n            continue\n        if [cell[1], cell[2]] == goal:\n            return cost\n        for delta in [[0, -1], [1, 0], [0, 1], [-1, 0]]:\n            x = cell[1] + delta[0]\n            y = cell[2] + delta[1]\n            if x < 0 or y < 0 or x >= width or y >= height:\n                continue\n            if costs[y][x] == 0:\n                continue\n            key = y * width + x\n            next_cost = cost + costs[y][x]\n            if key not in best or next_cost < best[key]:\n                best[key] = next_cost\n                frontier.append([next_cost, x, y])\n    return None\n",
+  "snippets": [
+    { "label": { "zh": "取出代价最低的候选", "en": "Pop the lowest-cost candidate" }, "code": "    while len(frontier) > 0:\n        index = 0\n        for candidate in range(1, len(frontier)):\n            if frontier[candidate][0] < frontier[index][0]:\n                index = candidate\n        cell = frontier.pop(index)\n        cost = cell[0]" },
+    { "label": { "zh": "跳过旧候选，检查终点", "en": "Skip old entries and check the goal" }, "code": "        if cost != best[cell[2] * width + cell[1]]:\n            continue\n        if [cell[1], cell[2]] == goal:\n            return cost" },
+    { "label": { "zh": "枚举合法邻格", "en": "Visit passable neighbors" }, "code": "        for delta in [[0, -1], [1, 0], [0, 1], [-1, 0]]:\n            x = cell[1] + delta[0]\n            y = cell[2] + delta[1]\n            if x < 0 or y < 0 or x >= width or y >= height:\n                continue\n            if costs[y][x] == 0:\n                continue" },
+    { "label": { "zh": "发现更低代价再加入", "en": "Queue a newly improved cost" }, "code": "            key = y * width + x\n            next_cost = cost + costs[y][x]\n            if key not in best or next_cost < best[key]:\n                best[key] = next_cost\n                frontier.append([next_cost, x, y])" }
+  ],
+  "cases": [
+    { "args": [[[1, 9, 1], [1, 1, 1]], [0, 0], [2, 0]], "expected": 4 },
+    { "args": [[[1, 0, 1], [1, 0, 1], [1, 0, 1]], [0, 0], [2, 2]], "expected": null },
+    { "args": [[[4]], [0, 0], [0, 0]], "expected": 0 },
+    { "args": [[[1, 2, 3], [3, 1, 1]], [0, 0], [2, 1]], "expected": 4 },
+    { "args": [[[2, 0, 1], [7, 2, 1]], [0, 0], [2, 0]], "expected": 11 },
+    { "args": [[[2, 1, 1], [1, 8, 1], [1, 1, 1]], [1, 2], [1, 0]], "expected": 4 }
+  ]
+}

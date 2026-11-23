@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "database-count-readings-query",
+  "order": 537,
+  "stage": "exercise",
+  "unit": { "id": "database", "order": 130, "title": { "zh": "数据库", "en": "Databases" } },
+  "topic": { "id": "sql-groups", "order": 2, "title": { "zh": "SQL 分组汇总", "en": "Grouped SQL queries" } },
+  "title": { "zh": "查出每区有效样本数", "en": "Query the Valid Reading Count by Area" },
+  "brief": { "zh": "用 SQL 生成每个区域的记录数，供站长核对。", "en": "Use SQL to count valid readings for each area so the manager can check coverage." },
+  "concept": { "zh": "GROUP BY zone 产生每区一行，COUNT(reading) 统计组内有读数的行。", "en": "GROUP BY zone returns one row per area, and COUNT(reading) counts rows with a reading in each group." },
+  "hints": [{ "zh": "先让所有分组都显示出来。样本最多的区域有 4 条。", "en": "Keep all groups visible. The largest groups have four readings." }],
+  "steps": [
+    {
+      "operation": "sql-group",
+      "input": "clean",
+      "label": { "zh": "按区域求记录数", "en": "Count records by area" },
+      "prompt": { "zh": "输出全部三个区域的有效记录数，按区域键排序。", "en": "Return valid reading counts for all three areas, sorted by area key." },
+      "initial": { "by": "zone", "statistic": "mean", "minimum": 0, "sort": "key" },
+      "goal": { "columns": ["zone", "count"], "rows": [["hangar", 4], ["storage", 3], ["workshop", 4]] },
+      "solution": { "by": "zone", "statistic": "count", "minimum": 0, "sort": "key" }
+    }
+  ]
+}

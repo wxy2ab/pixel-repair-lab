@@ -1,0 +1,97 @@
+import { expect, test, type Locator, type Page } from '@playwright/test'
+
+test.use({ launchOptions: { args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] } })
+
+async function openLesson(page: Page, unit: string, title: string) {
+  await page.goto('/')
+  await page.locator('[data-unit="' + unit + '"]').click()
+  await page.locator('.mission-list button').filter({ has: page.getByText(title, { exact: true }) }).click()
+}
+
+async function overhead(model: Locator) {
+  await model.scrollIntoViewIfNeeded()
+  await expect(model).toHaveAttribute('data-renderer', 'webgl')
+  await model.getByRole('button', { name: '俯视' }).click()
+  await expect(model.getByRole('button', { name: '俯视' })).toHaveAttribute('aria-pressed', 'true')
+  // Camera projection is painted on demand. Pick using the next completed overhead frame.
+  await model.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))))
+}
+
+async function clickPart(model: Locator, name: string) {
+  const label = model.locator('.teaching-model-labels').getByText(name, { exact: true })
+  await expect(label).toBeVisible()
+  await expect.poll(() => label.evaluate(node => (node as HTMLElement).style.left)).not.toBe('')
+  const canvas = model.locator('canvas')
+  const [part, box] = await Promise.all([label.boundingBox(), canvas.boundingBox()])
+  if (!part || !box) throw new Error('Expected a labelled instrument part')
+  await canvas.click({ position: { x: part.x + part.width / 2 - box.x, y: part.y + part.height / 2 - box.y } })
+}
+
+test('the 3D write-back bench keeps the RHS token separate until the actual write and rewinds it', async ({ page }) => {
+  await openLesson(page, 'foundations', '变量与算术')
+  const lesson = page.getByTestId('assignment-lesson')
+  const model = lesson.locator('[data-teaching-model="assignment-cradles"]')
+  await overhead(model)
+  await clickPart(model, '输入 6')
+  await expect(lesson).toHaveAttribute('data-assignment-stage', 'read')
+  await lesson.getByRole('button', { name: '下一步' }).click()
+  const tags = model.locator('.teaching-model-labels')
+  await expect(tags.getByText('6 + 3 → 9', { exact: true })).toHaveCount(2)
+  await expect(tags.getByText('charge = 6', { exact: true })).toHaveCount(2)
+  await clickPart(model, 'result · —')
+  await expect(tags.getByText('charge = 9', { exact: true })).toBeVisible()
+  await expect(tags.getByText('result = 9', { exact: true })).toBeVisible()
+  await expect(tags.getByText('6 + 3 → 9', { exact: true })).toHaveCount(0)
+  await lesson.getByRole('button', { name: '上一步' }).click()
+  await expect(tags.getByText('charge = 9', { exact: true })).toHaveCount(0)
+  await expect(tags.getByText('6 + 3 → 9', { exact: true })).toHaveCount(2)
+})
+
+test('the comparison rail includes its threshold and the interlock waits for the door input', async ({ page }) => {
+  await openLesson(page, 'foundations', '比较与布尔值')
+  const lesson = page.getByTestId('boolean-lesson')
+  const rail = lesson.locator('[data-teaching-model="charge-comparison"]')
+  await overhead(rail)
+  await clickPart(rail, '3')
+  await clickPart(rail, '4')
+  await expect(rail.locator('.teaching-model-labels')).toContainText('4 · True')
+  await clickPart(rail, '5')
+  await lesson.getByRole('button', { name: '下一步' }).click()
+  const gate = lesson.locator('[data-teaching-model="boolean-interlock"]')
+  await overhead(gate)
+  await clickPart(gate, '安全门 · ?')
+  await expect(gate.locator('.teaching-model-labels')).toContainText('安全门 · 关')
+  await expect(gate.locator('.teaching-model-labels')).not.toContainText('and · False')
+  await clickPart(gate, 'and')
+  await expect(gate.locator('.teaching-model-labels')).toContainText('and · False')
+})
+
+test('the fork executes only its selected route and a new prediction hides the decision', async ({ page }) => {
+  await openLesson(page, 'python-intermediate', '条件分支')
+  const lesson = page.getByTestId('branch-lesson')
+  const model = lesson.locator('[data-teaching-model="branch-track"]')
+  const tags = model.locator('.teaching-model-labels')
+  await overhead(model)
+  await clickPart(model, '— ≥ 4')
+  await expect(lesson).toHaveAttribute('data-branch-stage', 'charge')
+  await clickPart(model, '安全门 · ?')
+  await expect(lesson).toHaveAttribute('data-branch-stage', 'door')
+  await clickPart(model, 'and')
+  await clickPart(model, 'and · True')
+  await expect(lesson).toHaveAttribute('data-branch-stage', 'choice')
+  await clickPart(model, 'else')
+  await expect(lesson).toHaveAttribute('data-branch-stage', 'choice')
+  await clickPart(model, 'if')
+  await expect(tags.getByText('leave', { exact: true })).toBeVisible()
+  const next = lesson.getByRole('button', { name: '下一步' })
+  for (let i = 0; i < 5; i++) await next.click()
+  await expect(tags.getByText('wait', { exact: true })).toBeVisible()
+  const practice = page.getByTestId('branch-prediction')
+  await practice.locator('[data-branch-case="0"]').click()
+  const preview = practice.locator('[data-teaching-model="branch-track"]')
+  await overhead(preview)
+  await expect(preview.locator('.teaching-model-labels')).not.toContainText(/True|False|leave|wait/)
+  await practice.locator('[data-prediction="else"]').click()
+  await practice.getByRole('button', { name: '运行验证' }).click()
+  await expect(preview.locator('.teaching-model-labels')).toContainText('wait')
+})

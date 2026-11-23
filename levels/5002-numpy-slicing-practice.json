@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "numpy-slicing-practice",
+  "order": 5002,
+  "stage": "exercise",
+  "unit": {
+    "id": "numpy",
+    "order": 100,
+    "title": {
+      "zh": "NumPy",
+      "en": "NumPy"
+    }
+  },
+  "topic": {
+    "id": "arrays",
+    "order": 1,
+    "title": {
+      "zh": "数组与位置",
+      "en": "Arrays and positions"
+    }
+  },
+  "title": {
+    "zh": "取出三个连续的读数",
+    "en": "Get Three Consecutive Readings"
+  },
+  "brief": {
+    "zh": "维修员只想看数组位置 3、4、5 对应的温度。",
+    "en": "The technician only wants temperatures at array positions 3, 4, and 5."
+  },
+  "concept": {
+    "zh": "先确定要看的列，再把最后一个位置加 1 作为终点。",
+    "en": "Choose the column, then add one to the final position to find the stop."
+  },
+  "hints": [
+    {
+      "zh": "位置 5 前后各有一个数字，想想哪一个会被切片排除。",
+      "en": "Position 5 has a number on either side. Which stop keeps position 5 inside the slice?"
+    }
+  ],
+  "steps": [
+    {
+      "operation": "array",
+      "input": "clean",
+      "label": {
+        "zh": "选择读数切片",
+        "en": "Slice the readings"
+      },
+      "prompt": {
+        "zh": "输出 reading 列中位置 3、4、5 的三个值，顺序保持不变。",
+        "en": "Return reading positions 3, 4, and 5 in their original order."
+      },
+      "initial": {
+        "column": "reading",
+        "start": 2,
+        "stop": 5
+      },
+      "solution": {
+        "column": "reading",
+        "start": 3,
+        "stop": 6
+      },
+      "goal": {
+        "columns": [
+          "index",
+          "reading"
+        ],
+        "rows": [
+          [
+            3,
+            22
+          ],
+          [
+            4,
+            28
+          ],
+          [
+            5,
+            26
+          ]
+        ]
+      }
+    }
+  ]
+}

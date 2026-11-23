@@ -1,0 +1,274 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "dc-diode-notes",
+  "order": 6011,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "diode-loop",
+    "order": 2,
+    "title": {
+      "zh": "二极管与通路",
+      "en": "Diodes and Current Paths"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "开关合上了，灯怎么还没亮？",
+    "en": "Why Is the Lamp Still Dark?"
+  },
+  "brief": {
+    "zh": "一圈导线里串着普通二极管、电阻和红色 LED。找出让红灯亮起的两个条件。",
+    "en": "One loop holds a diode, a resistor and a red LED. Find the two conditions that let the red lamp light."
+  },
+  "concept": {
+    "zh": "闭合回路与二极管的方向",
+    "en": "A complete loop and diode polarity"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "从电源走一圈",
+        "en": "Trace a complete loop"
+      },
+      "body": {
+        "zh": "用手指从电源正极沿电路走到负极。开关断开时路上有个缺口。合上开关，路就接通了。",
+        "en": "Trace the path from the positive supply terminal around to the negative terminal. An open switch leaves a gap. Closing it joins the two sides."
+      }
+    },
+    {
+      "title": {
+        "zh": "看二极管上的色环",
+        "en": "Find the band on the diode"
+      },
+      "body": {
+        "zh": "普通二极管有阳极 A 和阴极 K，图中带色环的一端是 K。在这块低压实验板上，正向放置时，常规电流能从 A 流向 K。翻转它，电流就小到点不亮灯。",
+        "en": "A diode has an anode A and a cathode K. The band marks K on this part. In this low-voltage circuit, conventional current can flow from A to K when it faces forward. Reversing it leaves too little current to light the lamp."
+      }
+    },
+    {
+      "title": {
+        "zh": "哪一个元件会发光？",
+        "en": "Which part makes light?"
+      },
+      "body": {
+        "zh": "红色 LED 也是二极管，它在正向通电时会发光。普通二极管用来改变电流能否通过。红灯固定接好，串联电阻用来限制通过灯的电流。",
+        "en": "The red LED is a light-emitting diode. It lights when forward current flows. Here you turn the ordinary diode to control the path. The LED stays facing forward and its series resistor limits the current."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "开关已闭合，普通二极管反向，红灯熄灭。只翻转普通二极管会怎样？",
+      "en": "The switch is closed, the ordinary diode is reversed, and the red LED is dark. What happens if you flip just the ordinary diode?"
+    },
+    "options": [
+      {
+        "zh": "红灯会亮",
+        "en": "The LED lights"
+      },
+      {
+        "zh": "开关自动断开",
+        "en": "The switch opens itself"
+      },
+      {
+        "zh": "电阻也要翻转才行",
+        "en": "The resistor must be flipped too"
+      }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "翻转后，正向二极管和闭合开关组成完整通路，电流也流过红灯。",
+      "en": "After the flip, the forward diode and closed switch complete the path through the red LED."
+    }
+  },
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": {
+          "zh": "普通二极管正向，开关留着缺口。",
+          "en": "The diode faces forward, but the switch leaves a gap."
+        },
+        "items": [
+          {
+            "id": "s",
+            "label": {
+              "zh": "开关 S",
+              "en": "Switch S"
+            },
+            "value": {
+              "zh": "断开",
+              "en": "Open"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "d",
+            "label": {
+              "zh": "普通二极管",
+              "en": "Diode"
+            },
+            "value": {
+              "zh": "色环端朝向负极一侧",
+              "en": "Band toward −"
+            },
+            "state": "done"
+          },
+          {
+            "id": "led",
+            "label": {
+              "zh": "红色 LED",
+              "en": "Red LED"
+            },
+            "value": {
+              "zh": "灭",
+              "en": "Off"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "合上开关，电流流过串联电阻和红灯。",
+          "en": "Close the switch. Current passes through the series resistor and the red LED."
+        },
+        "items": [
+          {
+            "id": "s",
+            "label": {
+              "zh": "开关 S",
+              "en": "Switch S"
+            },
+            "value": {
+              "zh": "闭合",
+              "en": "Closed"
+            },
+            "state": "active"
+          },
+          {
+            "id": "d",
+            "label": {
+              "zh": "普通二极管",
+              "en": "Diode"
+            },
+            "value": {
+              "zh": "色环端朝向负极一侧",
+              "en": "Band toward −"
+            },
+            "state": "done"
+          },
+          {
+            "id": "led",
+            "label": {
+              "zh": "红色 LED",
+              "en": "Red LED"
+            },
+            "value": {
+              "zh": "亮",
+              "en": "On"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "开关仍闭合。只翻转普通二极管，红灯熄灭。",
+          "en": "Keep the switch closed and reverse just the ordinary diode. The red light goes out."
+        },
+        "items": [
+          {
+            "id": "s",
+            "label": {
+              "zh": "开关 S",
+              "en": "Switch S"
+            },
+            "value": {
+              "zh": "闭合",
+              "en": "Closed"
+            },
+            "state": "active"
+          },
+          {
+            "id": "d",
+            "label": {
+              "zh": "普通二极管",
+              "en": "Diode"
+            },
+            "value": {
+              "zh": "色环端朝向正极一侧",
+              "en": "Band toward +"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "led",
+            "label": {
+              "zh": "红色 LED",
+              "en": "Red LED"
+            },
+            "value": {
+              "zh": "灭",
+              "en": "Off"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "把有色环的一端转回负极一侧，红灯又亮了。",
+          "en": "Turn the banded end back toward the negative side. The red LED lights again."
+        },
+        "items": [
+          {
+            "id": "s",
+            "label": {
+              "zh": "开关 S",
+              "en": "Switch S"
+            },
+            "value": {
+              "zh": "闭合",
+              "en": "Closed"
+            },
+            "state": "active"
+          },
+          {
+            "id": "d",
+            "label": {
+              "zh": "普通二极管",
+              "en": "Diode"
+            },
+            "value": {
+              "zh": "色环端朝向负极一侧",
+              "en": "Band toward −"
+            },
+            "state": "done"
+          },
+          {
+            "id": "led",
+            "label": {
+              "zh": "红色 LED",
+              "en": "Red LED"
+            },
+            "value": {
+              "zh": "亮",
+              "en": "On"
+            },
+            "state": "active"
+          }
+        ]
+      }
+    ]
+  }
+}

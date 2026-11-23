@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "debug-early-return",
+  "order": 942,
+  "unit": { "id": "python-advanced", "order": 30, "title": { "zh": "Python 高级", "en": "Advanced Python" } },
+  "topic": { "id": "debugging", "order": 4, "title": { "zh": "调试", "en": "Debugging" } },
+  "stage": "exercise",
+  "title": { "zh": "修好提前结束的合计", "en": "Fix a Total That Ends Early" },
+  "brief": { "zh": "先运行 total_readings(readings)，找出哪组用例算错。修正返回值的位置，让它能算完所有读数。", "en": "Run total_readings(readings) and find the failing cases. Move the return so it can add every reading." },
+  "concept": { "zh": "核对 return 所在的代码块", "en": "Check which block contains return" },
+  "hints": [
+    { "zh": "[2, 5] 的预期合计是 7。当前版本第一次循环结束前就返回了。", "en": "[2, 5] should total 7. The current function returns during the first loop iteration." },
+    { "zh": "把那一行的缩进改为四个空格，和 for 对齐。", "en": "Indent that line with four spaces so it lines up with for." }
+  ],
+  "functionName": "total_readings",
+  "starterCode": "def total_readings(readings):\n    total = 0\n    for reading in readings:\n        total = total + reading\n        return total\n",
+  "solutionCode": "def total_readings(readings):\n    total = 0\n    for reading in readings:\n        total = total + reading\n    return total\n",
+  "snippets": [{ "label": { "zh": "用循环后的返回替换原行", "en": "Replace the return at loop indentation" }, "code": "    return total" }],
+  "cases": [
+    { "args": [[2, 5]], "expected": 7 },
+    { "args": [[8]], "expected": 8 },
+    { "args": [[]], "expected": 0 },
+    { "args": [[0, 0, 4, 2]], "expected": 6 }
+  ]
+}

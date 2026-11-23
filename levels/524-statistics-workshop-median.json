@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "statistics-workshop-median",
+  "order": 524,
+  "stage": "exercise",
+  "unit": { "id": "statistics", "order": 120, "title": { "zh": "统计分析", "en": "Statistics" } },
+  "topic": { "id": "center-spread", "order": 1, "title": { "zh": "平均值、中位数与极差", "en": "Mean, median, and range" } },
+  "title": { "zh": "找车间的中位温度", "en": "Find the Workshop's Median Temperature" },
+  "brief": { "zh": "站长想知道车间读数排序后，中间位置对应多少度。", "en": "The station manager wants the center value when the workshop readings are sorted." },
+  "concept": { "zh": "先限定区域。四条读数的中位数是中间两条的平均值。", "en": "Limit the sample to one area. With four readings, the median is the average of the middle pair." },
+  "hints": [{ "zh": "把车间的四个数从小到大排出来。第 2 和第 3 个度数分别是 28°C 和 32°C。", "en": "Arrange the four workshop readings from low to high. The second and third readings are 28°C and 32°C." }],
+  "steps": [
+    {
+      "operation": "summary",
+      "input": "clean",
+      "label": { "zh": "限定区域并求中位数", "en": "Choose an area and find the median" },
+      "prompt": { "zh": "输出车间温度的中位数。", "en": "Return the median workshop temperature." },
+      "initial": { "statistic": "mean", "zone": "all" },
+      "goal": { "columns": ["statistic", "value"], "rows": [["median", 30]] },
+      "solution": { "statistic": "median", "zone": "workshop" }
+    }
+  ]
+}

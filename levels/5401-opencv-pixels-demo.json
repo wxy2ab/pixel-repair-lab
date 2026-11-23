@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "opencv-pixel-inspector",
+  "order": 5401,
+  "stage": "demo",
+  "unit": { "id": "opencv", "order": 140, "title": { "zh": "OpenCV", "en": "OpenCV" } },
+  "topic": { "id": "pixels", "order": 1, "title": { "zh": "像素与坐标", "en": "Pixels and coordinates" } },
+  "mode": "pixels",
+  "title": { "zh": "点一点，读出像素", "en": "Click a Pixel to Read It" },
+  "brief": { "zh": "在 6 × 4 的校准板上选两个不同的小格，对比位置和颜色读数。", "en": "Pick two different tiles on a 6 × 4 calibration board and compare their positions and color readings." },
+  "concept": { "zh": "像素坐标从 0 开始。操作不同的小格会读出不同的数组元素。", "en": "Pixel coordinates start at zero. Picking a new tile reads a different array element." },
+  "hints": [{ "zh": "从第 0 行移到第 1 行时，x 可以保持不变，只有 y 改变。", "en": "You can move from row 0 to row 1 without changing x. Only y changes." }],
+  "cases": [{
+    "image": "calibration",
+    "label": { "zh": "校准像素板", "en": "Pixel calibration board" },
+    "prompt": { "zh": "试着读取 (2, 0) 和 (2, 1)，观察坐标顺序和颜色数值。", "en": "Inspect (2, 0) and (2, 1). Compare the coordinate order and RGB values." },
+    "initial": { "x": 2, "y": 0 }
+  }]
+}

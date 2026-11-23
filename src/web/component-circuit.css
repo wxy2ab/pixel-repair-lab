@@ -1,0 +1,94 @@
+.component-bench {
+  min-width: 0;
+}
+.component-bench-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+.component-bench-header h2 { margin: 0; }
+.component-output {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid #b6c5be;
+  border-radius: 2rem;
+  background: #f0f4ef;
+  color: #344b43;
+  font-size: 0.85rem;
+}
+.component-output > span {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: #64786c;
+}
+.component-output[data-output="1"] { color: #832e20; background: #fff1e9; border-color: #e5a58c; }
+.component-output[data-output="1"] > span { background: #ed552f; box-shadow: 0 0 5px #ed552f; }
+.component-schematic {
+  width: 100%;
+  display: block;
+  border: 1px solid #adbfba;
+  border-radius: 0.65rem;
+  background: #f5f8ef;
+}
+.component-schematic path, .component-device circle {
+  fill: none;
+  stroke: #384d4a;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.component-schematic text { font: 600 15px system-ui, sans-serif; fill: #233e39; }
+.component-device circle { fill: #e5ece0; }
+.component-schematic .component-led { fill: #be8980; }
+.component-schematic .component-rays path { stroke: #956f65; stroke-width: 2; }
+.component-schematic[data-lit="true"] .component-led { fill: #ff6037; filter: drop-shadow(0 0 5px #ff6342); }
+.component-schematic[data-lit="true"] .component-rays path { stroke: #b63217; }
+.component-schematic .component-diode { fill: #916143; stroke: #513c35; stroke-width: 2; }
+.component-schematic .component-band { fill: #ffe9cc; }
+.component-schematic .component-driver { fill: #fff1d4; stroke: #735233; stroke-width: 2; }
+.component-schematic .component-transistor { stroke-width: 1.5; fill: #e1eddf; }
+.component-schematic .component-flow path, .component-schematic .component-base-flow {
+  stroke: #228261;
+  stroke-dasharray: 4 9;
+  stroke-width: 4;
+  animation: component-current 1s linear infinite;
+}
+.component-schematic .component-base-flow { stroke: #c07b18; }
+.component-flow polygon { fill: #166b50; }
+@keyframes component-current { to { stroke-dashoffset: -26; } }
+@media (prefers-reduced-motion: reduce) {
+  .component-schematic .component-flow path, .component-schematic .component-base-flow { animation: none; }
+}
+.component-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+.component-control {
+  display: flex;
+  gap: 0.18rem;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 3.4rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid #acbbb3;
+  border-radius: 0.55rem;
+  background: #f0f5ef;
+  color: #233d32;
+  text-align: start;
+  cursor: pointer;
+}
+.component-control[aria-pressed="true"] { background: #d9efdf; border-color: #5d8c71; }
+.component-control:hover { border-color: #3b745a; }
+.component-control:focus-visible { outline: 3px solid #18729b; outline-offset: 2px; }
+.component-control span { font-size: 0.8rem; }
+.component-control strong { font-size: 1rem; }
+.component-reading { margin: 0.75rem 0 0; line-height: 1.65; }

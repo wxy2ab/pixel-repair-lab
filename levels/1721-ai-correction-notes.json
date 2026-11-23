@@ -1,0 +1,214 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "ai-correction-notes",
+  "order": 1721,
+  "unit": {
+    "id": "ai-review",
+    "order": 170,
+    "title": {
+      "zh": "核对与修正",
+      "en": "Review and Revision"
+    }
+  },
+  "topic": {
+    "id": "specific-correction",
+    "order": 2,
+    "title": {
+      "zh": "写清修改",
+      "en": "Give Specific Corrections"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "修正一句话，保住正确项",
+    "en": "Make the Fix and Keep the Good Rows"
+  },
+  "brief": {
+    "zh": "用一条具体的反馈修正清单，保留已经正确的内容。",
+    "en": "Give precise feedback that fixes a manifest and preserves the correct entries."
+  },
+  "concept": {
+    "zh": "修正提示词写明要改的物品、目标数量及保留要求。",
+    "en": "Name the item, final quantity, and entries to preserve."
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "说出需要的最终数量",
+        "en": "Give the final quantity"
+      },
+      "body": {
+        "zh": "任务要四节电池。清单现在有五节，可以说“把电池改为四节”。写出最终数量，方便你下一轮核对。",
+        "en": "The task calls for four batteries. If the list contains five, ask to set the battery count to four. The final quantity gives you a clear reference for the next check."
+      }
+    },
+    {
+      "title": {
+        "zh": "告诉 AI 哪些内容要保留",
+        "en": "Say what to keep"
+      },
+      "body": {
+        "zh": "可以补一句“把其他物品保持原样”。如果有多处差异，就把每一处的改法分别说明。",
+        "en": "You can add “Keep the other items as they are.” If several entries need changes, describe each change separately."
+      }
+    }
+  ],
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": {
+          "zh": "清单里有五节电池和一块清洁布。任务要求四节电池和一块清洁布。",
+          "en": "The manifest lists five batteries and one cloth. The assignment calls for four batteries and one cloth."
+        },
+        "items": [
+          {
+            "id": "battery",
+            "label": {
+              "zh": "电池",
+              "en": "Batteries"
+            },
+            "value": {
+              "zh": "AI 5 · 目标 4",
+              "en": "AI 5 · Target 4"
+            },
+            "state": "active"
+          },
+          {
+            "id": "cloth",
+            "label": {
+              "zh": "清洁布",
+              "en": "Cleaning cloth"
+            },
+            "value": {
+              "zh": "AI 1 · 目标 1",
+              "en": "AI 1 · Target 1"
+            }
+          },
+          {
+            "id": "feedback",
+            "label": {
+              "zh": "给 AI 的反馈",
+              "en": "Feedback"
+            },
+            "value": {
+              "zh": "待写",
+              "en": "Ready to draft"
+            }
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "说清需要的最终数量，同时提醒 AI 保留其他项目。",
+          "en": "State the final quantity you need, and tell the AI to preserve the other rows."
+        },
+        "items": [
+          {
+            "id": "battery",
+            "label": {
+              "zh": "电池",
+              "en": "Batteries"
+            },
+            "value": {
+              "zh": "目标 4",
+              "en": "Target 4"
+            }
+          },
+          {
+            "id": "cloth",
+            "label": {
+              "zh": "清洁布",
+              "en": "Cleaning cloth"
+            },
+            "value": {
+              "zh": "保留 1",
+              "en": "Keep 1"
+            }
+          },
+          {
+            "id": "feedback",
+            "label": {
+              "zh": "给 AI 的反馈",
+              "en": "Feedback"
+            },
+            "value": {
+              "zh": "电池改为 4，其他物品保持原样",
+              "en": "Set batteries to 4. Keep everything else."
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "再看改过的清单。电池改成了四节，清洁布仍有一块。",
+          "en": "Inspect the revised manifest. It now has four batteries and still has one cloth."
+        },
+        "items": [
+          {
+            "id": "battery",
+            "label": {
+              "zh": "电池",
+              "en": "Batteries"
+            },
+            "value": {
+              "zh": "AI 4 · 目标 4",
+              "en": "AI 4 · Target 4"
+            }
+          },
+          {
+            "id": "cloth",
+            "label": {
+              "zh": "清洁布",
+              "en": "Cleaning cloth"
+            },
+            "value": {
+              "zh": "AI 1 · 目标 1",
+              "en": "AI 1 · Target 1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "feedback",
+            "label": {
+              "zh": "给 AI 的反馈",
+              "en": "Feedback"
+            },
+            "value": {
+              "zh": "复查通过",
+              "en": "Review passed"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "question": {
+    "prompt": {
+      "zh": "三条扎带要改成两条，扳手的数量已经正确。选一句修正。",
+      "en": "The three cable ties should become two. The wrench count is already correct. Choose a correction."
+    },
+    "options": [
+      {
+        "zh": "请重做清单。",
+        "en": "Please redo the manifest."
+      },
+      {
+        "zh": "把扎带改为 2 条，保留其他项目。",
+        "en": "Set cable ties to 2. Keep the other entries."
+      },
+      {
+        "zh": "清单里的件数少一点。",
+        "en": "Put fewer things on the list."
+      }
+    ],
+    "correct": 1,
+    "feedback": {
+      "zh": "写清改哪一项、改成多少，并说明其他项目要保留。",
+      "en": "Specify what to change, its final count, and what to preserve."
+    }
+  }
+}

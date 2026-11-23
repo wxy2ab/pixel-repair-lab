@@ -1,0 +1,121 @@
+{
+  "version": 1,
+  "kind": "replay",
+  "id": "selection-sort-replay",
+  "order": 1102,
+  "unit": {
+    "id": "algorithm-intro",
+    "order": 50,
+    "title": {
+      "zh": "算法初级",
+      "en": "Introductory Algorithms"
+    }
+  },
+  "stage": "demo",
+  "topic": {
+    "id": "selection-sort",
+    "order": 2,
+    "title": {
+      "zh": "选择排序",
+      "en": "Selection sort"
+    }
+  },
+  "title": {
+    "zh": "查看每次交换",
+    "en": "Watch each swap"
+  },
+  "brief": {
+    "zh": "运行两批货物，跟着输出查看有重复编号时的每一轮排序。",
+    "en": "Run two batches and inspect each pass, including duplicate part numbers."
+  },
+  "concept": {
+    "zh": "原地交换的顺序",
+    "en": "Order of in-place swaps"
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "顺序打乱的一批",
+        "en": "Shuffled parts"
+      },
+      "source": "parts = scan()\nfor start in range(len(parts)):\n    smallest = start\n    for index in range(start + 1, len(parts)):\n        if parts[index] < parts[smallest]:\n            smallest = index\n    saved = parts[start]\n    parts[start] = parts[smallest]\n    parts[smallest] = saved\n    say(str(parts))\nsubmit(parts)",
+      "scenario": {
+        "tiles": [
+          "#####",
+          "#...#",
+          "#####"
+        ],
+        "start": {
+          "x": 1,
+          "y": 1
+        },
+        "input": [
+          6,
+          3,
+          2,
+          5
+        ],
+        "allowedApi": [
+          "scan",
+          "say",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              [
+                2,
+                3,
+                5,
+                6
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "title": {
+        "zh": "带有重复编号的一批",
+        "en": "Duplicate labels"
+      },
+      "source": "parts = scan()\nfor start in range(len(parts)):\n    smallest = start\n    for index in range(start + 1, len(parts)):\n        if parts[index] < parts[smallest]:\n            smallest = index\n    saved = parts[start]\n    parts[start] = parts[smallest]\n    parts[smallest] = saved\n    say(str(parts))\nsubmit(parts)",
+      "scenario": {
+        "tiles": [
+          "#####",
+          "#...#",
+          "#####"
+        ],
+        "start": {
+          "x": 1,
+          "y": 1
+        },
+        "input": [
+          4,
+          4,
+          1
+        ],
+        "allowedApi": [
+          "scan",
+          "say",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              [
+                1,
+                4,
+                4
+              ]
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

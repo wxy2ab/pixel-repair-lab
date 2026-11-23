@@ -1,0 +1,225 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "pocket-route",
+  "order": 3,
+  "unit": {
+    "id": "structures",
+    "order": 40,
+    "title": {
+      "zh": "数据结构",
+      "en": "Data Structures"
+    }
+  },
+  "topic": {
+    "id": "lists",
+    "order": 1,
+    "title": {
+      "zh": "列表",
+      "en": "Lists"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "把路线装进口袋",
+    "en": "Pocket a Route"
+  },
+  "concept": {
+    "zh": "列表与索引",
+    "en": "Lists and indexing"
+  },
+  "brief": {
+    "zh": "站台提供一份方向列表。按索引读出每个方向，再用它移动。程序还要能走另一条路线。",
+    "en": "The station supplies a list of directions. Read each direction by its index and use it to move. Your program should work on a second route too."
+  },
+  "hints": [
+    {
+      "zh": "用 scan() 把路线存到 route。列表的第一个索引是 0。",
+      "en": "Use scan() to save the route in route. The first list index is 0."
+    },
+    {
+      "zh": "range(len(route)) 依次给出每个索引。把 move(route[i]) 放进循环。",
+      "en": "range(len(route)) gives you each index in order. Put move(route[i]) inside the loop."
+    }
+  ],
+  "tiles": [
+    "#########",
+    "#......##",
+    "#....#..#",
+    "#.#.....#",
+    "#....#..#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 2,
+    "y": 5
+  },
+  "input": [
+    "right",
+    "right",
+    "up",
+    "up",
+    "right"
+  ],
+  "allowedApi": [
+    "move",
+    "scan",
+    "say"
+  ],
+  "objectives": [
+    {
+      "type": "exit",
+      "x": 5,
+      "y": 3
+    },
+    {
+      "type": "moves",
+      "origin": "list-index"
+    }
+  ],
+  "variants": [
+    {
+      "input": [
+        "up",
+        "left",
+        "up",
+        "up",
+        "right",
+        "right"
+      ],
+      "objectives": [
+        {
+          "type": "exit",
+          "x": 3,
+          "y": 2
+        },
+        {
+          "type": "moves",
+          "origin": "list-index"
+        }
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "read-route",
+      "label": {
+        "zh": "扫描并保存路线列表",
+        "en": "Scan and save the route list"
+      },
+      "template": "route = scan()"
+    },
+    {
+      "id": "each-index",
+      "label": {
+        "zh": "逐个查看列表索引",
+        "en": "For each list index"
+      },
+      "template": "for i in range(len(route)):",
+      "block": true
+    },
+    {
+      "id": "indexed-move",
+      "label": {
+        "zh": "读取索引 i 的方向并移动",
+        "en": "Move in the direction at index i"
+      },
+      "template": "move(route[i])"
+    },
+    {
+      "id": "move",
+      "label": {
+        "zh": "移动",
+        "en": "Move"
+      },
+      "template": "move({{direction}})",
+      "parameters": [
+        {
+          "name": "direction",
+          "label": {
+            "zh": "方向",
+            "en": "Direction"
+          },
+          "choices": [
+            {
+              "id": "right",
+              "label": {
+                "zh": "右",
+                "en": "Right"
+              },
+              "code": "\"right\""
+            },
+            {
+              "id": "up",
+              "label": {
+                "zh": "上",
+                "en": "Up"
+              },
+              "code": "\"up\""
+            },
+            {
+              "id": "left",
+              "label": {
+                "zh": "左",
+                "en": "Left"
+              },
+              "code": "\"left\""
+            },
+            {
+              "id": "down",
+              "label": {
+                "zh": "下",
+                "en": "Down"
+              },
+              "code": "\"down\""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read-route"
+    },
+    {
+      "cardId": "each-index",
+      "children": [
+        {
+          "cardId": "indexed-move"
+        }
+      ]
+    }
+  ],
+  "tutorial": [
+    {
+      "text": {
+        "zh": "添加「扫描并保存路线列表」。机器人会把站台给出的方向放进 route。",
+        "en": "Add Scan and Save the Route List. Sprout puts the directions from the station into route."
+      },
+      "target": "palette"
+    },
+    {
+      "text": {
+        "zh": "添加「逐个查看列表索引」。循环中的 i 会从 0 开始往后数。",
+        "en": "Add For Each List Index. Inside the loop, i starts counting from 0."
+      },
+      "target": "program"
+    },
+    {
+      "text": {
+        "zh": "把「读取索引 i 的方向并移动」放进循环，让每个方向都用一次。",
+        "en": "Put Move in the Direction at Index i inside the loop to use each direction once."
+      },
+      "target": "program"
+    },
+    {
+      "text": {
+        "zh": "点击「运行」。同一程序也会验证一条不同长度的路线。",
+        "en": "Click Run. Your program is also checked against a route of a different length."
+      },
+      "target": "run"
+    }
+  ]
+}

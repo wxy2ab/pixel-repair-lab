@@ -1,0 +1,116 @@
+.two-pointer-lesson {
+  min-width: 0;
+  container-type: inline-size;
+}
+
+.two-pointer-body,
+.two-pointer-step,
+.two-pointer-status {
+  display: grid;
+  min-width: 0;
+  gap: 10px;
+}
+
+.two-pointer-body { padding: clamp(10px, 2.6cqi, 17px); }
+.two-pointer-body p { margin: 0; }
+.two-pointer-task { color: var(--muted); }
+
+.two-pointer-row {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #17273b;
+}
+
+.two-pointer-row .two-pointer-card {
+  align-content: start;
+  min-width: 34px;
+  min-height: 65px;
+  padding-inline: 3px;
+}
+
+.two-pointer-card[data-state='left'] {
+  border-color: #88bcea;
+  background: #244664;
+}
+
+.two-pointer-card[data-state='right'] {
+  border-color: var(--warm);
+  background: #443824;
+}
+
+.two-pointer-card[data-state='found'] .two-pointer-marker { color: var(--mint); }
+.two-pointer-card[data-state='left'] .two-pointer-marker { color: #c4e0fa; }
+.two-pointer-card[data-state='right'] .two-pointer-marker { color: var(--warm); }
+
+.two-pointer-card[data-state='excluded'] {
+  border-color: #62758b;
+  border-style: dashed;
+  background: #222e40;
+}
+
+.two-pointer-card[data-state='excluded'] .search-battery-charge {
+  border-color: #6b7b90;
+  background: #2e3849;
+  color: #b1bfd0;
+}
+
+.two-pointer-card[data-recent] {
+  border-color: var(--warm);
+  animation: two-pointer-ruled-out .28s ease-out;
+}
+
+.two-pointer-marker {
+  color: var(--muted);
+  font-size: .68rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.two-pointer-prior {
+  display: inline-block;
+  margin-inline-end: 8px;
+  color: var(--muted);
+  font-size: .85rem;
+}
+
+.two-pointer-equation {
+  display: inline-block;
+  padding: 2px 6px;
+  border: 1px solid #8d6a42;
+  border-radius: 5px;
+  background: #402f21;
+  color: #ffe7bc;
+  font: 700 .92rem/1.5 var(--mono);
+}
+
+.two-pointer-equation[data-relation='='] {
+  border-color: #4d9d80;
+  background: #24483c;
+  color: #dcfaec;
+}
+
+.two-pointer-code {
+  margin: 0;
+  padding: 6px 9px;
+  border: 1px solid #4b977d;
+  border-radius: 6px;
+  background: #19392f;
+  color: #e6fff3;
+  font: .83rem/1.52 var(--mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.two-pointer-controls { display: flex; flex-wrap: wrap; gap: 6px 8px; }
+.two-pointer-controls button { min-height: 44px; }
+.two-pointer-hint { color: #fac9b9; }
+
+@keyframes two-pointer-ruled-out {
+  from { transform: translateY(-3px); opacity: .68; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .two-pointer-card[data-recent] { animation: none; }
+}

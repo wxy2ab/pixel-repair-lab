@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "ai-constraints-notes",
+  "order": 5711,
+  "unit": { "id": "ai", "order": 160, "title": { "zh": "AI 协作", "en": "AI Collaboration" } },
+  "topic": { "id": "constraints", "order": 2, "title": { "zh": "写清约束", "en": "State the constraints" } },
+  "stage": "explain",
+  "title": { "zh": "该放、不能放、要保留", "en": "Include, Exclude, Keep" },
+  "brief": { "zh": "让 AI 更新已有清单时，写明必须加入、必须去掉和应该保留的内容。", "en": "When AI updates an existing list, spell out what to add, what to remove, and what to keep." },
+  "concept": { "zh": "把任务限制写成可以核对的要求。", "en": "Write constraints you can check." },
+  "hints": [],
+  "sections": [
+    {
+      "title": { "zh": "说明必须有和不能有的物品", "en": "Name what must be in or out" },
+      "body": { "zh": "给 AI 一份草稿时，AI 可能保留你没提到的物品。如果不允许带某样物品，就写清楚要把它从清单里去掉。", "en": "When AI starts from a draft, it may keep items you did not mention. If an item is forbidden, tell it to remove that item from the list." }
+    },
+    {
+      "title": { "zh": "保护已经正确的内容", "en": "Preserve the entries that are already correct" },
+      "body": { "zh": "如果草稿里已经有合适的数量，可以写“保留已有的 2 片滤网”。新清单出来后，要同时检查新增、排除和保留的内容。", "en": "If the draft already has the right count, say “Keep the 2 filters already listed.” Then check additions, exclusions, and preserved entries in the new list." }
+    }
+  ],
+  "question": {
+    "prompt": { "zh": "草稿有 2 片滤网和 1 瓶胶水。任务要求保留滤网，再加 1 把刷子，并且不能有胶水。哪条提示最清楚？", "en": "The draft contains 2 filters and 1 bottle of glue. The task is to keep the filters, add 1 brush, and leave out the glue. Which prompt is clearest?" },
+    "options": [
+      { "zh": "请向草稿添加 1 把刷子。", "en": "Add 1 brush to the draft." },
+      { "zh": "请保留 2 片滤网，加入 1 把刷子，去掉胶水。", "en": "Keep the 2 filters, add 1 brush, and remove the glue." },
+      { "zh": "请扔掉草稿，去掉胶水。", "en": "Discard the draft and remove the glue." }
+    ],
+    "correct": 1,
+    "feedback": { "zh": "这条提示把保留、增加和删除都写清了，可以逐项验收。", "en": "This prompt names precisely what to keep, add, and remove. Each change can be verified." }
+  },
+  "animation": {
+    "layout": "row",
+    "frames": [
+      {
+        "caption": { "zh": "先读草稿。滤网数量合适，胶水却违反规定。", "en": "Read the draft. The filter count is right, but the glue breaks the rule." },
+        "items": [
+          { "id": "filter", "label": { "zh": "滤网", "en": "Filters" }, "value": { "zh": "草稿 ×2", "en": "Draft ×2" }, "state": "done" },
+          { "id": "glue", "label": { "zh": "胶水", "en": "Glue" }, "value": { "zh": "草稿 ×1", "en": "Draft ×1" }, "state": "active" }
+        ]
+      },
+      {
+        "caption": { "zh": "只说“加一把刷子”，胶水可能还在。", "en": "If you only say “Add one brush,” the glue may remain." },
+        "items": [
+          { "id": "filter", "label": { "zh": "滤网", "en": "Filters" }, "value": { "zh": "×2", "en": "×2" }, "state": "done" },
+          { "id": "glue", "label": { "zh": "胶水", "en": "Glue" }, "value": { "zh": "×1，还在", "en": "×1, still listed" }, "state": "active" },
+          { "id": "brush", "label": { "zh": "刷子", "en": "Brush" }, "value": { "zh": "新增 ×1", "en": "Added ×1" }, "state": "done" }
+        ]
+      },
+      {
+        "caption": { "zh": "明确说出“去掉胶水，保留原来的 2 片滤网和 1 把刷子”，再核对结果。", "en": "Say “Remove the glue and keep the 2 filters and 1 brush.” Then check the result." },
+        "items": [
+          { "id": "filter", "label": { "zh": "滤网", "en": "Filters" }, "value": { "zh": "保留 ×2", "en": "Keep ×2" }, "state": "done" },
+          { "id": "brush", "label": { "zh": "刷子", "en": "Brush" }, "value": { "zh": "保留 ×1", "en": "Keep ×1" }, "state": "done" },
+          { "id": "glue", "label": { "zh": "胶水", "en": "Glue" }, "value": { "zh": "去掉", "en": "Remove" }, "state": "muted" }
+        ]
+      }
+    ]
+  }
+}

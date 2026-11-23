@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "ai-supply-box",
+  "order": 11,
+  "unit": {
+    "id": "ai",
+    "order": 160,
+    "title": {
+      "zh": "AI 协作",
+      "en": "AI Collaboration"
+    }
+  },
+  "topic": { "id": "task", "order": 1, "title": { "zh": "写清任务", "en": "Describe the task" } },
+  "stage": "exercise",
+  "title": {
+    "zh": "AI 补给搭档",
+    "en": "AI Supply Partner"
+  },
+  "brief": {
+    "zh": "给探测队打包一瓶水和两节电池，箱子里不能有磁铁。请让 AI 列出装箱清单，然后检查它的答案。",
+    "en": "Pack one water bottle and two batteries for the survey team. Leave out the magnet. Ask AI for a packing list, then check its work."
+  },
+  "concept": {
+    "zh": "写清楚数量和限制。检查 AI 的清单，再告诉它哪里需要修改。",
+    "en": "Give clear quantities and constraints. Check the AI's list and tell it what to change."
+  },
+  "hints": [
+    {
+      "zh": "在提示词中写出每样物品和数量。",
+      "en": "Name each item and its quantity in your prompt."
+    },
+    {
+      "zh": "告诉 AI 哪样物品不能放进箱子。",
+      "en": "Tell the AI which item to leave out of the box."
+    },
+    {
+      "zh": "发现数量不对时，告诉 AI 把它改成多少。",
+      "en": "If a count is wrong, tell the AI what it should be."
+    }
+  ],
+  "inventory": [
+    {
+      "id": "water",
+      "label": {
+        "zh": "水",
+        "en": "Water bottle"
+      },
+      "aliases": [
+        "瓶装水",
+        "瓶水",
+        "水瓶",
+        "water bottles",
+        "bottled water"
+      ]
+    },
+    {
+      "id": "battery",
+      "label": {
+        "zh": "电池",
+        "en": "Battery"
+      },
+      "aliases": [
+        "电芯",
+        "batteries"
+      ]
+    },
+    {
+      "id": "magnet",
+      "label": {
+        "zh": "磁铁",
+        "en": "Magnet"
+      },
+      "aliases": [
+        "磁石",
+        "magnets"
+      ]
+    }
+  ],
+  "required": {
+    "water": 1,
+    "battery": 2
+  },
+  "trainingFault": {
+    "itemId": "battery",
+    "quantity": 3
+  },
+  "examplePrompts": {
+    "zh": [
+      "请打包一瓶水和两节电池。不要放磁铁。",
+      "请把电池改为两节。"
+    ],
+    "en": [
+      "Pack one water bottle and two batteries. Leave out the magnet.",
+      "Set batteries to two."
+    ]
+  }
+}

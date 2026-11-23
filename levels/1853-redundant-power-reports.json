@@ -1,0 +1,224 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "challenge-redundant-power-reports",
+  "order": 1853,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "architecture",
+      "topic": "memory"
+    },
+    {
+      "unit": "architecture",
+      "topic": "registers"
+    },
+    {
+      "unit": "architecture",
+      "topic": "instructions"
+    }
+  ],
+  "title": {
+    "zh": "四份旁路报告",
+    "en": "Four Bypass Reports"
+  },
+  "concept": {
+    "zh": "四格原地改写 · 每份报告排除一路",
+    "en": "Four cells in place · One channel excluded per report"
+  },
+  "brief": {
+    "zh": "地址 0 到 3 原本各存一路供电读数。要做四份旁路报告，每份都排除自己地址原来那一路，只加上另外三路。把四份报告各写回自己的地址。这台 CPU 没有其他内存格，停机时 ACC 也要留下地址 3 的报告。一份程序通过五组读数。",
+    "en": "Addresses 0 through 3 originally hold four power readings. Produce four bypass reports. Each report sums the three readings from the other addresses, leaving out the original reading from its own address. Write each report back to its own address. This CPU has no other memory cells. At HALT, ACC must also hold the report for address 3. Pass all five sets of readings."
+  },
+  "hints": [],
+  "allowedOps": [
+    "LOAD",
+    "ADD",
+    "SUB",
+    "STORE",
+    "HALT"
+  ],
+  "starterCode": "HALT\n",
+  "solutionCode": "LOAD 3\nADD 0\nADD 1\nADD 2\nSTORE 3\nLOAD 3\nSUB 0\nSTORE 0\nLOAD 3\nSUB 1\nSTORE 1\nLOAD 3\nSUB 2\nSTORE 2\nLOAD 3\nADD 3\nADD 3\nSUB 0\nSUB 1\nSUB 2\nSTORE 3\nHALT\n",
+  "cases": [
+    {
+      "label": {
+        "zh": "四路供电",
+        "en": "All channels supplying power"
+      },
+      "memory": [
+        1,
+        4,
+        7,
+        13
+      ],
+      "accumulator": 35,
+      "goal": {
+        "accumulator": 12,
+        "memory": [
+          {
+            "address": 0,
+            "value": 24
+          },
+          {
+            "address": 1,
+            "value": 21
+          },
+          {
+            "address": 2,
+            "value": 18
+          },
+          {
+            "address": 3,
+            "value": 12
+          }
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "双路回馈",
+        "en": "Two feedback channels"
+      },
+      "memory": [
+        -7,
+        3,
+        12,
+        -4
+      ],
+      "accumulator": 2,
+      "goal": {
+        "accumulator": 8,
+        "memory": [
+          {
+            "address": 0,
+            "value": 11
+          },
+          {
+            "address": 1,
+            "value": 1
+          },
+          {
+            "address": 2,
+            "value": -8
+          },
+          {
+            "address": 3,
+            "value": 8
+          }
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "末路接管",
+        "en": "Fourth channel takes over"
+      },
+      "memory": [
+        0,
+        0,
+        0,
+        9
+      ],
+      "accumulator": -2,
+      "goal": {
+        "accumulator": 0,
+        "memory": [
+          {
+            "address": 0,
+            "value": 9
+          },
+          {
+            "address": 1,
+            "value": 9
+          },
+          {
+            "address": 2,
+            "value": 9
+          },
+          {
+            "address": 3,
+            "value": 0
+          }
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "总量刚好抵消",
+        "en": "Readings cancel out"
+      },
+      "memory": [
+        -8,
+        7,
+        -4,
+        5
+      ],
+      "accumulator": 41,
+      "goal": {
+        "accumulator": -5,
+        "memory": [
+          {
+            "address": 0,
+            "value": 8
+          },
+          {
+            "address": 1,
+            "value": -7
+          },
+          {
+            "address": 2,
+            "value": 4
+          },
+          {
+            "address": 3,
+            "value": -5
+          }
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "四路相等",
+        "en": "Matching channels"
+      },
+      "memory": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "accumulator": -10,
+      "goal": {
+        "accumulator": 18,
+        "memory": [
+          {
+            "address": 0,
+            "value": 18
+          },
+          {
+            "address": 1,
+            "value": 18
+          },
+          {
+            "address": 2,
+            "value": 18
+          },
+          {
+            "address": 3,
+            "value": 18
+          }
+        ]
+      }
+    }
+  ]
+}

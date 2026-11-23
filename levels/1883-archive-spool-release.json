@@ -1,0 +1,733 @@
+{
+  "version": 1,
+  "id": "challenge-archive-spool-release",
+  "order": 1883,
+  "kind": "grid",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": {
+    "zh": "档案卷轴倒带",
+    "en": "Archive Spool Release"
+  },
+  "concept": {
+    "zh": "连取四卷、反序验封",
+    "en": "Four archive reels and reverse seal checks"
+  },
+  "brief": {
+    "zh": "收齐 oak、reed、pine、elm 四卷档案并到出口。归档单按这四个名称排列，seals 字典列出封签。验收机按归档单的倒序接收封签，每个提交的值都须从同一个栈顶弹出。 限 33 回合，避开巡逻。scan() 列出巡线、目标坐标和 compass 方向表。第二张地图将图纸旋转半圈。",
+    "en": "Recover the four archive reels oak, reed, pine and elm and reach the exit. The archive manifest lists them in that order, and seals gives their seal codes. Submit the codes in reverse manifest order, popping every submitted value from the same stack. Avoid patrols within 33 turns. scan() lists patrol cycles, goal locations and the compass for plan directions. The second map rotates the plan by 180 degrees."
+  },
+  "prerequisites": [
+    {
+      "unit": "structures",
+      "topic": "stacks"
+    },
+    {
+      "unit": "structures",
+      "topic": "dictionaries"
+    },
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "#########",
+    "#.#...#.#",
+    "#.#.#.#.#",
+    "#...#.#.#",
+    "#####...#",
+    "#.....#.#",
+    "#.#..##.#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 3,
+    "y": 2
+  },
+  "items": [
+    {
+      "id": "oak",
+      "x": 4,
+      "y": 6
+    },
+    {
+      "id": "reed",
+      "x": 1,
+      "y": 5
+    },
+    {
+      "id": "pine",
+      "x": 5,
+      "y": 4
+    },
+    {
+      "id": "elm",
+      "x": 7,
+      "y": 2
+    }
+  ],
+  "enemies": [
+    {
+      "path": [
+        {
+          "x": 1,
+          "y": 3
+        },
+        {
+          "x": 2,
+          "y": 3
+        },
+        {
+          "x": 3,
+          "y": 3
+        },
+        {
+          "x": 2,
+          "y": 3
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 7,
+          "y": 6
+        },
+        {
+          "x": 7,
+          "y": 7
+        },
+        {
+          "x": 6,
+          "y": 7
+        },
+        {
+          "x": 5,
+          "y": 7
+        },
+        {
+          "x": 6,
+          "y": 7
+        },
+        {
+          "x": 7,
+          "y": 7
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 5,
+          "y": 7
+        },
+        {
+          "x": 6,
+          "y": 7
+        },
+        {
+          "x": 7,
+          "y": 7
+        },
+        {
+          "x": 6,
+          "y": 7
+        }
+      ]
+    }
+  ],
+  "turnLimit": 33,
+  "input": {
+    "seals": {
+      "oak": "K4",
+      "reed": "G2",
+      "pine": "C9",
+      "elm": "V1"
+    },
+    "compass": {
+      "N": "up",
+      "E": "right",
+      "S": "down",
+      "W": "left"
+    },
+    "parts": {
+      "oak": [
+        4,
+        6
+      ],
+      "reed": [
+        1,
+        5
+      ],
+      "pine": [
+        5,
+        4
+      ],
+      "elm": [
+        7,
+        2
+      ]
+    },
+    "exit": [
+      7,
+      7
+    ],
+    "patrols": [
+      [
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      [
+        [
+          7,
+          6
+        ],
+        [
+          7,
+          7
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          7,
+          7
+        ]
+      ],
+      [
+        [
+          5,
+          7
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          7,
+          7
+        ],
+        [
+          6,
+          7
+        ]
+      ]
+    ]
+  },
+  "objectives": [
+    {
+      "type": "collect",
+      "itemIds": [
+        "oak",
+        "reed",
+        "pine",
+        "elm"
+      ]
+    },
+    {
+      "type": "submit",
+      "values": [
+        "V1",
+        "C9",
+        "G2",
+        "K4"
+      ],
+      "origin": "stack-pop",
+      "sameContainer": true
+    },
+    {
+      "type": "exit",
+      "x": 7,
+      "y": 7
+    }
+  ],
+  "allowedApi": [
+    "move",
+    "pick",
+    "scan",
+    "submit"
+  ],
+  "cards": [
+    {
+      "id": "read",
+      "label": {
+        "zh": "读取图纸和工单",
+        "en": "Read plan and work order"
+      },
+      "template": "board = scan()"
+    },
+    {
+      "id": "N",
+      "label": {
+        "zh": "图纸北",
+        "en": "Plan north"
+      },
+      "template": "move(board[\"compass\"][\"N\"])"
+    },
+    {
+      "id": "E",
+      "label": {
+        "zh": "图纸东",
+        "en": "Plan east"
+      },
+      "template": "move(board[\"compass\"][\"E\"])"
+    },
+    {
+      "id": "S",
+      "label": {
+        "zh": "图纸南",
+        "en": "Plan south"
+      },
+      "template": "move(board[\"compass\"][\"S\"])"
+    },
+    {
+      "id": "W",
+      "label": {
+        "zh": "图纸西",
+        "en": "Plan west"
+      },
+      "template": "move(board[\"compass\"][\"W\"])"
+    },
+    {
+      "id": "grab",
+      "label": {
+        "zh": "拾取并读取件名",
+        "en": "Pick up and read the ID"
+      },
+      "template": "part = pick()"
+    },
+    {
+      "id": "stack",
+      "label": {
+        "zh": "备好卷轴栈",
+        "en": "Prepare the reel stack"
+      },
+      "template": "spool = []"
+    },
+    {
+      "id": "push",
+      "label": {
+        "zh": "压入本卷封签",
+        "en": "Push this reel’s seal"
+      },
+      "template": "spool.append(board[\"seals\"][part])"
+    },
+    {
+      "id": "while-stack",
+      "label": {
+        "zh": "卷轴栈里还有封签",
+        "en": "While seals remain"
+      },
+      "template": "while len(spool) > 0:",
+      "block": true
+    },
+    {
+      "id": "pop",
+      "label": {
+        "zh": "弹出并提交封签",
+        "en": "Pop and submit a seal"
+      },
+      "template": "submit(spool.pop())"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "stack"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "push"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "push"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "push"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "push"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "while-stack",
+      "children": [
+        {
+          "cardId": "pop"
+        }
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "#########",
+        "#.......#",
+        "#.##..#.#",
+        "#.#.....#",
+        "#...#####",
+        "#.#.#...#",
+        "#.#.#.#.#",
+        "#.#...#.#",
+        "#########"
+      ],
+      "start": {
+        "x": 5,
+        "y": 6
+      },
+      "items": [
+        {
+          "id": "oak",
+          "x": 4,
+          "y": 2
+        },
+        {
+          "id": "reed",
+          "x": 7,
+          "y": 3
+        },
+        {
+          "id": "pine",
+          "x": 3,
+          "y": 4
+        },
+        {
+          "id": "elm",
+          "x": 1,
+          "y": 6
+        }
+      ],
+      "enemies": [
+        {
+          "path": [
+            {
+              "x": 7,
+              "y": 5
+            },
+            {
+              "x": 6,
+              "y": 5
+            },
+            {
+              "x": 5,
+              "y": 5
+            },
+            {
+              "x": 6,
+              "y": 5
+            }
+          ]
+        },
+        {
+          "path": [
+            {
+              "x": 1,
+              "y": 2
+            },
+            {
+              "x": 1,
+              "y": 1
+            },
+            {
+              "x": 2,
+              "y": 1
+            },
+            {
+              "x": 3,
+              "y": 1
+            },
+            {
+              "x": 2,
+              "y": 1
+            },
+            {
+              "x": 1,
+              "y": 1
+            }
+          ]
+        },
+        {
+          "path": [
+            {
+              "x": 3,
+              "y": 1
+            },
+            {
+              "x": 2,
+              "y": 1
+            },
+            {
+              "x": 1,
+              "y": 1
+            },
+            {
+              "x": 2,
+              "y": 1
+            }
+          ]
+        }
+      ],
+      "turnLimit": 33,
+      "input": {
+        "seals": {
+          "oak": "M1",
+          "reed": "Q5",
+          "pine": "B7",
+          "elm": "R2"
+        },
+        "compass": {
+          "N": "down",
+          "E": "left",
+          "S": "up",
+          "W": "right"
+        },
+        "parts": {
+          "oak": [
+            4,
+            2
+          ],
+          "reed": [
+            7,
+            3
+          ],
+          "pine": [
+            3,
+            4
+          ],
+          "elm": [
+            1,
+            6
+          ]
+        },
+        "exit": [
+          1,
+          1
+        ],
+        "patrols": [
+          [
+            [
+              7,
+              5
+            ],
+            [
+              6,
+              5
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              5
+            ]
+          ],
+          [
+            [
+              1,
+              2
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              3,
+              1
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          [
+            [
+              3,
+              1
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              1
+            ]
+          ]
+        ]
+      },
+      "objectives": [
+        {
+          "type": "collect",
+          "itemIds": [
+            "oak",
+            "reed",
+            "pine",
+            "elm"
+          ]
+        },
+        {
+          "type": "submit",
+          "values": [
+            "R2",
+            "B7",
+            "Q5",
+            "M1"
+          ],
+          "origin": "stack-pop",
+          "sameContainer": true
+        },
+        {
+          "type": "exit",
+          "x": 1,
+          "y": 1
+        }
+      ]
+    }
+  ]
+}

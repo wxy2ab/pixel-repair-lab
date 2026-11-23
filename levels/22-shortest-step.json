@@ -1,0 +1,203 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "routing",
+    "order": 60,
+    "title": {
+      "zh": "算法进阶",
+      "en": "Intermediate Algorithms"
+    }
+  },
+  "kind": "algorithm",
+  "stage": "exercise",
+  "id": "shortest-step",
+  "order": 1213,
+  "title": {
+    "zh": "最短路的第一步",
+    "en": "First step on a shortest route"
+  },
+  "concept": {
+    "zh": "广度优先搜索与函数",
+    "en": "Breadth-first search and functions"
+  },
+  "brief": {
+    "zh": "写一个 shortest_step(board, start, goal) 函数。坐标用 [x, y]，井号是墙，圆点是地板。返回一条最短路线的第一步。没有路或已经到了就返回 None。",
+    "en": "Write shortest_step(board, start, goal). Coordinates are [x, y], # is a wall, and . is the floor. Return the first step on a shortest route, or None if there is no route or you are already there."
+  },
+  "hints": [
+    {
+      "zh": "把队列里的每格记成 [x, y, first]，其中 first 是从起点出发时的第一步。",
+      "en": "Store [x, y, first] in each queue entry. The value first records the first move from the start."
+    },
+    {
+      "zh": "每次从队首取格子。按上、右、下、左检查相邻格，略过墙、边界和已经访问过的格子。",
+      "en": "Take from the front. Check up, right, down, then left and skip walls, edges, and visited cells."
+    },
+    {
+      "zh": "新格子是终点时，返回记录的第一步。队列空了就没有路线。",
+      "en": "Return the stored first move when a new cell is the goal. An empty queue means there is no route."
+    }
+  ],
+  "functionName": "shortest_step",
+  "starterCode": "def shortest_step(board, start, goal):\n    if start == goal:\n        return None\n    \n    return None",
+  "solutionCode": "def shortest_step(board, start, goal):\n    if start == goal:\n        return None\n    width = len(board[0])\n    height = len(board)\n    queue = [[start[0], start[1], None]]\n    seen = {start[1] * width + start[0]: True}\n    while len(queue) > 0:\n        cell = queue.pop(0)\n        for direction in [\"up\", \"right\", \"down\", \"left\"]:\n            x = cell[0]\n            y = cell[1]\n            if direction == \"up\":\n                y -= 1\n            elif direction == \"right\":\n                x += 1\n            elif direction == \"down\":\n                y += 1\n            else:\n                x -= 1\n            if x < 0 or x >= width or y < 0 or y >= height:\n                continue\n            if board[y][x] == \"#\":\n                continue\n            key = y * width + x\n            if key in seen:\n                continue\n            first = cell[2]\n            if first is None:\n                first = direction\n            if [x, y] == goal:\n                return first\n            seen[key] = True\n            queue.append([x, y, first])\n    return None",
+  "snippets": [
+    {
+      "label": {
+        "zh": "棋盘宽高",
+        "en": "Board dimensions"
+      },
+      "code": "    width = len(board[0])\n    height = len(board)"
+    },
+    {
+      "label": {
+        "zh": "起点入队",
+        "en": "Enqueue the start"
+      },
+      "code": "    queue = [[start[0], start[1], None]]\n    seen = {start[1] * width + start[0]: True}"
+    },
+    {
+      "label": {
+        "zh": "从队首取格子",
+        "en": "Take from the queue"
+      },
+      "code": "    while len(queue) > 0:\n        cell = queue.pop(0)"
+    },
+    {
+      "label": {
+        "zh": "检查四个方向",
+        "en": "Check four directions"
+      },
+      "code": "        for direction in [\"up\", \"right\", \"down\", \"left\"]:\n            x = cell[0]\n            y = cell[1]"
+    },
+    {
+      "label": {
+        "zh": "检查边界",
+        "en": "Check the edges"
+      },
+      "code": "            if x < 0 or x >= width or y < 0 or y >= height:\n                continue"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          "#####",
+          "#...#",
+          "#####"
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          3,
+          1
+        ]
+      ],
+      "expected": "right"
+    },
+    {
+      "args": [
+        [
+          "#######",
+          "#.#...#",
+          "#.....#",
+          "#######"
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          5,
+          1
+        ]
+      ],
+      "expected": "down"
+    },
+    {
+      "args": [
+        [
+          "#####",
+          "#...#",
+          "#...#",
+          "#...#",
+          "#####"
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          1
+        ]
+      ],
+      "expected": "up"
+    },
+    {
+      "args": [
+        [
+          "#####",
+          "#.#.#",
+          "#####"
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          3,
+          1
+        ]
+      ],
+      "expected": null
+    },
+    {
+      "args": [
+        [
+          "#####",
+          "#...#",
+          "#####"
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "expected": null
+    },
+    {
+      "args": [
+        [
+          "#######",
+          "#.....#",
+          "#..#..#",
+          "#######"
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "expected": "up"
+    }
+  ],
+  "topic": {
+    "id": "breadth-first",
+    "order": 2,
+    "title": {
+      "zh": "广度优先搜索",
+      "en": "Breadth-first search"
+    }
+  }
+}

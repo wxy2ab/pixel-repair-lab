@@ -1,0 +1,46 @@
+.course-path-start {
+  display: flex;
+  gap: 10px 18px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 13px 15px;
+  margin: 0 0 12px;
+  border: 1px solid #39675b;
+  border-radius: 10px;
+  background: linear-gradient(120deg, #1b3434, #1a2a40);
+}
+.course-path-start h3 { font-size: 16px; margin-bottom: 3px; }
+.course-path-start p { margin: 0; color: var(--muted); font-size: 14px; }
+.course-path-start .primary-button { max-width: 100%; white-space: normal; }
+.course-start-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; min-width: 0; }
+.course-start-actions .subtle-button { white-space: normal; }
+.overview-topics { margin-top: 14px; padding: 13px 15px; }
+.overview-topics h2 { font-size: 17px; }
+.overview-topics ol { display: flex; flex-wrap: wrap; gap: 8px; margin: 9px 0 0; padding: 0; list-style: none; }
+.overview-topics button { display: flex; align-items: center; gap: 6px; white-space: normal; }
+.course-route-nav {
+  display: flex;
+  gap: 9px 14px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  padding: 10px 13px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: #172638;
+}
+.course-route-nav strong, .course-route-nav small { display: block; }
+.course-route-nav strong { font-size: 14px; color: #dcedfe; }
+.course-route-nav small { font-size: 13px; color: var(--muted); }
+.course-route-nav nav { display: flex; gap: 6px; flex-wrap: wrap; }
+.course-route-nav .optional-challenge { color: #ffda9d; border-color: #775c3d; }
+.course-topic-heading { padding: 8px 7px 2px; color: #a5b8ce; font-size: 13px; font-weight: 700; }
+.course-helpers { display: grid; gap: 5px; border-top: 1px solid var(--border); padding-top: 8px; }
+.course-helper { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.course-helper code { color: #b6e8d9; }
+.course-helper .subtle-button[aria-pressed='true'] { color: #aaf5d9; border-color: #4b8b71; background: #21453f; }
+.course-helper small { color: var(--muted); }
+.course-helper .subtle-button { min-height: 29px; padding: 3px 7px; font-size: 12px; white-space: normal; }
+@media (max-width: 520px) { .course-route-nav nav { width: 100%; } }

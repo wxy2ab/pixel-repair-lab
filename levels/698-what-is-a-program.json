@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "python-program-basics",
+  "order": 698,
+  "unit": { "id": "foundations", "order": 10, "title": { "zh": "Python 基础", "en": "Python Foundations" } },
+  "stage": "explain",
+  "overview": true,
+  "title": { "zh": "什么是程序？", "en": "What Is a Program?" },
+  "brief": {
+    "zh": "程序是一组电脑可以照着做的指令。给芽芽一个起始电量，看看预先写好的步骤怎样得出结果。",
+    "en": "A program is a set of instructions a computer can follow. Give Sprout a starting charge and see how the instructions work out the result."
+  },
+  "concept": { "zh": "输入、预定步骤与输出", "en": "Input, predefined steps, and output" },
+  "hints": [],
+  "execution": {
+    "source": "charge = scan()\nresult = charge + 3\nsay(str(result))",
+    "cases": [
+      { "label": { "zh": "起始电量 6 格", "en": "Start with 6 units" }, "input": 6, "expected": "9" },
+      { "label": { "zh": "起始电量 1 格", "en": "Start with 1 unit" }, "input": 1, "expected": "4" },
+      { "label": { "zh": "起始电量 0 格", "en": "Start with 0 units" }, "input": 0, "expected": "3" }
+    ],
+    "intro": { "mode": "basics", "rule": { "zh": "在原电量上加 3 格", "en": "Add 3 units to the starting charge" } }
+  },
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": { "zh": "芽芽收到起始电量 6 格。这是交给程序的输入。", "en": "Sprout receives a starting charge of 6 units. This is the input to the program." },
+        "items": [
+          { "id": "input", "label": { "zh": "输入", "en": "Input" }, "value": { "zh": "6 格", "en": "6 units" }, "state": "active" },
+          { "id": "process", "label": { "zh": "预定步骤", "en": "Predefined steps" }, "value": { "zh": "加 3 格", "en": "Add 3 units" }, "state": "muted" },
+          { "id": "output", "label": { "zh": "输出", "en": "Output" }, "state": "muted" }
+        ]
+      },
+      {
+        "caption": { "zh": "电脑照着预先写好的步骤，把 3 加到收到的数字上。", "en": "The computer follows the instructions written beforehand and adds 3 to the number it received." },
+        "items": [
+          { "id": "input", "label": { "zh": "输入", "en": "Input" }, "value": { "zh": "6 格", "en": "6 units" }, "state": "done" },
+          { "id": "process", "label": { "zh": "预定步骤", "en": "Predefined steps" }, "value": { "zh": "6 + 3", "en": "6 + 3" }, "state": "active" },
+          { "id": "output", "label": { "zh": "输出", "en": "Output" }, "state": "muted" }
+        ]
+      },
+      {
+        "caption": { "zh": "程序显示算出的 9 格。这是这次运行的输出。", "en": "The program displays the answer, 9 units. This is the output of this run." },
+        "items": [
+          { "id": "input", "label": { "zh": "输入", "en": "Input" }, "value": { "zh": "6 格", "en": "6 units" }, "state": "done" },
+          { "id": "process", "label": { "zh": "预定步骤", "en": "Predefined steps" }, "value": { "zh": "6 + 3", "en": "6 + 3" }, "state": "done" },
+          { "id": "output", "label": { "zh": "输出", "en": "Output" }, "value": { "zh": "9 格", "en": "9 units" }, "state": "active" }
+        ]
+      }
+    ]
+  },
+  "sections": [
+    {
+      "title": { "zh": "先写好步骤，电脑照着做", "en": "Write the steps for the computer to follow" },
+      "body": { "zh": "给芽芽补电的程序有三个步骤。先读取起始电量，再加 3 格，最后显示算好的电量。运行之前，程序里就已经写好了这些指令和顺序。", "en": "The charger program has three steps. It reads the starting charge, adds 3 units, then shows the result. These instructions and their order are set before the program runs." }
+    },
+    {
+      "title": { "zh": "输入和输出", "en": "Input and output" },
+      "body": { "zh": "输入是交给程序的信息，例如起始电量 6 格。输出是程序产生的结果，例如屏幕上显示的 9 格。换成 1 格再运行一次，看看同样的步骤会给出什么结果。", "en": "Input is information you give the program, such as a starting charge of 6 units. Output is what the program produces, such as the 9 units on the screen. Try a starting charge of 1 unit and see what the same steps produce." }
+    }
+  ],
+  "question": {
+    "prompt": { "zh": "看看刚才这次补电。你把哪个数交给了程序？", "en": "Look at the run you just made. Which number did you give the program?" },
+    "options": [
+      { "zh": "装进读数槽的起始电量", "en": "The starting charge I put in the reader" },
+      { "zh": "补电规则里要加的格数", "en": "The number of units in the charging rule" },
+      { "zh": "电量屏最后显示的读数", "en": "The final reading on the display" }
+    ],
+    "correct": 0,
+    "feedback": { "zh": "读数槽把你选的起始电量交给程序，这是输入。程序照规则补电，电量屏显示的结果就是输出。", "en": "The reader sends your chosen starting charge into the program. That is the input. The program applies its rule and the display shows the output." }
+  }
+}

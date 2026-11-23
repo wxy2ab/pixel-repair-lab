@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "statistics-grouped-summary-lesson",
+  "order": 525,
+  "stage": "explain",
+  "unit": { "id": "statistics", "order": 120, "title": { "zh": "统计分析", "en": "Statistics" } },
+  "topic": { "id": "grouped-summary", "order": 2, "title": { "zh": "按组比较", "en": "Compare groups" } },
+  "title": { "zh": "每个区域各算一份", "en": "Summarize Each Area Separately" },
+  "brief": { "zh": "维修站不同区域的温度记录混在一起。先分类，再比较每组的温度。", "en": "Readings from different areas of the station are mixed together. Sort them into groups, then compare their temperatures." },
+  "concept": { "zh": "按类别分组，每组分别计算样本数和汇总值。", "en": "Group rows by category, then count and summarize each group on its own." },
+  "hints": [],
+  "sections": [
+    { "title": { "zh": "分组键", "en": "The group key" }, "body": { "zh": "把区域作为分组键。同一区域的读数放在一组，即使它们在原表里隔得很远。", "en": "Use area as the group key. Put readings from the same area together, even when they appear far apart in the original table." } },
+    { "title": { "zh": "读数和样本数一起看", "en": "Read the result alongside the count" }, "body": { "zh": "每组用自己的读数算平均值。两个区域可以有相同平均值、不同的样本数。记录样本数，分清 1 次测量和多次测量得到的结果。", "en": "Calculate each mean using its own readings. Two areas can have the same mean with different sample counts. Keep the count so you know whether a result came from one measurement or several." } }
+  ],
+  "animation": {
+    "layout": "grid",
+    "frames": [
+      { "caption": { "zh": "四条记录按到达顺序排着。找一找哪些读数来自同一个区域。", "en": "Four observations are arranged in arrival order. Find the readings that belong to the same area." }, "items": [
+        { "id": "a", "label": { "zh": "机库", "en": "Hangar" }, "value": { "zh": "18°C", "en": "18°C" } },
+        { "id": "b", "label": { "zh": "车间", "en": "Workshop" }, "value": { "zh": "21°C", "en": "21°C" } },
+        { "id": "c", "label": { "zh": "机库", "en": "Hangar" }, "value": { "zh": "27°C", "en": "27°C" } },
+        { "id": "d", "label": { "zh": "机库", "en": "Hangar" }, "value": { "zh": "18°C", "en": "18°C" } }
+      ] },
+      { "caption": { "zh": "机库的三个读数靠在一起，车间的一个读数另成一组。", "en": "The hangar's three readings move together. The workshop's single reading forms its own group." }, "items": [
+        { "id": "a", "label": { "zh": "机库", "en": "Hangar" }, "value": { "zh": "18°C", "en": "18°C" }, "state": "active" },
+        { "id": "c", "label": { "zh": "机库", "en": "Hangar" }, "value": { "zh": "27°C", "en": "27°C" }, "state": "active" },
+        { "id": "d", "label": { "zh": "机库", "en": "Hangar" }, "value": { "zh": "18°C", "en": "18°C" }, "state": "active" },
+        { "id": "b", "label": { "zh": "车间", "en": "Workshop" }, "value": { "zh": "21°C", "en": "21°C" }, "state": "muted" }
+      ] },
+      { "caption": { "zh": "汇总表每区一行。两个平均值都是 21°C，样本数分别是 3 和 1。", "en": "The summary has one row per area. Both means are 21°C, but their counts are 3 and 1." }, "items": [
+        { "id": "a", "label": { "zh": "机库 · 3 条", "en": "Hangar · 3 readings" }, "value": { "zh": "(18 + 27 + 18) ÷ 3 = 21°C", "en": "(18 + 27 + 18) ÷ 3 = 21°C" }, "state": "done" },
+        { "id": "b", "label": { "zh": "车间 · 1 条", "en": "Workshop · 1 reading" }, "value": { "zh": "21 ÷ 1 = 21°C", "en": "21 ÷ 1 = 21°C" }, "state": "done" }
+      ] }
+    ]
+  },
+  "question": {
+    "prompt": { "zh": "车间又测得 23°C，只更新哪一组？", "en": "The workshop records another reading of 23°C. Which group do you update?" },
+    "options": [ { "zh": "只更新车间组", "en": "Only the workshop" }, { "zh": "只更新机库组", "en": "Only the hangar" }, { "zh": "两组都更新", "en": "Both groups" } ],
+    "correct": 0,
+    "feedback": { "zh": "车间组变成 2 条，平均值是 22°C。机库用的仍是原来三条。", "en": "The workshop now has two readings with a mean of 22°C. The hangar still uses its original three readings." }
+  }
+}

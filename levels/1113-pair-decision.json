@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "pair-decision",
+  "order": 1113,
+  "unit": {
+    "id": "algorithm-intro",
+    "order": 50,
+    "title": {
+      "zh": "算法初级",
+      "en": "Introductory Algorithms"
+    }
+  },
+  "stage": "exercise",
+  "topic": {
+    "id": "two-pointers",
+    "order": 3,
+    "title": {
+      "zh": "双指针",
+      "en": "Two pointers"
+    }
+  },
+  "title": {
+    "zh": "判断下一次缩小哪一侧",
+    "en": "Decide which side to shrink"
+  },
+  "brief": {
+    "zh": "pair_decision(low, high, target) 返回 left、right 或 match，分别表示移动左端、移动右端或找到一对。",
+    "en": "Return left, right, or match from pair_decision(low, high, target), depending on which end should move or whether a pair matches."
+  },
+  "concept": {
+    "zh": "拆出一条决策规则",
+    "en": "Extract a decision rule"
+  },
+  "hints": [],
+  "functionName": "pair_decision",
+  "starterCode": "def pair_decision(low, high, target):\n    return \"match\"",
+  "solutionCode": "def pair_decision(low, high, target):\n    total = low + high\n    if total < target:\n        return \"left\"\n    if total > target:\n        return \"right\"\n    return \"match\"",
+  "snippets": [
+    {
+      "label": {
+        "zh": "先算两端之和",
+        "en": "Add the two ends"
+      },
+      "code": "    total = low + high"
+    },
+    {
+      "label": {
+        "zh": "比较目标",
+        "en": "Compare with target"
+      },
+      "code": "    if total < target:\n        return \"left\"\n    if total > target:\n        return \"right\""
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        1,
+        8,
+        11
+      ],
+      "expected": "left"
+    },
+    {
+      "args": [
+        3,
+        7,
+        8
+      ],
+      "expected": "right"
+    },
+    {
+      "args": [
+        4,
+        8,
+        12
+      ],
+      "expected": "match"
+    },
+    {
+      "args": [
+        -4,
+        -1,
+        -6
+      ],
+      "expected": "right"
+    }
+  ]
+}

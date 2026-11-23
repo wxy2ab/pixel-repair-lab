@@ -1,0 +1,199 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "robot-directory",
+  "order": 6,
+  "unit": {
+    "id": "structures",
+    "order": 40,
+    "title": {
+      "zh": "数据结构",
+      "en": "Data Structures"
+    }
+  },
+  "topic": {
+    "id": "dictionaries",
+    "order": 4,
+    "title": {
+      "zh": "字典",
+      "en": "Dictionaries"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "机器人通讯录",
+    "en": "Robot Directory"
+  },
+  "concept": {
+    "zh": "字典与键值",
+    "en": "Dictionaries and key-value pairs"
+  },
+  "brief": {
+    "zh": "按任务清单联系机器人。用名字在通讯录里查找各自的频道号，并依次提交。",
+    "en": "Contact the robots in the request list. Look up each robot's channel by name in the directory and submit the channels in order."
+  },
+  "hints": [
+    {
+      "zh": "字典中，名字是键，频道号是值。directory[\"pip\"] 会查到 Pip 的频道号。",
+      "en": "In the dictionary, each name is a key and each channel is its value. directory[\"pip\"] looks up Pip's channel."
+    },
+    {
+      "zh": "让 name 依次代表每个来信的名字。在循环里面查 directory[name]。",
+      "en": "Let name stand for each requested robot in turn. Look up directory[name] inside the loop."
+    }
+  ],
+  "tiles": [
+    "#########",
+    "#.......#",
+    "#.###.#.#",
+    "#.......#",
+    "#.#.###.#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 4,
+    "y": 3
+  },
+  "input": [
+    "pip",
+    "lumi",
+    "sol"
+  ],
+  "allowedApi": [
+    "scan",
+    "submit"
+  ],
+  "objectives": [
+    {
+      "type": "submit",
+      "values": [
+        2,
+        9,
+        6
+      ],
+      "origin": "dict-index",
+      "sameContainer": true
+    }
+  ],
+  "variants": [
+    {
+      "input": [
+        "sol",
+        "pip",
+        "pip",
+        "lumi"
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            6,
+            2,
+            2,
+            9
+          ],
+          "origin": "dict-index",
+          "sameContainer": true
+        }
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "read-requests",
+      "label": {
+        "zh": "扫描名字清单",
+        "en": "Scan the name list"
+      },
+      "template": "names = scan()"
+    },
+    {
+      "id": "directory",
+      "label": {
+        "zh": "创建名字与频道的字典",
+        "en": "Make a name-to-channel dictionary"
+      },
+      "template": "directory = {\"sol\": 6, \"pip\": 2, \"lumi\": 9}"
+    },
+    {
+      "id": "each-name",
+      "label": {
+        "zh": "逐个处理名字",
+        "en": "For each name"
+      },
+      "template": "for name in names:",
+      "block": true
+    },
+    {
+      "id": "lookup",
+      "label": {
+        "zh": "查频道并提交",
+        "en": "Look up and submit a channel"
+      },
+      "template": "submit(directory[{{key}}])",
+      "parameters": [
+        {
+          "name": "key",
+          "label": {
+            "zh": "键",
+            "en": "Key"
+          },
+          "choices": [
+            {
+              "id": "current",
+              "label": {
+                "zh": "当前名字",
+                "en": "Current name"
+              },
+              "code": "name"
+            },
+            {
+              "id": "sol",
+              "label": {
+                "zh": "Sol",
+                "en": "Sol"
+              },
+              "code": "\"sol\""
+            },
+            {
+              "id": "pip",
+              "label": {
+                "zh": "Pip",
+                "en": "Pip"
+              },
+              "code": "\"pip\""
+            },
+            {
+              "id": "lumi",
+              "label": {
+                "zh": "Lumi",
+                "en": "Lumi"
+              },
+              "code": "\"lumi\""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read-requests"
+    },
+    {
+      "cardId": "directory"
+    },
+    {
+      "cardId": "each-name",
+      "children": [
+        {
+          "cardId": "lookup",
+          "values": {
+            "key": "current"
+          }
+        }
+      ]
+    }
+  ]
+}

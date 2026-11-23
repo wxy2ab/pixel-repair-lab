@@ -1,0 +1,316 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "python-intermediate",
+    "order": 20,
+    "title": {
+      "zh": "Python 进阶",
+      "en": "Intermediate Python"
+    }
+  },
+  "kind": "lecture",
+  "id": "control-flow-notes",
+  "order": 810,
+  "stage": "explain",
+  "topic": {
+    "id": "branches",
+    "order": 1,
+    "title": {
+      "zh": "条件分支",
+      "en": "Conditional branches"
+    }
+  },
+  "title": {
+    "zh": "条件分支",
+    "en": "Conditional Branches"
+  },
+  "concept": {
+    "zh": "用判断结果选择一条路线",
+    "en": "Choose a route from the result of a condition"
+  },
+  "brief": {
+    "zh": "芽芽补完电，来到安全门前。先判断电量和门，再看看程序选哪条路、让芽芽做什么。",
+    "en": "Sprout has charged up and reached the safety door. Check the charge and the door, then follow the path the program chooses."
+  },
+  "hints": [],
+  "execution": {
+    "source": "result = scan()\nenough = result >= 4\ndoor = door_open()\ncan_leave = enough and door\nif can_leave:\n    say(\"leave\")\nelse:\n    say(\"wait\")",
+    "branchLesson": {
+      "threshold": 4,
+      "actions": {
+        "if": {
+          "zh": "芽芽出发",
+          "en": "Sprout leaves"
+        },
+        "else": {
+          "zh": "芽芽留在补电站等待",
+          "en": "Sprout waits at the charging station"
+        }
+      }
+    },
+    "cases": [
+      {
+        "label": {
+          "zh": "补电后 4 格，门开着",
+          "en": "4 units, door open"
+        },
+        "input": 4,
+        "doorOpen": true,
+        "activity": "branch",
+        "expected": "leave"
+      },
+      {
+        "label": {
+          "zh": "补电后 4 格，门关着",
+          "en": "4 units, door closed"
+        },
+        "input": 4,
+        "doorOpen": false,
+        "activity": "branch",
+        "expected": "wait"
+      },
+      {
+        "label": {
+          "zh": "补电后 3 格，门开着",
+          "en": "3 units, door open"
+        },
+        "input": 3,
+        "doorOpen": true,
+        "activity": "predict",
+        "expected": "wait"
+      },
+      {
+        "label": {
+          "zh": "补电后 5 格，门关着",
+          "en": "5 units, door closed"
+        },
+        "input": 5,
+        "doorOpen": false,
+        "activity": "predict",
+        "expected": "wait"
+      },
+      {
+        "label": {
+          "zh": "补电后 5 格，门开着",
+          "en": "5 units, door open"
+        },
+        "input": 5,
+        "doorOpen": true,
+        "activity": "predict",
+        "expected": "leave"
+      }
+    ]
+  },
+  "sections": [
+    {
+      "title": {
+        "zh": "两个条件合成一个判断",
+        "en": "Combine two checks into one condition"
+      },
+      "body": {
+        "zh": "电量至少 4 格，安全门也打开时，can_leave 是 True。程序用这个值来选择接下来的动作。",
+        "en": "When the charge is at least 4 and the safety door is open, can_leave is True. The program uses that value to choose what to do next."
+      }
+    },
+    {
+      "title": {
+        "zh": "每次只走一条分支",
+        "en": "Take one branch each time"
+      },
+      "body": {
+        "zh": "条件为 True，就执行 if 下方缩进的指令，让芽芽出发。条件为 False，就执行 else 下方缩进的指令，让芽芽留在补电站等待。",
+        "en": "When the condition is True, the indented command under if tells Sprout to leave. When it is False, the indented command under else tells Sprout to wait at the charging station."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "电量正好 4 格，安全门关着。程序会选哪条路？",
+      "en": "The charge is exactly 4 and the safety door is closed. Which path does the program choose?"
+    },
+    "options": [
+      {
+        "zh": "if 分支",
+        "en": "The if branch"
+      },
+      {
+        "zh": "else 分支",
+        "en": "The else branch"
+      }
+    ],
+    "correct": 1,
+    "feedback": {
+      "zh": "电量够了，门关着，合起来的条件是 False，所以芽芽走 else 分支，在补电站等待。",
+      "en": "There is enough charge and the door is closed. The combined condition is False, so the else branch tells Sprout to wait at the charging station."
+    }
+  },
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": {
+          "zh": "补完电有 4 格，已经达到出发所需的电量。",
+          "en": "The charge is 4 units, which meets the departure requirement."
+        },
+        "items": [
+          {
+            "id": "charge",
+            "label": {
+              "zh": "补电后的电量",
+              "en": "Charge after topping up"
+            },
+            "value": {
+              "zh": "4 格",
+              "en": "4 units"
+            },
+            "state": "active"
+          },
+          {
+            "id": "condition",
+            "label": {
+              "zh": "电量达标而且门开着",
+              "en": "Enough charge and the door is open"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "if",
+            "label": {
+              "zh": "芽芽出发",
+              "en": "Sprout leaves"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "else",
+            "label": {
+              "zh": "芽芽留在补电站等待",
+              "en": "Sprout waits at the charging station"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "安全门开着，两个条件都成立，程序选 if 分支。",
+          "en": "The safety door is open. Both checks are true, so the program chooses the if branch."
+        },
+        "items": [
+          {
+            "id": "condition",
+            "label": {
+              "zh": "电量达标而且门开着",
+              "en": "Enough charge and the door is open"
+            },
+            "value": {
+              "zh": "True",
+              "en": "True"
+            },
+            "state": "done"
+          },
+          {
+            "id": "if",
+            "label": {
+              "zh": "芽芽出发",
+              "en": "Sprout leaves"
+            },
+            "value": {
+              "zh": "if",
+              "en": "if"
+            },
+            "state": "active"
+          },
+          {
+            "id": "else",
+            "label": {
+              "zh": "芽芽留在补电站等待",
+              "en": "Sprout waits at the charging station"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "沿着 if 分支的指令，芽芽出发。",
+          "en": "Sprout leaves after following the command in the if branch."
+        },
+        "items": [
+          {
+            "id": "condition",
+            "label": {
+              "zh": "电量达标而且门开着",
+              "en": "Enough charge and the door is open"
+            },
+            "value": {
+              "zh": "True",
+              "en": "True"
+            },
+            "state": "done"
+          },
+          {
+            "id": "if",
+            "label": {
+              "zh": "芽芽出发",
+              "en": "Sprout leaves"
+            },
+            "value": {
+              "zh": "if",
+              "en": "if"
+            },
+            "state": "done"
+          },
+          {
+            "id": "else",
+            "label": {
+              "zh": "芽芽留在补电站等待",
+              "en": "Sprout waits at the charging station"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "换成门关着时，条件变成 False，芽芽就走 else 分支，在补电站等待。",
+          "en": "With the door closed, the condition is False. Sprout follows the else branch and waits at the charging station."
+        },
+        "items": [
+          {
+            "id": "condition",
+            "label": {
+              "zh": "电量达标而且门开着",
+              "en": "Enough charge and the door is open"
+            },
+            "value": {
+              "zh": "False",
+              "en": "False"
+            },
+            "state": "done"
+          },
+          {
+            "id": "if",
+            "label": {
+              "zh": "芽芽出发",
+              "en": "Sprout leaves"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "else",
+            "label": {
+              "zh": "芽芽留在补电站等待",
+              "en": "Sprout waits at the charging station"
+            },
+            "value": {
+              "zh": "else",
+              "en": "else"
+            },
+            "state": "active"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "challenge-rotate-socket-diagram",
+  "order": 1914,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "prerequisites": [{"unit": "architecture", "topic": "memory"}, {"unit": "architecture", "topic": "registers"}, {"unit": "architecture", "topic": "instructions"}],
+  "title": {"zh": "九个插座的镜像接线表", "en": "Mirror the Socket Panel"},
+  "concept": {"zh": "无空闲地址的矩阵转置", "en": "Transpose a matrix with no spare cells"},
+  "brief": {"zh": "九个插座的读数按行排在地址 0 至 8。接线板要沿左上到右下的对角线翻面：原先第 r 行第 c 列的数应移到第 c 行第 r 列，三个对角读数留在原位。只能使用这九格内存和 ACC。最后在 ACC 提交对角线三个读数的和。", "en": "The nine socket readings form a 3×3 panel stored by rows at addresses 0 through 8. Reflect it across the top-left to bottom-right diagonal: each reading at row r, column c must move to row c, column r. Keep the diagonal in place. Only these nine cells and ACC are available. Finish with the sum of the three diagonal readings in ACC."},
+  "hints": [],
+  "allowedOps": ["LOAD", "ADD", "SUB", "STORE", "HALT"],
+  "starterCode": "HALT\n",
+  "solutionCode": "LOAD 1\nADD 3\nSTORE 1\nSUB 3\nSTORE 3\nLOAD 1\nSUB 3\nSTORE 1\nLOAD 2\nADD 6\nSTORE 2\nSUB 6\nSTORE 6\nLOAD 2\nSUB 6\nSTORE 2\nLOAD 5\nADD 7\nSTORE 5\nSUB 7\nSTORE 7\nLOAD 5\nSUB 7\nSTORE 5\nLOAD 0\nADD 4\nADD 8\nHALT\n",
+  "cases": [
+    {"label": {"zh": "验收样本 1", "en": "Acceptance sample 1"}, "memory": [2, 9, 4, 8, 1, 6, 3, 5, 7], "accumulator": 3, "goal": {"memory": [{"address": 0, "value": 2}, {"address": 1, "value": 8}, {"address": 2, "value": 3}, {"address": 3, "value": 9}, {"address": 4, "value": 1}, {"address": 5, "value": 5}, {"address": 6, "value": 4}, {"address": 7, "value": 6}, {"address": 8, "value": 7}], "accumulator": 10}},
+    {"label": {"zh": "验收样本 2", "en": "Acceptance sample 2"}, "memory": [0, 0, 0, -1, 0, 0, 0, 0, 0], "accumulator": 1, "goal": {"memory": [{"address": 0, "value": 0}, {"address": 1, "value": -1}, {"address": 2, "value": 0}, {"address": 3, "value": 0}, {"address": 4, "value": 0}, {"address": 5, "value": 0}, {"address": 6, "value": 0}, {"address": 7, "value": 0}, {"address": 8, "value": 0}], "accumulator": 0}},
+    {"label": {"zh": "验收样本 3", "en": "Acceptance sample 3"}, "memory": [-1, -4, 6, 3, -8, 2, -5, 9, 0], "accumulator": -2, "goal": {"memory": [{"address": 0, "value": -1}, {"address": 1, "value": 3}, {"address": 2, "value": -5}, {"address": 3, "value": -4}, {"address": 4, "value": -8}, {"address": 5, "value": 9}, {"address": 6, "value": 6}, {"address": 7, "value": 2}, {"address": 8, "value": 0}], "accumulator": -9}},
+    {"label": {"zh": "验收样本 4", "en": "Acceptance sample 4"}, "memory": [4, 2, 8, 2, 3, 1, 8, 1, 6], "accumulator": 17, "goal": {"memory": [{"address": 0, "value": 4}, {"address": 1, "value": 2}, {"address": 2, "value": 8}, {"address": 3, "value": 2}, {"address": 4, "value": 3}, {"address": 5, "value": 1}, {"address": 6, "value": 8}, {"address": 7, "value": 1}, {"address": 8, "value": 6}], "accumulator": 13}},
+    {"label": {"zh": "验收样本 5", "en": "Acceptance sample 5"}, "memory": [3, 3, -2, -2, 8, 8, 1, 1, 5], "accumulator": -8, "goal": {"memory": [{"address": 0, "value": 3}, {"address": 1, "value": -2}, {"address": 2, "value": 1}, {"address": 3, "value": 3}, {"address": 4, "value": 8}, {"address": 5, "value": 1}, {"address": 6, "value": -2}, {"address": 7, "value": 8}, {"address": 8, "value": 5}], "accumulator": 16}}
+  ]
+}

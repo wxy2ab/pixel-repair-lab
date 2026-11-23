@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "kind": "replay",
+  "id": "functions-replay",
+  "order": 421,
+  "unit": {
+    "id": "python-advanced",
+    "order": 30,
+    "title": {
+      "zh": "Python 高级",
+      "en": "Advanced Python"
+    }
+  },
+  "stage": "demo",
+  "topic": { "id": "function-design", "order": 1, "title": { "zh": "函数设计", "en": "Function Design" } },
+  "title": {
+    "zh": "把计算交给小帮手",
+    "en": "Give a Small Helper the Calculation"
+  },
+  "concept": {
+    "zh": "同一个函数可以处理不同的读数",
+    "en": "The same function can process different readings"
+  },
+  "brief": {
+    "zh": "让机器人调用两次标记函数，给两个读数加上相同的单位。",
+    "en": "Have the robot call the same labeling function twice to add units to two readings."
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "用一个函数给多个读数加单位",
+        "en": "Use one function to add units to different readings"
+      },
+      "source": "def label(reading):\n    return str(reading) + \" C\"\nreadings = scan()\nfor reading in readings:\n    submit(label(reading))",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "allowedApi": [
+          "scan",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              "17 C",
+              "22 C"
+            ]
+          }
+        ],
+        "input": [
+          17,
+          22
+        ]
+      }
+    }
+  ]
+}

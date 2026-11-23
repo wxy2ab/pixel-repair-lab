@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "supply-lead",
+  "order": 1313,
+  "unit": { "id": "algorithm-advanced", "order": 70, "title": { "zh": "算法高级", "en": "Advanced Algorithms" } },
+  "topic": { "id": "rival-strategy", "order": 3, "title": { "zh": "对手策略", "en": "Rival Strategy" } },
+  "stage": "exercise",
+  "title": { "zh": "算出一件补给的领先量", "en": "Measure the Lead to One Supply" },
+  "brief": { "zh": "完成 supply_lead(player, target, rivals)。在开阔场地里，用最近对手到目标的步数减去自己的步数。没有对手时返回 None。", "en": "Complete supply_lead(player, target, rivals). In an open arena, subtract your steps to the target from the closest rival’s steps. Return None when there are no rivals." },
+  "concept": { "zh": "先在多个对手中找最小距离", "en": "Find the minimum distance among multiple rivals" },
+  "hints": [
+    { "zh": "distance 已算出开阔场地里的横向加纵向步数。", "en": "distance already returns the horizontal plus vertical steps in an open arena." },
+    { "zh": "用第一个对手初始化最近距离，再比较剩下的位置。", "en": "Start the nearest distance with the first rival, then compare the remaining positions." }
+  ],
+  "functionName": "supply_lead",
+  "starterCode": "def distance(a, b):\n    dx = a[0] - b[0]\n    dy = a[1] - b[1]\n    if dx < 0:\n        dx = -dx\n    if dy < 0:\n        dy = -dy\n    return dx + dy\n\ndef supply_lead(player, target, rivals):\n    if len(rivals) == 0:\n        return None\n    nearest = distance(rivals[0], target)\n    return None\n",
+  "solutionCode": "def distance(a, b):\n    dx = a[0] - b[0]\n    dy = a[1] - b[1]\n    if dx < 0:\n        dx = -dx\n    if dy < 0:\n        dy = -dy\n    return dx + dy\n\ndef supply_lead(player, target, rivals):\n    if len(rivals) == 0:\n        return None\n    nearest = distance(rivals[0], target)\n    for rival in rivals:\n        steps = distance(rival, target)\n        if steps < nearest:\n            nearest = steps\n    return nearest - distance(player, target)\n",
+  "snippets": [
+    { "label": { "zh": "找最近的对手", "en": "Find the closest rival" }, "code": "    for rival in rivals:\n        steps = distance(rival, target)\n        if steps < nearest:\n            nearest = steps" },
+    { "label": { "zh": "算领先量并返回", "en": "Return the travel margin" }, "code": "    return nearest - distance(player, target)" }
+  ],
+  "cases": [
+    { "args": [[1, 1], [4, 1], [[7, 1], [4, 2], [1, 4]]], "expected": -2 },
+    { "args": [[3, 3], [3, 4], [[6, 4], [5, 6]]], "expected": 2 },
+    { "args": [[2, 1], [3, 2], [[3, 4], [7, 1]]], "expected": 0 },
+    { "args": [[4, 2], [4, 2], [[4, 3]]], "expected": 1 },
+    { "args": [[1, 1], [2, 2], []], "expected": null }
+  ]
+}

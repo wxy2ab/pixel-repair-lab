@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "routing",
+    "order": 60,
+    "title": {
+      "zh": "算法进阶",
+      "en": "Intermediate Algorithms"
+    }
+  },
+  "kind": "algorithm",
+  "stage": "exercise",
+  "id": "binary-search-index",
+  "order": 1203,
+  "title": {
+    "zh": "每次只查一半",
+    "en": "Search one half at a time"
+  },
+  "brief": {
+    "zh": "编号已经从小到大排列。实现 binary_index(values, target)，找到就返回索引，找不到返回 -1。",
+    "en": "The part numbers are sorted. Implement binary_index(values, target), returning the index or -1."
+  },
+  "concept": {
+    "zh": "二分查找与区间边界",
+    "en": "Binary search and interval bounds"
+  },
+  "hints": [
+    {
+      "zh": "中间一格比较后可以排除它，把边界改为 mid + 1 或 mid - 1。",
+      "en": "After comparing the middle, exclude it with mid + 1 or mid - 1."
+    }
+  ],
+  "functionName": "binary_index",
+  "starterCode": "def binary_index(values, target):\n    low = 0\n    high = len(values) - 1\n    return -1",
+  "solutionCode": "def binary_index(values, target):\n    low = 0\n    high = len(values) - 1\n    while low <= high:\n        mid = (low + high) // 2\n        if values[mid] == target:\n            return mid\n        if values[mid] < target:\n            low = mid + 1\n        else:\n            high = mid - 1\n    return -1",
+  "snippets": [
+    {
+      "label": {
+        "zh": "循环与中点",
+        "en": "Loop and midpoint"
+      },
+      "code": "    while low <= high:\n        mid = (low + high) // 2"
+    },
+    {
+      "label": {
+        "zh": "缩小区间",
+        "en": "Shrink the interval"
+      },
+      "code": "        if values[mid] < target:\n            low = mid + 1\n        else:\n            high = mid - 1"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          1,
+          3,
+          5,
+          7,
+          9
+        ],
+        7
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        [
+          1,
+          3,
+          5,
+          7,
+          9
+        ],
+        0
+      ],
+      "expected": -1
+    },
+    {
+      "args": [
+        [
+          1,
+          3,
+          5,
+          7,
+          9
+        ],
+        9
+      ],
+      "expected": 4
+    },
+    {
+      "args": [
+        [],
+        2
+      ],
+      "expected": -1
+    },
+    {
+      "args": [
+        [
+          8
+        ],
+        8
+      ],
+      "expected": 0
+    }
+  ],
+  "topic": {
+    "id": "binary-search",
+    "order": 1,
+    "title": {
+      "zh": "二分查找",
+      "en": "Binary search"
+    }
+  }
+}

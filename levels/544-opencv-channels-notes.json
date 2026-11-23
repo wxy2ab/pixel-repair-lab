@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "opencv-color-channels",
+  "order": 544,
+  "stage": "explain",
+  "unit": { "id": "opencv", "order": 140, "title": { "zh": "OpenCV", "en": "OpenCV" } },
+  "topic": { "id": "color", "order": 2, "title": { "zh": "颜色与通道", "en": "Color and channels" } },
+  "title": { "zh": "一个像素里有三种光", "en": "Three Lights in One Pixel" },
+  "brief": { "zh": "拆开红、绿、蓝三个通道，再把彩色像素变成灰度。", "en": "Separate the red, green, and blue channels, then turn a color pixel into grayscale." },
+  "concept": { "zh": "每个颜色通道有自己的数值。RGB 和 BGR 的顺序不同。", "en": "Every color channel has its own value. RGB and BGR put the values in a different order." },
+  "hints": [],
+  "sections": [
+    {
+      "title": { "zh": "彩色像素有三个读数", "en": "One color pixel has three readings" },
+      "body": { "zh": "RGB 里的三个数字依次表示红、绿、蓝的亮度，每个数字都在 0 到 255 之间。只看红色通道时，你看到的是所有像素的红色读数。", "en": "The three numbers in RGB give the red, green, and blue intensities in order. Each runs from 0 to 255. Viewing the red channel shows every pixel’s red reading." }
+    },
+    {
+      "title": { "zh": "读数的顺序由格式决定", "en": "The format sets the order" },
+      "body": { "zh": "OpenCV 默认按蓝、绿、红（BGR）读取彩色图片。转换到 RGB 后，同一个像素的红蓝数字互换位置。做灰度转换时，则用三个通道按不同权重算出一个亮度。", "en": "OpenCV loads color pictures in blue, green, red order (BGR) by default. Conversion to RGB swaps the positions of red and blue for the same pixel. Grayscale combines all three channels with different weights into one brightness." }
+    }
+  ],
+  "animation": {
+    "layout": "row",
+    "frames": [
+      {
+        "caption": { "zh": "拆开一个彩色像素，会得到三份读数。OpenCV 把蓝色放在最前。", "en": "Split a color pixel into three readings. OpenCV puts blue first." },
+        "items": [
+          { "id": "blue", "swatch": "#00002d", "label": { "zh": "蓝 B", "en": "Blue B" }, "value": { "zh": "45", "en": "45" }, "state": "active" },
+          { "id": "green", "swatch": "#005a00", "label": { "zh": "绿 G", "en": "Green G" }, "value": { "zh": "90", "en": "90" } },
+          { "id": "red", "swatch": "#d20000", "label": { "zh": "红 R", "en": "Red R" }, "value": { "zh": "210", "en": "210" } }
+        ]
+      },
+      {
+        "caption": { "zh": "转成 RGB，红色移到开头。读数依然是原来的三个数。", "en": "Convert to RGB and red moves first. The three readings keep their values." },
+        "items": [
+          { "id": "red", "swatch": "#d20000", "label": { "zh": "红 R", "en": "Red R" }, "value": { "zh": "210", "en": "210" }, "state": "active" },
+          { "id": "green", "swatch": "#005a00", "label": { "zh": "绿 G", "en": "Green G" }, "value": { "zh": "90", "en": "90" } },
+          { "id": "blue", "swatch": "#00002d", "label": { "zh": "蓝 B", "en": "Blue B" }, "value": { "zh": "45", "en": "45" }, "state": "active" }
+        ]
+      },
+      {
+        "caption": { "zh": "灰度转换把这三份读数合成一个亮度。绿色的权重最大。", "en": "Grayscale conversion blends the three readings with weights. Green contributes the most per unit." },
+        "items": [
+          { "id": "red", "swatch": "#d20000", "label": { "zh": "红 R", "en": "Red R" }, "value": { "zh": "210 × 0.299", "en": "210 × 0.299" }, "state": "muted" },
+          { "id": "green", "swatch": "#005a00", "label": { "zh": "绿 G", "en": "Green G" }, "value": { "zh": "90 × 0.587", "en": "90 × 0.587" }, "state": "muted" },
+          { "id": "blue", "swatch": "#00002d", "label": { "zh": "蓝 B", "en": "Blue B" }, "value": { "zh": "45 × 0.114", "en": "45 × 0.114" }, "state": "muted" },
+          { "id": "gray", "swatch": "#797979", "label": { "zh": "灰度", "en": "Grayscale" }, "value": { "zh": "121", "en": "121" }, "state": "done" }
+        ]
+      }
+    ]
+  },
+  "question": {
+    "prompt": { "zh": "OpenCV 读到一个 BGR 像素 (20, 90, 240)。哪个数字表示红色？", "en": "OpenCV reads a BGR pixel (20, 90, 240). Which number is its red reading?" },
+    "options": [ { "zh": "20", "en": "20" }, { "zh": "90", "en": "90" }, { "zh": "240", "en": "240" } ],
+    "correct": 2,
+    "feedback": { "zh": "BGR 的最后一个数字是红色读数，值为 240。", "en": "Red comes last in BGR. Its reading is 240." }
+  }
+}

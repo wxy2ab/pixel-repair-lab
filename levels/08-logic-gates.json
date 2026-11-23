@@ -1,0 +1,229 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "logic-gates",
+  "order": 8,
+  "unit": {
+    "id": "computer",
+    "order": 80,
+    "title": {
+      "zh": "计算机原理",
+      "en": "Computer Systems"
+    }
+  },
+  "topic": {
+    "id": "logic-gates",
+    "order": 2,
+    "title": {
+      "zh": "逻辑门",
+      "en": "Logic Gates"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "逻辑门控制台",
+    "en": "Logic Gate Console"
+  },
+  "concept": {
+    "zh": "与、或、非",
+    "en": "AND, OR, NOT"
+  },
+  "brief": {
+    "zh": "扫描左、右两个开关。先提交两者的 AND 结果，再提交 OR 结果，最后提交左开关的 NOT 结果。",
+    "en": "Scan the left and right switches. Submit their AND result, then their OR result, then the NOT of the left switch."
+  },
+  "hints": [
+    {
+      "zh": "AND 要求两个开关都打开。OR 只要求至少一个打开。",
+      "en": "AND needs both switches to be on. OR needs at least one switch to be on."
+    },
+    {
+      "zh": "NOT 会把打开变成关闭，把关闭变成打开。Python 用 True 和 False 表示两种状态。",
+      "en": "NOT flips an on switch to off and an off switch to on. Python represents the two states with True and False."
+    }
+  ],
+  "tiles": [
+    "#########",
+    "#.......#",
+    "#.##.##.#",
+    "#.......#",
+    "#.#...#.#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 4,
+    "y": 3
+  },
+  "input": [
+    true,
+    false
+  ],
+  "allowedApi": [
+    "scan",
+    "submit"
+  ],
+  "objectives": [
+    {
+      "type": "submit",
+      "values": [
+        false,
+        true,
+        false
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "input": [
+        true,
+        true
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            true,
+            true,
+            false
+          ]
+        }
+      ]
+    },
+    {
+      "input": [
+        false,
+        false
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            false,
+            false,
+            true
+          ]
+        }
+      ]
+    },
+    {
+      "input": [
+        false,
+        true
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            false,
+            true,
+            true
+          ]
+        }
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "read-switches",
+      "label": {
+        "zh": "读取两个开关",
+        "en": "Read both switches"
+      },
+      "template": "switches = scan()"
+    },
+    {
+      "id": "combine",
+      "label": {
+        "zh": "通过双输入逻辑门",
+        "en": "Use a two-input gate"
+      },
+      "template": "submit(switches[0] {{operator}} switches[1])",
+      "parameters": [
+        {
+          "name": "operator",
+          "label": {
+            "zh": "逻辑门",
+            "en": "Gate"
+          },
+          "choices": [
+            {
+              "id": "and",
+              "label": {
+                "zh": "与 AND",
+                "en": "AND"
+              },
+              "code": "and"
+            },
+            {
+              "id": "or",
+              "label": {
+                "zh": "或 OR",
+                "en": "OR"
+              },
+              "code": "or"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "invert",
+      "label": {
+        "zh": "把一个开关的值取反",
+        "en": "Invert one switch"
+      },
+      "template": "submit(not switches[{{side}}])",
+      "parameters": [
+        {
+          "name": "side",
+          "label": {
+            "zh": "开关",
+            "en": "Switch"
+          },
+          "choices": [
+            {
+              "id": "left",
+              "label": {
+                "zh": "左开关",
+                "en": "Left switch"
+              },
+              "code": "0"
+            },
+            {
+              "id": "right",
+              "label": {
+                "zh": "右开关",
+                "en": "Right switch"
+              },
+              "code": "1"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read-switches"
+    },
+    {
+      "cardId": "combine",
+      "values": {
+        "operator": "and"
+      }
+    },
+    {
+      "cardId": "combine",
+      "values": {
+        "operator": "or"
+      }
+    },
+    {
+      "cardId": "invert",
+      "values": {
+        "side": "left"
+      }
+    }
+  ]
+}

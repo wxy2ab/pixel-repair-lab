@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "yolox-archive-review-challenge",
+  "order": 560,
+  "stage": "challenge",
+  "unit": {
+    "id": "yolox",
+    "order": 150,
+    "title": { "zh": "YOLOX", "en": "YOLOX" }
+  },
+  "mode": "detect",
+  "title": { "zh": "按复核要求整理两张检测单", "en": "Prepare Two Detection Sheets" },
+  "brief": { "zh": "把检测清单分别交给宠物巡查员和人员档案员。两份清单对类别和分数的要求不同。", "en": "Prepare lists for a pet inspector and a staff archivist. The two lists have different class and score requirements." },
+  "concept": { "zh": "结合类别和置信度筛选，再把检测结果和照片核对。", "en": "Combine class and confidence filters, then check the model's results against the photos." },
+  "hints": [
+    { "zh": "如果类别对了却没有框，检查门槛。如果框的类别不符合任务，检查类别筛选。", "en": "If the class is right but no box appears, check the threshold. If the class is wrong for the job, check the class filter." }
+  ],
+  "cases": [
+    {
+      "image": "labrador",
+      "label": { "zh": "宠物复核 · 保留有用候选", "en": "Pet review · Keep the useful candidate" },
+      "prompt": { "zh": "仅筛选狗，找到这只拉布拉多犬，让检测单上留下它的框。", "en": "Filter to Dog and keep the Labrador's box on the detection sheet." },
+      "initial": { "confidence": 95, "target": "person" },
+      "goal": { "labels": ["dog"], "target": "dog" },
+      "solution": { "confidence": 90, "target": "dog" }
+    },
+    {
+      "image": "astronaut",
+      "label": { "zh": "人员复核 · 严格筛查", "en": "Staff review · Apply a strict cutoff" },
+      "prompt": { "zh": "仅筛选人，把门槛提高到模型这次给的分数以上。用空清单告诉档案员没有候选达标。", "en": "Filter to Person and raise the threshold above the score the model gives this time. Leave the list empty because no candidate meets the cutoff." },
+      "initial": { "confidence": 50, "target": "dog" },
+      "goal": { "labels": [], "target": "person" },
+      "solution": { "confidence": 95, "target": "person" }
+    }
+  ]
+}

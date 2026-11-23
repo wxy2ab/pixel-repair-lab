@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "kind": "arena",
+  "order": 1835,
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "id": "challenge-marked-cargo-run",
+  "title": {
+    "zh": "标记电池撤离",
+    "en": "Marked Cargo Run"
+  },
+  "concept": {
+    "zh": "一台追踪机 · 一块指定电池",
+    "en": "One pursuer · One required battery"
+  },
+  "brief": {
+    "zh": "16 回合内取走坐标 (3,1) 的电池，再从右上角的出口撤离。另一块电池可取可留。石墨号会沿通道追向芽芽。和对手同格或迎面换位会被抓。",
+    "en": "Collect the battery at (3,1) and exit through the upper-right door within 16 turns. The other battery is optional. Graphite pursues Sprout through the corridors. Sharing a tile or swapping positions head-on with a rival gets you caught."
+  },
+  "difficulty": "intermediate",
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "#############",
+    "#.........#.#",
+    "#.##.####.#.#",
+    "#....#......#",
+    "#....#......#",
+    "#......##...#",
+    "#############"
+  ],
+  "start": {
+    "x": 1,
+    "y": 1
+  },
+  "items": [
+    {
+      "id": "battery-a",
+      "x": 3,
+      "y": 1
+    },
+    {
+      "id": "battery-b",
+      "x": 7,
+      "y": 3
+    }
+  ],
+  "opponents": [
+    {
+      "id": "rival-1",
+      "title": {
+        "zh": "石墨号",
+        "en": "Graphite"
+      },
+      "start": {
+        "x": 3,
+        "y": 3
+      },
+      "policy": {
+        "kind": "pursue"
+      }
+    }
+  ],
+  "maxTurns": 16,
+  "objective": {
+    "kind": "escape",
+    "exit": {
+      "x": 11,
+      "y": 1
+    },
+    "itemIds": [
+      "battery-a"
+    ]
+  },
+  "starterCode": "while True:\n    state = scan()\n    wait()\n",
+  "solutionCode": "from algorithms import shortest_step\n\ndef decide(state):\n    target = state[\"exit\"]\n    for battery in state[\"items\"]:\n        if battery[\"id\"] == \"battery-a\":\n            target = [battery[\"x\"], battery[\"y\"]]\n            if state[\"player\"] == target:\n                return \"pick\"\n            break\n    direction = shortest_step(state[\"tiles\"], state[\"player\"], target)\n    if direction is None:\n        return \"wait\"\n    return direction\n\nwhile True:\n    action = decide(scan())\n    if action == \"pick\":\n        pick()\n    elif action == \"wait\":\n        wait()\n    else:\n        move(action)\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "查看对手位置",
+        "en": "Read opponent positions"
+      },
+      "code": "state = scan()\nfor robot in state[\"opponents\"]:\n    x = robot[\"x\"]\n    y = robot[\"y\"]"
+    },
+    {
+      "label": {
+        "zh": "迈向当前目标",
+        "en": "Step toward a target"
+      },
+      "code": "from algorithms import shortest_step\nstate = scan()\ntarget = state[\"exit\"]\ndirection = shortest_step(state[\"tiles\"], state[\"player\"], target)\nif direction is not None:\n    move(direction)"
+    }
+  ]
+}

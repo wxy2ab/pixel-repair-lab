@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "kind": "circuit",
+  "id": "dc-transistor-repair",
+  "order": 6024,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "transistor-switch",
+    "order": 3,
+    "title": {
+      "zh": "晶体管开关",
+      "en": "Transistor Switches"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "检修灯为什么没有响应？",
+    "en": "Why Did the Lamp Ignore the Signal?"
+  },
+  "brief": {
+    "zh": "第一组要保留 HIGH 输入却隔离灯支路，第二组要让已停用的灯重新受 HIGH 信号控制。对照输入与开关状态完成工单。",
+    "en": "For the first order, keep the input HIGH while isolating the lamp. For the second, restore a disabled lamp so it lights under HIGH control. Check both the input and the switch."
+  },
+  "concept": {
+    "zh": "隔离负载与恢复信号控制",
+    "en": "Isolate the load and restore signal control"
+  },
+  "hints": [],
+  "mode": "transistor",
+  "cases": [
+    {
+      "label": {
+        "zh": "保留控制信号，切断灯支路",
+        "en": "Isolate the lamp with the input active"
+      },
+      "bits": [
+        1,
+        0
+      ],
+      "goal": {
+        "output": 0,
+        "baseHigh": 1
+      },
+      "solution": {
+        "bits": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "恢复接通的报到灯",
+        "en": "Restore the arrival lamp"
+      },
+      "bits": [
+        0,
+        0
+      ],
+      "goal": {
+        "output": 1,
+        "baseHigh": 1
+      },
+      "solution": {
+        "bits": [
+          1,
+          1
+        ]
+      }
+    }
+  ]
+}

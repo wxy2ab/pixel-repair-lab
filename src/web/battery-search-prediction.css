@@ -1,0 +1,20 @@
+.battery-search-prediction { min-inline-size: 0; }
+
+.battery-search-prediction .search-prediction-pick {
+  padding: 0 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #17283d;
+}
+
+.battery-search-prediction .search-prediction-pick[data-match='true'] { border-color: #548a73; }
+.battery-search-prediction .search-prediction-pick[data-match='false'] { border-color: #a17857; }
+.battery-search-prediction .search-battery-row { margin-block-start: 7px; }
+.battery-search-prediction .search-battery-tile[aria-pressed='true'] {
+  border-color: var(--mint);
+  background-color: #21483d;
+  color: #e3fff1;
+}
+
+.search-prediction-path { margin: 8px 0 0; color: #bdd0e7; font-size: 13px; }
+.search-prediction-path code { margin-inline-start: 4px; color: #e1eeff; overflow-wrap: anywhere; }

@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "kind": "replay",
+  "id": "weighted-path-replay",
+  "order": 1302,
+  "unit": { "id": "algorithm-advanced", "order": 70, "title": { "zh": "算法高级", "en": "Advanced Algorithms" } },
+  "topic": { "id": "weighted-path", "order": 2, "title": { "zh": "带权路径", "en": "Weighted Paths" } },
+  "stage": "demo",
+  "title": { "zh": "比较两条路线的耗电量", "en": "Compare the Energy Cost of Two Routes" },
+  "brief": { "zh": "查表读取经过的地板耗电量，观察两个累计值怎样变化。", "en": "Look up the energy cost of each entered tile and follow the two running totals." },
+  "concept": { "zh": "累计进入每个格子的代价，从起点之后开始", "en": "Add each entry cost, starting after the starting tile" },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": { "zh": "两步直走，四步绕行", "en": "Two steps direct, four for the detour" },
+      "source": "plan = scan()\ncosts = plan[\"costs\"]\nfor route in plan[\"routes\"]:\n    total = 0\n    for step in range(1, len(route)):\n        cell = route[step]\n        total += costs[cell[1]][cell[0]]\n        say(str(total))\n    submit(total)",
+      "scenario": {
+        "tiles": ["#####", "#...#", "#...#", "#####"],
+        "start": { "x": 1, "y": 1 },
+        "allowedApi": ["scan", "say", "submit"],
+        "input": { "costs": [[1, 7, 2], [2, 1, 1]], "routes": [[[0, 0], [1, 0], [2, 0]], [[0, 0], [0, 1], [1, 1], [2, 1], [2, 0]]] },
+        "objectives": [{ "type": "submit", "values": [9, 6] }]
+      }
+    }
+  ]
+}

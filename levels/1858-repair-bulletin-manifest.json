@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "challenge-repair-bulletin-manifest",
+  "order": 1858,
+  "difficulty": "intermediate",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "以更正单为准",
+    "en": "Use the Corrected Bulletin"
+  },
+  "concept": {
+    "zh": "旧清单 · 条款优先级 · 手动复核",
+    "en": "Old manifest · Rule precedence · Manual audit"
+  },
+  "brief": {
+    "zh": "手里是旧清单，原计划装 6 个转接头、3 个保险丝和 2 个防尘盖。仓库通知把转接头减到 4 个，并取消防尘盖。维修负责人随后签字，只把保险丝改为 5 个，加 1 张验收卡。两份通知没提到的项目沿用前一版，检测笔留在货架。请 AI 修订清单，每轮指出全部差异，再确认最终清单。",
+    "en": "The old manifest calls for 6 adaptors, 3 fuses, and 2 dust caps. Receiving then cuts the adaptors to 4 and cancels the caps. The repair lead signs a later change that only raises fuses to 5 and adds 1 audit card. Keep all requirements unchanged by each bulletin. Leave the test probe on the shelf. Have AI revise the manifest, flag every discrepancy per round, then approve the final manifest."
+  },
+  "prerequisites": [
+    {
+      "unit": "ai",
+      "topic": "constraints"
+    },
+    {
+      "unit": "ai-review",
+      "topic": "review"
+    },
+    {
+      "unit": "ai-review",
+      "topic": "specific-correction"
+    }
+  ],
+  "hints": [],
+  "inventory": [
+    {
+      "id": "adaptor",
+      "label": {
+        "zh": "转接头",
+        "en": "adaptor"
+      },
+      "aliases": [
+        "adaptors"
+      ]
+    },
+    {
+      "id": "fuse",
+      "label": {
+        "zh": "保险丝",
+        "en": "fuse"
+      },
+      "aliases": [
+        "fuses"
+      ]
+    },
+    {
+      "id": "dustcap",
+      "label": {
+        "zh": "防尘盖",
+        "en": "dust cap"
+      },
+      "aliases": [
+        "dust caps"
+      ]
+    },
+    {
+      "id": "audit-card",
+      "label": {
+        "zh": "验收卡",
+        "en": "audit card"
+      },
+      "aliases": [
+        "audit cards"
+      ]
+    },
+    {
+      "id": "probe",
+      "label": {
+        "zh": "检测笔",
+        "en": "test probe"
+      },
+      "aliases": [
+        "test probes"
+      ]
+    }
+  ],
+  "required": {
+    "adaptor": 4,
+    "fuse": 5,
+    "audit-card": 1
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "adaptor",
+        "quantity": 6
+      },
+      {
+        "itemId": "audit-card",
+        "quantity": 0
+      }
+    ],
+    "draft": {
+      "items": [
+        {
+          "id": "adaptor",
+          "quantity": 6
+        },
+        {
+          "id": "fuse",
+          "quantity": 3
+        },
+        {
+          "id": "dustcap",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  "examplePrompts": {
+    "zh": [
+      "放 4 个转接头。放 5 个保险丝。移除防尘盖。放 1 个验收卡。移除检测笔。",
+      "放 4 个转接头。",
+      "放 1 个验收卡。"
+    ],
+    "en": [
+      "Pack 4 adaptors. Pack 5 fuses. Remove the dust cap. Pack 1 audit card. Remove the test probe.",
+      "Pack 4 adaptors.",
+      "Pack 1 audit card."
+    ]
+  }
+}

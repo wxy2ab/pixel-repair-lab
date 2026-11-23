@@ -1,0 +1,147 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "pandas-missing-readings",
+  "order": 518,
+  "stage": "exercise",
+  "unit": {
+    "id": "pandas",
+    "order": 110,
+    "title": {
+      "zh": "pandas",
+      "en": "pandas"
+    }
+  },
+  "topic": {
+    "id": "cleaning",
+    "order": 2,
+    "title": {
+      "zh": "数据清洗",
+      "en": "Data cleaning"
+    }
+  },
+  "title": {
+    "zh": "去掉不能计算的温度",
+    "en": "Remove Readings That Cannot Be Calculated"
+  },
+  "brief": {
+    "zh": "统计同学需要数字温度。请先去掉无法测量或无法转换的行，保留其他原始记录。",
+    "en": "The statistics team needs numeric readings. Remove missing or unconvertible readings and keep the other source records."
+  },
+  "concept": {
+    "zh": "空值和无法转换的文本都会成为缺失值。",
+    "en": "Blank values and unconvertible text both become missing values."
+  },
+  "hints": [
+    {
+      "zh": "第 6 号为空，第 11 号的文本无法转成数字。",
+      "en": "Record 6 is blank, and the text in record 11 cannot become a number."
+    }
+  ],
+  "steps": [
+    {
+      "operation": "clean",
+      "input": "raw",
+      "label": {
+        "zh": "处理缺测",
+        "en": "Handle missing readings"
+      },
+      "prompt": {
+        "zh": "剔除缺测温度。保留区域名的原样，也保留重复记录以便之后审核。",
+        "en": "Drop missing readings. Keep original area spellings and duplicates for review."
+      },
+      "initial": {
+        "trim": false,
+        "dropMissing": false,
+        "deduplicate": false
+      },
+      "solution": {
+        "trim": false,
+        "dropMissing": true,
+        "deduplicate": false
+      },
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            "hangar",
+            18
+          ],
+          [
+            2,
+            1,
+            "workshop",
+            24
+          ],
+          [
+            3,
+            1,
+            "storage",
+            20
+          ],
+          [
+            4,
+            2,
+            " Hangar ",
+            22
+          ],
+          [
+            5,
+            2,
+            "workshop",
+            28
+          ],
+          [
+            7,
+            3,
+            "hangar",
+            26
+          ],
+          [
+            8,
+            3,
+            " Workshop ",
+            32
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16
+          ],
+          [
+            10,
+            4,
+            "hangar",
+            30
+          ],
+          [
+            12,
+            4,
+            "storage",
+            24
+          ],
+          [
+            13,
+            4,
+            "workshop",
+            36
+          ]
+        ]
+      }
+    }
+  ]
+}

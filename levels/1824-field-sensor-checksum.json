@@ -1,0 +1,406 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-field-sensor-checksum",
+  "order": 1824,
+  "difficulty": "intermediate",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "structures",
+      "topic": "dictionaries"
+    },
+    {
+      "unit": "architecture",
+      "topic": "memory"
+    }
+  ],
+  "title": {
+    "zh": "边走边验收",
+    "en": "Field Sensor Checksum"
+  },
+  "concept": {
+    "zh": "按零件编号找地址 · 加权汇总 · 写回验证",
+    "en": "IDs to addresses · Weighted checksum · Readback"
+  },
+  "brief": {
+    "zh": "收齐温度件 (3,3)、电压件 (4,5) 和继电器 (6,3)，跳过备用件。扫描表按零件编号登记［内存地址，权重］。计算三个读数乘各自权重后的总和，写入地址 4，再从该地址读出并提交。最后停在出口。三组扫描表和初始内存都不同。",
+    "en": "Recover the thermostat (3,3), voltage probe (4,5), and relay (6,3), leaving the spare. The scanner maps each part ID to [memory address, weight]. Add each sensor reading multiplied by its weight. Store the total at address 4, read it back from that address, and submit it. Finish at the exit. There are three different tables and memory states."
+  },
+  "hints": [],
+  "tiles": [
+    "#########",
+    "#...#...#",
+    "###.#.#.#",
+    "#.......#",
+    "#.##.##.#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 1,
+    "y": 3
+  },
+  "turnLimit": 13,
+  "items": [
+    {
+      "id": "thermo",
+      "x": 3,
+      "y": 3
+    },
+    {
+      "id": "voltage",
+      "x": 4,
+      "y": 5
+    },
+    {
+      "id": "relay",
+      "x": 6,
+      "y": 3
+    },
+    {
+      "id": "spare",
+      "x": 5,
+      "y": 1
+    }
+  ],
+  "input": {
+    "thermo": [
+      0,
+      2
+    ],
+    "voltage": [
+      2,
+      1
+    ],
+    "relay": [
+      1,
+      3
+    ],
+    "spare": [
+      3,
+      4
+    ]
+  },
+  "memory": [
+    8,
+    4,
+    5,
+    93,
+    0
+  ],
+  "objectives": [
+    {
+      "type": "collect",
+      "itemIds": [
+        "thermo",
+        "voltage",
+        "relay"
+      ]
+    },
+    {
+      "type": "memory",
+      "address": 4,
+      "value": 33
+    },
+    {
+      "type": "submit",
+      "values": [
+        33
+      ],
+      "origin": "memory-load"
+    },
+    {
+      "type": "exit",
+      "x": 7,
+      "y": 3
+    }
+  ],
+  "variants": [
+    {
+      "input": {
+        "thermo": [
+          1,
+          3
+        ],
+        "voltage": [
+          0,
+          2
+        ],
+        "relay": [
+          3,
+          2
+        ],
+        "spare": [
+          2,
+          7
+        ]
+      },
+      "memory": [
+        3,
+        -3,
+        30,
+        9,
+        27
+      ],
+      "objectives": [
+        {
+          "type": "collect",
+          "itemIds": [
+            "thermo",
+            "voltage",
+            "relay"
+          ]
+        },
+        {
+          "type": "memory",
+          "address": 4,
+          "value": 15
+        },
+        {
+          "type": "submit",
+          "values": [
+            15
+          ],
+          "origin": "memory-load"
+        },
+        {
+          "type": "exit",
+          "x": 7,
+          "y": 3
+        }
+      ]
+    },
+    {
+      "input": {
+        "thermo": [
+          2,
+          5
+        ],
+        "voltage": [
+          0,
+          1
+        ],
+        "relay": [
+          1,
+          4
+        ],
+        "spare": [
+          3,
+          2
+        ]
+      },
+      "memory": [
+        4,
+        3,
+        2,
+        9,
+        -7
+      ],
+      "objectives": [
+        {
+          "type": "collect",
+          "itemIds": [
+            "thermo",
+            "voltage",
+            "relay"
+          ]
+        },
+        {
+          "type": "memory",
+          "address": 4,
+          "value": 26
+        },
+        {
+          "type": "submit",
+          "values": [
+            26
+          ],
+          "origin": "memory-load"
+        },
+        {
+          "type": "exit",
+          "x": 7,
+          "y": 3
+        }
+      ]
+    }
+  ],
+  "allowedApi": [
+    "scan",
+    "move",
+    "pick",
+    "load",
+    "store",
+    "submit"
+  ],
+  "cards": [
+    {
+      "id": "up",
+      "label": {
+        "zh": "向上",
+        "en": "Up"
+      },
+      "template": "move(\"up\")"
+    },
+    {
+      "id": "right",
+      "label": {
+        "zh": "向右",
+        "en": "Right"
+      },
+      "template": "move(\"right\")"
+    },
+    {
+      "id": "down",
+      "label": {
+        "zh": "向下",
+        "en": "Down"
+      },
+      "template": "move(\"down\")"
+    },
+    {
+      "id": "left",
+      "label": {
+        "zh": "向左",
+        "en": "Left"
+      },
+      "template": "move(\"left\")"
+    },
+    {
+      "id": "read",
+      "label": {
+        "zh": "读验收表",
+        "en": "Read the intake table"
+      },
+      "template": "sensors = scan()"
+    },
+    {
+      "id": "zero",
+      "label": {
+        "zh": "将总和设成零",
+        "en": "Start the total at zero"
+      },
+      "template": "total = 0"
+    },
+    {
+      "id": "grab",
+      "label": {
+        "zh": "拾取并记下编号",
+        "en": "Pick up and record the ID"
+      },
+      "template": "part = pick()"
+    },
+    {
+      "id": "locate",
+      "label": {
+        "zh": "从表里找地址和权重",
+        "en": "Find the address and weight in the table"
+      },
+      "template": "sensor = sensors[part]"
+    },
+    {
+      "id": "weigh",
+      "label": {
+        "zh": "累加该读数乘权重",
+        "en": "Add the weighted reading"
+      },
+      "template": "total = total + load(sensor[0]) * sensor[1]"
+    },
+    {
+      "id": "save",
+      "label": {
+        "zh": "把总和写到地址 4",
+        "en": "Store the total at address 4"
+      },
+      "template": "store(4, total)"
+    },
+    {
+      "id": "readback",
+      "label": {
+        "zh": "读回地址 4 并提交",
+        "en": "Read back and submit address 4"
+      },
+      "template": "submit(load(4))"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "zero"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "locate"
+    },
+    {
+      "cardId": "weigh"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "down"
+    },
+    {
+      "cardId": "down"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "locate"
+    },
+    {
+      "cardId": "weigh"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "locate"
+    },
+    {
+      "cardId": "weigh"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "save"
+    },
+    {
+      "cardId": "readback"
+    }
+  ]
+}

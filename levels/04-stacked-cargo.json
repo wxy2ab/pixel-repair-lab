@@ -1,0 +1,208 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "stacked-cargo",
+  "order": 4,
+  "unit": {
+    "id": "structures",
+    "order": 40,
+    "title": {
+      "zh": "数据结构",
+      "en": "Data Structures"
+    }
+  },
+  "topic": {
+    "id": "stacks",
+    "order": 2,
+    "title": {
+      "zh": "栈",
+      "en": "Stacks"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "叠起来的货箱",
+    "en": "Stacked Cargo"
+  },
+  "concept": {
+    "zh": "栈与后进先出",
+    "en": "Stacks and last in, first out"
+  },
+  "brief": {
+    "zh": "扫描到货清单。把货箱一件件叠起来，从最顶层开始发货。",
+    "en": "Scan the arrival list. Stack the boxes in order and send the top one first."
+  },
+  "hints": [
+    {
+      "zh": "扫描返回的是到货顺序。用 append() 把每个货箱放到列表末尾。",
+      "en": "Scan returns the arrival order. Use append() to put each box at the end of the list."
+    },
+    {
+      "zh": "栈顶是最后放进去的货箱。pop() 取走列表末尾并返回那个货箱。",
+      "en": "The top box was added last. pop() removes and returns the box at the end of the list."
+    }
+  ],
+  "tiles": [
+    "#########",
+    "#.......#",
+    "#.##.##.#",
+    "#.......#",
+    "#.#...#.#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 4,
+    "y": 3
+  },
+  "input": [
+    "amber",
+    "mint",
+    "violet"
+  ],
+  "allowedApi": [
+    "scan",
+    "submit"
+  ],
+  "objectives": [
+    {
+      "type": "submit",
+      "values": [
+        "violet",
+        "mint",
+        "amber"
+      ],
+      "origin": "stack-pop",
+      "sameContainer": true
+    }
+  ],
+  "variants": [
+    {
+      "input": [
+        "teal",
+        "silver",
+        "coral",
+        "gold"
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            "gold",
+            "coral",
+            "silver",
+            "teal"
+          ],
+          "origin": "stack-pop",
+          "sameContainer": true
+        }
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "read-arrivals",
+      "label": {
+        "zh": "读取到货顺序",
+        "en": "Read arrivals"
+      },
+      "template": "arrivals = scan()"
+    },
+    {
+      "id": "new-cargo",
+      "label": {
+        "zh": "建一个空列表",
+        "en": "Make an empty list"
+      },
+      "template": "cargo = []"
+    },
+    {
+      "id": "each-arrival",
+      "label": {
+        "zh": "逐件查看到货",
+        "en": "For each arrival"
+      },
+      "template": "for box in arrivals:",
+      "block": true
+    },
+    {
+      "id": "add-cargo",
+      "label": {
+        "zh": "把货箱放到末尾",
+        "en": "Append the box"
+      },
+      "template": "cargo.append(box)"
+    },
+    {
+      "id": "each-cargo",
+      "label": {
+        "zh": "有几箱就发几次",
+        "en": "Send once per box"
+      },
+      "template": "for turn in range(len(cargo)):",
+      "block": true
+    },
+    {
+      "id": "send-cargo",
+      "label": {
+        "zh": "取一箱并发送",
+        "en": "Remove and send a box"
+      },
+      "template": "submit(cargo.{{take}})",
+      "parameters": [
+        {
+          "name": "take",
+          "label": {
+            "zh": "从哪一端取",
+            "en": "Which end"
+          },
+          "choices": [
+            {
+              "id": "last",
+              "label": {
+                "zh": "末尾",
+                "en": "Last"
+              },
+              "code": "pop()"
+            },
+            {
+              "id": "first",
+              "label": {
+                "zh": "开头",
+                "en": "First"
+              },
+              "code": "pop(0)"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read-arrivals"
+    },
+    {
+      "cardId": "new-cargo"
+    },
+    {
+      "cardId": "each-arrival",
+      "children": [
+        {
+          "cardId": "add-cargo"
+        }
+      ]
+    },
+    {
+      "cardId": "each-cargo",
+      "children": [
+        {
+          "cardId": "send-cargo",
+          "values": {
+            "take": "last"
+          }
+        }
+      ]
+    }
+  ]
+}

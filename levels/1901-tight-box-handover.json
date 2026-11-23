@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "challenge-tight-box-handover",
+  "order": 1901,
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "框边交接质检",
+    "en": "Bounding-Box Handover"
+  },
+  "brief": {
+    "zh": "标注员交来的两张照片一张框得太松，一张只框了局部。给拉布拉多犬和宇航员各重画一个框。用每张图自己的宽高换算边界，两张的交并比都须达到各自合同要求。",
+    "en": "One annotation is too loose and the other misses part of its subject. Redraw the Labrador and astronaut boxes. Boundaries are relative to each photo’s own dimensions. Both overlap scores must meet their individual contracts."
+  },
+  "concept": {
+    "zh": "边界校准、百分比坐标与交并比",
+    "en": "Edge calibration, relative coordinates and intersection over union"
+  },
+  "prerequisites": [
+    {
+      "unit": "opencv",
+      "topic": "pixels"
+    },
+    {
+      "unit": "yolox",
+      "topic": "object-detection"
+    },
+    {
+      "unit": "yolox",
+      "topic": "bounding-boxes"
+    }
+  ],
+  "hints": [],
+  "mode": "boxes",
+  "cases": [
+    {
+      "image": "labrador",
+      "label": {
+        "zh": "横幅犬只登记照",
+        "en": "Landscape dog portrait"
+      },
+      "prompt": {
+        "zh": "与犬只参考框的交并比至少为 0.97。横向和纵向百分比都以这张照片自身尺寸计算。",
+        "en": "Achieve at least 0.97 IoU with the dog reference box. Both axis percentages use this photo’s actual dimensions."
+      },
+      "initial": {
+        "x": 0,
+        "y": 0,
+        "w": 100,
+        "h": 100
+      },
+      "goal": {
+        "minIou": 0.97
+      },
+      "solution": {
+        "x": 7,
+        "y": 6,
+        "w": 84,
+        "h": 90
+      }
+    },
+    {
+      "image": "astronaut",
+      "label": {
+        "zh": "方形工作人员登记照",
+        "en": "Square crew portrait"
+      },
+      "prompt": {
+        "zh": "左上角和右下角都要对齐人物范围。与人物参考框的交并比至少为 0.98。",
+        "en": "Fit both corners to the full person region. Achieve at least 0.98 IoU with the person reference box."
+      },
+      "initial": {
+        "x": 15,
+        "y": 10,
+        "w": 33,
+        "h": 36
+      },
+      "goal": {
+        "minIou": 0.98
+      },
+      "solution": {
+        "x": 2,
+        "y": 4,
+        "w": 70,
+        "h": 94
+      }
+    }
+  ]
+}

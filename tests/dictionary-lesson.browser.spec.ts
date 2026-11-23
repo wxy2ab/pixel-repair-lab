@@ -1,0 +1,108 @@
+import { expect, test, type Locator } from '@playwright/test'
+import type { Catalog } from '../src/shared/types'
+
+const button = (panel: Locator, name: string) => panel.getByRole('button', { name, exact: true })
+
+async function showsRecords(panel: Locator, expected: Record<string, number>) {
+  await expect(panel.locator('[data-record-key]')).toHaveCount(Object.keys(expected).length)
+  for (const [key, charge] of Object.entries(expected)) {
+    await expect(panel.locator(`[data-record-key="${key}"]`)).toHaveAttribute('data-charge', String(charge))
+  }
+}
+
+test('a new dictionary key adds a record while charging updates the existing key, and prediction checks both results', async ({ page, request }) => {
+  const response = await request.get('/api/levels')
+  expect(response.ok()).toBe(true)
+  const { levels, issues } = await response.json() as Catalog
+  expect(issues).toEqual([])
+  const lesson = levels.find(level => level.id === 'dictionary-notes')
+  if (lesson?.kind !== 'lecture' || !lesson.execution?.dictionaryLesson) throw new Error('Missing the battery dictionary lesson')
+  const source = lesson.execution.source.split('\n')
+
+  await page.goto('/#track-algorithms')
+  await page.locator('[data-unit="structures"]').click()
+  const mission = page.locator('.mission-list').getByRole('button').filter({ has: page.getByText(lesson.title.zh, { exact: true }) })
+  await mission.click()
+  await expect(page.getByRole('heading', { level: 1, name: lesson.title.zh, exact: true })).toBeVisible()
+
+  const guide = page.getByTestId('dictionary-lesson')
+  const records = guide.getByTestId('dictionary-records')
+  const arrival = guide.getByTestId('dictionary-arrival')
+  const code = guide.getByTestId('dictionary-lesson-code')
+  const reading = guide.getByTestId('dictionary-reading')
+  const output = guide.getByTestId('dictionary-output')
+  const practice = page.getByTestId('dictionary-prediction')
+  const completed = mission.locator('.mission-check')
+  const key = (name: string) => records.locator(`[data-record-key="${name}"]`).getByRole('button')
+
+  async function state(stage: string, line: number, expected: Record<string, number>) {
+    await expect(guide).toHaveAttribute('data-dictionary-stage', stage)
+    await expect(code.locator('code')).toHaveCount(line)
+    await expect(code.locator(`[data-line="${line}"][aria-current="step"] code`)).toHaveText(source[line - 1])
+    await showsRecords(records, expected)
+  }
+
+  await expect(guide).toHaveAttribute('data-dictionary-stage', 'start')
+  await expect(code).toHaveCount(0)
+  await expect(practice).toHaveCount(0)
+  await showsRecords(records, { A: 2, B: 4, C: 6 })
+  await key('A').click()
+  await expect(guide).toHaveAttribute('data-dictionary-stage', 'start')
+  await expect(code).toHaveCount(0)
+  await key('B').click()
+  await state('lookup', 2, { A: 2, B: 4, C: 6 })
+  await expect(reading).toHaveText('4')
+  await arrival.click()
+  await state('register', 3, { A: 2, B: 4, C: 6, D: 3 })
+  await key('D').click()
+  await state('register', 3, { A: 2, B: 4, C: 6, D: 3 })
+  await key('B').click()
+  await state('calculate', 4, { A: 2, B: 4, C: 6, D: 3 })
+  await expect(guide.getByTestId('dictionary-calculation-result')).toHaveText('7')
+  await expect(reading).toHaveText('4')
+
+  await button(guide, '下一步').click()
+  await state('update', 5, { A: 2, B: 7, C: 6, D: 3 })
+  await expect(reading).toHaveText('4')
+  await expect(practice).toHaveCount(0)
+  await expect(output).toHaveCount(0)
+  await button(guide, '上一步').click()
+  await state('calculate', 4, { A: 2, B: 4, C: 6, D: 3 })
+  await button(guide, '下一步').click()
+  await state('update', 5, { A: 2, B: 7, C: 6, D: 3 })
+  await button(guide, '下一步').click()
+  await state('output', 6, { A: 2, B: 7, C: 6, D: 3 })
+  await expect(output).toHaveText('{"A":2,"B":7,"C":6,"D":3}')
+
+  const verify = button(practice, '运行验证')
+  const actualReading = practice.getByTestId('dictionary-actual-reading')
+  const actualRecords = practice.getByTestId('dictionary-actual-records')
+  await expect(verify).toBeDisabled()
+  await practice.locator('[data-reading-option="4"]').click()
+  await expect(verify).toBeDisabled()
+  await practice.locator('[data-record-option="1"]').click()
+  await expect(actualReading).toHaveCount(0)
+  await verify.click()
+  await expect(practice).toHaveAttribute('data-match', 'false')
+  await expect(actualReading).toHaveText('2')
+  await showsRecords(actualRecords, { P: 5, R: 4, Q: 0, T: 3 })
+  await expect(completed).toHaveCount(0)
+
+  await button(practice, '再猜一次').click()
+  await expect(actualRecords).toHaveCount(0)
+  await expect(verify).toBeDisabled()
+  await practice.locator('[data-record-option="1"]').click()
+  await practice.locator('[data-dictionary-case="1"]').click()
+  await expect(practice.locator('[data-record-option="1"]')).toHaveAttribute('aria-pressed', 'false')
+  await practice.locator('[data-reading-option="0"]').click()
+  await practice.locator('[data-record-option="0"]').click()
+  await verify.click()
+  await expect(practice).toHaveAttribute('data-match', 'false')
+  await expect(actualReading).toHaveText('0')
+  await showsRecords(actualRecords, { K: 3, M: 1, L: 4 })
+  await expect(completed).toHaveCount(0)
+  await practice.locator('[data-record-option="1"]').click()
+  await verify.click()
+  await expect(practice).toHaveAttribute('data-match', 'true')
+  await expect(completed).toBeVisible()
+})

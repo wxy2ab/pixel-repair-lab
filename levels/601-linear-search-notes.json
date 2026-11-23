@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "unit": {
+    "id": "algorithm-intro",
+    "order": 50,
+    "title": { "zh": "算法初级", "en": "Introductory Algorithms" }
+  },
+  "stage": "explain",
+  "id": "linear-search-notes",
+  "order": 601,
+  "topic": {
+    "id": "linear-search",
+    "order": 1,
+    "title": { "zh": "线性查找", "en": "Linear search" }
+  },
+  "title": { "zh": "在维修站找电池", "en": "Find a Battery at the Repair Station" },
+  "brief": {
+    "zh": "先亲手找出指定电量的电池，再看程序怎样逐块找，又怎样利用排好的顺序缩小范围。",
+    "en": "Find a battery with the requested charge, then see how a program searches one by one and how a sorted row helps it narrow the search."
+  },
+  "concept": {
+    "zh": "逐块查找、折半查找与比较次数",
+    "en": "Linear search, binary search, and counting comparisons"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": { "zh": "从头逐块查找", "en": "Check one battery at a time" },
+      "body": {
+        "zh": "每查看一块电池，就把它的电量和目标比一次。找到就停。电池可以按任意顺序摆放。",
+        "en": "Compare each battery’s charge with the target and stop once it matches. The batteries can be in any order."
+      }
+    },
+    {
+      "title": { "zh": "从有序范围的中间找", "en": "Check the middle of a sorted range" },
+      "body": {
+        "zh": "先把电池从低电量排到高电量。目标比中间电量大时，只需要找右边。目标比中间电量小时，只需要找左边。",
+        "en": "Arrange the batteries from lowest to highest charge. If the target exceeds the middle charge, search the right side. If it is lower, search the left side."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "电池从低电量到高电量排列。目标比中间的电量小，下一步去哪边找？",
+      "en": "The batteries go from lowest to highest charge. The target is lower than the middle charge. Which side should you search next?"
+    },
+    "options": [{ "zh": "左边", "en": "Left" }, { "zh": "右边", "en": "Right" }],
+    "correct": 0,
+    "feedback": {
+      "zh": "中间和右边的电量都已经大于目标，可以只找左边。",
+      "en": "The middle and every battery on the right exceed the target, so only the left side is needed."
+    }
+  },
+  "execution": {
+    "source": "def find_battery(charges, target):\n    comparisons = 0\n    for index in range(len(charges)):\n        charge = charges[index]\n        comparisons += 1\n        matches = charge == target\n        if matches:\n            return [index, comparisons]\n    return [-1, comparisons]\n",
+    "cases": [],
+    "batterySearch": {
+      "binarySource": "def find_battery(charges, target):\n    first = 0\n    last = len(charges) - 1\n    comparisons = 0\n    while first <= last:\n        middle = (first + last) // 2\n        charge = charges[middle]\n        comparisons += 1\n        matches = charge == target\n        if matches:\n            return [middle, comparisons]\n        if charge < target:\n            first = middle + 1\n        else:\n            last = middle - 1\n    return [-1, comparisons]\n",
+      "demo": {
+        "batteries": [
+          { "name": "A", "charge": 2 },
+          { "name": "B", "charge": 4 },
+          { "name": "C", "charge": 6 },
+          { "name": "D", "charge": 8 },
+          { "name": "E", "charge": 10 },
+          { "name": "F", "charge": 12 },
+          { "name": "G", "charge": 14 }
+        ],
+        "manualOrder": ["F", "A", "C", "E", "B", "G", "D"],
+        "target": 10,
+        "expected": { "battery": "E", "linear": 5, "binary": 3 }
+      },
+      "practice": {
+        "batteries": [
+          { "name": "H", "charge": 1 },
+          { "name": "J", "charge": 3 },
+          { "name": "K", "charge": 5 },
+          { "name": "L", "charge": 7 },
+          { "name": "M", "charge": 9 },
+          { "name": "N", "charge": 11 },
+          { "name": "P", "charge": 13 },
+          { "name": "Q", "charge": 15 }
+        ],
+        "target": 13,
+        "expected": { "battery": "P", "linear": 7, "binary": 3 },
+        "predictions": {
+          "linear": [6, 7, 8],
+          "binary": [2, 3, 4]
+        }
+      }
+    }
+  }
+}

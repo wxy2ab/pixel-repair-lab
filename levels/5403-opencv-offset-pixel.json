@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "opencv-offset-pixel",
+  "order": 5403,
+  "stage": "exercise",
+  "unit": { "id": "opencv", "order": 140, "title": { "zh": "OpenCV", "en": "OpenCV" } },
+  "topic": { "id": "pixels", "order": 1, "title": { "zh": "像素与坐标", "en": "Pixels and coordinates" } },
+  "mode": "pixels",
+  "title": { "zh": "沿像素网格找零件", "en": "Follow the Pixel Grid to a Part" },
+  "brief": { "zh": "维修员只给了起点和移动步数，用坐标找到目标。", "en": "The repair technician gives you only the start and a pair of offsets. Find the target by its coordinates." },
+  "concept": { "zh": "横向位移加到 x，纵向位移加到 y。", "en": "Add horizontal movement to x and vertical movement to y." },
+  "hints": [{ "zh": "向右两格意味着 x 加 2。向下两格意味着 y 加 2。", "en": "Two tiles right adds 2 to x. Two tiles down adds 2 to y." }],
+  "cases": [{
+    "image": "calibration",
+    "label": { "zh": "横向和纵向移动", "en": "Move across and down" },
+    "prompt": { "zh": "以 (2, 1) 为出发点，向右两格，再向下两格。读取最后到达的像素。", "en": "Start at (2, 1), move two tiles right and two tiles down, then read the destination pixel." },
+    "initial": { "x": 2, "y": 1 },
+    "goal": { "x": 4, "y": 3, "rgb": [15, 115, 180] },
+    "solution": { "x": 4, "y": 3 }
+  }]
+}

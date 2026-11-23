@@ -1,0 +1,19 @@
+{
+  "columns": ["id", "day", "zone", "reading"],
+  "rows": [
+    [1, 1, "hangar", 18],
+    [2, 1, "workshop", " 24 "],
+    [3, 1, "storage", 20],
+    [4, 2, " Hangar ", 22],
+    [5, 2, "workshop", 28],
+    [6, 2, "storage", null],
+    [7, 3, "hangar", 26],
+    [8, 3, " Workshop ", " 32 "],
+    [9, 3, "storage", 16],
+    [9, 3, "storage", 16],
+    [10, 4, "hangar", 30],
+    [11, 4, "workshop", "bad"],
+    [12, 4, "storage", 24],
+    [13, 4, "workshop", 36]
+  ]
+}

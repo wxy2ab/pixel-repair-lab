@@ -1,0 +1,218 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "python-intermediate",
+    "order": 20,
+    "title": {
+      "zh": "Python 进阶",
+      "en": "Intermediate Python"
+    }
+  },
+  "kind": "grid",
+  "id": "report-hot-readings",
+  "order": 823,
+  "stage": "exercise",
+  "title": {
+    "zh": "找出过热的电池",
+    "en": "Find the Hot Batteries"
+  },
+  "concept": {
+    "zh": "在循环中做判断",
+    "en": "Make a decision inside a loop"
+  },
+  "brief": {
+    "zh": "扫描一组温度。按原来的顺序报告所有温度达到 6 或更高的电池。",
+    "en": "Scan a batch of temperatures. Report each reading of 6 or higher in its original order."
+  },
+  "hints": [
+    {
+      "zh": "先逐个取值，再判断，最后把报告卡片放进条件块里。",
+      "en": "Read one value at a time, check it, then put the report card inside the condition."
+    }
+  ],
+  "tiles": [
+    "#######",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#######"
+  ],
+  "start": {
+    "x": 2,
+    "y": 2
+  },
+  "allowedApi": [
+    "scan",
+    "submit"
+  ],
+  "objectives": [
+    {
+      "type": "submit",
+      "values": [
+        7,
+        6
+      ]
+    }
+  ],
+  "input": [
+    2,
+    7,
+    6,
+    4
+  ],
+  "cards": [
+    {
+      "id": "read",
+      "label": {
+        "zh": "扫描温度表",
+        "en": "Scan the temperature list"
+      },
+      "template": "readings = scan()"
+    },
+    {
+      "id": "each",
+      "label": {
+        "zh": "逐个读取温度",
+        "en": "For each temperature"
+      },
+      "template": "for reading in readings:",
+      "block": true
+    },
+    {
+      "id": "cutoff",
+      "label": {
+        "zh": "检查温度是否达标",
+        "en": "Check the temperature threshold"
+      },
+      "template": "if reading {{compare}} {{threshold}}:",
+      "parameters": [
+        {
+          "name": "compare",
+          "label": {
+            "zh": "比较规则",
+            "en": "Comparison"
+          },
+          "choices": [
+            {
+              "id": "above",
+              "label": {
+                "zh": "高于",
+                "en": "Greater than"
+              },
+              "code": ">"
+            },
+            {
+              "id": "enough",
+              "label": {
+                "zh": "至少",
+                "en": "At least"
+              },
+              "code": ">="
+            },
+            {
+              "id": "below",
+              "label": {
+                "zh": "低于",
+                "en": "Less than"
+              },
+              "code": "<"
+            }
+          ]
+        },
+        {
+          "name": "threshold",
+          "label": {
+            "zh": "门槛",
+            "en": "Threshold"
+          },
+          "choices": [
+            {
+              "id": "5",
+              "label": {
+                "zh": "5",
+                "en": "5"
+              },
+              "code": "5"
+            },
+            {
+              "id": "6",
+              "label": {
+                "zh": "6",
+                "en": "6"
+              },
+              "code": "6"
+            },
+            {
+              "id": "7",
+              "label": {
+                "zh": "7",
+                "en": "7"
+              },
+              "code": "7"
+            }
+          ]
+        }
+      ],
+      "block": true
+    },
+    {
+      "id": "submit-reading",
+      "label": {
+        "zh": "报告这次读数",
+        "en": "Report this reading"
+      },
+      "template": "submit(reading)"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "each",
+      "children": [
+        {
+          "cardId": "cutoff",
+          "values": {
+            "compare": "enough",
+            "threshold": "6"
+          },
+          "children": [
+            {
+              "cardId": "submit-reading"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "input": [
+        6,
+        5,
+        8,
+        6,
+        2
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            6,
+            8,
+            6
+          ]
+        }
+      ]
+    }
+  ],
+  "topic": {
+    "id": "for-loops",
+    "order": 2,
+    "title": {
+      "zh": "for 循环",
+      "en": "For loops"
+    }
+  }
+}

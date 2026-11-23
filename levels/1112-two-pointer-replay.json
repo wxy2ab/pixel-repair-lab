@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "kind": "replay",
+  "id": "two-pointer-replay",
+  "order": 1112,
+  "unit": {
+    "id": "algorithm-intro",
+    "order": 50,
+    "title": {
+      "zh": "算法初级",
+      "en": "Introductory Algorithms"
+    }
+  },
+  "stage": "demo",
+  "topic": {
+    "id": "two-pointers",
+    "order": 3,
+    "title": {
+      "zh": "双指针",
+      "en": "Two pointers"
+    }
+  },
+  "title": {
+    "zh": "回放指针的每一步",
+    "en": "Replay pointer movements"
+  },
+  "brief": {
+    "zh": "运行可配对和不可配对两组输入，对比报出的索引是怎样靠拢的。",
+    "en": "Run one matching and one nonmatching input, then compare how the indexes move together."
+  },
+  "concept": {
+    "zh": "缩小搜索窗口",
+    "en": "Shrink a search window"
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "目标 13",
+        "en": "Target 13"
+      },
+      "source": "work = scan()\nreadings = work[\"values\"]\ntarget = work[\"target\"]\nleft = 0\nright = len(readings) - 1\nfound = False\nwhile left < right and not found:\n    say(str(left) + \", \" + str(right))\n    total = readings[left] + readings[right]\n    if total == target:\n        found = True\n    elif total < target:\n        left += 1\n    else:\n        right -= 1\nsubmit(found)",
+      "scenario": {
+        "tiles": [
+          "#####",
+          "#...#",
+          "#####"
+        ],
+        "start": {
+          "x": 1,
+          "y": 1
+        },
+        "input": {
+          "values": [
+            1,
+            5,
+            8,
+            12,
+            17
+          ],
+          "target": 13
+        },
+        "allowedApi": [
+          "scan",
+          "say",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "title": {
+        "zh": "找不到目标 10",
+        "en": "No pair for 10"
+      },
+      "source": "work = scan()\nreadings = work[\"values\"]\ntarget = work[\"target\"]\nleft = 0\nright = len(readings) - 1\nfound = False\nwhile left < right and not found:\n    say(str(left) + \", \" + str(right))\n    total = readings[left] + readings[right]\n    if total == target:\n        found = True\n    elif total < target:\n        left += 1\n    else:\n        right -= 1\nsubmit(found)",
+      "scenario": {
+        "tiles": [
+          "#####",
+          "#...#",
+          "#####"
+        ],
+        "start": {
+          "x": 1,
+          "y": 1
+        },
+        "input": {
+          "values": [
+            1,
+            4,
+            7,
+            12
+          ],
+          "target": 10
+        },
+        "allowedApi": [
+          "scan",
+          "say",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              false
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,283 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "challenge-thermostat-deadband",
+  "order": 1895,
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "恒温带内的值班日",
+    "en": "Days Inside the Thermostat Band"
+  },
+  "brief": {
+    "zh": "恒温器只认 20 到 28°C 的读数，两个端点都算。用已清洗记录提交两次边界筛选的底稿，再从有效样本中挑出日平均至少 24°C 的日期，最暖的排在前面。",
+    "en": "The thermostat accepts readings from 20 through 28°C, including both limits. Submit a trail for both bounds, then rank days whose in-band readings average at least 24°C, warmest first."
+  },
+  "concept": {
+    "zh": "双边筛选、分日平均与验收排序",
+    "en": "Inclusive limits, daily averages and acceptance ranking"
+  },
+  "prerequisites": [
+    {
+      "unit": "numpy",
+      "topic": "masks"
+    },
+    {
+      "unit": "statistics",
+      "topic": "grouped-summary"
+    },
+    {
+      "unit": "database",
+      "topic": "sql-groups"
+    }
+  ],
+  "hints": [],
+  "steps": [
+    {
+      "operation": "mask",
+      "label": {
+        "zh": "下限底稿",
+        "en": "Lower-bound log"
+      },
+      "prompt": {
+        "zh": "保留所有达到温度下限的整行，沿用原顺序。",
+        "en": "Keep complete rows that meet the lower temperature limit, in their original order."
+      },
+      "initial": {
+        "column": "day",
+        "comparison": "lte",
+        "threshold": 2
+      },
+      "solution": {
+        "column": "reading",
+        "comparison": "gte",
+        "threshold": 20
+      },
+      "input": "clean",
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            2,
+            1,
+            "workshop",
+            24.0
+          ],
+          [
+            3,
+            1,
+            "storage",
+            20.0
+          ],
+          [
+            4,
+            2,
+            "hangar",
+            22.0
+          ],
+          [
+            5,
+            2,
+            "workshop",
+            28.0
+          ],
+          [
+            7,
+            3,
+            "hangar",
+            26.0
+          ],
+          [
+            8,
+            3,
+            "workshop",
+            32.0
+          ],
+          [
+            10,
+            4,
+            "hangar",
+            30.0
+          ],
+          [
+            12,
+            4,
+            "storage",
+            24.0
+          ],
+          [
+            13,
+            4,
+            "workshop",
+            36.0
+          ]
+        ]
+      }
+    },
+    {
+      "operation": "mask",
+      "label": {
+        "zh": "带内样本",
+        "en": "In-band readings"
+      },
+      "prompt": {
+        "zh": "从底稿剔除超过上限的读数，保留刚好压线的样本。",
+        "en": "Drop readings above the upper limit from the log, keeping those exactly on the limit."
+      },
+      "initial": {
+        "column": "reading",
+        "comparison": "gte",
+        "threshold": 28
+      },
+      "solution": {
+        "column": "reading",
+        "comparison": "lte",
+        "threshold": 28
+      },
+      "input": "previous",
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            2,
+            1,
+            "workshop",
+            24.0
+          ],
+          [
+            3,
+            1,
+            "storage",
+            20.0
+          ],
+          [
+            4,
+            2,
+            "hangar",
+            22.0
+          ],
+          [
+            5,
+            2,
+            "workshop",
+            28.0
+          ],
+          [
+            7,
+            3,
+            "hangar",
+            26.0
+          ],
+          [
+            12,
+            4,
+            "storage",
+            24.0
+          ]
+        ]
+      }
+    },
+    {
+      "operation": "group",
+      "label": {
+        "zh": "分日账单",
+        "en": "Day-by-day ledger"
+      },
+      "prompt": {
+        "zh": "每个还有样本的日期占一行，提交带内读数的算术平均。",
+        "en": "Give each day that still has samples one row with their arithmetic mean."
+      },
+      "initial": {
+        "by": "zone",
+        "statistic": "max"
+      },
+      "solution": {
+        "by": "day",
+        "statistic": "mean"
+      },
+      "input": "previous",
+      "goal": {
+        "columns": [
+          "day",
+          "mean"
+        ],
+        "rows": [
+          [
+            1,
+            22.0
+          ],
+          [
+            2,
+            25.0
+          ],
+          [
+            3,
+            26.0
+          ],
+          [
+            4,
+            24.0
+          ]
+        ]
+      }
+    },
+    {
+      "operation": "report",
+      "label": {
+        "zh": "达标日",
+        "en": "Accepted days"
+      },
+      "prompt": {
+        "zh": "只交平均至少 24°C 的日期，均值降序，同温按日期升序。",
+        "en": "Keep days averaging at least 24°C. Order by decreasing mean, then by increasing day."
+      },
+      "initial": {
+        "minimum": 20,
+        "sort": "key"
+      },
+      "solution": {
+        "minimum": 24,
+        "sort": "value-desc"
+      },
+      "input": "previous",
+      "goal": {
+        "columns": [
+          "day",
+          "mean"
+        ],
+        "rows": [
+          [
+            3,
+            26.0
+          ],
+          [
+            2,
+            25.0
+          ],
+          [
+            4,
+            24.0
+          ]
+        ]
+      }
+    }
+  ]
+}

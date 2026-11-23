@@ -1,0 +1,118 @@
+{
+  "version": 1,
+  "kind": "replay",
+  "id": "structures-replay",
+  "order": 104,
+  "unit": {
+    "id": "structures",
+    "order": 40,
+    "title": {
+      "zh": "数据结构",
+      "en": "Data Structures"
+    }
+  },
+  "topic": {
+    "id": "lists",
+    "order": 1,
+    "title": {
+      "zh": "列表",
+      "en": "Lists"
+    }
+  },
+  "stage": "demo",
+  "title": {
+    "zh": "看看数据怎么出来",
+    "en": "Watch the Data Come Out"
+  },
+  "brief": {
+    "zh": "用索引把清单变成移动路线，也可以按指定顺序读出其中的零件。",
+    "en": "Use indexes to turn a list into a route or read its parts in a requested order."
+  },
+  "concept": {
+    "zh": "从列表按位置取数据",
+    "en": "Read a list by position"
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "列表：按第 0 和第 1 个位置取方向",
+        "en": "List: read the directions at indexes 0 and 1"
+      },
+      "source": "route = scan()\nmove(route[0])\nmove(route[1])",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "allowedApi": [
+          "scan",
+          "move"
+        ],
+        "objectives": [
+          {
+            "type": "exit",
+            "x": 3,
+            "y": 1
+          },
+          {
+            "type": "moves",
+            "origin": "list-index"
+          }
+        ],
+        "input": [
+          "right",
+          "up"
+        ]
+      }
+    },
+    {
+      "title": {
+        "zh": "先看索引 2，再看索引 0",
+        "en": "Read index 2, then index 0"
+      },
+      "source": "parts = scan()\nsubmit(parts[2])\nsubmit(parts[0])",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "allowedApi": [
+          "scan",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              "gear",
+              "spring"
+            ],
+            "origin": "list-index",
+            "sameContainer": true
+          }
+        ],
+        "input": [
+          "spring",
+          "washer",
+          "gear"
+        ]
+      }
+    }
+  ]
+}

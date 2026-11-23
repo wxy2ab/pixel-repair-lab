@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "kind": "circuit",
+  "id": "dc-gates-demo",
+  "order": 6032,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "logic-signals",
+    "order": 4,
+    "title": {
+      "zh": "逻辑门与信号",
+      "en": "Logic Gates and Signals"
+    }
+  },
+  "stage": "demo",
+  "title": {
+    "zh": "在维修台更换信号门",
+    "en": "Swap the Workshop Signal Gate"
+  },
+  "brief": {
+    "zh": "先保持开关不动，在 AND 和 OR 之间切换。再选 NOT，分别拨动 B 和 A，找出哪一路能改变输出。",
+    "en": "Keep the switches still and swap AND for OR. Select NOT next and flip B, then A. Which one changes the output?"
+  },
+  "concept": {
+    "zh": "用相同输入比较逻辑规则",
+    "en": "Compare logic rules on the same inputs"
+  },
+  "hints": [],
+  "mode": "logic",
+  "gateChoices": [
+    "AND",
+    "OR",
+    "NOT"
+  ],
+  "cases": [
+    {
+      "label": {
+        "zh": "一个传感器在呼叫",
+        "en": "One sensor is calling"
+      },
+      "bits": [
+        0,
+        1
+      ],
+      "gate": "AND"
+    },
+    {
+      "label": {
+        "zh": "试探 NOT 读取哪一路",
+        "en": "Find out which input NOT reads"
+      },
+      "bits": [
+        1,
+        0
+      ],
+      "gate": "NOT"
+    }
+  ]
+}

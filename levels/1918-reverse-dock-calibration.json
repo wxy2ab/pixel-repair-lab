@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "challenge-reverse-dock-calibration",
+  "order": 1918,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "prerequisites": [{"unit": "architecture", "topic": "memory"}, {"unit": "architecture", "topic": "registers"}, {"unit": "architecture", "topic": "instructions"}],
+  "title": {"zh": "倒装电池架的校准", "en": "Reverse-Mounted Battery Rack"},
+  "concept": {"zh": "反序、校准与原地交换", "en": "Reverse, offset and swap in place"},
+  "brief": {"zh": "地址 0 到 3 是一架装反的电池读数。把四个通道完全倒序，每个都加上 ACC 起初给出的同一校准量。地址 4 要留下原校准量，ACC 最后要给出四个新通道的总量。只能动用这五格内存。", "en": "The four battery channels at 0 through 3 were mounted backwards. Reverse all four original readings and add the initial ACC offset to each. Keep the original offset at address 4 and finish with the sum of the corrected channels in ACC. Only the five cells are available."},
+  "hints": [],
+  "allowedOps": ["LOAD", "ADD", "SUB", "STORE", "HALT"],
+  "starterCode": "HALT\n",
+  "solutionCode": "STORE 4\nLOAD 0\nADD 3\nSTORE 0\nSUB 3\nADD 4\nSTORE 3\nLOAD 0\nSUB 3\nADD 4\nADD 4\nSTORE 0\nLOAD 1\nADD 2\nSTORE 1\nSUB 2\nADD 4\nSTORE 2\nLOAD 1\nSUB 2\nADD 4\nADD 4\nSTORE 1\nLOAD 0\nADD 1\nADD 2\nADD 3\nHALT\n",
+  "cases": [
+    {"label": {"zh": "验收样本 1", "en": "Acceptance sample 1"}, "memory": [4, 7, 1, 9, -99], "accumulator": 3, "goal": {"memory": [{"address": 0, "value": 12}, {"address": 1, "value": 4}, {"address": 2, "value": 10}, {"address": 3, "value": 7}, {"address": 4, "value": 3}], "accumulator": 33}},
+    {"label": {"zh": "验收样本 2", "en": "Acceptance sample 2"}, "memory": [-4, 3, 7, -2, 6], "accumulator": -8, "goal": {"memory": [{"address": 0, "value": -10}, {"address": 1, "value": -1}, {"address": 2, "value": -5}, {"address": 3, "value": -12}, {"address": 4, "value": -8}], "accumulator": -28}},
+    {"label": {"zh": "验收样本 3", "en": "Acceptance sample 3"}, "memory": [0, 0, 0, 0, 8], "accumulator": 5, "goal": {"memory": [{"address": 0, "value": 5}, {"address": 1, "value": 5}, {"address": 2, "value": 5}, {"address": 3, "value": 5}, {"address": 4, "value": 5}], "accumulator": 20}},
+    {"label": {"zh": "验收样本 4", "en": "Acceptance sample 4"}, "memory": [-7, -1, 5, 3, 8], "accumulator": 0, "goal": {"memory": [{"address": 0, "value": 3}, {"address": 1, "value": 5}, {"address": 2, "value": -1}, {"address": 3, "value": -7}, {"address": 4, "value": 0}], "accumulator": 0}},
+    {"label": {"zh": "验收样本 5", "en": "Acceptance sample 5"}, "memory": [6, 3, 3, 6, 51], "accumulator": -4, "goal": {"memory": [{"address": 0, "value": 2}, {"address": 1, "value": -1}, {"address": 2, "value": -1}, {"address": 3, "value": 2}, {"address": 4, "value": -4}], "accumulator": 2}}
+  ]
+}

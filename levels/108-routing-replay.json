@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "routing",
+    "order": 60,
+    "title": {
+      "zh": "算法进阶",
+      "en": "Intermediate Algorithms"
+    }
+  },
+  "kind": "replay",
+  "id": "routing-replay",
+  "order": 1211,
+  "stage": "demo",
+  "topic": {
+    "id": "breadth-first",
+    "order": 2,
+    "title": {
+      "zh": "广度优先搜索",
+      "en": "Breadth-first search"
+    }
+  },
+  "title": {
+    "zh": "两张地图，同一个选择规则",
+    "en": "Two Maps, One Decision Rule"
+  },
+  "concept": {
+    "zh": "每一步重新调用最短路函数",
+    "en": "Recalculate a shortest route each step"
+  },
+  "brief": {
+    "zh": "比较始终调用 shortest_step 的两张地图。墙的位置改变时，同一段程序会选择另一条最短路线。",
+    "en": "Compare two maps using the same shortest_step function. When the walls change, the same program selects a different shortest route."
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "走两格直达出口",
+        "en": "Take two steps straight to the exit"
+      },
+      "source": "from algorithms import shortest_step\nroute = scan()\nposition = route[\"start\"]\nwhile position != route[\"goal\"]:\n    direction = shortest_step(route[\"board\"], position, route[\"goal\"])\n    move(direction)\n    if direction == \"up\":\n        position[1] -= 1\n    elif direction == \"right\":\n        position[0] += 1\n    elif direction == \"down\":\n        position[1] += 1\n    else:\n        position[0] -= 1",
+      "scenario": {
+        "tiles": [
+          "######",
+          "#....#",
+          "#....#",
+          "######"
+        ],
+        "start": {
+          "x": 1,
+          "y": 1
+        },
+        "input": {
+          "board": [
+            "######",
+            "#....#",
+            "#....#",
+            "######"
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "goal": [
+            3,
+            1
+          ]
+        },
+        "allowedApi": [
+          "scan",
+          "move"
+        ],
+        "objectives": [
+          {
+            "type": "exit",
+            "x": 3,
+            "y": 1
+          }
+        ]
+      }
+    },
+    {
+      "title": {
+        "zh": "绕开中间的墙",
+        "en": "Go around the central wall"
+      },
+      "source": "from algorithms import shortest_step\nroute = scan()\nposition = route[\"start\"]\nwhile position != route[\"goal\"]:\n    direction = shortest_step(route[\"board\"], position, route[\"goal\"])\n    move(direction)\n    if direction == \"up\":\n        position[1] -= 1\n    elif direction == \"right\":\n        position[0] += 1\n    elif direction == \"down\":\n        position[1] += 1\n    else:\n        position[0] -= 1",
+      "scenario": {
+        "tiles": [
+          "######",
+          "#.#..#",
+          "#....#",
+          "######"
+        ],
+        "start": {
+          "x": 1,
+          "y": 1
+        },
+        "input": {
+          "board": [
+            "######",
+            "#.#..#",
+            "#....#",
+            "######"
+          ],
+          "start": [
+            1,
+            1
+          ],
+          "goal": [
+            3,
+            1
+          ]
+        },
+        "allowedApi": [
+          "scan",
+          "move"
+        ],
+        "objectives": [
+          {
+            "type": "exit",
+            "x": 3,
+            "y": 1
+          }
+        ]
+      }
+    }
+  ]
+}

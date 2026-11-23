@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "ai-review-two-differences",
+  "order": 1714,
+  "unit": {
+    "id": "ai-review",
+    "order": 170,
+    "title": {
+      "zh": "核对与修正",
+      "en": "Review and Revision"
+    }
+  },
+  "topic": {
+    "id": "review",
+    "order": 1,
+    "title": {
+      "zh": "核对清单",
+      "en": "Review the Manifest"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "核对两处独立差异",
+    "en": "Find Two Independent Differences"
+  },
+  "brief": {
+    "zh": "维修车需要两个轮子、一卷胶带和三条扎带，磁铁要留在架上。先请 AI 把扎带补到三条，再对照任务复查整份清单。",
+    "en": "The repair cart needs two wheels, one roll of tape, and three cable ties. Leave the magnet on the shelf. First ask for three cable ties, then review the whole manifest."
+  },
+  "concept": {
+    "zh": "初稿里已有的内容和 AI 新出现的改动都需要核对。",
+    "en": "Review both inherited draft entries and new changes made by the AI."
+  },
+  "hints": [
+    {
+      "zh": "检查 AI 清单里没出现的必需品，以及初稿里不该留下的物品。",
+      "en": "Look for a required item that is missing and an unwanted item still carried over from the draft."
+    }
+  ],
+  "inventory": [
+    {
+      "id": "wheel",
+      "label": {
+        "zh": "轮子",
+        "en": "Wheel"
+      },
+      "aliases": [
+        "wheels",
+        "车轮"
+      ]
+    },
+    {
+      "id": "tape",
+      "label": {
+        "zh": "胶带",
+        "en": "Tape"
+      },
+      "aliases": [
+        "胶纸",
+        "tape roll"
+      ]
+    },
+    {
+      "id": "tie",
+      "label": {
+        "zh": "扎带",
+        "en": "Cable tie"
+      },
+      "aliases": [
+        "cable ties",
+        "束线带"
+      ]
+    },
+    {
+      "id": "magnet",
+      "label": {
+        "zh": "磁铁",
+        "en": "Magnet"
+      },
+      "aliases": [
+        "magnets",
+        "磁石"
+      ]
+    }
+  ],
+  "required": {
+    "wheel": 2,
+    "tape": 1,
+    "tie": 3
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "tape",
+        "quantity": 0
+      }
+    ],
+    "cards": [
+      {
+        "zh": "扎带改为 3 条。",
+        "en": "Set cable ties to 3."
+      },
+      {
+        "zh": "胶带改为 1 卷。",
+        "en": "Set tape to 1."
+      },
+      {
+        "zh": "去掉磁铁。",
+        "en": "Remove the magnet."
+      },
+      {
+        "zh": "其他项目保持原样。",
+        "en": "Keep the other entries."
+      }
+    ],
+    "draft": {
+      "items": [
+        {
+          "id": "wheel",
+          "quantity": 2
+        },
+        {
+          "id": "tape",
+          "quantity": 1
+        },
+        {
+          "id": "tie",
+          "quantity": 1
+        },
+        {
+          "id": "magnet",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  "examplePrompts": {
+    "zh": [
+      "扎带改为 3 条。先保留初稿中的其他项目。",
+      "胶带改为 1 卷。去掉磁铁。其他项目保持原样。"
+    ],
+    "en": [
+      "Set cable ties to 3. Keep the other draft entries for now.",
+      "Set tape to 1. Remove the magnet. Keep the other entries."
+    ]
+  }
+}

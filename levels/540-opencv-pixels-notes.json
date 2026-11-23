@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "opencv-pixel-positions",
+  "order": 540,
+  "stage": "explain",
+  "unit": { "id": "opencv", "order": 140, "title": { "zh": "OpenCV", "en": "OpenCV" } },
+  "topic": { "id": "pixels", "order": 1, "title": { "zh": "像素与坐标", "en": "Pixels and coordinates" } },
+  "title": { "zh": "给图片里的小格编号", "en": "Number the Tiles of an Image" },
+  "brief": { "zh": "把图像想成一片马赛克，找出每一小块的位置。", "en": "Think of an image as a mosaic and find the address of each tile." },
+  "concept": { "zh": "图片是像素网格。x 表示列，y 表示行。", "en": "An image is a grid of pixels. x names the column and y names the row." },
+  "hints": [],
+  "sections": [
+    {
+      "title": { "zh": "每个小格是一个像素", "en": "Each tile is a pixel" },
+      "body": { "zh": "放大一张数字图片，就能看到排成网格的像素。宽度数一行有几格，高度数一列有几格。", "en": "Zoom in on a digital picture to see its grid of pixels. Width counts the tiles across and height counts the tiles down." }
+    },
+    {
+      "title": { "zh": "从左上角出发", "en": "Start in the top-left corner" },
+      "body": { "zh": "左上角是 (0, 0)。x 向右增加，y 向下增加。OpenCV 把图像读成数组，用 image[y, x] 取像素，先写行，再写列。", "en": "The top-left corner is (0, 0). x grows to the right and y grows down. OpenCV reads an image as an array. Use image[y, x] to pick a pixel, with row first and column second." }
+    }
+  ],
+  "animation": {
+    "layout": "grid",
+    "frames": [
+      {
+        "caption": { "zh": "这张小图有两列、两行。", "en": "This tiny image has two columns and two rows." },
+        "items": [
+          { "id": "upper-left", "swatch": "#f07466", "label": { "zh": "珊瑚色", "en": "Coral" } },
+          { "id": "upper-right", "swatch": "#29abb0", "label": { "zh": "青色", "en": "Teal" } },
+          { "id": "lower-left", "swatch": "#f7d52d", "label": { "zh": "黄色", "en": "Yellow" } },
+          { "id": "lower-right", "swatch": "#8f58d8", "label": { "zh": "紫色", "en": "Purple" } }
+        ]
+      },
+      {
+        "caption": { "zh": "坐标从左上角的 (0, 0) 开始。向右走一格，x 就变成 1。", "en": "Start at (0, 0) in the top left. Move one tile right and x becomes 1." },
+        "items": [
+          { "id": "upper-left", "swatch": "#f07466", "label": { "zh": "珊瑚色", "en": "Coral" }, "value": { "zh": "(0, 0)", "en": "(0, 0)" }, "state": "done" },
+          { "id": "upper-right", "swatch": "#29abb0", "label": { "zh": "青色", "en": "Teal" }, "value": { "zh": "(1, 0)", "en": "(1, 0)" }, "state": "active" },
+          { "id": "lower-left", "swatch": "#f7d52d", "label": { "zh": "黄色", "en": "Yellow" }, "state": "muted" },
+          { "id": "lower-right", "swatch": "#8f58d8", "label": { "zh": "紫色", "en": "Purple" }, "state": "muted" }
+        ]
+      },
+      {
+        "caption": { "zh": "从起点向下一格，y 变成 1。取黄色格时写 image[1, 0]。", "en": "Move down one from the start and y becomes 1. Read the yellow tile with image[1, 0]." },
+        "items": [
+          { "id": "upper-left", "swatch": "#f07466", "label": { "zh": "珊瑚色", "en": "Coral" }, "value": { "zh": "(0, 0)", "en": "(0, 0)" } },
+          { "id": "upper-right", "swatch": "#29abb0", "label": { "zh": "青色", "en": "Teal" }, "value": { "zh": "(1, 0)", "en": "(1, 0)" } },
+          { "id": "lower-left", "swatch": "#f7d52d", "label": { "zh": "黄色", "en": "Yellow" }, "value": { "zh": "(0, 1)", "en": "(0, 1)" }, "state": "active" },
+          { "id": "lower-right", "swatch": "#8f58d8", "label": { "zh": "紫色", "en": "Purple" }, "value": { "zh": "(1, 1)", "en": "(1, 1)" } }
+        ]
+      }
+    ]
+  },
+  "question": {
+    "prompt": { "zh": "哪行代码会读到右上角的青色像素？", "en": "Which code reads the teal pixel in the top-right corner?" },
+    "options": [
+      { "zh": "image[1, 0]", "en": "image[1, 0]" },
+      { "zh": "image[0, 1]", "en": "image[0, 1]" },
+      { "zh": "image[1, 1]", "en": "image[1, 1]" }
+    ],
+    "correct": 1,
+    "feedback": { "zh": "青色在第 0 行、第 1 列，写成 image[0, 1]。", "en": "Teal sits in row 0, column 1, so use image[0, 1]." }
+  }
+}

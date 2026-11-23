@@ -1,0 +1,378 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "python-intermediate",
+    "order": 20,
+    "title": {
+      "zh": "Python 进阶",
+      "en": "Intermediate Python"
+    }
+  },
+  "kind": "lecture",
+  "id": "for-loop-notes",
+  "order": 820,
+  "stage": "explain",
+  "topic": {
+    "id": "for-loops",
+    "order": 2,
+    "title": {
+      "zh": "for 循环",
+      "en": "For loops"
+    }
+  },
+  "title": {
+    "zh": "for 遍历",
+    "en": "Visit Every Item with for"
+  },
+  "concept": {
+    "zh": "逐块取数、重复计算、记录结果",
+    "en": "Visit each battery, repeat a calculation, and record the results"
+  },
+  "brief": {
+    "zh": "给一排电池各补 3 格。看看芽芽怎样一块一块地处理它们，又在什么时候停下来。",
+    "en": "Add 3 units to every battery in a row. Follow Sprout as each battery is handled, and see when the loop ends."
+  },
+  "hints": [],
+  "execution": {
+    "source": "batteries = read_batteries()\ncharged = []\nfor charge in batteries:\n    new_charge = charge + 3\n    charged.append(new_charge)\nsay(str(charged))",
+    "cases": [],
+    "forLoop": {
+      "increment": 3,
+      "cases": [
+        {
+          "label": {
+            "zh": "2、6、2 格",
+            "en": "2, 6, and 2 units"
+          },
+          "batteries": [
+            2,
+            6,
+            2
+          ],
+          "expected": [
+            5,
+            9,
+            5
+          ]
+        },
+        {
+          "label": {
+            "zh": "5、1、5、0 格",
+            "en": "5, 1, 5, and 0 units"
+          },
+          "batteries": [
+            5,
+            1,
+            5,
+            0
+          ],
+          "expected": [
+            8,
+            4,
+            8,
+            3
+          ],
+          "predictions": {
+            "rounds": [
+              3,
+              4,
+              5
+            ],
+            "results": [
+              [
+                8,
+                4,
+                3
+              ],
+              [
+                8,
+                4,
+                8,
+                3
+              ],
+              [
+                8,
+                8,
+                4,
+                3
+              ]
+            ]
+          }
+        },
+        {
+          "label": {
+            "zh": "4、0 格",
+            "en": "4 and 0 units"
+          },
+          "batteries": [
+            4,
+            0
+          ],
+          "expected": [
+            7,
+            3
+          ],
+          "predictions": {
+            "rounds": [
+              1,
+              2,
+              3
+            ],
+            "results": [
+              [
+                4,
+                0
+              ],
+              [
+                7,
+                3
+              ],
+              [
+                3,
+                7
+              ]
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "sections": [
+    {
+      "title": {
+        "zh": "每轮取一块电池",
+        "en": "Pick up one battery each turn"
+      },
+      "body": {
+        "zh": "for charge in batteries 从左到右取每块电池的读数，并把这轮的起始电量存进 charge。两块电池的读数一样时，它们也各占一轮。",
+        "en": "for charge in batteries takes the readings from left to right. It puts each starting charge into charge for one turn. Two batteries with the same reading still have two turns."
+      }
+    },
+    {
+      "title": {
+        "zh": "先算新电量，再追加一条结果",
+        "en": "Calculate the new charge, then append one result"
+      },
+      "body": {
+        "zh": "缩进里的两条指令每轮都运行。先把 charge 加 3，再用 append 把算好的电量放到结果列表的末尾。",
+        "en": "The two indented instructions run on every turn. Add 3 to charge, then use append to put the result at the end of the list."
+      }
+    },
+    {
+      "title": {
+        "zh": "用完列表，循环就结束",
+        "en": "The loop ends when it runs out of items"
+      },
+      "body": {
+        "zh": "最后一块处理完，for 找不到下一块，程序就去执行缩进外显示结果的那一行。",
+        "en": "After the last battery is handled, for finds no next item. The program moves on to the line outside the loop that shows the results."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "电池的起始电量依次是 2、6、2。每块补完 3 格，循环几次，结果是什么？",
+      "en": "The batteries start at 2, 6, and 2 units. Add 3 to each. How many turns run and what are the results?"
+    },
+    "options": [
+      {
+        "zh": "3 次，结果是 [5, 9, 5]。",
+        "en": "3 turns, with [5, 9, 5]."
+      },
+      {
+        "zh": "2 次，结果是 [5, 9]。",
+        "en": "2 turns, with [5, 9]."
+      },
+      {
+        "zh": "3 次，结果是 [5, 5, 9]。",
+        "en": "3 turns, with [5, 5, 9]."
+      }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "每块电池各用一轮。两块 2 格的电池都要处理，结果按取出电池的原顺序记录。",
+      "en": "Each battery gets a turn, including both batteries with 2 units. The results are recorded in the original order."
+    }
+  },
+  "animation": {
+    "layout": "row",
+    "frames": [
+      {
+        "caption": {
+          "zh": "三块电池从左到右排成一排。",
+          "en": "The three batteries line up from left to right."
+        },
+        "items": [
+          {
+            "id": "first",
+            "label": {
+              "zh": "第一块",
+              "en": "First battery"
+            },
+            "value": {
+              "zh": "2",
+              "en": "2"
+            },
+            "state": "active"
+          },
+          {
+            "id": "second",
+            "label": {
+              "zh": "第二块",
+              "en": "Second battery"
+            },
+            "value": {
+              "zh": "6",
+              "en": "6"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "third",
+            "label": {
+              "zh": "第三块",
+              "en": "Third battery"
+            },
+            "value": {
+              "zh": "2",
+              "en": "2"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "第一轮取出 2，加 3，再把 5 追加到结果。",
+          "en": "The first turn takes 2, adds 3, and appends 5."
+        },
+        "items": [
+          {
+            "id": "first",
+            "label": {
+              "zh": "第一块",
+              "en": "First battery"
+            },
+            "value": {
+              "zh": "2 → 5",
+              "en": "2 → 5"
+            },
+            "state": "done"
+          },
+          {
+            "id": "second",
+            "label": {
+              "zh": "第二块",
+              "en": "Second battery"
+            },
+            "value": {
+              "zh": "6",
+              "en": "6"
+            },
+            "state": "active"
+          },
+          {
+            "id": "third",
+            "label": {
+              "zh": "第三块",
+              "en": "Third battery"
+            },
+            "value": {
+              "zh": "2",
+              "en": "2"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "第二轮记录 9。第三块虽然也是 2 格，仍然要做一轮。",
+          "en": "The second turn records 9. The third battery has 2 units too and gets its own turn."
+        },
+        "items": [
+          {
+            "id": "first",
+            "label": {
+              "zh": "第一块",
+              "en": "First battery"
+            },
+            "value": {
+              "zh": "5",
+              "en": "5"
+            },
+            "state": "done"
+          },
+          {
+            "id": "second",
+            "label": {
+              "zh": "第二块",
+              "en": "Second battery"
+            },
+            "value": {
+              "zh": "6 → 9",
+              "en": "6 → 9"
+            },
+            "state": "done"
+          },
+          {
+            "id": "third",
+            "label": {
+              "zh": "第三块",
+              "en": "Third battery"
+            },
+            "value": {
+              "zh": "2",
+              "en": "2"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "记录最后一个 5 后没有下一块，循环结束。结果依次是 5、9、5。",
+          "en": "After recording the last 5, there is no next battery and the loop ends. The results are 5, 9, and 5 in order."
+        },
+        "items": [
+          {
+            "id": "first",
+            "label": {
+              "zh": "第一块",
+              "en": "First battery"
+            },
+            "value": {
+              "zh": "5",
+              "en": "5"
+            },
+            "state": "done"
+          },
+          {
+            "id": "second",
+            "label": {
+              "zh": "第二块",
+              "en": "Second battery"
+            },
+            "value": {
+              "zh": "9",
+              "en": "9"
+            },
+            "state": "done"
+          },
+          {
+            "id": "third",
+            "label": {
+              "zh": "第三块",
+              "en": "Third battery"
+            },
+            "value": {
+              "zh": "5",
+              "en": "5"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  }
+}

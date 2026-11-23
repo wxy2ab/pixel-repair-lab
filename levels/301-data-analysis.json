@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "data-analysis",
+  "order": 301,
+  "stage": "demo",
+  "unit": { "id": "statistics", "order": 120, "title": { "zh": "统计分析", "en": "Statistics" } },
+  "topic": { "id": "center-spread", "order": 1, "title": { "zh": "平均值、中位数与极差", "en": "Mean, median, and range" } },
+  "title": { "zh": "给温度做个小结", "en": "Summarize the Temperatures" },
+  "brief": { "zh": "给同一批读数换一种统计方式，看看它回答的是哪一个问题。", "en": "Apply different statistics to the same readings and see which question each one answers." },
+  "concept": { "zh": "样本数、平均值、中位数和极差概括的是读数的不同特点。", "en": "Count, mean, median, and range describe different things about the readings." },
+  "hints": [{ "zh": "比较全站的平均值和中位数，再单独查看仓库的极差。", "en": "Compare the station-wide mean and median, then check the range for storage alone." }],
+  "steps": [
+    {
+      "operation": "summary",
+      "input": "clean",
+      "label": { "zh": "选一种统计量", "en": "Choose a statistic" },
+      "prompt": { "zh": "改变统计量或区域，再运行一次。观察输入记录和结果怎样变化。", "en": "Change the statistic or area and run again. Watch how the input readings and result change." },
+      "initial": { "statistic": "mean", "zone": "all" }
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+.map-scenario-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  background: #172536;
+  color: #c0cfe0;
+}
+.map-scenario-picker > span { margin-inline-end: 4px; font-size: .83rem; }
+.map-scenario-picker button {
+  min-height: 36px;
+  padding: 3px 11px;
+  border: 1px solid #53657a;
+  border-radius: 6px;
+  background: #202f42;
+  color: #e4edf5;
+  font-size: .87rem;
+  font-weight: 650;
+}
+.map-scenario-picker button[aria-pressed="true"] {
+  border-color: #72cfb4;
+  background: #235345;
+  color: #e4fff4;
+  box-shadow: inset 0 -2px #72cfb4;
+}
+.map-scenario-picker button:hover { border-color: #b7e7d9; }

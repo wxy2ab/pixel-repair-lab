@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "architecture-final-report",
+  "order": 1530,
+  "unit": { "id": "architecture", "order": 90, "title": { "zh": "计算机结构", "en": "Computer Architecture" } },
+  "stage": "challenge",
+  "title": { "zh": "编写维修站电量报告", "en": "Program the Station’s Energy Report" },
+  "brief": { "zh": "地址 0、1 是两次充电量，地址 2 是耗电量。先把充电合计写到地址 3，再把扣除耗电后的余额写到地址 4 和 ACC。保留地址 0、1、2 和 5 的值。", "en": "Addresses 0 and 1 hold two charges, and address 2 holds the drain. Write the combined charge to address 3, then write the balance after the drain to address 4 and leave it in ACC. Preserve addresses 0, 1, 2, and 5." },
+  "concept": { "zh": "一份汇编程序处理多组输入，并保留两份中间与最终结果。", "en": "Use one assembly program for multiple inputs, saving both an intermediate and a final result." },
+  "hints": [
+    { "zh": "先 LOAD 第一个充电量，ADD 第二个，再 STORE 到地址 3。", "en": "LOAD the first charge, ADD the second, and STORE it at address 3." },
+    { "zh": "STORE 不会清空 ACC。直接 SUB 耗电量，再保存余额。", "en": "STORE keeps the value in ACC. SUB the drain from it and save the balance." },
+    { "zh": "单步检查看过的地址和寄存器，再检验同一程序的四组输入。", "en": "Step through the addresses and registers, then check all four inputs with the same program." }
+  ],
+  "allowedOps": ["LOAD", "ADD", "SUB", "STORE", "HALT"],
+  "starterCode": "HALT\n",
+  "solutionCode": "LOAD 0\nADD 1\nSTORE 3\nSUB 2\nSTORE 4\nHALT\n",
+  "cases": [
+    { "label": { "zh": "有余量", "en": "Spare charge" }, "memory": [21, 7, 9, 0, 0, 66], "goal": {
+      "accumulator": 19, "memory": [{ "address": 0, "value": 21 }, { "address": 1, "value": 7 }, { "address": 2, "value": 9 }, { "address": 3, "value": 28 }, { "address": 4, "value": 19 }, { "address": 5, "value": 66 }]
+    } },
+    { "label": { "zh": "刚好抵扣", "en": "Exactly spent" }, "memory": [5, 11, 16, 88, 77, 31], "accumulator": 12, "goal": {
+      "accumulator": 0, "memory": [{ "address": 0, "value": 5 }, { "address": 1, "value": 11 }, { "address": 2, "value": 16 }, { "address": 3, "value": 16 }, { "address": 4, "value": 0 }, { "address": 5, "value": 31 }]
+    } },
+    { "label": { "zh": "出现负数", "en": "Negative balance" }, "memory": [4, 2, 10, -9, -8, 72], "accumulator": -7, "goal": {
+      "accumulator": -4, "memory": [{ "address": 0, "value": 4 }, { "address": 1, "value": 2 }, { "address": 2, "value": 10 }, { "address": 3, "value": 6 }, { "address": 4, "value": -4 }, { "address": 5, "value": 72 }]
+    } },
+    { "label": { "zh": "保留已有记录", "en": "Preserve existing records" }, "memory": [19, 0, 4, 19, 91, 53], "accumulator": 31, "goal": {
+      "accumulator": 15, "memory": [{ "address": 0, "value": 19 }, { "address": 1, "value": 0 }, { "address": 2, "value": 4 }, { "address": 3, "value": 19 }, { "address": 4, "value": 15 }, { "address": 5, "value": 53 }]
+    } }
+  ]
+}

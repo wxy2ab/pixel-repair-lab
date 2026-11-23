@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "data-station-heat-report",
+  "order": 5391,
+  "stage": "challenge",
+  "unit": { "id": "database", "order": 130, "title": { "zh": "数据库", "en": "Databases" } },
+  "courseFinal": true,
+  "title": { "zh": "综合项目 · 维修站温度巡查报告", "en": "Final Project · Station Heat Inspection Report" },
+  "brief": { "zh": "用同一份传感器日志，决定最近三天哪些区域要优先巡查。一步步查看筛选、清洗、汇总和 SQL 查询产生的表。", "en": "Use one set of sensor logs to decide which areas to inspect first for the latest three days. See the table produced by each filtering, cleaning, summary, and SQL step." },
+  "concept": { "zh": "把每一步的真实输出交给下一步，从原始日志得到可以决定巡查次序的报告。", "en": "Feed each step’s actual output into the next to turn raw logs into an inspection priority report." },
+  "hints": [{ "zh": "最近三天从第 2 天开始。最后先巡查平均温度最高的区域，其次检查排名第二的区域。", "en": "The latest three days start on day 2. Inspect the area with the highest mean first, followed by the runner-up." }],
+  "steps": [
+    {
+      "operation": "mask",
+      "input": "raw",
+      "label": { "zh": "NumPy · 选最近三天", "en": "NumPy · Select the latest three days" },
+      "prompt": { "zh": "选择日期列，用掩码保留第 2 天及之后的所有原始记录。", "en": "Use a mask on the day column to keep every raw reading from day 2 onward." },
+      "initial": { "column": "reading", "comparison": "gte", "threshold": 20 },
+      "goal": {
+        "columns": ["id", "day", "zone", "reading"],
+        "rows": [
+          [4, 2, " Hangar ", 22],
+          [5, 2, "workshop", 28],
+          [6, 2, "storage", null],
+          [7, 3, "hangar", 26],
+          [8, 3, " Workshop ", " 32 "],
+          [9, 3, "storage", 16],
+          [9, 3, "storage", 16],
+          [10, 4, "hangar", 30],
+          [11, 4, "workshop", "bad"],
+          [12, 4, "storage", 24],
+          [13, 4, "workshop", 36]
+        ]
+      },
+      "solution": { "column": "day", "comparison": "gte", "threshold": 2 }
+    },
+    {
+      "operation": "clean",
+      "input": "previous",
+      "label": { "zh": "pandas · 整理记录", "en": "pandas · Clean the readings" },
+      "prompt": { "zh": "规范区域名称，把可用温度转为数字，去掉无效读数，按编号去重。", "en": "Normalize area names, convert usable temperatures to numbers, drop invalid readings, and deduplicate by ID." },
+      "initial": { "trim": false, "dropMissing": false, "deduplicate": false },
+      "goal": {
+        "columns": ["id", "day", "zone", "reading"],
+        "rows": [
+          [4, 2, "hangar", 22],
+          [5, 2, "workshop", 28],
+          [7, 3, "hangar", 26],
+          [8, 3, "workshop", 32],
+          [9, 3, "storage", 16],
+          [10, 4, "hangar", 30],
+          [12, 4, "storage", 24],
+          [13, 4, "workshop", 36]
+        ]
+      },
+      "solution": { "trim": true, "dropMissing": true, "deduplicate": true }
+    },
+    {
+      "operation": "group",
+      "input": "previous",
+      "label": { "zh": "统计 · 算每区平均值", "en": "Statistics · Calculate the area means" },
+      "prompt": { "zh": "用刚刚清洗出的温度，按区域计算第 2 至 4 天的平均温度。", "en": "Use the cleaned readings to find each area’s mean temperature over days 2 through 4." },
+      "initial": { "by": "day", "statistic": "count" },
+      "goal": { "columns": ["zone", "mean"], "rows": [["hangar", 26], ["storage", 20], ["workshop", 32]] },
+      "solution": { "by": "zone", "statistic": "mean" }
+    },
+    {
+      "operation": "report",
+      "input": "previous",
+      "label": { "zh": "SQL · 排出巡查次序", "en": "SQL · Rank the inspections" },
+      "prompt": { "zh": "从汇总表中选出平均温度至少 25°C 的区域，让温度最高的排在最前面。", "en": "Query the summary for areas with a mean of at least 25°C. Put the highest mean first." },
+      "initial": { "minimum": 0, "sort": "key" },
+      "goal": { "columns": ["zone", "mean"], "rows": [["workshop", 32], ["hangar", 26]] },
+      "solution": { "minimum": 25, "sort": "value-desc" }
+    }
+  ]
+}

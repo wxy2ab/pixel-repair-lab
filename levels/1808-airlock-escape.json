@@ -1,0 +1,459 @@
+{
+  "version": 1,
+  "kind": "arena",
+  "id": "challenge-airlock-escape",
+  "order": 1808,
+  "difficulty": "advanced",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "stage": "challenge",
+  "title": {
+    "zh": "三机围堵：气闸撤离",
+    "en": "Airlock Escape"
+  },
+  "concept": {
+    "zh": "两台追踪机器人 · 一台守卫 · 21 回合",
+    "en": "Two pursuers · One guard · 21 turns"
+  },
+  "brief": {
+    "zh": "在 21 回合内回收两块电池并抵达出口。霜线号和焰线号会沿当前通道追你，守门号在两个格子间往返。和任何对手同格或迎面交换位置都会被抓。第 4、8 回合结束后，通道开关，指定电池若还在场上就会换位。有机器人或电池占住的门当次保持打开。从容模式下，同一程序要通过三张地图。",
+    "en": "Recover both batteries and reach the exit within 21 turns. Frostline and Fireline chase you along open routes, while Sentry moves back and forth between two tiles. Sharing a tile or swapping places with any rival gets you caught. Passages switch after turns 4 and 8, and designated batteries move if still unclaimed. Gates occupied by robots or batteries stay open. In Relaxed mode, one program must pass all three maps."
+  },
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "rival-strategy"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "#########",
+    "#..#....#",
+    "#....##.#",
+    "#.#.....#",
+    "#....#..#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 6,
+    "y": 4
+  },
+  "opponents": [
+    {
+      "id": "frostline",
+      "title": {
+        "zh": "霜线号",
+        "en": "Frostline"
+      },
+      "start": {
+        "x": 1,
+        "y": 2
+      },
+      "policy": {
+        "kind": "pursue"
+      }
+    },
+    {
+      "id": "fireline",
+      "title": {
+        "zh": "焰线号",
+        "en": "Fireline"
+      },
+      "start": {
+        "x": 3,
+        "y": 4
+      },
+      "policy": {
+        "kind": "pursue"
+      }
+    },
+    {
+      "id": "sentry",
+      "title": {
+        "zh": "守门号",
+        "en": "Sentry"
+      },
+      "start": {
+        "x": 7,
+        "y": 1
+      },
+      "policy": {
+        "kind": "patrol",
+        "path": [
+          {
+            "x": 7,
+            "y": 1
+          },
+          {
+            "x": 6,
+            "y": 1
+          }
+        ]
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": "battery-a",
+      "x": 5,
+      "y": 5
+    },
+    {
+      "id": "battery-b",
+      "x": 2,
+      "y": 1
+    }
+  ],
+  "shifts": [
+    {
+      "turn": 4,
+      "open": [
+        {
+          "x": 2,
+          "y": 3
+        }
+      ],
+      "close": [
+        {
+          "x": 4,
+          "y": 1
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "battery-b",
+          "x": 2,
+          "y": 5
+        }
+      ]
+    },
+    {
+      "turn": 8,
+      "open": [
+        {
+          "x": 5,
+          "y": 4
+        }
+      ],
+      "close": [
+        {
+          "x": 4,
+          "y": 3
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "battery-b",
+          "x": 1,
+          "y": 2
+        }
+      ]
+    }
+  ],
+  "maxTurns": 21,
+  "objective": {
+    "kind": "escape",
+    "exit": {
+      "x": 1,
+      "y": 5
+    },
+    "itemIds": [
+      "battery-a",
+      "battery-b"
+    ]
+  },
+  "starterCode": "while True:\n    wait()\n",
+  "solutionCode": "def absolute(value):\n    if value < 0:\n        return -value\n    return value\n\ndef choose_route(tiles, width, start, blocked, offsets, goals):\n    steps = {start: 0}\n    first = {}\n    frontier = [start]\n    best = None\n    best_dist = width * len(tiles)\n    for cell in frontier:\n        distance = steps[cell]\n        if distance > best_dist:\n            break\n        if cell in goals and cell != start:\n            if distance < best_dist or goals[0] == cell:\n                best = cell\n                best_dist = distance\n        if distance >= best_dist:\n            continue\n        for direction in range(4):\n            neighbor = cell + offsets[direction]\n            if neighbor in steps or (cell == start and neighbor in blocked):\n                continue\n            if tiles[neighbor // width][neighbor % width] != \".\":\n                continue\n            steps[neighbor] = distance + 1\n            if cell == start:\n                first[neighbor] = direction\n            else:\n                first[neighbor] = first[cell]\n            frontier.append(neighbor)\n    if best is None:\n        return \"wait\"\n    return [\"up\", \"right\", \"down\", \"left\"][first[best]]\n\ndef restricted_cells(tiles, width, player, opponents, offsets):\n    guard = opponents[2]\n    patrol = guard[\"y\"] * width + guard[\"x\"]\n    danger = {patrol: True}\n    for offset in offsets:\n        danger[patrol + offset] = True\n    for i in range(2):\n        robot = opponents[i]\n        position = robot[\"y\"] * width + robot[\"x\"]\n        dx = player[0] - robot[\"x\"]\n        dy = player[1] - robot[\"y\"]\n        if absolute(dx) + absolute(dy) > 2:\n            continue\n        for offset in offsets:\n            next_cell = position + offset\n            y = next_cell // width\n            x = next_cell % width\n            if absolute(player[0] - x) + absolute(player[1] - y) != absolute(dx) + absolute(dy) - 1:\n                continue\n            if tiles[y][x] == \".\":\n                danger[next_cell] = True\n                if x == player[0] and y == player[1]:\n                    danger[position] = True\n                break\n    return danger\n\ndef decide(state):\n    tiles = state[\"tiles\"]\n    width = len(tiles[0])\n    player = state[\"player\"]\n    start = player[1] * width + player[0]\n    offsets = [-width, 1, width, -1]\n    danger = restricted_cells(tiles, width, player, state[\"opponents\"], offsets)\n    goals = []\n    for battery in state[\"items\"]:\n        goals.append(battery[\"y\"] * width + battery[\"x\"])\n    if start in goals and start not in danger:\n        return \"pick\"\n    if len(goals) == 0:\n        exit = state[\"exit\"]\n        goals.append(exit[1] * width + exit[0])\n    return choose_route(tiles, width, start, danger, offsets, goals)\n\nwhile True:\n    action = decide(scan())\n    if action == \"pick\":\n        pick()\n    elif action == \"wait\":\n        wait()\n    else:\n        move(action)\n",
+  "snippets": [],
+  "variants": [
+    {
+      "tiles": [
+        "#########",
+        "##......#",
+        "#...#..##",
+        "##......#",
+        "#..#.#..#",
+        "##.#....#",
+        "#########"
+      ],
+      "start": {
+        "x": 6,
+        "y": 4
+      },
+      "opponents": [
+        {
+          "id": "frostline",
+          "title": {
+            "zh": "霜线号",
+            "en": "Frostline"
+          },
+          "start": {
+            "x": 2,
+            "y": 5
+          },
+          "policy": {
+            "kind": "pursue"
+          }
+        },
+        {
+          "id": "fireline",
+          "title": {
+            "zh": "焰线号",
+            "en": "Fireline"
+          },
+          "start": {
+            "x": 1,
+            "y": 2
+          },
+          "policy": {
+            "kind": "pursue"
+          }
+        },
+        {
+          "id": "sentry",
+          "title": {
+            "zh": "守门号",
+            "en": "Sentry"
+          },
+          "start": {
+            "x": 1,
+            "y": 4
+          },
+          "policy": {
+            "kind": "patrol",
+            "path": [
+              {
+                "x": 1,
+                "y": 4
+              },
+              {
+                "x": 2,
+                "y": 4
+              }
+            ]
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": "battery-a",
+          "x": 5,
+          "y": 5
+        },
+        {
+          "id": "battery-b",
+          "x": 7,
+          "y": 1
+        }
+      ],
+      "shifts": [
+        {
+          "turn": 4,
+          "open": [
+            {
+              "x": 5,
+              "y": 4
+            }
+          ],
+          "close": [
+            {
+              "x": 3,
+              "y": 1
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "battery-b",
+              "x": 5,
+              "y": 2
+            }
+          ]
+        },
+        {
+          "turn": 8,
+          "open": [
+            {
+              "x": 4,
+              "y": 2
+            }
+          ],
+          "close": [
+            {
+              "x": 5,
+              "y": 3
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "battery-b",
+              "x": 3,
+              "y": 3
+            }
+          ]
+        }
+      ],
+      "maxTurns": 21,
+      "objective": {
+        "kind": "escape",
+        "exit": {
+          "x": 4,
+          "y": 1
+        },
+        "itemIds": [
+          "battery-a",
+          "battery-b"
+        ]
+      }
+    },
+    {
+      "tiles": [
+        "#########",
+        "#.......#",
+        "#.##....#",
+        "#....#..#",
+        "#.....#.#",
+        "#..#..#.#",
+        "#########"
+      ],
+      "start": {
+        "x": 4,
+        "y": 3
+      },
+      "opponents": [
+        {
+          "id": "frostline",
+          "title": {
+            "zh": "霜线号",
+            "en": "Frostline"
+          },
+          "start": {
+            "x": 7,
+            "y": 1
+          },
+          "policy": {
+            "kind": "pursue"
+          }
+        },
+        {
+          "id": "fireline",
+          "title": {
+            "zh": "焰线号",
+            "en": "Fireline"
+          },
+          "start": {
+            "x": 1,
+            "y": 1
+          },
+          "policy": {
+            "kind": "pursue"
+          }
+        },
+        {
+          "id": "sentry",
+          "title": {
+            "zh": "守门号",
+            "en": "Sentry"
+          },
+          "start": {
+            "x": 4,
+            "y": 1
+          },
+          "policy": {
+            "kind": "patrol",
+            "path": [
+              {
+                "x": 4,
+                "y": 1
+              },
+              {
+                "x": 4,
+                "y": 2
+              }
+            ]
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": "battery-a",
+          "x": 5,
+          "y": 5
+        },
+        {
+          "id": "battery-b",
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "shifts": [
+        {
+          "turn": 4,
+          "open": [
+            {
+              "x": 6,
+              "y": 5
+            }
+          ],
+          "close": [
+            {
+              "x": 7,
+              "y": 2
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "battery-b",
+              "x": 1,
+              "y": 4
+            }
+          ]
+        },
+        {
+          "turn": 8,
+          "open": [
+            {
+              "x": 3,
+              "y": 2
+            }
+          ],
+          "close": [
+            {
+              "x": 1,
+              "y": 5
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "battery-b",
+              "x": 3,
+              "y": 4
+            }
+          ]
+        }
+      ],
+      "maxTurns": 21,
+      "objective": {
+        "kind": "escape",
+        "exit": {
+          "x": 7,
+          "y": 5
+        },
+        "itemIds": [
+          "battery-a",
+          "battery-b"
+        ]
+      }
+    }
+  ]
+}

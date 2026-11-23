@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "debug-first-peak",
+  "order": 943,
+  "unit": { "id": "python-advanced", "order": 30, "title": { "zh": "Python 高级", "en": "Advanced Python" } },
+  "topic": { "id": "debugging", "order": 4, "title": { "zh": "调试", "en": "Debugging" } },
+  "stage": "exercise",
+  "title": { "zh": "修好找峰值的位置", "en": "Fix the Peak Finder" },
+  "brief": { "zh": "find_peak_index(readings) 要返回最高读数第一次出现的下标，编号从 0 开始。空列表返回 -1。看看最后一项和同分的情况。", "en": "find_peak_index(readings) should return the zero-based index of the first maximum, or -1 for an empty list. Check the last item and cases with ties." },
+  "concept": { "zh": "用不同用例分别定位漏读末项和同分选择错误", "en": "Use separate cases to find a skipped last item and incorrect tie handling" },
+  "hints": [
+    { "zh": "range 的结束值不会走到。用 len(readings) 作结束值才能读到最后一项。", "en": "range excludes its stop value. Stopping at len(readings) lets the loop see the last item." },
+    { "zh": "只有遇到严格更大的读数才更新位置。相等时保留先出现的下标。", "en": "Replace the saved index only when a value is strictly greater. On a tie, keep the earlier index." }
+  ],
+  "functionName": "find_peak_index",
+  "starterCode": "def find_peak_index(readings):\n    if len(readings) == 0:\n        return -1\n    best = 0\n    for index in range(1, len(readings) - 1):\n        if readings[index] >= readings[best]:\n            best = index\n    return best\n",
+  "solutionCode": "def find_peak_index(readings):\n    if len(readings) == 0:\n        return -1\n    best = 0\n    for index in range(1, len(readings)):\n        if readings[index] > readings[best]:\n            best = index\n    return best\n",
+  "snippets": [
+    { "label": { "zh": "遍历到最后一项", "en": "Include the last item" }, "code": "    for index in range(1, len(readings)):" },
+    { "label": { "zh": "只在严格更大时更新", "en": "Update only for a strictly higher value" }, "code": "        if readings[index] > readings[best]:" }
+  ],
+  "cases": [
+    { "args": [[3, 6, 9]], "expected": 2 },
+    { "args": [[7, 7, 1]], "expected": 0 },
+    { "args": [[-8, -2, -4]], "expected": 1 },
+    { "args": [[5]], "expected": 0 },
+    { "args": [[]], "expected": -1 },
+    { "args": [[0, 2, 1, 2]], "expected": 1 }
+  ]
+}

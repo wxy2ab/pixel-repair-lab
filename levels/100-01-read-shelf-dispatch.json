@@ -1,0 +1,197 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "read-shelf-dispatch",
+  "order": 1000,
+  "unit": {
+    "id": "structures",
+    "order": 40,
+    "title": {
+      "zh": "数据结构",
+      "en": "Data Structures"
+    }
+  },
+  "topic": {
+    "id": "lists",
+    "order": 1,
+    "title": {
+      "zh": "列表",
+      "en": "Lists"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "按编号拣出零件",
+    "en": "Pick Parts by Their Numbers"
+  },
+  "concept": {
+    "zh": "用另一份列表提供索引",
+    "en": "Use a second list to supply indexes"
+  },
+  "brief": {
+    "zh": "扫描结果第一项是货架清单，第二项是一组要取的索引。按索引清单的顺序提交货架上的零件。",
+    "en": "The first scanned list is the shelf, and the second contains requested indexes. Submit the shelf parts in the order of those indexes."
+  },
+  "hints": [
+    {
+      "zh": "货架清单和取件索引要分别保存。从取件索引列表中逐个读取位置。",
+      "en": "Store the shelf and its requested indexes separately. Read the positions one at a time from the requests."
+    },
+    {
+      "zh": "同一个索引可能会再次出现。每次出现都按它的位置查一次。",
+      "en": "The same index may appear again. Look it up each time it appears."
+    }
+  ],
+  "tiles": [
+    "#######",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#######"
+  ],
+  "start": {
+    "x": 2,
+    "y": 2
+  },
+  "allowedApi": [
+    "scan",
+    "submit"
+  ],
+  "objectives": [
+    {
+      "type": "submit",
+      "values": [
+        "washer",
+        "bolt",
+        "washer"
+      ],
+      "origin": "list-index",
+      "sameContainer": true
+    }
+  ],
+  "input": [
+    [
+      "gear",
+      "bolt",
+      "spring",
+      "washer"
+    ],
+    [
+      3,
+      1,
+      3
+    ]
+  ],
+  "cards": [
+    {
+      "id": "read",
+      "label": {
+        "zh": "扫描货架和取件位置",
+        "en": "Scan the shelf and requested positions"
+      },
+      "template": "manifest = scan()"
+    },
+    {
+      "id": "shelf",
+      "label": {
+        "zh": "取出货架清单",
+        "en": "Read the shelf list"
+      },
+      "template": "shelf = manifest[0]"
+    },
+    {
+      "id": "indexes",
+      "label": {
+        "zh": "取出取件索引",
+        "en": "Read the requested indexes"
+      },
+      "template": "requests = manifest[1]"
+    },
+    {
+      "id": "each",
+      "label": {
+        "zh": "逐个读取取件索引",
+        "en": "For each requested index"
+      },
+      "template": "for index in requests:",
+      "block": true
+    },
+    {
+      "id": "lookup",
+      "label": {
+        "zh": "从货架对应位置取零件",
+        "en": "Read the part at that shelf position"
+      },
+      "template": "submit(shelf[index])"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "shelf"
+    },
+    {
+      "cardId": "indexes"
+    },
+    {
+      "cardId": "each",
+      "children": [
+        {
+          "cardId": "lookup"
+        }
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "input": [
+        [
+          "wire",
+          "spring",
+          "bolt"
+        ],
+        [
+          2,
+          0,
+          1,
+          2
+        ]
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            "bolt",
+            "wire",
+            "spring",
+            "bolt"
+          ],
+          "origin": "list-index",
+          "sameContainer": true
+        }
+      ]
+    },
+    {
+      "input": [
+        [
+          "bearing"
+        ],
+        [
+          0
+        ]
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            "bearing"
+          ],
+          "origin": "list-index",
+          "sameContainer": true
+        }
+      ]
+    }
+  ]
+}

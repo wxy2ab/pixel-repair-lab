@@ -1,0 +1,443 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-four-latch-cascade",
+  "order": 1829,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "python-advanced",
+      "topic": "nested-loops"
+    },
+    {
+      "unit": "foundations",
+      "topic": "booleans"
+    },
+    {
+      "unit": "python-intermediate",
+      "topic": "branches"
+    }
+  ],
+  "title": {
+    "zh": "四闸接力锁",
+    "en": "Four-Latch Cascade"
+  },
+  "concept": {
+    "zh": "二进制翻转 · 状态跨闸保留 · 连过四闸",
+    "en": "Binary toggles · Carry state forward · Four latches"
+  },
+  "brief": {
+    "zh": "四道闸共用一个开关。扫描里的 initial 是初始状态，blocks 按闸门顺序列出收到的 0、1 信号。信号 1 翻转开关，信号 0 保持原状。每道闸处理完本组信号后，状态 0 开上路，状态 1 开下路。通过该闸后保留开关状态，再处理下一组。每道闸内取一块电池，最后到出口。三张地图均限 28 回合，每次移动和拾取各花 1 回合。",
+    "en": "Four latches share one switch. Read its initial state and the blocks of signals, one block for each latch. A 1 flips the switch and a 0 leaves it unchanged. After the current block, state 0 opens the upper route and state 1 opens the lower route. Carry the switch state to the next latch. Collect one battery at each latch and reach the exit. All three maps allow 28 turns, with each move and pickup costing one turn."
+  },
+  "hints": [],
+  "start": {
+    "x": 1,
+    "y": 2
+  },
+  "turnLimit": 28,
+  "allowedApi": [
+    "scan",
+    "move",
+    "pick"
+  ],
+  "input": {
+    "initial": 0,
+    "blocks": [
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        1,
+        0
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        0
+      ]
+    ]
+  },
+  "tiles": [
+    "###################",
+    "#########...#...###",
+    "#.#...#...#...#...#",
+    "#...#...###########",
+    "###################"
+  ],
+  "items": [
+    {
+      "id": "gate-cell-1",
+      "x": 2,
+      "y": 3
+    },
+    {
+      "id": "gate-cell-2",
+      "x": 6,
+      "y": 3
+    },
+    {
+      "id": "gate-cell-3",
+      "x": 10,
+      "y": 1
+    },
+    {
+      "id": "gate-cell-4",
+      "x": 14,
+      "y": 1
+    }
+  ],
+  "objectives": [
+    {
+      "type": "collect",
+      "itemIds": [
+        "gate-cell-1",
+        "gate-cell-2",
+        "gate-cell-3",
+        "gate-cell-4"
+      ]
+    },
+    {
+      "type": "exit",
+      "x": 17,
+      "y": 2
+    }
+  ],
+  "variants": [
+    {
+      "input": {
+        "initial": 1,
+        "blocks": [
+          [
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1,
+            0,
+            1
+          ]
+        ]
+      },
+      "tiles": [
+        "###################",
+        "#####...#...#...###",
+        "#.#...#...#...#...#",
+        "#...###############",
+        "###################"
+      ],
+      "items": [
+        {
+          "id": "gate-cell-1",
+          "x": 2,
+          "y": 3
+        },
+        {
+          "id": "gate-cell-2",
+          "x": 6,
+          "y": 1
+        },
+        {
+          "id": "gate-cell-3",
+          "x": 10,
+          "y": 1
+        },
+        {
+          "id": "gate-cell-4",
+          "x": 14,
+          "y": 1
+        }
+      ],
+      "objectives": [
+        {
+          "type": "collect",
+          "itemIds": [
+            "gate-cell-1",
+            "gate-cell-2",
+            "gate-cell-3",
+            "gate-cell-4"
+          ]
+        },
+        {
+          "type": "exit",
+          "x": 17,
+          "y": 2
+        }
+      ]
+    },
+    {
+      "input": {
+        "initial": 1,
+        "blocks": [
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1
+          ]
+        ]
+      },
+      "tiles": [
+        "###################",
+        "#...#####...#######",
+        "#.#...#...#...#...#",
+        "#####...#####...###",
+        "###################"
+      ],
+      "items": [
+        {
+          "id": "gate-cell-1",
+          "x": 2,
+          "y": 1
+        },
+        {
+          "id": "gate-cell-2",
+          "x": 6,
+          "y": 3
+        },
+        {
+          "id": "gate-cell-3",
+          "x": 10,
+          "y": 1
+        },
+        {
+          "id": "gate-cell-4",
+          "x": 14,
+          "y": 3
+        }
+      ],
+      "objectives": [
+        {
+          "type": "collect",
+          "itemIds": [
+            "gate-cell-1",
+            "gate-cell-2",
+            "gate-cell-3",
+            "gate-cell-4"
+          ]
+        },
+        {
+          "type": "exit",
+          "x": 17,
+          "y": 2
+        }
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "read",
+      "label": {
+        "zh": "读取锁站信号",
+        "en": "Read latch signals"
+      },
+      "template": "panel = scan()"
+    },
+    {
+      "id": "initial",
+      "label": {
+        "zh": "设定开关初始状态",
+        "en": "Set the initial switch state"
+      },
+      "template": "phase = panel[\"initial\"]"
+    },
+    {
+      "id": "latches",
+      "label": {
+        "zh": "逐道处理闸门",
+        "en": "Process one latch at a time"
+      },
+      "template": "for signals in panel[\"blocks\"]:",
+      "block": true
+    },
+    {
+      "id": "signals",
+      "label": {
+        "zh": "逐个读取本闸信号",
+        "en": "Read each signal for this latch"
+      },
+      "template": "for signal in signals:",
+      "block": true
+    },
+    {
+      "id": "if-bit",
+      "label": {
+        "zh": "如果收到 1",
+        "en": "If the signal is 1"
+      },
+      "template": "if signal == 1:",
+      "block": true
+    },
+    {
+      "id": "toggle",
+      "label": {
+        "zh": "翻转开关",
+        "en": "Flip the switch"
+      },
+      "template": "phase = 1 - phase"
+    },
+    {
+      "id": "if-upper",
+      "label": {
+        "zh": "如果状态是 0",
+        "en": "If the switch is 0"
+      },
+      "template": "if phase == 0:",
+      "block": true
+    },
+    {
+      "id": "otherwise",
+      "label": {
+        "zh": "否则",
+        "en": "Otherwise"
+      },
+      "template": "else:",
+      "block": true
+    },
+    {
+      "id": "route-up",
+      "label": {
+        "zh": "记录上路及返回方向",
+        "en": "Choose the upper route and return direction"
+      },
+      "template": "route = [\"up\", \"down\"]"
+    },
+    {
+      "id": "route-down",
+      "label": {
+        "zh": "记录下路及返回方向",
+        "en": "Choose the lower route and return direction"
+      },
+      "template": "route = [\"down\", \"up\"]"
+    },
+    {
+      "id": "enter",
+      "label": {
+        "zh": "走进当前开通的路",
+        "en": "Enter the currently open route"
+      },
+      "template": "move(route[0])"
+    },
+    {
+      "id": "leave",
+      "label": {
+        "zh": "返回中间通道",
+        "en": "Return to the middle lane"
+      },
+      "template": "move(route[1])"
+    },
+    {
+      "id": "right",
+      "label": {
+        "zh": "向右",
+        "en": "Right"
+      },
+      "template": "move(\"right\")"
+    },
+    {
+      "id": "pick",
+      "label": {
+        "zh": "拾取零件",
+        "en": "Pick up the part"
+      },
+      "template": "pick()"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "initial"
+    },
+    {
+      "cardId": "latches",
+      "children": [
+        {
+          "cardId": "signals",
+          "children": [
+            {
+              "cardId": "if-bit",
+              "children": [
+                {
+                  "cardId": "toggle"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cardId": "if-upper",
+          "children": [
+            {
+              "cardId": "route-up"
+            }
+          ]
+        },
+        {
+          "cardId": "otherwise",
+          "children": [
+            {
+              "cardId": "route-down"
+            }
+          ]
+        },
+        {
+          "cardId": "enter"
+        },
+        {
+          "cardId": "right"
+        },
+        {
+          "cardId": "pick"
+        },
+        {
+          "cardId": "right"
+        },
+        {
+          "cardId": "leave"
+        },
+        {
+          "cardId": "right"
+        },
+        {
+          "cardId": "right"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,263 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "python-advanced-repair-report",
+  "order": 950,
+  "unit": {
+    "id": "python-advanced",
+    "order": 30,
+    "title": {
+      "zh": "Python 高级",
+      "en": "Advanced Python"
+    }
+  },
+  "stage": "challenge",
+  "title": {
+    "zh": "给整架电池补电",
+    "en": "Charge the Whole Battery Rack"
+  },
+  "brief": {
+    "zh": "导入保存过的补电函数，让两层循环给整架电池补电。先用小例子找错，修好后再预测新一组的结果。",
+    "en": "Import your saved charging function and use two loops to charge a whole rack. Start with a small test, then fix the code and predict the result for a new rack."
+  },
+  "concept": {
+    "zh": "复用补电函数，逐排逐块补电",
+    "en": "Reuse a charging function across rows of batteries"
+  },
+  "hints": [
+    {
+      "zh": "在「写出电量相加函数」练习里跑通并保存 charge_total。回来选「用我的函数」就能导入。",
+      "en": "In Write the Charge Total Function, pass the tests and save charge_total. Then choose Use my function to import it here."
+    },
+    {
+      "zh": "外层的 for row in rows 每次选一排。内层每次取一块，调用 charge_total(charge, added)，把结果放进当前排。",
+      "en": "The outer loop picks one row. The inner loop takes one battery at a time, calls charge_total(charge, added), and stores the new charge in the current row."
+    },
+    {
+      "zh": "一排补完就把这一排加入 results。整个电池架处理完，再用 return 交回结果。",
+      "en": "Save each row in results once that row is charged. Return the results after the whole rack is finished."
+    }
+  ],
+  "functionName": "charge_rows",
+  "helpers": [
+    "charge_total"
+  ],
+  "starterCode": "from algorithms import charge_total\n\ndef charge_rows(rows, added):\n    results = []\n    for row in rows:\n        charged_row = []\n        for charge in row:\n            charged_row.append(charge_total(charge, added))\n        results.append(charged_row)\n        return results\n",
+  "solutionCode": "from algorithms import charge_total\n\ndef charge_rows(rows, added):\n    results = []\n    for row in rows:\n        charged_row = []\n        for charge in row:\n            charged_row.append(charge_total(charge, added))\n        results.append(charged_row)\n    return results\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "每块电池调用补电函数",
+        "en": "Call the charging function for each battery"
+      },
+      "code": "            charged_row.append(charge_total(charge, added))"
+    },
+    {
+      "label": {
+        "zh": "整架补完后返回结果",
+        "en": "Return the results after finishing the rack"
+      },
+      "code": "    return results"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          [
+            1,
+            4
+          ],
+          [
+            2
+          ]
+        ],
+        3
+      ],
+      "expected": [
+        [
+          4,
+          7
+        ],
+        [
+          5
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            0
+          ],
+          [
+            4,
+            1
+          ],
+          [],
+          [
+            2,
+            5,
+            3
+          ]
+        ],
+        3
+      ],
+      "expected": [
+        [
+          3
+        ],
+        [
+          7,
+          4
+        ],
+        [],
+        [
+          5,
+          8,
+          6
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            5,
+            2
+          ],
+          [
+            1
+          ],
+          []
+        ],
+        0
+      ],
+      "expected": [
+        [
+          5,
+          2
+        ],
+        [
+          1
+        ],
+        []
+      ]
+    },
+    {
+      "args": [
+        [],
+        4
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          [],
+          [],
+          [
+            0,
+            0
+          ],
+          [
+            3
+          ]
+        ],
+        2
+      ],
+      "expected": [
+        [],
+        [],
+        [
+          2,
+          2
+        ],
+        [
+          5
+        ]
+      ]
+    }
+  ],
+  "chargingChallenge": {
+    "trialCase": 0,
+    "predictions": [
+      {
+        "caseIndex": 1,
+        "options": [
+          [
+            [
+              3
+            ]
+          ],
+          [
+            [
+              3
+            ],
+            [
+              7,
+              4
+            ],
+            [],
+            [
+              5,
+              8,
+              6
+            ]
+          ],
+          [
+            [
+              3
+            ],
+            [
+              7,
+              4
+            ],
+            [
+              3
+            ],
+            [
+              5,
+              8,
+              6
+            ]
+          ]
+        ]
+      },
+      {
+        "caseIndex": 2,
+        "options": [
+          [
+            [
+              8,
+              5
+            ],
+            [
+              4
+            ],
+            []
+          ],
+          [
+            [
+              5,
+              2
+            ],
+            [
+              1
+            ],
+            []
+          ],
+          [
+            [
+              5,
+              2
+            ],
+            [
+              1
+            ]
+          ]
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-patrol-gate-timing",
+  "order": 1816,
+  "difficulty": "intermediate",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": { "zh": "挑战场", "en": "Challenge Arena" }
+  },
+  "stage": "challenge",
+  "prerequisites": [
+    { "unit": "foundations", "topic": "sequence" },
+    { "unit": "python-intermediate", "topic": "branches" }
+  ],
+  "title": { "zh": "错峰穿过巡逻闸", "en": "Through the Patrol Gates" },
+  "concept": { "zh": "两道巡逻闸 · 两种巡逻节奏 · 10 回合", "en": "Two patrol gates · Two patrol schedules · Ten turns" },
+  "brief": {
+    "zh": "在 10 回合内取走 (7,2) 的电池并抵达出口。两块备用电池可取可留。移动和拾取各花 1 回合，扫描免费。踏进巡逻机器人占据的格子，或在行动后与它同格，都会失败。巡逻从第 0 回合开始，每 6 回合重复。西闸 (3,2) 在第 1、5 回合被占，东闸 (6,2) 在第 1、4 回合被占。同一份程序还要通过西闸改在第 3、5 回合被占的场景。",
+    "en": "Pick up the battery at (7,2) and reach the exit within ten turns. The other two batteries are optional. A move or pickup costs one turn and scanning is free. Entering a tile occupied by a patrol or sharing its tile after your action ends the run. Patrols start at turn zero and repeat every six turns. The west gate at (3,2) is occupied on turns 1 and 5. The east gate at (6,2) is occupied on turns 1 and 4. The same program must also handle a west gate occupied on turns 3 and 5 instead."
+  },
+  "hints": [],
+  "tiles": [
+    "##########",
+    "###.##.###",
+    "#........#",
+    "###.##.###",
+    "##########"
+  ],
+  "start": { "x": 1, "y": 2 },
+  "turnLimit": 10,
+  "enemies": [
+    {
+      "path": [
+        { "x": 3, "y": 1 }, { "x": 3, "y": 2 }, { "x": 3, "y": 3 },
+        { "x": 3, "y": 3 }, { "x": 3, "y": 3 }, { "x": 3, "y": 2 }
+      ]
+    },
+    {
+      "path": [
+        { "x": 6, "y": 3 }, { "x": 6, "y": 2 }, { "x": 6, "y": 1 },
+        { "x": 6, "y": 1 }, { "x": 6, "y": 2 }, { "x": 6, "y": 3 }
+      ]
+    }
+  ],
+  "items": [
+    { "id": "spare-west", "x": 2, "y": 2 },
+    { "id": "spare-east", "x": 5, "y": 2 },
+    { "id": "delivery-battery", "x": 7, "y": 2 }
+  ],
+  "allowedApi": ["move", "scan", "pick"],
+  "objectives": [
+    { "type": "collect", "itemIds": ["delivery-battery"] },
+    { "type": "exit", "x": 8, "y": 2 }
+  ],
+  "variants": [
+    {
+      "enemies": [
+        {
+          "path": [
+            { "x": 3, "y": 3 }, { "x": 3, "y": 3 }, { "x": 3, "y": 3 },
+            { "x": 3, "y": 2 }, { "x": 3, "y": 1 }, { "x": 3, "y": 2 }
+          ]
+        },
+        {
+          "path": [
+            { "x": 6, "y": 3 }, { "x": 6, "y": 2 }, { "x": 6, "y": 1 },
+            { "x": 6, "y": 1 }, { "x": 6, "y": 2 }, { "x": 6, "y": 3 }
+          ]
+        }
+      ]
+    }
+  ],
+  "cards": [
+    { "id": "right", "label": { "zh": "向右", "en": "Right" }, "template": "move(\"right\")" },
+    { "id": "left", "label": { "zh": "向左", "en": "Left" }, "template": "move(\"left\")" },
+    { "id": "up", "label": { "zh": "向上", "en": "Up" }, "template": "move(\"up\")" },
+    { "id": "down", "label": { "zh": "向下", "en": "Down" }, "template": "move(\"down\")" },
+    { "id": "pick", "label": { "zh": "拾取电池", "en": "Pick up a battery" }, "template": "pick()" },
+    {
+      "id": "if-patrol",
+      "label": { "zh": "如果扫描发现巡逻机器人", "en": "If a scan spots a patrol" },
+      "template": "if scan()[{{side}}] == \"enemy\":",
+      "block": true,
+      "parameters": [
+        {
+          "name": "side",
+          "label": { "zh": "要检查哪一侧", "en": "Side to check" },
+          "choices": [
+            { "id": "right", "label": { "zh": "右侧", "en": "Right" }, "code": "\"right\"" },
+            { "id": "left", "label": { "zh": "左侧", "en": "Left" }, "code": "\"left\"" }
+          ]
+        }
+      ]
+    }
+  ],
+  "solutionCards": [
+    { "cardId": "right" },
+    { "cardId": "if-patrol", "values": { "side": "right" }, "children": [{ "cardId": "pick" }] },
+    { "cardId": "right" }, { "cardId": "right" }, { "cardId": "right" },
+    { "cardId": "if-patrol", "values": { "side": "right" }, "children": [{ "cardId": "pick" }] },
+    { "cardId": "right" }, { "cardId": "right" },
+    { "cardId": "pick" },
+    { "cardId": "right" }
+  ]
+}

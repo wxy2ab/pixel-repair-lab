@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "inventory-counts",
+  "order": 1009,
+  "unit": {
+    "id": "structures",
+    "order": 40,
+    "title": {
+      "zh": "数据结构",
+      "en": "Data Structures"
+    }
+  },
+  "topic": {
+    "id": "dictionaries",
+    "order": 4,
+    "title": {
+      "zh": "字典",
+      "en": "Dictionaries"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "写一个零件点数函数",
+    "en": "Write a Part Counting Function"
+  },
+  "concept": {
+    "zh": "读写字典并累计同类物品",
+    "en": "Read, update, and tally by key"
+  },
+  "brief": {
+    "zh": "写好 inventory_counts(values)。接收一列零件名称，返回每个名称和数量配对的字典。",
+    "en": "Complete inventory_counts(values). Take a list of part names and return a dictionary pairing each name with its count."
+  },
+  "hints": [
+    {
+      "zh": "起始代码已经为每个零件进入一次循环。已有名称就更新数量，新名称就记 1。",
+      "en": "The starter already loops once for each part. Update the count for a known name or store 1 for a new name."
+    },
+    {
+      "zh": "把光标点到代码末尾，添加判断和返回字典两个片段。最后一条 return 会在循环做完以后运行。",
+      "en": "Click at the end of the code and insert the decision and return snippets. The final return runs after the loop has finished."
+    }
+  ],
+  "functionName": "inventory_counts",
+  "starterCode": "def inventory_counts(values):\n    counts = {}\n    for part in values:\n        pass\n",
+  "solutionCode": "def inventory_counts(values):\n    counts = {}\n    for part in values:\n        pass\n        if part in counts:\n            counts[part] = counts[part] + 1\n        else:\n            counts[part] = 1\n    return counts",
+  "snippets": [
+    {
+      "label": {
+        "zh": "判断这个名称是否已经计过",
+        "en": "Check whether this part has already been counted"
+      },
+      "code": "        if part in counts:\n            counts[part] = counts[part] + 1\n        else:\n            counts[part] = 1"
+    },
+    {
+      "label": {
+        "zh": "返回点数后的字典",
+        "en": "Return the counts dictionary"
+      },
+      "code": "    return counts"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          "washer",
+          "gear",
+          "washer"
+        ]
+      ],
+      "expected": {
+        "washer": 2,
+        "gear": 1
+      }
+    },
+    {
+      "args": [
+        [
+          "coil",
+          "coil",
+          "coil"
+        ]
+      ],
+      "expected": {
+        "coil": 3
+      }
+    },
+    {
+      "args": [
+        [
+          "wire",
+          "gear",
+          "wire",
+          "gear",
+          "ring"
+        ]
+      ],
+      "expected": {
+        "wire": 2,
+        "gear": 2,
+        "ring": 1
+      }
+    },
+    {
+      "args": [
+        [
+          "bolt"
+        ]
+      ],
+      "expected": {
+        "bolt": 1
+      }
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": {}
+    }
+  ]
+}

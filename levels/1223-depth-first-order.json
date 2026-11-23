@@ -1,0 +1,150 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "routing",
+    "order": 60,
+    "title": {
+      "zh": "算法进阶",
+      "en": "Intermediate Algorithms"
+    }
+  },
+  "kind": "algorithm",
+  "id": "depth-first-order",
+  "order": 1222,
+  "stage": "exercise",
+  "topic": {
+    "id": "depth-first",
+    "order": 3,
+    "title": {
+      "zh": "深度优先搜索",
+      "en": "Depth-first search"
+    }
+  },
+  "title": {
+    "zh": "记下房间的探索顺序",
+    "en": "Record the order of room visits"
+  },
+  "concept": {
+    "zh": "栈中的深度优先顺序",
+    "en": "Depth-first order from a stack"
+  },
+  "brief": {
+    "zh": "实现 depth_first_order(graph, start)。从栈顶取房间，把还没访问的邻居按列表顺序压入栈，最后返回各房间第一次被访问的顺序。",
+    "en": "Implement depth_first_order(graph, start). Pop a room from the stack, push its unvisited neighbors in list order, and return the order of first visits."
+  },
+  "hints": [
+    {
+      "zh": "列表里最后一个压入的邻居会先被取出。用 visited 字典阻止有环的路线重复访问。",
+      "en": "The last neighbor in the list is popped first. Use a visited dictionary to avoid revisiting rooms in cycles."
+    }
+  ],
+  "functionName": "depth_first_order",
+  "starterCode": "def depth_first_order(graph, start):\n    stack = [start]\n    visited = {}\n    order = []\n    return order\n",
+  "solutionCode": "def depth_first_order(graph, start):\n    stack = [start]\n    visited = {}\n    order = []\n    while len(stack) > 0:\n        room = stack.pop()\n        if room in visited:\n            continue\n        visited[room] = True\n        order.append(room)\n        for neighbor in graph[room]:\n            if neighbor not in visited:\n                stack.append(neighbor)\n    return order\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "从栈顶取房间",
+        "en": "Pop the room on top"
+      },
+      "code": "    while len(stack) > 0:\n        room = stack.pop()"
+    },
+    {
+      "label": {
+        "zh": "跳过或登记房间",
+        "en": "Skip or record the room"
+      },
+      "code": "        if room in visited:\n            continue\n        visited[room] = True\n        order.append(room)"
+    },
+    {
+      "label": {
+        "zh": "把未访问的邻居压栈",
+        "en": "Push unvisited neighbors"
+      },
+      "code": "        for neighbor in graph[room]:\n            if neighbor not in visited:\n                stack.append(neighbor)"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        {
+          "a": [
+            "b",
+            "c"
+          ],
+          "b": [
+            "d"
+          ],
+          "c": [],
+          "d": []
+        },
+        "a"
+      ],
+      "expected": [
+        "a",
+        "c",
+        "b",
+        "d"
+      ]
+    },
+    {
+      "args": [
+        {
+          "a": [
+            "b"
+          ],
+          "b": [
+            "a",
+            "c"
+          ],
+          "c": [
+            "b"
+          ]
+        },
+        "a"
+      ],
+      "expected": [
+        "a",
+        "b",
+        "c"
+      ]
+    },
+    {
+      "args": [
+        {
+          "solo": []
+        },
+        "solo"
+      ],
+      "expected": [
+        "solo"
+      ]
+    },
+    {
+      "args": [
+        {
+          "a": [
+            "b",
+            "c"
+          ],
+          "b": [
+            "d"
+          ],
+          "c": [
+            "d"
+          ],
+          "d": [
+            "a"
+          ]
+        },
+        "a"
+      ],
+      "expected": [
+        "a",
+        "c",
+        "d",
+        "b"
+      ]
+    }
+  ]
+}

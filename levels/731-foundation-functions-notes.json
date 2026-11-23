@@ -1,0 +1,390 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "foundation-functions-notes",
+  "order": 731,
+  "unit": {
+    "id": "foundations",
+    "order": 10,
+    "title": {
+      "zh": "Python 基础",
+      "en": "Python Foundations"
+    }
+  },
+  "topic": {
+    "id": "functions",
+    "order": 4,
+    "title": {
+      "zh": "函数与参数",
+      "en": "Functions and Parameters"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "函数与参数",
+    "en": "Functions and Parameters"
+  },
+  "brief": {
+    "zh": "把起始电量交给补电函数。看看两个同名的格子各自存了什么，以及计算结果怎样回到主程序。",
+    "en": "Pass the starting charge to the charging function. See what the two boxes with the same name hold and how the answer comes back to the main program."
+  },
+  "concept": {
+    "zh": "参数、局部变量与返回值",
+    "en": "Parameters, local variables, and return values"
+  },
+  "hints": [],
+  "execution": {
+    "source": "def top_up(charge):\n    charge = charge + 3\n    return charge\n\ncharge = scan()\nresult = top_up(charge)\nsay(str(result))",
+    "guided": true,
+    "functionLesson": {
+      "functionName": "top_up",
+      "parameter": "charge",
+      "resultVariable": "result"
+    },
+    "cases": [
+      {
+        "label": {
+          "zh": "起始电量 6 格",
+          "en": "Start with 6 units"
+        },
+        "input": 6,
+        "expected": "9"
+      },
+      {
+        "label": {
+          "zh": "起始电量 3 格",
+          "en": "Start with 3 units"
+        },
+        "input": 3,
+        "expected": "6",
+        "predictions": [
+          "3",
+          "9",
+          "6"
+        ]
+      },
+      {
+        "label": {
+          "zh": "起始电量 0 格",
+          "en": "Start with 0 units"
+        },
+        "input": 0,
+        "expected": "3",
+        "predictions": [
+          "0",
+          "3",
+          "9"
+        ]
+      }
+    ],
+    "visual": {
+      "title": {
+        "zh": "把电量交给补电函数",
+        "en": "Hand the charge to the charging function"
+      },
+      "main": [
+        {
+          "id": "read",
+          "line": 5,
+          "label": {
+            "zh": "读取起始电量",
+            "en": "Read the starting charge"
+          },
+          "note": {
+            "zh": "主程序把电池读数存进自己的格子。",
+            "en": "The main program stores the battery reading in its own box."
+          },
+          "icon": "battery"
+        },
+        {
+          "id": "call-top-up",
+          "line": 6,
+          "label": {
+            "zh": "把电量传给函数",
+            "en": "Pass the charge to the function"
+          },
+          "note": {
+            "zh": "把括号里那个变量的值交给函数的参数。",
+            "en": "Pass the value in parentheses to the function’s parameter."
+          },
+          "icon": "call",
+          "calls": "top_up"
+        },
+        {
+          "id": "display",
+          "line": 7,
+          "label": {
+            "zh": "显示返回的电量",
+            "en": "Show the returned charge"
+          },
+          "note": {
+            "zh": "屏幕显示主程序收到的新电量。",
+            "en": "The screen shows the new charge the main program received."
+          },
+          "icon": "display"
+        }
+      ],
+      "functions": [
+        {
+          "id": "top_up",
+          "title": {
+            "zh": "补电函数",
+            "en": "Charging function"
+          },
+          "header": {
+            "id": "define-top-up",
+            "line": 1,
+            "label": {
+              "zh": "补电函数的参数",
+              "en": "The charging function’s parameter"
+            },
+            "note": {
+              "zh": "括号内的名字是参数。每次调用时，它接收这次交进来的值。",
+              "en": "The name in parentheses is a parameter. It receives a value on each call."
+            },
+            "icon": "function"
+          },
+          "steps": [
+            {
+              "id": "add-charge",
+              "line": 2,
+              "label": {
+                "zh": "函数给电量加 3 格",
+                "en": "The function adds 3 units"
+              },
+              "note": {
+                "zh": "取出参数格里的数，加 3 格，再写回函数自己的格子。",
+                "en": "Take the number in the parameter’s box, add 3, and store it back in the function’s box."
+              },
+              "icon": "compute"
+            },
+            {
+              "id": "return-charge",
+              "line": 3,
+              "label": {
+                "zh": "把新电量交回主程序",
+                "en": "Return the new charge to the main program"
+              },
+              "note": {
+                "zh": "return 把算好的数交给正在等待的主程序。",
+                "en": "return hands the new number back to the main program."
+              },
+              "icon": "return"
+            }
+          ]
+        }
+      ],
+      "practice": []
+    }
+  },
+  "sections": [
+    {
+      "title": {
+        "zh": "参数接住调用时交来的值",
+        "en": "A parameter receives a value when a function is called"
+      },
+      "body": {
+        "zh": "调用 top_up(charge) 时，先从主程序的 charge 里读出数值，把这个数交给补电函数。函数把它放进自己的参数 charge。",
+        "en": "In top_up(charge), the main program first reads its charge and passes the number to the function. The function stores that number in its own parameter named charge."
+      }
+    },
+    {
+      "title": {
+        "zh": "同一个名字可以在两个地方各存一个数",
+        "en": "The same name can hold a value in two places"
+      },
+      "body": {
+        "zh": "主程序和补电函数各有一个叫 charge 的格子。函数补 3 格后，函数的格子里是 9，主程序的格子里还是 6。",
+        "en": "The main program and the charging function each have a box named charge. After adding 3, the function’s box holds 9 while the main program’s box still holds 6."
+      }
+    },
+    {
+      "title": {
+        "zh": "返回值要交回调用的地方",
+        "en": "A return value goes back to the call"
+      },
+      "body": {
+        "zh": "return charge 把函数算好的值交回主程序。主程序接着运行调用这一行，把收到的值存进 result。",
+        "en": "return charge hands the function’s answer back to the main program. The main program finishes the call by storing the answer in result."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "主程序的 charge 是 6。函数补 3 格后，返回值和主程序里的 charge 各是多少？",
+      "en": "The main program’s charge is 6. After the function adds 3, what is the return value and what is in the main program’s charge?"
+    },
+    "options": [
+      {
+        "zh": "返回 9，主程序的 charge 是 6。",
+        "en": "It returns 9, and the main program’s charge is 6."
+      },
+      {
+        "zh": "返回 9，主程序的 charge 是 9。",
+        "en": "It returns 9, and the main program’s charge is 9."
+      },
+      {
+        "zh": "返回 6，主程序的 charge 是 9。",
+        "en": "It returns 6, and the main program’s charge is 9."
+      }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "函数在自己的 charge 里算出 9 并返回。主程序的原读数是 6，返回的 9 存进 result。",
+      "en": "The function calculates 9 in its own charge and returns it. The main program keeps its original reading of 6 and stores the returned 9 in result."
+    }
+  },
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": {
+          "zh": "主程序把电池读到的 6 存进 charge。",
+          "en": "The main program stores the battery reading of 6 in charge."
+        },
+        "items": [
+          {
+            "id": "main",
+            "label": {
+              "zh": "主程序",
+              "en": "Main program"
+            },
+            "value": {
+              "zh": "charge = 6",
+              "en": "charge = 6"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "主程序把 6 交给补电函数，函数的参数 charge 接到 6。",
+          "en": "The main program hands over 6, and the function receives it in its parameter named charge."
+        },
+        "items": [
+          {
+            "id": "main",
+            "label": {
+              "zh": "主程序",
+              "en": "Main program"
+            },
+            "value": {
+              "zh": "charge = 6",
+              "en": "charge = 6"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "function",
+            "label": {
+              "zh": "补电函数",
+              "en": "Charging function"
+            },
+            "value": {
+              "zh": "charge = 6",
+              "en": "charge = 6"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "函数在自己的格子里加 3。两个同名的格子现在分别是 6 和 9。",
+          "en": "The function adds 3 in its own box. The two boxes with the same name now hold 6 and 9."
+        },
+        "items": [
+          {
+            "id": "main",
+            "label": {
+              "zh": "主程序",
+              "en": "Main program"
+            },
+            "value": {
+              "zh": "charge = 6",
+              "en": "charge = 6"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "function",
+            "label": {
+              "zh": "补电函数",
+              "en": "Charging function"
+            },
+            "value": {
+              "zh": "charge = 9",
+              "en": "charge = 9"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "return 把 9 交回主程序。",
+          "en": "return hands 9 back to the main program."
+        },
+        "items": [
+          {
+            "id": "main",
+            "label": {
+              "zh": "主程序",
+              "en": "Main program"
+            },
+            "value": {
+              "zh": "charge = 6",
+              "en": "charge = 6"
+            },
+            "state": "active"
+          },
+          {
+            "id": "returned",
+            "label": {
+              "zh": "返回值",
+              "en": "Return value"
+            },
+            "value": {
+              "zh": "9",
+              "en": "9"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "主程序把返回的 9 存进 result，charge 中仍是原读数 6。",
+          "en": "The main program stores the returned 9 in result. Its charge still holds the original reading of 6."
+        },
+        "items": [
+          {
+            "id": "main",
+            "label": {
+              "zh": "主程序",
+              "en": "Main program"
+            },
+            "value": {
+              "zh": "charge = 6",
+              "en": "charge = 6"
+            },
+            "state": "done"
+          },
+          {
+            "id": "result",
+            "label": {
+              "zh": "主程序的 result",
+              "en": "Main program result"
+            },
+            "value": {
+              "zh": "9",
+              "en": "9"
+            },
+            "state": "active"
+          }
+        ]
+      }
+    ]
+  }
+}

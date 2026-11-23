@@ -1,0 +1,153 @@
+.classroom-workspace { container: classroom / inline-size; min-width: 0; }
+.classroom-workspace .classroom-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(245px, .85fr);
+  gap: clamp(14px, 1.6vw, 24px);
+  align-items: start;
+}
+.teaching-screen, .command-desk { box-sizing: border-box; min-width: 0; overflow-wrap: anywhere; }
+.teaching-screen {
+  --board-edge: #ae8c60;
+  position: relative;
+  isolation: isolate;
+  color: #f0f6ec;
+  border: 6px solid var(--board-edge);
+  border-radius: 9px;
+  background-color: #183d36;
+  background-image: radial-gradient(ellipse at 16% 0%, #48705a50, transparent 66%),
+    radial-gradient(#96c5ad16 .7px, transparent .9px);
+  background-size: auto, 5px 5px;
+  box-shadow: inset 0 0 0 2px #192c2480, inset 0 3px 14px #0d21144a, 0 2px 0 #665030, 0 8px 20px #07100e35;
+}
+.teaching-screen__heading, .command-desk__heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 36px;
+  padding: 8px clamp(12px, 1.4vw, 20px);
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+.teaching-screen__heading {
+  color: #c4d8be;
+  border-bottom: 1px solid #dbeac126;
+}
+.teaching-screen__heading strong, .command-desk__heading strong {
+  padding-inline-start: 9px;
+  border-inline-start: 1px solid currentColor;
+  font: inherit;
+}
+.classroom-screen-icon { position: relative; width: 18px; height: 13px; border: 1.6px solid currentColor; border-radius: 2px; }
+.classroom-screen-icon::after { content: ''; position: absolute; width: 10px; height: 2px; background: currentColor; left: 2px; bottom: -4px; }
+.teaching-screen__body { min-width: 0; padding: clamp(12px, 1.5vw, 23px); }
+.teaching-screen__body > :last-child, .command-desk__body > :last-child { margin-bottom: 0; }
+.teaching-screen__ledge { position: relative; height: 10px; margin: 0 -7px -6px; border-radius: 2px; background: linear-gradient(#d0b48b 0 27%, #a0815c 28% 72%, #7c613e 74%); }
+.teaching-screen__ledge i, .teaching-screen__ledge b { position: absolute; right: 75px; bottom: 9px; width: 23px; height: 4px; background: #e8e8d3; border-radius: 2px; }
+.teaching-screen__ledge i + i { right: 52px; width: 16px; background: #e7b98a; }
+.teaching-screen__ledge b { right: 15px; width: 30px; height: 8px; background: linear-gradient(#809c91 0 45%, #374e47 48%); }
+.teaching-screen[data-surface='monitor'] {
+  border-color: #354957;
+  border-radius: 13px;
+  background: linear-gradient(145deg, #172d3d, #101e2e 76%);
+  box-shadow: inset 0 0 0 1px #9cc5c536, 0 2px 0 #101a25, 0 8px 20px #060e1738;
+}
+[data-surface='monitor'] > .teaching-screen__heading { color: #b6dce3; border-bottom-color: #7893a63d; }
+[data-surface='monitor'] > .teaching-screen__ledge { height: 9px; margin: 0; background: none; }
+[data-surface='monitor'] > .teaching-screen__ledge i { display: none; }
+[data-surface='monitor'] > .teaching-screen__ledge b { bottom: 3px; right: 12px; width: 8px; height: 3px; background: #8ce7bb; box-shadow: 0 0 5px #59eeb477; }
+.command-desk {
+  --desk-text: #243b50;
+  --desk-muted: #455e72;
+  overflow: hidden;
+  border: 1px solid #839ba8;
+  border-radius: 10px;
+  color: var(--desk-text);
+  background: #e6eef1;
+  box-shadow: 0 3px 0 #506273, 0 8px 20px #060e172b;
+}
+.command-desk__heading {
+  min-height: 39px;
+  background: #d5e2e8;
+  border-bottom: 1px solid #b2c4cd;
+  color: #28485c;
+}
+.classroom-control-icon { display: inline-flex; width: 17px; gap: 4px; align-items: center; }
+.classroom-control-icon i { position: relative; width: 2px; height: 14px; background: currentColor; }
+.classroom-control-icon i::after { content: ''; position: absolute; width: 6px; height: 3px; left: -2px; top: 3px; border-radius: 1px; background: currentColor; }
+.classroom-control-icon i + i::after { top: 8px; }
+.command-desk__body { padding: clamp(12px, 1.3vw, 18px); min-width: 0; }
+.command-desk__body > .panel, .teaching-screen__body > .panel { margin: 0; }
+.command-desk .primary-button { background: #165c68; border-color: #124f5c; color: white; }
+.command-desk .primary-button:not(:disabled):hover { background: #0e4550; }
+.command-desk .subtle-button { background: #f6fafb; border-color: #97aeba; color: #243e50; }
+.command-desk .subtle-button:not(:disabled):hover { background: #dcebf0; }
+.command-desk .subtle-button[aria-pressed='true'], .command-desk .subtle-button[aria-selected='true'] { background: #cfebe5; border-color: #50887d; color: #184e49; }
+.command-desk :where(button, select, input, textarea, summary):focus-visible { outline-color: #358e9d; }
+.command-desk .panel { color: #e9eef7; }
+.classroom-workspace :where(.teaching-screen, .command-desk) + :where(.teaching-screen, .command-desk) { margin-top: 16px; }
+.classroom-workspace :is(.classroom-split, .lesson-layout, .lecture-layout) > :is(.teaching-screen, .command-desk) { margin-top: 0; }
+.classroom-workspace .classroom-demonstration {
+  display: grid;
+  gap: 15px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  min-width: 0;
+}
+.classroom-demonstration > :is(.teaching-screen, .command-desk) { margin-top: 0; }
+.teaching-screen__body .panel-heading { min-height: 0; padding: 0 0 10px; border: 0; }
+.teaching-screen__body > .panel.board-panel > .panel-heading { padding: 8px 12px; }
+.course-progress-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; }
+.course-progress-heading h2 { margin: 0; font-size: 16px; }
+.course-progress-summary { min-width: 0; flex: 1 1 auto; }
+.course-progress-meter { display: block; width: 100%; height: 5px; margin-top: 10px; border: 0; border-radius: 6px; background: #354052; color: #eccb93; appearance: none; }
+.course-progress-meter::-webkit-progress-bar { background: #354052; border-radius: inherit; }
+.course-progress-meter::-webkit-progress-value { background: #eccb93; border-radius: inherit; }
+.course-progress-meter::-moz-progress-bar { background: #eccb93; border-radius: inherit; }
+.sidebar.classroom-rail {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  max-height: 100vh;
+  max-height: 100dvh;
+  overflow-y: auto;
+  scrollbar-color: #48566a transparent;
+  scrollbar-width: thin;
+}
+.classroom-rail .course-route-nav {
+  display: grid; gap: 12px;
+  padding: 14px 12px;
+  margin: 0 0 20px;
+  border: 1px solid #655d50;
+  border-top: 3px solid #ccb58d;
+  background: linear-gradient(140deg, #2e3340, #202d3b);
+}
+.classroom-rail .course-progress-heading { color: #eed8ae; margin-bottom: 9px; }
+.classroom-rail .course-progress-heading h2 { font-size: 15px; color: inherit; }
+.classroom-rail .course-route-nav strong { line-height: 1.4; }
+.classroom-rail .course-route-nav small { margin-top: 4px; font-size: 12px; }
+.classroom-rail .course-route-nav nav { gap: 6px; }
+.classroom-rail .course-route-nav nav button { min-height: 32px; padding: 4px 9px; white-space: normal; line-height: 1.3; font-size: 12px; }
+@media (max-width: 670px) {
+  .app-main > .sidebar.classroom-rail { display: block; position: static; max-height: none; overflow: visible; padding: 9px 14px 0; background: #16212e; }
+  .classroom-rail .course-route-nav { padding: 8px 10px; margin: 0 0 8px; gap: 7px; }
+  .classroom-rail .course-progress-summary { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; }
+  .classroom-rail .course-progress-heading { margin: 0; }
+  .classroom-rail .course-progress-heading h2 { font-size: 12px; }
+  .classroom-rail .course-route-nav strong { font-size: 13px; }
+  .classroom-rail .course-route-nav small { margin: 0; }
+  .classroom-rail .course-progress-meter { margin-top: 4px; height: 3px; }
+  .classroom-rail:not(.sidebar-open) :is(.sidebar-heading, .mission-groups) { display: none; }
+  .classroom-rail.sidebar-open .mission-groups { max-height: 38dvh; overflow-y: auto; }
+}
+@container classroom (max-width: 780px) {
+  .classroom-workspace .classroom-split, .classroom-workspace .lesson-layout { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 540px) {
+  .teaching-screen { border-width: 4px; }
+  .teaching-screen__ledge { margin-inline: -5px; margin-bottom: -4px; }
+  .teaching-screen__body, .command-desk__body { padding: 11px; }
+}

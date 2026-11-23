@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "ai-multi-turn-new-omission",
+  "order": 1733,
+  "unit": {
+    "id": "ai-review",
+    "order": 170,
+    "title": {
+      "zh": "核对与修正",
+      "en": "Review and Revision"
+    }
+  },
+  "topic": {
+    "id": "multi-turn",
+    "order": 3,
+    "title": {
+      "zh": "多轮修正",
+      "en": "Revise Across Turns"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "修好数量后，追回漏件",
+    "en": "Fix the Count and Catch a New Omission"
+  },
+  "brief": {
+    "zh": "控制柜维修需要两根电线、一根保险丝和一块电路板。每次收到新清单，都把三项重新检查一遍。",
+    "en": "The control cabinet repair needs two wires, one fuse, and one circuit board. Recheck all three items each time a new manifest arrives."
+  },
+  "concept": {
+    "zh": "后续草稿会保留很多之前的行，也可能遗漏另一条正确的记录。",
+    "en": "A revised draft can preserve many earlier rows and still omit one that used to be correct."
+  },
+  "hints": [
+    {
+      "zh": "第一轮和第二轮错的可能是不同物品。先标记当前轮的差异，再修改。",
+      "en": "Different items may be wrong in the first and second rounds. Mark the current discrepancies before sending a correction."
+    }
+  ],
+  "inventory": [
+    {
+      "id": "wire",
+      "label": {
+        "zh": "电线",
+        "en": "Wire"
+      },
+      "aliases": [
+        "wires",
+        "导线"
+      ]
+    },
+    {
+      "id": "fuse",
+      "label": {
+        "zh": "保险丝",
+        "en": "Fuse"
+      },
+      "aliases": [
+        "fuses",
+        "熔丝"
+      ]
+    },
+    {
+      "id": "board",
+      "label": {
+        "zh": "电路板",
+        "en": "Circuit board"
+      },
+      "aliases": [
+        "circuit boards",
+        "线路板"
+      ]
+    }
+  ],
+  "required": {
+    "wire": 2,
+    "fuse": 1,
+    "board": 1
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "wire",
+        "quantity": 3
+      },
+      {
+        "itemId": "fuse",
+        "quantity": 0
+      }
+    ],
+    "cards": [
+      {
+        "zh": "电线改为 2 根。",
+        "en": "Set wires to 2."
+      },
+      {
+        "zh": "保险丝改为 1 根。",
+        "en": "Set fuses to 1."
+      },
+      {
+        "zh": "保留其他项目。",
+        "en": "Keep the other entries."
+      }
+    ]
+  },
+  "examplePrompts": {
+    "zh": [
+      "准备 2 件电线、1 件保险丝、1 块电路板。",
+      "电线改为 2 根。保留其他项目。",
+      "保险丝改为 1 根。保留其他项目。"
+    ],
+    "en": [
+      "Pack 2 wires, 1 fuse, and 1 circuit board.",
+      "Set wires to 2. Keep the other entries.",
+      "Set fuses to 1. Keep the other entries."
+    ]
+  }
+}

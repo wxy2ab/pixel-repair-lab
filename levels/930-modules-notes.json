@@ -1,0 +1,273 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "python-modules-notes",
+  "order": 930,
+  "unit": {
+    "id": "python-advanced",
+    "order": 30,
+    "title": {
+      "zh": "Python 高级",
+      "en": "Advanced Python"
+    }
+  },
+  "topic": {
+    "id": "modules",
+    "order": 3,
+    "title": {
+      "zh": "模块",
+      "en": "Modules"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "模块",
+    "en": "Modules"
+  },
+  "brief": {
+    "zh": "补电函数写在一个文件里。主程序导入它，再传入电量并接收结果。",
+    "en": "The charging function lives in one file. The main program imports it, passes in the charge, and receives the result."
+  },
+  "concept": {
+    "zh": "模块保存函数，导入让另一个文件能调用它",
+    "en": "A module holds a function that another file can import and call"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "补电函数放在哪里",
+        "en": "Where the charging function lives"
+      },
+      "body": {
+        "zh": "algorithms.py 保存补电函数 top_up。main.py 负责读电量、调用函数和显示结果。",
+        "en": "The file algorithms.py holds the function top_up. The file main.py reads the starting charge, calls the function, and displays the result."
+      }
+    },
+    {
+      "title": {
+        "zh": "导入时准备好函数名",
+        "en": "Import makes the function available"
+      },
+      "body": {
+        "zh": "执行 from algorithms import top_up 时，Python 读到 algorithms.py 里的函数定义。导入完成后，main.py 可以用 top_up 这个名字。",
+        "en": "When Python runs from algorithms import top_up, it reads the function definition in algorithms.py. After the import, main.py can use the name top_up."
+      }
+    },
+    {
+      "title": {
+        "zh": "调用时传值，返回时带回结果",
+        "en": "A call sends a value and return brings back the result"
+      },
+      "body": {
+        "zh": "执行 top_up(charge) 时，起始电量传给函数参数 amount。函数加 3 格，再用 return 把新电量交回 main.py，存到 result。",
+        "en": "When top_up(charge) runs, the starting charge is passed to the parameter amount. The function adds 3 and returns the new charge to main.py, which stores it in result."
+      }
+    }
+  ],
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": {
+          "zh": "两个文件分工。algorithms.py 保存补电函数，main.py 运行任务。",
+          "en": "The two files have separate jobs. algorithms.py holds the charging function, and main.py runs the task."
+        },
+        "items": [
+          {
+            "id": "main",
+            "label": {
+              "zh": "主程序",
+              "en": "Main program"
+            },
+            "value": {
+              "zh": "main.py",
+              "en": "main.py"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "module",
+            "label": {
+              "zh": "补电模块",
+              "en": "Charging module"
+            },
+            "value": {
+              "zh": "algorithms.py",
+              "en": "algorithms.py"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "导入完成，主程序已经可以用 top_up 这个名字。",
+          "en": "The import makes the name top_up available in the main program."
+        },
+        "items": [
+          {
+            "id": "main",
+            "label": {
+              "zh": "主程序",
+              "en": "Main program"
+            },
+            "value": {
+              "zh": "可以调用 top_up",
+              "en": "Can call top_up"
+            },
+            "state": "active"
+          },
+          {
+            "id": "module",
+            "label": {
+              "zh": "补电模块",
+              "en": "Charging module"
+            },
+            "value": {
+              "zh": "定义 top_up",
+              "en": "Defines top_up"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "调用把起始电量 2 格传给参数 amount。",
+          "en": "The call passes 2 units of charge to the parameter amount."
+        },
+        "items": [
+          {
+            "id": "main",
+            "label": {
+              "zh": "主程序",
+              "en": "Main program"
+            },
+            "value": {
+              "zh": "charge = 2",
+              "en": "charge = 2"
+            },
+            "state": "done"
+          },
+          {
+            "id": "module",
+            "label": {
+              "zh": "补电模块",
+              "en": "Charging module"
+            },
+            "value": {
+              "zh": "amount = 2",
+              "en": "amount = 2"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "补 3 格后，函数返回 5，主程序把它存进 result。",
+          "en": "After adding 3, the function returns 5 and the main program stores it in result."
+        },
+        "items": [
+          {
+            "id": "main",
+            "label": {
+              "zh": "主程序",
+              "en": "Main program"
+            },
+            "value": {
+              "zh": "result = 5",
+              "en": "result = 5"
+            },
+            "state": "active"
+          },
+          {
+            "id": "module",
+            "label": {
+              "zh": "补电模块",
+              "en": "Charging module"
+            },
+            "value": {
+              "zh": "返回 5",
+              "en": "Returns 5"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  },
+  "question": {
+    "prompt": {
+      "zh": "导入完成后，哪一行会把起始电量交给补电函数？",
+      "en": "After the import, which line sends the starting charge to the charging function?"
+    },
+    "options": [
+      {
+        "zh": "result = top_up(charge)",
+        "en": "result = top_up(charge)"
+      },
+      {
+        "zh": "from algorithms import top_up",
+        "en": "from algorithms import top_up"
+      },
+      {
+        "zh": "say(str(result))",
+        "en": "say(str(result))"
+      }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "导入准备好函数名。运行 top_up(charge) 时，charge 的值才会进入参数 amount。",
+      "en": "The import makes the function available. When top_up(charge) runs, the value of charge is passed to amount."
+    }
+  },
+  "execution": {
+    "source": "from algorithms import top_up\ncharge = scan()\nresult = top_up(charge)\nsay(str(result))",
+    "cases": [
+      {
+        "label": {
+          "zh": "起始电量 2 格",
+          "en": "Start with 2 units"
+        },
+        "input": 2,
+        "expected": "5"
+      },
+      {
+        "label": {
+          "zh": "起始电量 0 格",
+          "en": "Start with 0 units"
+        },
+        "input": 0,
+        "expected": "3",
+        "predictions": [
+          "0",
+          "3",
+          "6"
+        ]
+      },
+      {
+        "label": {
+          "zh": "起始电量 6 格",
+          "en": "Start with 6 units"
+        },
+        "input": 6,
+        "expected": "9",
+        "predictions": [
+          "6",
+          "9",
+          "3"
+        ]
+      }
+    ],
+    "moduleLesson": {
+      "moduleName": "algorithms",
+      "source": "def top_up(amount):\n    new_charge = amount + 3\n    return new_charge",
+      "functionName": "top_up",
+      "parameter": "amount",
+      "resultVariable": "result",
+      "increment": 3
+    }
+  }
+}

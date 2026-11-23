@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "python-program-interfaces",
+  "order": 699,
+  "unit": { "id": "foundations", "order": 10, "title": { "zh": "Python 基础", "en": "Python Foundations" } },
+  "stage": "explain",
+  "overview": true,
+  "title": { "zh": "命令行程序", "en": "Command-Line Programs" },
+  "brief": {
+    "zh": "选一个起始电量，在终端提交一条文字命令，给芽芽补 3 格电。",
+    "en": "Choose a starting charge and submit a text command in the terminal to give Sprout 3 more units."
+  },
+  "concept": { "zh": "用文字命令给程序传入数字", "en": "Give a program a number in a text command" },
+  "hints": [],
+  "execution": {
+    "source": "charge = scan()\nresult = charge + 3\nsay(str(result))",
+    "cases": [
+      { "label": { "zh": "起始电量 6 格", "en": "Start with 6 units" }, "input": 6, "expected": "9" },
+      { "label": { "zh": "起始电量 1 格", "en": "Start with 1 unit" }, "input": 1, "expected": "4" },
+      { "label": { "zh": "起始电量 0 格", "en": "Start with 0 units" }, "input": 0, "expected": "3" }
+    ],
+    "intro": { "mode": "interfaces", "interface": "cli", "rule": { "zh": "在原电量上加 3 格", "en": "Add 3 units to the starting charge" }, "command": "charge" }
+  },
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": { "zh": "在终端提交 charge 6，启动补电程序，并把数字 6 交给它。", "en": "Submit charge 6 in the terminal to start the charging program and give it the number 6." },
+        "items": [
+          { "id": "input", "label": { "zh": "终端读命令", "en": "Terminal reads the command" }, "value": { "zh": "charge 6", "en": "charge 6" }, "state": "active" },
+          { "id": "process", "label": { "zh": "程序计算", "en": "Program calculates" }, "state": "muted" },
+          { "id": "output", "label": { "zh": "终端显示", "en": "Terminal displays" }, "state": "muted" }
+        ]
+      },
+      {
+        "caption": { "zh": "程序拿到输入 6，按补电规则加 3。", "en": "The program receives 6 and follows its charging rule to add 3." },
+        "items": [
+          { "id": "input", "label": { "zh": "终端读命令", "en": "Terminal reads the command" }, "value": { "zh": "charge 6", "en": "charge 6" }, "state": "done" },
+          { "id": "process", "label": { "zh": "程序计算", "en": "Program calculates" }, "value": { "zh": "6 + 3", "en": "6 + 3" }, "state": "active" },
+          { "id": "output", "label": { "zh": "终端显示", "en": "Terminal displays" }, "state": "muted" }
+        ]
+      },
+      {
+        "caption": { "zh": "补电程序把结果 9 作为文字输出到终端。", "en": "The charging program sends the result, 9, to the terminal as text." },
+        "items": [
+          { "id": "input", "label": { "zh": "终端读命令", "en": "Terminal reads the command" }, "value": { "zh": "charge 6", "en": "charge 6" }, "state": "done" },
+          { "id": "process", "label": { "zh": "程序计算", "en": "Program calculates" }, "value": { "zh": "6 + 3", "en": "6 + 3" }, "state": "done" },
+          { "id": "output", "label": { "zh": "终端显示", "en": "Terminal displays" }, "value": { "zh": "9", "en": "9" }, "state": "active" }
+        ]
+      }
+    ]
+  },
+  "sections": [
+    {
+      "title": { "zh": "命令名在前，输入跟在后面", "en": "The command name comes before the input" },
+      "body": { "zh": "在终端可以用文字命令启动程序。charge 6 里的 charge 是补电程序的命令名，空格后面的 6 是交给程序的起始电量。", "en": "In a terminal, a text command can start a program. In charge 6, charge names the charging command. The 6 after the space gives the program its starting charge." }
+    },
+    {
+      "title": { "zh": "在终端读结果", "en": "Read the result in the terminal" },
+      "body": { "zh": "补电程序算出新电量，再把这个数字作为文字输出到终端。可以换个数字再提交，看看哪一部分变了。", "en": "The charging program calculates the new charge, then writes that number as text in the terminal. Try submitting a different starting charge and see which part changes." }
+    }
+  ],
+  "question": {
+    "prompt": { "zh": "这次芽芽还剩 1 格电。选一条能把这个起始电量交给补电程序的命令。", "en": "Sprout has 1 unit of charge left. Choose the command that gives this starting charge to the program." },
+    "options": [
+      { "zh": "1 charge", "en": "1 charge" },
+      { "zh": "charge 1", "en": "charge 1" },
+      { "zh": "charge 4", "en": "charge 4" }
+    ],
+    "correct": 1,
+    "feedback": { "zh": "先写命令名 charge，再写起始电量 1。试着在终端提交这条命令，看看输出是不是 4。", "en": "Put the command name charge first and the starting charge 1 after it. Submit the command in the terminal to check whether it displays 4." }
+  }
+}

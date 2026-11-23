@@ -1,0 +1,7 @@
+.cpu-lecture { display: grid; gap: .45rem; min-width: 0; }
+.cpu-lecture-program { min-width: 0; }
+.cpu-lecture-program ol { display: flex; flex-wrap: wrap; gap: .4rem; align-items: baseline; list-style: none; margin: 0 0 .3rem; padding: 0; }
+.cpu-lecture-program li { font-size: .88rem; }
+.cpu-lecture-program li[aria-current] { font-weight: 750; text-decoration: underline; text-underline-offset: .2em; }
+.cpu-lecture-program li span { font-weight: normal; }
+.cpu-lecture-program .station-source { margin: 0; }

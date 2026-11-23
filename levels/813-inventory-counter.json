@@ -1,0 +1,221 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "python-intermediate",
+    "order": 20,
+    "title": {
+      "zh": "Python 进阶",
+      "en": "Intermediate Python"
+    }
+  },
+  "kind": "grid",
+  "id": "inventory-counter",
+  "order": 843,
+  "stage": "exercise",
+  "topic": {
+    "id": "collections",
+    "order": 4,
+    "title": {
+      "zh": "列表与字典",
+      "en": "Lists and dictionaries"
+    }
+  },
+  "title": {
+    "zh": "给到货零件盘点",
+    "en": "Count the arriving parts"
+  },
+  "concept": {
+    "zh": "用字典登记与更新数量",
+    "en": "Record and update counts in a dictionary"
+  },
+  "brief": {
+    "zh": "按到货清单登记每种零件的数量，最后从字典里查出要报告的那一种。",
+    "en": "Count each kind of part from the arrival list, then look up the requested kind in the dictionary."
+  },
+  "hints": [
+    {
+      "zh": "第一次见到一个名字，记为 1。以后再看到同一个名字，就把对应的数量加 1。",
+      "en": "Set a name’s count to 1 when you first encounter it. Add 1 every time you see that name again."
+    },
+    {
+      "zh": "把 if 和 else 都放进 for 块。循环结束后再查询要报告的零件。",
+      "en": "Put both if and else inside the for block. Look up the requested part after the loop."
+    }
+  ],
+  "tiles": [
+    "#######",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#######"
+  ],
+  "start": {
+    "x": 2,
+    "y": 2
+  },
+  "input": {
+    "parts": [
+      "bolt",
+      "wire",
+      "bolt",
+      "gear",
+      "bolt"
+    ],
+    "target": "bolt"
+  },
+  "allowedApi": [
+    "scan",
+    "submit"
+  ],
+  "objectives": [
+    {
+      "type": "submit",
+      "values": [
+        3
+      ],
+      "origin": "dict-index"
+    }
+  ],
+  "variants": [
+    {
+      "input": {
+        "parts": [
+          "gear",
+          "bolt",
+          "wire",
+          "wire"
+        ],
+        "target": "wire"
+      },
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            2
+          ],
+          "origin": "dict-index"
+        }
+      ]
+    },
+    {
+      "input": {
+        "parts": [
+          "bolt",
+          "bolt",
+          "gear"
+        ],
+        "target": "gear"
+      },
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            1
+          ],
+          "origin": "dict-index"
+        }
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "scan-manifest",
+      "label": {
+        "zh": "扫描到货与查询目标",
+        "en": "Read arrivals and wanted part"
+      },
+      "template": "manifest = scan()"
+    },
+    {
+      "id": "empty-counts",
+      "label": {
+        "zh": "新建空字典",
+        "en": "Create an empty dictionary"
+      },
+      "template": "counts = {}"
+    },
+    {
+      "id": "for-part",
+      "label": {
+        "zh": "逐个查看到货零件",
+        "en": "Visit each arriving part"
+      },
+      "template": "for part in manifest[\"parts\"]:",
+      "block": true
+    },
+    {
+      "id": "if-known",
+      "label": {
+        "zh": "如果已登记这种零件",
+        "en": "If the part is already recorded"
+      },
+      "template": "if part in counts:",
+      "block": true
+    },
+    {
+      "id": "add-one",
+      "label": {
+        "zh": "已登记的数量加一",
+        "en": "Add one to the recorded count"
+      },
+      "template": "counts[part] += 1"
+    },
+    {
+      "id": "else",
+      "label": {
+        "zh": "否则",
+        "en": "Otherwise"
+      },
+      "template": "else:",
+      "block": true
+    },
+    {
+      "id": "start-one",
+      "label": {
+        "zh": "第一次登记为一件",
+        "en": "Record one for a new part"
+      },
+      "template": "counts[part] = 1"
+    },
+    {
+      "id": "report-count",
+      "label": {
+        "zh": "查询指定零件的数量",
+        "en": "Report the requested part count"
+      },
+      "template": "submit(counts[manifest[\"target\"]])"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "scan-manifest"
+    },
+    {
+      "cardId": "empty-counts"
+    },
+    {
+      "cardId": "for-part",
+      "children": [
+        {
+          "cardId": "if-known",
+          "children": [
+            {
+              "cardId": "add-one"
+            }
+          ]
+        },
+        {
+          "cardId": "else",
+          "children": [
+            {
+              "cardId": "start-one"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cardId": "report-count"
+    }
+  ]
+}

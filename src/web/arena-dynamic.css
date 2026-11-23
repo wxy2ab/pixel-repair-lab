@@ -1,0 +1,91 @@
+.arena-shift-countdown {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 11px 13px 0;
+  padding: 7px 9px;
+  border: 1px solid #695536;
+  border-radius: 6px;
+  background: #332a21;
+  color: #ffdda4;
+  font-size: 13px;
+}
+.arena-shift-countdown span { font-variant-numeric: tabular-nums; }
+.arena-step-source { display: block; max-width: min(32rem, 78vw); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.arena-shift-report { padding: 10px 14px 12px; border-top: 1px solid var(--border); }
+.arena-shift-report h3 { margin: 0 0 5px; font-size: 13px; color: var(--muted); }
+.arena-shift-report ul { display: grid; gap: 4px; padding: 0; margin: 0; list-style: none; }
+.arena-shift-report li { display: flex; align-items: baseline; gap: 6px; color: #dce7f9; font-size: 13px; overflow-wrap: anywhere; }
+.arena-change-dot { flex: 0 0 7px; height: 7px; border-radius: 2px; background: var(--change-color); }
+[data-testid='arena-dynamic-board'] [data-change='opened'],
+[data-testid='arena-dynamic-board'] [data-arena-change~='opened'] { --change-color: #77edbf; }
+[data-testid='arena-dynamic-board'] [data-change='closed'],
+[data-testid='arena-dynamic-board'] [data-arena-change~='closed'] { --change-color: #ffa797; }
+[data-testid='arena-dynamic-board'] [data-change='blocked'],
+[data-testid='arena-dynamic-board'] [data-arena-change~='blocked'] { --change-color: #ffda8c; }
+[data-testid='arena-dynamic-board'] [data-change='relocated'],
+[data-testid='arena-dynamic-board'] [data-arena-change~='relocated'] { --change-color: #8ad7ff; }
+[data-testid='arena-dynamic-board'] .tile[data-arena-change] { outline: 2px solid var(--change-color); outline-offset: -2px; }
+[data-testid='arena-dynamic-board'] .tile[data-arena-change~='blocked'] { outline-style: dashed; }
+[data-testid='arena-dynamic-board'] .tile[data-arena-change~='relocated'] > .gem { background: #b4e9ff; }
+
+.arena-events--dynamic .arena-tactic {
+  margin-inline-start: auto;
+  padding: 0 6px;
+  border: 1px solid #3d5671;
+  border-radius: 4px;
+  color: #c9dcf4;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.arena-events--dynamic [data-tactic='contest'] .arena-tactic { border-color: #785647; color: #ffcfac; }
+.arena-state-reference { font-size: 13px; color: var(--muted); }
+.arena-state-reference summary { color: #dce7f9; cursor: pointer; }
+.arena-state-reference dl {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 4px 10px;
+  margin: 8px 0 0;
+}
+.arena-state-reference dd { margin: 0; overflow-wrap: anywhere; }
+
+.saved-arena-scores { display: grid; align-content: start; gap: 4px; }
+.saved-arena-scores > span { color: #bed4e7; font-size: 12px; }
+.saved-arena-scores ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.saved-arena-scores li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 5px;
+  max-width: 100%;
+  padding: 3px 6px;
+  border: 1px solid #42576c;
+  border-radius: 4px;
+  color: #d8e5f0;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.saved-arena-scores li[data-actor-id='player'] {
+  border-color: #597f76;
+  background: #1e393a;
+  color: #c0f4de;
+}
+.saved-arena-scores strong { font: 700 13px var(--mono); }
+.saved-arena-opponent-number {
+  min-width: 14px;
+  padding: 1px 2px;
+  border-radius: 3px;
+  background: #f39880;
+  color: #231914;
+  font: 700 11px var(--mono);
+  text-align: center;
+}

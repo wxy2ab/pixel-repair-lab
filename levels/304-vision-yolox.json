@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "vision-yolox",
+  "order": 304,
+  "stage": "demo",
+  "unit": {
+    "id": "yolox",
+    "order": 150,
+    "title": { "zh": "YOLOX", "en": "YOLOX" }
+  },
+  "topic": {
+    "id": "object-detection",
+    "order": 1,
+    "title": { "zh": "目标检测", "en": "Object detection" }
+  },
+  "mode": "detect",
+  "title": { "zh": "给照片里的狗画个框", "en": "Find the Dog in the Photo" },
+  "brief": { "zh": "把两张照片分别交给本地 YOLOX，核对框出的区域和模型给出的类别。", "en": "Give two photos to the local YOLOX model. Check the regions it marks and the categories it predicts." },
+  "concept": { "zh": "模型输出的类别对应照片中的一个位置。", "en": "A model's predicted class is attached to a location in the photo." },
+  "hints": [
+    { "zh": "选择“全部类别”看完整的检测输出，再按类别筛选。", "en": "Choose All classes to view the detection output, then filter by class." }
+  ],
+  "cases": [
+    {
+      "image": "labrador",
+      "label": { "zh": "草地上的拉布拉多犬", "en": "Labrador on the grass" },
+      "prompt": { "zh": "运行检测。在框里找到模型认出的目标，再把类别切到“人”试试。", "en": "Run detection and locate the object in its box. Then try filtering to the Person class." },
+      "initial": { "confidence": 50, "target": "all" }
+    },
+    {
+      "image": "astronaut",
+      "label": { "zh": "宇航员照片", "en": "Astronaut portrait" },
+      "prompt": { "zh": "用同样的设置看另一张照片，找找模型在框上写了什么。", "en": "Use the same settings with a second photo and read the label on the box." },
+      "initial": { "confidence": 50, "target": "all" }
+    }
+  ]
+}

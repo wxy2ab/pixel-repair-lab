@@ -1,0 +1,29 @@
+.visual-program-guide { overflow: hidden; }
+.visual-program-heading { display: grid; gap: 9px; padding: 14px 16px 12px; border-bottom: 1px solid var(--border); }
+.visual-program-heading h2 { margin: 0; font-size: 18px; }
+.visual-program-stages { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.visual-program-stages li { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; }
+.visual-program-stages li + li::before { content: '›'; color: var(--muted); }
+.visual-program-stages li[aria-current='step'] { color: var(--mint); font-weight: 700; }
+.visual-program-guide > .visual-program-stages { padding: 6px 2px; }
+.visual-program-current-order { display: flex; flex-wrap: wrap; align-items: center; gap: 9px 24px; padding: 0; margin: 0; list-style: none; }
+.visual-program-current-order li { position: relative; padding: 7px 12px; border: 1px solid #54748a; border-radius: 6px; color: #e6f4ff; background: #243d50; }
+.visual-program-current-order li[aria-current] { border-color: #9ae8c1; }
+.visual-program-current-order li + li::before { position: absolute; inset-inline-start: -20px; content: '→'; color: #a9c2d2; }
+.visual-program-body { display: grid; gap: 11px; padding: 12px 16px 15px; }
+.visual-program-trial { margin: 0; font-size: 16px; }
+.visual-program-instruction, .visual-program-response p { margin: 0; overflow-wrap: anywhere; }
+.visual-program-instruction { color: var(--muted); font-size: 14px; }
+.command-desk .visual-program-instruction { margin: 0 0 10px; color: var(--desk-muted); }
+.visual-program-guide .command-desk .program-diagram { margin-bottom: 10px; }
+.visual-program-response { min-height: 34px; }
+.visual-program-response p { padding: 8px 10px; border-left: 3px solid #6c8eaf; border-radius: 0 5px 5px 0; background: #21344c; }
+.visual-program-response .error-message { border-color: #e6a466; color: #ffce93; }
+.visual-program-response .win-message { border-color: var(--mint); color: var(--mint); }
+.visual-program-response strong { font-family: var(--mono); }
+.visual-program-actions { display: flex; flex-wrap: wrap; gap: 6px 8px; }
+.visual-program-actions button { white-space: normal; text-align: start; }
+
+@media (max-width: 570px) {
+  .visual-program-heading, .visual-program-body { padding-inline: 10px; }
+}

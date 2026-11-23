@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "yolox-confidence-human-review",
+  "order": 559,
+  "stage": "exercise",
+  "unit": {
+    "id": "yolox",
+    "order": 150,
+    "title": { "zh": "YOLOX", "en": "YOLOX" }
+  },
+  "topic": {
+    "id": "detection-confidence",
+    "order": 3,
+    "title": { "zh": "置信度门槛", "en": "Confidence thresholds" }
+  },
+  "mode": "detect",
+  "title": { "zh": "给人工复核留一个候选", "en": "Keep a Candidate for Human Review" },
+  "brief": { "zh": "模型把一张照片的检测清单筛空了。用两个不同的审核要求，决定何时应让人再看一眼。", "en": "The detector left an empty list for one photo. Follow two review requirements and decide when a person should look again." },
+  "concept": { "zh": "在同一张照片上可以为不同用途采用不同门槛。", "en": "Different review needs can use different thresholds on the same photo." },
+  "hints": [
+    { "zh": "高门槛适用于严格筛查。要给人工复核留候选，可以把门槛降到模型分数以下。", "en": "A high cutoff is useful for strict review. To retain a suggestion for human review, lower the threshold below its score." }
+  ],
+  "cases": [
+    {
+      "image": "astronaut",
+      "label": { "zh": "人工接力", "en": "Human review" },
+      "prompt": { "zh": "保留全部类别，降低门槛，让这一张图里的人重新出现在清单中。", "en": "Keep All classes and lower the threshold so the person is back on the list." },
+      "initial": { "confidence": 95, "target": "all" },
+      "goal": { "labels": ["person"], "target": "all" },
+      "solution": { "confidence": 50, "target": "all" }
+    },
+    {
+      "image": "astronaut",
+      "label": { "zh": "只保留过高门槛的候选", "en": "Strict screening" },
+      "prompt": { "zh": "沿用全部类别，把门槛提高到该候选的分数以上，让清单为空。", "en": "Keep All classes and raise the cutoff above the candidate score, leaving the list empty." },
+      "initial": { "confidence": 75, "target": "all" },
+      "goal": { "labels": [], "target": "all" },
+      "solution": { "confidence": 95, "target": "all" }
+    }
+  ]
+}

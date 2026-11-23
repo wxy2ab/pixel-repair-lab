@@ -1,0 +1,188 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-battery-endgame-draft",
+  "order": 1849,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "algorithm-advanced",
+      "topic": "dynamic-programming"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "rival-strategy"
+    }
+  ],
+  "title": {
+    "zh": "长架两端争夺",
+    "en": "Battery Rack Endgame"
+  },
+  "concept": {
+    "zh": "对手也会算 · 两端择一 · 最终分差",
+    "en": "An optimal rival · Take either end · Final score margin"
+  },
+  "brief": {
+    "zh": "points 是长架上每块电池的积分，可以为负。你先手，之后双方轮流各拿剩余电池最左或最右一块，直到拿完。双方都尽量提高自己的分数减对方的分数。返回 [你第一步选的端点, 最后你的分数减对手分数]。两步一样好时选 \"left\"，另一端填 \"right\"。空架返回 [\"none\", 0]。",
+    "en": "points lists the scores of the batteries on a rack. Scores can be negative. You go first. Players alternate taking one battery from either remaining end until the rack is empty. Each player maximizes their final score minus the other player's. Return [your first end, your final score minus theirs]. Use \"left\" on a tie or \"right\" for the other end. An empty rack returns [\"none\", 0]."
+  },
+  "hints": [],
+  "functionName": "play_rack_endgame",
+  "starterCode": "def play_rack_endgame(points):\n    pass\n",
+  "solutionCode": "def play_rack_endgame(points):\n    size = len(points)\n    if size == 0:\n        return [\"none\", 0]\n    if size == 1:\n        return [\"left\", points[0]]\n    margins = []\n    for left in range(size):\n        row = []\n        for right in range(size):\n            row.append(0)\n        row[left] = points[left]\n        margins.append(row)\n    for width in range(2, size):\n        for left in range(size - width + 1):\n            right = left + width - 1\n            from_left = points[left] - margins[left + 1][right]\n            from_right = points[right] - margins[left][right - 1]\n            if from_left >= from_right:\n                margins[left][right] = from_left\n            else:\n                margins[left][right] = from_right\n    from_left = points[0] - margins[1][size - 1]\n    from_right = points[size - 1] - margins[0][size - 2]\n    if from_left >= from_right:\n        return [\"left\", from_left]\n    return [\"right\", from_right]\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "遍历指定长度的区间",
+        "en": "Loop over intervals of a given size"
+      },
+      "code": "    for left in range(len(points) - width + 1):\n        right = left + width - 1"
+    },
+    {
+      "label": {
+        "zh": "读取两端积分",
+        "en": "Read scores at both ends"
+      },
+      "code": "    first_score = points[0]\n    last_score = points[len(points) - 1]"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          8,
+          15,
+          3,
+          7
+        ]
+      ],
+      "expected": [
+        "right",
+        11
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          5,
+          233,
+          7
+        ]
+      ],
+      "expected": [
+        "left",
+        222
+      ]
+    },
+    {
+      "args": [
+        [
+          -5,
+          -1,
+          -7,
+          -3
+        ]
+      ],
+      "expected": [
+        "right",
+        8
+      ]
+    },
+    {
+      "args": [
+        [
+          4,
+          4,
+          4,
+          4
+        ]
+      ],
+      "expected": [
+        "left",
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          -8
+        ]
+      ],
+      "expected": [
+        "left",
+        -8
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": [
+        "none",
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          7,
+          1,
+          3
+        ]
+      ],
+      "expected": [
+        "left",
+        5
+      ]
+    },
+    {
+      "args": [
+        [
+          3,
+          9,
+          2,
+          8,
+          -4,
+          17,
+          5
+        ]
+      ],
+      "expected": [
+        "left",
+        -28
+      ]
+    },
+    {
+      "args": [
+        [
+          9,
+          -7,
+          15,
+          4,
+          0,
+          -6,
+          10,
+          12,
+          3,
+          2,
+          14,
+          -9
+        ]
+      ],
+      "expected": [
+        "left",
+        55
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "statistics-twelve-readings",
+  "order": 523,
+  "stage": "exercise",
+  "unit": { "id": "statistics", "order": 120, "title": { "zh": "统计分析", "en": "Statistics" } },
+  "topic": { "id": "center-spread", "order": 1, "title": { "zh": "平均值、中位数与极差", "en": "Mean, median, and range" } },
+  "title": { "zh": "清点全站的有效温度读数", "en": "Count the Station's Valid Temperature Readings" },
+  "brief": { "zh": "确认清洗后有多少条温度记录可以用来分析。", "en": "Check how many temperature readings remain available for analysis after cleaning." },
+  "concept": { "zh": "样本数数的是记录的条数。", "en": "The sample count tells you how many readings you have." },
+  "hints": [{ "zh": "保持所有区域，挑一个回答“有多少条”的统计量。", "en": "Keep all areas and choose the statistic that answers “how many readings?”" }],
+  "steps": [
+    {
+      "operation": "summary",
+      "input": "clean",
+      "label": { "zh": "统计有效样本数", "en": "Count valid readings" },
+      "prompt": { "zh": "输出全站清洗后的样本数。", "en": "Return the station-wide count after cleaning." },
+      "initial": { "statistic": "mean", "zone": "all" },
+      "goal": { "columns": ["statistic", "value"], "rows": [["count", 11]] },
+      "solution": { "statistic": "count", "zone": "all" }
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "pythonVersion": "3.12.16",
+  "requirements": [
+    "duckdb==1.5.0",
+    "numpy==2.2.6",
+    "opencv-python-headless==4.12.0.88",
+    "pandas==2.2.3",
+    "python-dateutil==2.9.0.post0",
+    "pytz==2025.2",
+    "six==1.17.0",
+    "tzdata==2025.2"
+  ],
+  "common": [
+    {
+      "url": "https://files.pythonhosted.org/packages/ec/57/56b9bcc3c9c6a792fcbaf139543cee77261f3651ca9da0c93f5c1221264b/python_dateutil-2.9.0.post0-py2.py3-none-any.whl",
+      "sha256": "a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427"
+    },
+    {
+      "url": "https://files.pythonhosted.org/packages/81/c4/34e93fe5f5429d7570ec1fa436f1986fb1f00c3e0f43a589fe2bbcd22c3f/pytz-2025.2-py2.py3-none-any.whl",
+      "sha256": "5ddf76296dd8c44c26eb8f4b6f35488f3ccbf6fbbd7adee0b7262d43f0ec2f00"
+    },
+    {
+      "url": "https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl",
+      "sha256": "4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274"
+    },
+    {
+      "url": "https://files.pythonhosted.org/packages/5c/23/c7abc0ca0a1526a0774eca151daeb8de62ec457e77262b66b359c3c7679e/tzdata-2025.2-py2.py3-none-any.whl",
+      "sha256": "1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8"
+    }
+  ],
+  "targets": {
+    "macos-arm64": {
+      "python": {
+        "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261110/cpython-3.12.16%2B20261110-aarch64-apple-darwin-install_only_stripped.tar.gz",
+        "sha256": "2f11b8aa3726bdbd87dd9eb76568412faddf4f47e26913fa45d6a2e424972acd"
+      },
+      "wheels": [
+        {
+          "url": "https://files.pythonhosted.org/packages/4f/71/76e37c9a599ad89dd944e6cbb3e6a8ad196944a421758e83adea507637b6/duckdb-1.5.0-cp312-cp312-macosx_11_0_arm64.whl",
+          "sha256": "dc92b238f4122800a7592e99134124cc9048c50f766c37a0778dd2637f5cbe59"
+        },
+        {
+          "url": "https://files.pythonhosted.org/packages/66/ee/560deadcdde6c2f90200450d5938f63a34b37e27ebff162810f716f6a230/numpy-2.2.6-cp312-cp312-macosx_11_0_arm64.whl",
+          "sha256": "de749064336d37e340f640b05f24e9e3dd678c57318c7289d222a8a2f543e90c"
+        },
+        {
+          "url": "https://files.pythonhosted.org/packages/f7/7d/414e243c5c8216a5277afd104a319cc1291c5e23f5eeef512db5629ee7f4/opencv_python_headless-4.12.0.88-cp37-abi3-macosx_13_0_arm64.whl",
+          "sha256": "1e58d664809b3350c1123484dd441e1667cd7bed3086db1b9ea1b6f6cb20b50e"
+        },
+        {
+          "url": "https://files.pythonhosted.org/packages/e1/0c/ad295fd74bfac85358fd579e271cded3ac969de81f62dd0142c426b9da91/pandas-2.2.3-cp312-cp312-macosx_11_0_arm64.whl",
+          "sha256": "a5a1595fe639f5988ba6a8e5bc9649af3baf26df3998a0abe56c02609392e0a4"
+        }
+      ]
+    },
+    "macos-x64": {
+      "python": {
+        "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261110/cpython-3.12.16%2B20261110-x86_64-apple-darwin-install_only_stripped.tar.gz",
+        "sha256": "b78a4c479f1964ec484880bee567568266f68da102269fb93a05fe8716b45f91"
+      },
+      "wheels": [
+        {
+          "url": "https://files.pythonhosted.org/packages/21/e9/61143471958d36d3f3e764cb4cd43330be208ddbff1c78d3310b9ee67fe8/duckdb-1.5.0-cp312-cp312-macosx_10_13_x86_64.whl",
+          "sha256": "cb786d5472afc16cc3c7355eb2007172538311d6f0cc6f6a0859e84a60220375"
+        },
+        {
+          "url": "https://files.pythonhosted.org/packages/82/5d/c00588b6cf18e1da539b45d3598d3557084990dcc4331960c15ee776ee41/numpy-2.2.6-cp312-cp312-macosx_10_13_x86_64.whl",
+          "sha256": "41c5a21f4a04fa86436124d388f6ed60a9343a6f767fced1a8a71c3fbca038ff"
+        },
+        {
+          "url": "https://files.pythonhosted.org/packages/05/14/7e162714beed1cd5e7b5eb66fcbcba2f065c51b1d9da2463024c84d2f7c0/opencv_python_headless-4.12.0.88-cp37-abi3-macosx_13_0_x86_64.whl",
+          "sha256": "365bb2e486b50feffc2d07a405b953a8f3e8eaa63865bc650034e5c71e7a5154"
+        },
+        {
+          "url": "https://files.pythonhosted.org/packages/17/a3/fb2734118db0af37ea7433f57f722c0a56687e14b14690edff0cdb4b7e58/pandas-2.2.3-cp312-cp312-macosx_10_9_x86_64.whl",
+          "sha256": "b1d432e8d08679a40e2a6d8b2f9770a5c21793a6f9f47fdd52c5ce1948a5a8a9"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "python": {
+        "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261110/cpython-3.12.16%2B20261110-aarch64-unknown-linux-gnu-install_only_stripped.tar.gz",
+        "sha256": "b6a41defec4975d94b4ff1950236e7383e5c02ba40ea48c9ec33c66087a35aab"
+      },
+      "wheels": [
+        {
+          "url": "https://files.pythonhosted.org/packages/db/b8/de1831656d5d13173e27c79c7259c8b9a7bdc314fdc8920604838ea4c46d/duckdb-1.5.0-cp312-cp312-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl",
+          "sha256": "1b74cb205c21d3696d8f8b88adca401e1063d6e6f57c1c4f56a243610b086e30"
+        },
+        {
+          "url": "https://files.pythonhosted.org/packages/f8/35/8c80729f1ff76b3921d5c9487c7ac3de9b2a103b1cd05e905b3090513510/numpy-2.2.6-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl",
+          "sha256": "f2618db89be1b4e05f7a1a847a9c1c0abd63e63a1607d892dd54668dd92faf87"
+        },
+        {
+          "url": "https://files.pythonhosted.org/packages/69/4e/116720df7f1f7f3b59abc608ca30fbec9d2b3ae810afe4e4d26483d9dfa0/opencv_python_headless-4.12.0.88-cp37-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.whl",
+          "sha256": "aeb4b13ecb8b4a0beb2668ea07928160ea7c2cd2d9b5ef571bbee6bafe9cc8d0"
+        },
+        {
+          "url": "https://files.pythonhosted.org/packages/c6/2a/4bba3f03f7d07207481fed47f5b35f556c7441acddc368ec43d6643c5777/pandas-2.2.3-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl",
+          "sha256": "5de54125a92bb4d1c051c0659e6fcb75256bf799a732a87184e5ea503965bce3"
+        }
+      ]
+    },
+    "linux-x64": {
+      "python": {
+        "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261110/cpython-3.12.16%2B20261110-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz",
+        "sha256": "6a9e62dad033790aef722dbd370e0ce76ce17b73627ba3ae679f537049350b39"
+      },
+      "wheels": [
+        {
+          "url": "https://files.pythonhosted.org/packages/1f/8d/33d349a3bcbd3e9b7b4e904c19d5b97f058c4c20791b89a8d6323bb93dce/duckdb-1.5.0-cp312-cp312-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl",
+          "sha256": "6e56c19ffd1ffe3642fa89639e71e2e00ab0cf107b62fe16e88030acaebcbde6"
+        },
+        {
+          "url": "https://files.pythonhosted.org/packages/8c/3d/1e1db36cfd41f895d266b103df00ca5b3cbe965184df824dec5c08c6b803/numpy-2.2.6-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+          "sha256": "fd83c01228a688733f1ded5201c678f0c53ecc1006ffbc404db9f7a899ac6249"
+        },
+        {
+          "url": "https://files.pythonhosted.org/packages/89/53/e19c21e0c4eb1275c3e2c97b081103b6dfb3938172264d283a519bf728b9/opencv_python_headless-4.12.0.88-cp37-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+          "sha256": "236c8df54a90f4d02076e6f9c1cc763d794542e886c576a6fee46ec8ff75a7a9"
+        },
+        {
+          "url": "https://files.pythonhosted.org/packages/38/f8/d8fddee9ed0d0c0f4a2132c1dfcf0e3e53265055da8df952a53e7eaf178c/pandas-2.2.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+          "sha256": "fffb8ae78d8af97f849404f21411c95062db1496aeb3e56f146f0355c9989319"
+        }
+      ]
+    }
+  }
+}

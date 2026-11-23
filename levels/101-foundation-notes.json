@@ -1,0 +1,270 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "foundation-notes",
+  "order": 101,
+  "unit": {
+    "id": "foundations",
+    "order": 10,
+    "title": {
+      "zh": "Python 基础",
+      "en": "Python Foundations"
+    }
+  },
+  "topic": {
+    "id": "variables",
+    "order": 2,
+    "title": {
+      "zh": "变量与算术",
+      "en": "Variables and Arithmetic"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "变量与算术",
+    "en": "Variables and Arithmetic"
+  },
+  "brief": {
+    "zh": "还记得杯子上的电量名牌吗？这次在调试器里找 charge，给它读到的电量加 3，再试试把结果存到哪个名字下。",
+    "en": "Remember the name tag on the charge cup? Find charge in the debugger, add 3 to its reading, and try choosing where to save the result."
+  },
+  "concept": {
+    "zh": "读取、计算与赋值",
+    "en": "Reading, calculating, and assigning values"
+  },
+  "hints": [],
+  "execution": {
+    "source": "charge = scan()\nresult = charge + 3\nsay(str(result))",
+    "assignment": {
+      "overwriteSource": "charge = scan()\ncharge = charge + 3\nsay(str(charge))",
+      "inputVariable": "charge",
+      "resultVariable": "result"
+    },
+    "cases": [
+      {
+        "label": {
+          "zh": "起始电量 6 格",
+          "en": "Start with 6 units"
+        },
+        "input": 6,
+        "expected": "9"
+      },
+      {
+        "label": {
+          "zh": "起始电量 1 格",
+          "en": "Start with 1 unit"
+        },
+        "input": 1,
+        "expected": "4",
+        "predictions": [
+          "1",
+          "4",
+          "9"
+        ]
+      },
+      {
+        "label": {
+          "zh": "起始电量 0 格",
+          "en": "Start with 0 units"
+        },
+        "input": 0,
+        "expected": "3",
+        "predictions": [
+          "0",
+          "9",
+          "3"
+        ]
+      }
+    ]
+  },
+  "sections": [
+    {
+      "title": {
+        "zh": "用变量记住原电量",
+        "en": "Remember the starting charge in a variable"
+      },
+      "body": {
+        "zh": "读取电量后，把数字放进名叫 charge 的格子。后面用到 charge 时，程序就从这个格子里取数。",
+        "en": "After reading the charge, store the number in a box called charge. When the program uses charge later, it reads the number in that box."
+      }
+    },
+    {
+      "title": {
+        "zh": "先算右边，再写左边",
+        "en": "Calculate the right side before storing on the left"
+      },
+      "body": {
+        "zh": "charge = charge + 3 先取出 charge 中的 6，算出 9，再把 9 写回 charge。写回之前，格子里还是 6。",
+        "en": "In charge = charge + 3, the program reads the old 6, calculates 9, then writes 9 back into charge. The box still holds 6 while the right side is being calculated."
+      }
+    },
+    {
+      "title": {
+        "zh": "左边的名字决定结果放在哪",
+        "en": "The name on the left decides where the result goes"
+      },
+      "body": {
+        "zh": "result = charge + 3 把 9 存进 result，charge 依然是 6。两种写法都算出 9，可以通过变量里的值看出区别。",
+        "en": "With result = charge + 3, the program puts 9 into result, leaving 6 in charge. Both instructions calculate 9. The boxes show where it is stored."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "charge 一开始是 6。执行 charge = charge + 3 后，charge 的值是多少？",
+      "en": "charge starts at 6. What is in charge after running charge = charge + 3?"
+    },
+    "options": [
+      {
+        "zh": "6",
+        "en": "6"
+      },
+      {
+        "zh": "9",
+        "en": "9"
+      },
+      {
+        "zh": "3",
+        "en": "3"
+      }
+    ],
+    "correct": 1,
+    "feedback": {
+      "zh": "先读出 6，加 3 得到 9，再用 9 更新 charge。",
+      "en": "First read 6 and add 3. Then store the resulting 9 in charge."
+    }
+  },
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": {
+          "zh": "从电池读出 6，把它存进 charge。",
+          "en": "Read 6 from the battery and store it in charge."
+        },
+        "items": [
+          {
+            "id": "battery",
+            "label": {
+              "zh": "起始电量",
+              "en": "Starting charge"
+            },
+            "value": {
+              "zh": "6",
+              "en": "6"
+            },
+            "state": "done"
+          },
+          {
+            "id": "charge",
+            "label": {
+              "zh": "原电量",
+              "en": "Original charge"
+            },
+            "value": {
+              "zh": "6",
+              "en": "6"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "先算右边。charge 里仍是 6，加 3 得到 9。",
+          "en": "Calculate the right side first. charge still holds 6, and adding 3 gives 9."
+        },
+        "items": [
+          {
+            "id": "charge",
+            "label": {
+              "zh": "原电量",
+              "en": "Original charge"
+            },
+            "value": {
+              "zh": "6",
+              "en": "6"
+            },
+            "state": "done"
+          },
+          {
+            "id": "sum",
+            "label": {
+              "zh": "算出的新电量",
+              "en": "Calculated charge"
+            },
+            "value": {
+              "zh": "6 + 3 → 9",
+              "en": "6 + 3 → 9"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "左边写 result，就把 9 放进新的格子，charge 还是 6。",
+          "en": "With result on the left, 9 goes into a new box and charge still holds 6."
+        },
+        "items": [
+          {
+            "id": "charge",
+            "label": {
+              "zh": "charge",
+              "en": "charge"
+            },
+            "value": {
+              "zh": "6",
+              "en": "6"
+            },
+            "state": "done"
+          },
+          {
+            "id": "result",
+            "label": {
+              "zh": "result",
+              "en": "result"
+            },
+            "value": {
+              "zh": "9",
+              "en": "9"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "左边写 charge，就把 9 存回原来的格子。",
+          "en": "With charge on the left, 9 goes back into the original box."
+        },
+        "items": [
+          {
+            "id": "sum",
+            "label": {
+              "zh": "算出的新电量",
+              "en": "Calculated charge"
+            },
+            "value": {
+              "zh": "9",
+              "en": "9"
+            },
+            "state": "done"
+          },
+          {
+            "id": "charge",
+            "label": {
+              "zh": "charge",
+              "en": "charge"
+            },
+            "value": {
+              "zh": "9",
+              "en": "9"
+            },
+            "state": "active"
+          }
+        ]
+      }
+    ]
+  }
+}

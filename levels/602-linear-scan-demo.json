@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "kind": "replay",
+  "unit": {
+    "id": "algorithm-intro",
+    "order": 50,
+    "title": {
+      "zh": "算法初级",
+      "en": "Introductory Algorithms"
+    }
+  },
+  "stage": "demo",
+  "id": "linear-scan-demo",
+  "order": 602,
+  "title": {
+    "zh": "扫描一列货物",
+    "en": "Scan a row of cargo"
+  },
+  "brief": {
+    "zh": "换一组数据，看计数何时增加、何时保持不变。",
+    "en": "Switch inputs and see when the running count changes."
+  },
+  "concept": {
+    "zh": "累计状态",
+    "en": "Running counts"
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "有两个编号 5",
+        "en": "Two parts numbered 5"
+      },
+      "source": "values = scan()\ncount = 0\nfor value in values:\n    if value == 5:\n        count += 1\n    say(str(count))\nsubmit(count)",
+      "scenario": {
+        "tiles": [
+          "#####",
+          "#...#",
+          "#####"
+        ],
+        "start": {
+          "x": 1,
+          "y": 1
+        },
+        "input": [
+          5,
+          3,
+          7,
+          5,
+          1
+        ],
+        "allowedApi": [
+          "scan",
+          "say",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "title": {
+        "zh": "没有编号 5",
+        "en": "No parts numbered 5"
+      },
+      "source": "values = scan()\ncount = 0\nfor value in values:\n    if value == 5:\n        count += 1\n    say(str(count))\nsubmit(count)",
+      "scenario": {
+        "tiles": [
+          "#####",
+          "#...#",
+          "#####"
+        ],
+        "start": {
+          "x": 1,
+          "y": 1
+        },
+        "input": [
+          4,
+          3,
+          7
+        ],
+        "allowedApi": [
+          "scan",
+          "say",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              0
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "topic": {
+    "id": "linear-search",
+    "order": 1,
+    "title": {
+      "zh": "线性查找",
+      "en": "Linear search"
+    }
+  }
+}

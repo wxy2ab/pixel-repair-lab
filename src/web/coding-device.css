@@ -1,0 +1,49 @@
+.coding-device { grid-column: 1 / -1; min-width: 0; }
+.coding-device-console {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+  border: 1px solid #405569;
+  border-radius: 7px;
+  overflow: hidden;
+  color: #e5eff7;
+  background: #16283a;
+}
+.coding-device-controls, .coding-device-readout { min-width: 0; }
+.coding-device-controls {
+  display: grid;
+  align-content: start;
+  gap: 9px;
+  padding: clamp(9px, 1.4vw, 16px);
+  border-bottom: 1px solid #455f6b;
+  background: #233b47;
+  color: #e0f2f1;
+}
+.coding-device-controls p { margin: 0; }
+.coding-device-readout { padding: clamp(9px, 1.4vw, 16px); }
+.coding-device-readout > .panel-heading,
+.coding-device-readout > .visual-program-heading { min-height: 0; padding: 0 0 8px; border: 0; background: transparent; }
+.coding-device-readout > div[class$='-body'],
+.coding-device-readout > div[class$='-content'] { padding: 0; }
+.coding-device-readout > .walkthrough-workspace { padding-inline: 0; }
+.coding-device-controls .primary-button { min-height: 38px; }
+.coding-device-controls :is(button, input[type='range']):focus-visible,
+.coding-device .device-charge-key:focus-visible { outline: 3px solid #f4cf82; outline-offset: 2px; }
+.coding-device .device-charge-key {
+  cursor: pointer;
+  background: #275f4c;
+  color: #efffe9;
+  border-color: #a7ecc4;
+  font-family: inherit;
+}
+.coding-device .device-charge-key:hover { background: #387b61; }
+.coding-device .device-charge-key small { color: #e0ffdb; font-size: 11px; font-weight: 600; }
+.coding-device .device-battery-trigger { padding: 6px 8px; border: 1px solid #83caaa; border-radius: 5px; }
+.coding-device .for-batteries .device-battery-trigger { display: grid; justify-items: center; gap: 4px; }
+.coding-device .assignment-store { grid-column: 1 / -1; justify-self: center; }
+@container classroom (min-width: 760px) {
+  .coding-device-console[data-workbench] { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
+  .coding-device-console[data-workbench] > .coding-device-controls { border: 0; border-inline-end: 1px solid #455f6b; }
+}
+.route-case-board { min-width: 0; margin-block: 10px; }
+.route-case-board > p { margin: 5px 0; font-size: .87rem; }

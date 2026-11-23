@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "challenge-four-sensor-vibration",
+  "order": 1919,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "prerequisites": [{"unit": "architecture", "topic": "memory"}, {"unit": "architecture", "topic": "registers"}, {"unit": "architecture", "topic": "instructions"}],
+  "title": {"zh": "四点振动分解", "en": "Four-Point Vibration Signature"},
+  "concept": {"zh": "单寄存器的二维信号分解", "en": "Two-dimensional signal decomposition in place"},
+  "brief": {"zh": "地址 0 至 3 按左上、右上、左下、右下排列四个传感器。检测台只收四个特征：0 写总和；1 写左列和减右列和；2 写上排和减下排和；3 写主对角线和减另一条对角线和。每个特征都按最初的传感器读数计算。没有空余格，停机时 ACC 保留特征 3。", "en": "Addresses 0 to 3 hold the top-left, top-right, bottom-left and bottom-right sensors. Submit four features: total in 0, left column sum minus right column sum in 1, top row sum minus bottom row sum in 2, and main diagonal sum minus the other diagonal in 3. All features must use the original readings. There are no spare cells. Halt with feature 3 in ACC."},
+  "hints": [],
+  "allowedOps": ["LOAD", "ADD", "SUB", "STORE", "HALT"],
+  "starterCode": "HALT\n",
+  "solutionCode": "LOAD 0\nADD 1\nSTORE 0\nSUB 1\nSUB 1\nSTORE 1\nLOAD 2\nADD 3\nSTORE 2\nSUB 3\nSUB 3\nSTORE 3\nLOAD 0\nADD 2\nSTORE 0\nSUB 2\nSUB 2\nSTORE 2\nLOAD 1\nADD 3\nSTORE 1\nSUB 3\nSUB 3\nSTORE 3\nHALT\n",
+  "cases": [
+    {"label": {"zh": "验收样本 1", "en": "Acceptance sample 1"}, "memory": [4, 7, 2, 9], "accumulator": 4, "goal": {"memory": [{"address": 0, "value": 22}, {"address": 1, "value": -10}, {"address": 2, "value": 0}, {"address": 3, "value": 4}], "accumulator": 4}},
+    {"label": {"zh": "验收样本 2", "en": "Acceptance sample 2"}, "memory": [-3, 0, 11, -7], "accumulator": 0, "goal": {"memory": [{"address": 0, "value": 1}, {"address": 1, "value": 15}, {"address": 2, "value": -7}, {"address": 3, "value": -21}], "accumulator": -21}},
+    {"label": {"zh": "验收样本 3", "en": "Acceptance sample 3"}, "memory": [8, -8, -8, 8], "accumulator": 13, "goal": {"memory": [{"address": 0, "value": 0}, {"address": 1, "value": 0}, {"address": 2, "value": 0}, {"address": 3, "value": 32}], "accumulator": 32}},
+    {"label": {"zh": "验收样本 4", "en": "Acceptance sample 4"}, "memory": [0, 7, 0, 0], "accumulator": -5, "goal": {"memory": [{"address": 0, "value": 7}, {"address": 1, "value": -7}, {"address": 2, "value": 7}, {"address": 3, "value": -7}], "accumulator": -7}},
+    {"label": {"zh": "验收样本 5", "en": "Acceptance sample 5"}, "memory": [3, 3, 3, 3], "accumulator": 1, "goal": {"memory": [{"address": 0, "value": 12}, {"address": 1, "value": 0}, {"address": 2, "value": 0}, {"address": 3, "value": 0}], "accumulator": 0}}
+  ]
+}

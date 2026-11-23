@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "database-warm-area-query-challenge",
+  "order": 539,
+  "stage": "challenge",
+  "unit": { "id": "database", "order": 130, "title": { "zh": "数据库", "en": "Databases" } },
+  "title": { "zh": "找出多次偏暖的区域", "en": "Find Areas That Were Warm More Than Once" },
+  "brief": { "zh": "先选出所有偏暖读数，再找出偏暖读数至少出现两次的区域。", "en": "Select the warm readings, then find the areas where warm temperatures occurred at least twice." },
+  "concept": { "zh": "WHERE 先筛行，分组汇总后用 HAVING 再筛组。", "en": "Use WHERE to select individual rows, then use HAVING to select groups after aggregation." },
+  "hints": [{ "zh": "第一步保留区域和记录编号等所有列。第二步给每区计数，再保留计数至少为 2 的区域。", "en": "Keep all columns, including area and ID, in the first step. Then count by area and keep groups with at least two readings." }],
+  "steps": [
+    {
+      "operation": "query",
+      "input": "clean",
+      "label": { "zh": "挑出偏暖的读数", "en": "Select warm readings" },
+      "prompt": { "zh": "保留所有温度至少 24°C 的记录，显示所有列，按编号排列。", "en": "Return all readings at 24°C or above, keeping all columns, in ID order." },
+      "initial": { "columns": "all", "zone": "all", "minimum": 18, "sort": "id" },
+      "goal": {
+        "columns": ["id", "day", "zone", "reading"],
+        "rows": [
+          [2, 1, "workshop", 24],
+          [5, 2, "workshop", 28],
+          [7, 3, "hangar", 26],
+          [8, 3, "workshop", 32],
+          [10, 4, "hangar", 30],
+          [12, 4, "storage", 24],
+          [13, 4, "workshop", 36]
+        ]
+      },
+      "solution": { "columns": "all", "zone": "all", "minimum": 24, "sort": "id" }
+    },
+    {
+      "operation": "sql-group",
+      "input": "previous",
+      "label": { "zh": "统计偏暖次数", "en": "Count warm readings" },
+      "prompt": { "zh": "使用上一步的结果，找出偏暖读数至少 2 次的区域。按偏暖次数从多到少排列。", "en": "Use the previous result to find areas with at least two warm readings. Sort by number of warm readings, highest first." },
+      "initial": { "by": "day", "statistic": "mean", "minimum": 0, "sort": "key" },
+      "goal": { "columns": ["zone", "count"], "rows": [["workshop", 4], ["hangar", 2]] },
+      "solution": { "by": "zone", "statistic": "count", "minimum": 2, "sort": "value-desc" }
+    }
+  ]
+}

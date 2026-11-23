@@ -1,0 +1,89 @@
+.bread-meter {
+  max-width: 670px;
+  margin: 8px auto 0;
+  padding: 9px 10px 8px;
+  border: 1px solid #ecc577;
+  border-inline-width: 5px;
+  border-radius: 11px;
+  color: #f3efe1;
+  background: #394441;
+  box-shadow: inset 0 1px #798782, inset 0 -3px #28332f;
+}
+.bread-meter-head, .bread-meter-face, .bread-meter-footer, .bread-meter-modes {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.bread-meter-head { justify-content: space-between; flex-wrap: wrap; }
+.bread-meter h3 { margin: 0; color: #fff4d4; font: 700 .9rem var(--sans, system-ui), sans-serif; }
+.bread-meter-modes { gap: 2px; padding: 2px; background: #202f2d; border-radius: 5px; }
+.bread-meter-modes button, .bread-meter-footer button {
+  min-height: 27px;
+  padding: 2px 8px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: #e9eee3;
+  cursor: pointer;
+  font: 600 .77rem var(--sans, system-ui), sans-serif;
+}
+.bread-meter-modes button[aria-pressed="true"] { background: #f3cc81; color: #392f22; }
+.bread-meter button:focus-visible { outline: 2px solid #97e6f8; outline-offset: 2px; }
+.bread-meter-face { align-items: stretch; margin: 7px 0 5px; flex-wrap: wrap; }
+.bread-meter-lcd {
+  display: grid;
+  align-content: center;
+  flex: 1 1 115px;
+  min-width: 0;
+  padding: 3px 10px 4px;
+  border: 2px solid #202c27;
+  border-radius: 4px;
+  background: linear-gradient(105deg, #d6dfb1, #b7c9a1);
+  box-shadow: inset 1px 2px 4px #64765966;
+  color: #21372e;
+  line-height: 1.18;
+  font-family: var(--mono, monospace);
+}
+.bread-meter-lcd span { font: 650 .63rem var(--sans, system-ui), sans-serif; color: #40523f; }
+.bread-meter-lcd strong { font-size: clamp(.95rem, 2vw, 1.35rem); letter-spacing: .015em; }
+.bread-meter-probes { flex: 2 1 160px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 5px; }
+.bread-meter-probe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 4px;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 38px;
+  padding: 2px 4px;
+  color: #273a34;
+  border: 1px solid #a7b1a6;
+  border-radius: 5px;
+  background: #e3e7d9;
+  cursor: grab;
+  touch-action: none;
+}
+.bread-meter-probe:active { cursor: grabbing; }
+.bread-meter-probe[aria-pressed="true"] { background: #fff0c5; box-shadow: inset 0 0 0 2px #c48d40; }
+.bread-meter-probe > svg { width: 35px; height: 19px; }
+.bread-meter-probe b, .bread-meter-probe small { display: block; line-height: 1.2; }
+.bread-meter-probe b { font: 700 .8rem var(--sans, system-ui), sans-serif; }
+.bread-meter-probe small { color: #485a51; font: 550 .7rem var(--mono, monospace); }
+.bread-meter-footer { align-items: baseline; justify-content: space-between; }
+.bread-meter-footer p { margin: 2px 0; color: #e1e9dc; font-size: .79rem; line-height: 1.4; }
+.bread-meter-footer button { flex: none; border-color: #89998d; min-height: 25px; }
+.bread-meter-footer button:hover, .bread-meter-modes button:not([aria-pressed="true"]):hover { background: #51625a; }
+.bread-probe-lead { pointer-events: none; --cable: #353f45; --cable-edge: #a2aaa3; --grip: #303a40; --guard: #626e72; }
+.bread-probe-lead[data-probe="red"] { --cable: #c94c3f; --cable-edge: #f3cbba; --grip: #c94636; --guard: #e97862; }
+.bread-probe-lead path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.bread-probe-cable-outline { stroke: var(--cable-edge); stroke-width: 4; }
+.bread-probe-cable { stroke: var(--cable); stroke-width: 2.6; }
+.bread-probe-needle { stroke: #637575; stroke-width: 2.2; }
+.bread-probe-grip { stroke: var(--grip); stroke-width: 6; }
+.bread-probe-guard { stroke: var(--guard); stroke-width: 3.2; }
+.bread-probe-contact { fill: var(--cable); stroke: white; stroke-width: 1.1; }
+.bread-probe-handle { width: 100%; height: 100%; display: block; padding: 0; border: 0; background: transparent; pointer-events: auto; cursor: grab; touch-action: none; }
+.bread-probe-handle:focus-visible { outline: 2px dashed #19788a; outline-offset: -2px; }
+.bread-terminal[data-probe-target] .bread-focus-ring { stroke: #384951; fill: #c8d8d9; }
+.bread-terminal[data-probe-target="red"] .bread-focus-ring { stroke: #bd4130; fill: #f2c8b2; }
+.bread-part-pick:disabled, .bread-part-handle:disabled { opacity: 1; cursor: default; }

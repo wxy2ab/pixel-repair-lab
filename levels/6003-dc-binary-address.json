@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "kind": "circuit",
+  "id": "dc-binary-address",
+  "order": 6003,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "binary-lamps",
+    "order": 1,
+    "title": {
+      "zh": "二进制与信号灯",
+      "en": "Binary Signals"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "为芽芽发送停靠号",
+    "en": "Send Sprout a Bay Number"
+  },
+  "brief": {
+    "zh": "用三盏灯发送两张车票上的号码。每一张都要和十进制读数对上。",
+    "en": "Use three lamps to send the number on each of two tickets. Match the decimal reading each time."
+  },
+  "concept": {
+    "zh": "将号码写成三位二进制",
+    "en": "Encode bay numbers using three bits"
+  },
+  "hints": [],
+  "mode": "binary",
+  "cases": [
+    {
+      "label": {
+        "zh": "第一张车票 · 2 号",
+        "en": "First ticket · bay 2"
+      },
+      "bits": [
+        0,
+        0,
+        0
+      ],
+      "goal": {
+        "value": 2
+      },
+      "solution": {
+        "bits": [
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "第二张车票 · 6 号",
+        "en": "Second ticket · bay 6"
+      },
+      "bits": [
+        0,
+        0,
+        1
+      ],
+      "goal": {
+        "value": 6
+      },
+      "solution": {
+        "bits": [
+          1,
+          1,
+          0
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "kind": "circuit",
+  "id": "computer-replay",
+  "order": 106,
+  "unit": {
+    "id": "computer",
+    "order": 80,
+    "title": {
+      "zh": "计算机原理",
+      "en": "Computer Systems"
+    }
+  },
+  "topic": {
+    "id": "binary",
+    "order": 1,
+    "title": {
+      "zh": "二进制",
+      "en": "Binary"
+    }
+  },
+  "stage": "demo",
+  "title": {
+    "zh": "打开计算机的观察窗",
+    "en": "Watch the Computer Work"
+  },
+  "concept": {
+    "zh": "改变一位并观察数值变化",
+    "en": "Change one bit and observe the value"
+  },
+  "brief": {
+    "zh": "拨动开关，在二进制读数和十进制读数之间来回看。试着只改变一位，比较哪一位带来的变化更大。",
+    "en": "Flip the switches and compare the binary and decimal readings. Change just one bit at a time to see which position makes a bigger difference."
+  },
+  "hints": [
+    {
+      "zh": "先在三位例子里翻动最左和最右各一次。再换成四位，看看增加一位带来了多大的数。",
+      "en": "In a three-bit example, flip the leftmost switch and then the rightmost one. Switch to four bits to see how much the extra position can add."
+    }
+  ],
+  "mode": "binary",
+  "cases": [
+    {
+      "label": {
+        "zh": "三位灯从 011 开始",
+        "en": "Three switches start at 011"
+      },
+      "bits": [
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "label": {
+        "zh": "三位灯从 101 开始",
+        "en": "Three switches start at 101"
+      },
+      "bits": [
+        1,
+        0,
+        1
+      ]
+    },
+    {
+      "label": {
+        "zh": "四位灯从 0110 开始",
+        "en": "Four switches start at 0110"
+      },
+      "bits": [
+        0,
+        1,
+        1,
+        0
+      ]
+    }
+  ]
+}

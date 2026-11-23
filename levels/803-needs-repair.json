@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "python-intermediate",
+    "order": 20,
+    "title": {
+      "zh": "Python 进阶",
+      "en": "Intermediate Python"
+    }
+  },
+  "kind": "algorithm",
+  "id": "needs-repair",
+  "order": 813,
+  "stage": "exercise",
+  "topic": {
+    "id": "branches",
+    "order": 1,
+    "title": {
+      "zh": "条件分支",
+      "en": "Conditional branches"
+    }
+  },
+  "title": {
+    "zh": "写一条检修规则",
+    "en": "Write a repair rule"
+  },
+  "concept": {
+    "zh": "把比较写成可复用函数",
+    "en": "Make a comparison reusable"
+  },
+  "brief": {
+    "zh": "实现 needs_repair(reading, limit)。读数达到或超过警戒线时返回 True，其余情况返回 False。通过用例后可以保存这个函数。",
+    "en": "Implement needs_repair(reading, limit). Return True when the reading meets or exceeds the limit, and False otherwise. Pass the cases to save the function."
+  },
+  "hints": [
+    {
+      "zh": "用 >= 把相等也包括进来。比较表达式本身就能得到 True 或 False。",
+      "en": "Use >= so equality counts. The comparison itself produces True or False."
+    }
+  ],
+  "functionName": "needs_repair",
+  "starterCode": "def needs_repair(reading, limit):\n    return False\n",
+  "solutionCode": "def needs_repair(reading, limit):\n    return reading >= limit\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "比较读数和警戒线",
+        "en": "Compare the reading and the limit"
+      },
+      "code": "    return reading >= limit"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        2,
+        5
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        5,
+        5
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        8,
+        5
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        -3,
+        -2
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        2.5,
+        2.5
+      ],
+      "expected": true
+    }
+  ]
+}

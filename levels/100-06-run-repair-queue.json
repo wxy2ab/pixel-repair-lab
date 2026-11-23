@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "kind": "replay",
+  "id": "run-repair-queue",
+  "order": 1005,
+  "unit": {
+    "id": "structures",
+    "order": 40,
+    "title": {
+      "zh": "数据结构",
+      "en": "Data Structures"
+    }
+  },
+  "topic": {
+    "id": "queues",
+    "order": 3,
+    "title": {
+      "zh": "队列",
+      "en": "Queues"
+    }
+  },
+  "stage": "demo",
+  "title": {
+    "zh": "新货到队尾再发车",
+    "en": "Add a Box at the Back Before Dispatch"
+  },
+  "concept": {
+    "zh": "入队、出队与等待",
+    "en": "Enqueue, dequeue, and wait"
+  },
+  "brief": {
+    "zh": "已经有两件货在等。把新货放到队尾，观察今天发出的两件。",
+    "en": "Two boxes are already waiting. Add a new box at the back and watch which two leave today."
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "在垫圈和齿轮后面加入轴承",
+        "en": "Add a bearing behind the washer and gear"
+      },
+      "source": "parts = scan()\nqueue = []\nqueue.append(parts[0])\nqueue.append(parts[1])\nqueue.append(parts[2])\nsubmit(queue.pop(0))\nsubmit(queue.pop(0))",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "allowedApi": [
+          "scan",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              "washer",
+              "gear"
+            ],
+            "origin": "queue-pop",
+            "sameContainer": true
+          }
+        ],
+        "input": [
+          "washer",
+          "gear",
+          "bearing"
+        ]
+      }
+    }
+  ]
+}

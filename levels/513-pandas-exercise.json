@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "pandas-four-delivery-groups",
+  "order": 513,
+  "stage": "exercise",
+  "unit": {
+    "id": "pandas",
+    "order": 110,
+    "title": {
+      "zh": "pandas",
+      "en": "pandas"
+    }
+  },
+  "topic": {
+    "id": "tables",
+    "order": 1,
+    "title": {
+      "zh": "数据表与列",
+      "en": "Tables and columns"
+    }
+  },
+  "title": {
+    "zh": "做一张区域和读数对照表",
+    "en": "Make a Table of Areas and Readings"
+  },
+  "brief": {
+    "zh": "把原始记录整理成两列，方便同学把区域和温度一行行对起来。",
+    "en": "Show the raw records in two columns so classmates can read each area beside its temperature."
+  },
+  "concept": {
+    "zh": "选列只改变结果显示的字段。",
+    "en": "Selecting columns changes which fields the output displays."
+  },
+  "hints": [
+    {
+      "zh": "保留所有区域。检查输出是不是只剩 zone 和 reading 两列。",
+      "en": "Keep every area. Check that zone and reading are the only columns shown."
+    }
+  ],
+  "steps": [
+    {
+      "operation": "table",
+      "input": "raw",
+      "label": {
+        "zh": "选择两列",
+        "en": "Choose two columns"
+      },
+      "prompt": {
+        "zh": "保留所有原始行，只显示区域 zone 和读数 reading，按这个顺序排列。",
+        "en": "Keep every raw row and display only zone and reading, in that order."
+      },
+      "initial": {
+        "columns": "day-zone",
+        "zone": "all"
+      },
+      "solution": {
+        "columns": "zone-reading",
+        "zone": "all"
+      },
+      "goal": {
+        "columns": [
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            "hangar",
+            18
+          ],
+          [
+            "workshop",
+            " 24 "
+          ],
+          [
+            "storage",
+            20
+          ],
+          [
+            " Hangar ",
+            22
+          ],
+          [
+            "workshop",
+            28
+          ],
+          [
+            "storage",
+            null
+          ],
+          [
+            "hangar",
+            26
+          ],
+          [
+            " Workshop ",
+            " 32 "
+          ],
+          [
+            "storage",
+            16
+          ],
+          [
+            "storage",
+            16
+          ],
+          [
+            "hangar",
+            30
+          ],
+          [
+            "workshop",
+            "bad"
+          ],
+          [
+            "storage",
+            24
+          ],
+          [
+            "workshop",
+            36
+          ]
+        ]
+      }
+    }
+  ]
+}

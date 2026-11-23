@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "kind": "replay",
+  "id": "ai-replay",
+  "order": 110,
+  "unit": {
+    "id": "ai",
+    "order": 160,
+    "title": {
+      "zh": "AI 协作",
+      "en": "AI Collaboration"
+    }
+  },
+  "topic": { "id": "task", "order": 1, "title": { "zh": "写清任务", "en": "Describe the task" } },
+  "stage": "demo",
+  "title": {
+    "zh": "观看一次提示词修正",
+    "en": "Watch a Prompt Get Corrected"
+  },
+  "brief": {
+    "zh": "发送一份写明物品和数量的绘图提示词，看看 AI 交回什么清单，再运行一次修正。",
+    "en": "Send a drawing-kit prompt that names items and quantities. See what list the AI returns, then run a correction."
+  },
+  "concept": {
+    "zh": "清单核对与定向修正",
+    "en": "Check the list and give a targeted correction"
+  },
+  "hints": [],
+  "mode": "ai",
+  "example": {
+    "version": 1,
+    "kind": "ai",
+    "id": "drawing-kit-example",
+    "order": 0,
+    "unit": {
+      "id": "ai",
+      "order": 160,
+      "title": {
+        "zh": "AI 协作",
+        "en": "AI Collaboration"
+      }
+    },
+    "stage": "exercise",
+    "title": {
+      "zh": "绘图用品清单",
+      "en": "Drawing Supply List"
+    },
+    "brief": {
+      "zh": "请准备三支记号笔和一卷胶带。垫圈留在外面。",
+      "en": "Pack three markers and one roll of tape. Leave out the washer."
+    },
+    "concept": {
+      "zh": "看清哪一项数量需要改",
+      "en": "Identify the count that needs changing"
+    },
+    "hints": [],
+    "inventory": [
+      {
+        "id": "marker",
+        "label": {
+          "zh": "记号笔",
+          "en": "Marker"
+        },
+        "aliases": [
+          "markers",
+          "马克笔"
+        ]
+      },
+      {
+        "id": "tape",
+        "label": {
+          "zh": "胶带",
+          "en": "Tape"
+        },
+        "aliases": [
+          "胶纸",
+          "tape roll"
+        ]
+      },
+      {
+        "id": "washer",
+        "label": {
+          "zh": "垫圈",
+          "en": "Washer"
+        },
+        "aliases": [
+          "washers",
+          "垫片"
+        ]
+      }
+    ],
+    "required": {
+      "marker": 3,
+      "tape": 1
+    },
+    "trainingFault": {
+      "itemId": "tape",
+      "quantity": 2
+    },
+    "examplePrompts": {
+      "zh": [
+        "请打包三支记号笔和一卷胶带。不要放垫圈。请逐项列出物品和数量。",
+        "请把胶带改为一卷。"
+      ],
+      "en": [
+        "Pack three markers and one roll of tape. Leave out the washer. Return a checklist with one item per line.",
+        "Set tape to one."
+      ]
+    }
+  }
+}

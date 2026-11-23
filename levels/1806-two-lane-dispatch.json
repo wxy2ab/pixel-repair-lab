@@ -1,0 +1,514 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-two-lane-dispatch",
+  "order": 1806,
+  "difficulty": "starter",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "stage": "challenge",
+  "title": {
+    "zh": "双线应急补给",
+    "en": "Two-Lane Emergency Dispatch"
+  },
+  "concept": {
+    "zh": "两份工单 · 14 回合",
+    "en": "Two work orders · 14 turns"
+  },
+  "brief": {
+    "zh": "工单的 bay 指定西舱（west）或东舱（east）。在 14 回合内取走指定舱的两块电池，提交 codes 表里该舱的校验号，最终停在上方出口。移动和拾取各花 1 回合。同一程序还要通过另一份工单。",
+    "en": "The work order’s bay is west or east. In 14 turns, take both batteries from that bay, submit its verification number from the codes table, and finish at the upper exit. A move or a pickup costs one turn. The same program must pass a second work order."
+  },
+  "prerequisites": [
+    {
+      "unit": "python-intermediate",
+      "topic": "branches"
+    },
+    {
+      "unit": "structures",
+      "topic": "dictionaries"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "###########",
+    "#.........#",
+    "#.###.###.#",
+    "#...#.#...#",
+    "#.#.#.#.#.#",
+    "#.........#",
+    "###########"
+  ],
+  "start": {
+    "x": 5,
+    "y": 5
+  },
+  "turnLimit": 14,
+  "items": [
+    {
+      "id": "west-inner",
+      "x": 3,
+      "y": 3
+    },
+    {
+      "id": "west-outer",
+      "x": 1,
+      "y": 2
+    },
+    {
+      "id": "east-inner",
+      "x": 7,
+      "y": 3
+    },
+    {
+      "id": "east-outer",
+      "x": 9,
+      "y": 2
+    }
+  ],
+  "input": {
+    "bay": "west",
+    "codes": {
+      "west": 36,
+      "east": 81
+    }
+  },
+  "allowedApi": [
+    "scan",
+    "submit",
+    "move",
+    "pick"
+  ],
+  "objectives": [
+    {
+      "type": "collect",
+      "itemIds": [
+        "west-inner",
+        "west-outer"
+      ]
+    },
+    {
+      "type": "submit",
+      "values": [
+        36
+      ],
+      "origin": "dict-index"
+    },
+    {
+      "type": "exit",
+      "x": 5,
+      "y": 1
+    }
+  ],
+  "variants": [
+    {
+      "input": {
+        "bay": "east",
+        "codes": {
+          "west": 58,
+          "east": 27
+        }
+      },
+      "objectives": [
+        {
+          "type": "collect",
+          "itemIds": [
+            "east-inner",
+            "east-outer"
+          ]
+        },
+        {
+          "type": "submit",
+          "values": [
+            27
+          ],
+          "origin": "dict-index"
+        },
+        {
+          "type": "exit",
+          "x": 5,
+          "y": 1
+        }
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "read",
+      "label": {
+        "zh": "扫描工单",
+        "en": "Scan the work order"
+      },
+      "template": "ticket = scan()"
+    },
+    {
+      "id": "if-bay",
+      "label": {
+        "zh": "如果工单指定",
+        "en": "If the work order names"
+      },
+      "template": "if ticket[\"bay\"] == {{bay}}:",
+      "block": true,
+      "parameters": [
+        {
+          "name": "bay",
+          "label": {
+            "zh": "舱位",
+            "en": "Bay"
+          },
+          "choices": [
+            {
+              "id": "west",
+              "label": {
+                "zh": "西舱",
+                "en": "West bay"
+              },
+              "code": "\"west\""
+            },
+            {
+              "id": "east",
+              "label": {
+                "zh": "东舱",
+                "en": "East bay"
+              },
+              "code": "\"east\""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "else-bay",
+      "label": {
+        "zh": "否则",
+        "en": "Otherwise"
+      },
+      "template": "else:",
+      "block": true
+    },
+    {
+      "id": "set-headings",
+      "label": {
+        "zh": "设置出舱和回程方向",
+        "en": "Set outbound and return headings"
+      },
+      "template": "heading = {{pair}}",
+      "parameters": [
+        {
+          "name": "pair",
+          "label": {
+            "zh": "出舱 / 回程",
+            "en": "Outbound / return"
+          },
+          "choices": [
+            {
+              "id": "left",
+              "label": {
+                "zh": "左 / 右",
+                "en": "Left / right"
+              },
+              "code": "[\"left\", \"right\"]"
+            },
+            {
+              "id": "right",
+              "label": {
+                "zh": "右 / 左",
+                "en": "Right / left"
+              },
+              "code": "[\"right\", \"left\"]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "repeat",
+      "label": {
+        "zh": "重复",
+        "en": "Repeat"
+      },
+      "template": "for turn in range({{count}}):",
+      "block": true,
+      "parameters": [
+        {
+          "name": "count",
+          "label": {
+            "zh": "次数",
+            "en": "Count"
+          },
+          "choices": [
+            {
+              "id": "2",
+              "label": {
+                "zh": "2",
+                "en": "2"
+              },
+              "code": "2"
+            },
+            {
+              "id": "3",
+              "label": {
+                "zh": "3",
+                "en": "3"
+              },
+              "code": "3"
+            },
+            {
+              "id": "4",
+              "label": {
+                "zh": "4",
+                "en": "4"
+              },
+              "code": "4"
+            },
+            {
+              "id": "5",
+              "label": {
+                "zh": "5",
+                "en": "5"
+              },
+              "code": "5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "horizontal",
+      "label": {
+        "zh": "沿选定方向横移",
+        "en": "Move along the selected heading"
+      },
+      "template": "move(heading[{{way}}])",
+      "parameters": [
+        {
+          "name": "way",
+          "label": {
+            "zh": "方向",
+            "en": "Heading"
+          },
+          "choices": [
+            {
+              "id": "out",
+              "label": {
+                "zh": "出舱",
+                "en": "Outbound"
+              },
+              "code": "0"
+            },
+            {
+              "id": "back",
+              "label": {
+                "zh": "回程",
+                "en": "Return"
+              },
+              "code": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vertical",
+      "label": {
+        "zh": "竖直移动",
+        "en": "Move vertically"
+      },
+      "template": "move({{direction}})",
+      "parameters": [
+        {
+          "name": "direction",
+          "label": {
+            "zh": "方向",
+            "en": "Direction"
+          },
+          "choices": [
+            {
+              "id": "up",
+              "label": {
+                "zh": "向上",
+                "en": "Up"
+              },
+              "code": "\"up\""
+            },
+            {
+              "id": "down",
+              "label": {
+                "zh": "向下",
+                "en": "Down"
+              },
+              "code": "\"down\""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pick",
+      "label": {
+        "zh": "拾取电池",
+        "en": "Pick up battery"
+      },
+      "template": "pick()"
+    },
+    {
+      "id": "report",
+      "label": {
+        "zh": "从校验号表查值并提交",
+        "en": "Submit a number from the codes table"
+      },
+      "template": "submit(ticket[\"codes\"][{{key}}])",
+      "parameters": [
+        {
+          "name": "key",
+          "label": {
+            "zh": "查找的舱位",
+            "en": "Bay to look up"
+          },
+          "choices": [
+            {
+              "id": "ticket",
+              "label": {
+                "zh": "工单指定的舱位",
+                "en": "Bay on the work order"
+              },
+              "code": "ticket[\"bay\"]"
+            },
+            {
+              "id": "west",
+              "label": {
+                "zh": "西舱",
+                "en": "West bay"
+              },
+              "code": "\"west\""
+            },
+            {
+              "id": "east",
+              "label": {
+                "zh": "东舱",
+                "en": "East bay"
+              },
+              "code": "\"east\""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "if-bay",
+      "values": {
+        "bay": "west"
+      },
+      "children": [
+        {
+          "cardId": "set-headings",
+          "values": {
+            "pair": "left"
+          }
+        }
+      ]
+    },
+    {
+      "cardId": "else-bay",
+      "children": [
+        {
+          "cardId": "set-headings",
+          "values": {
+            "pair": "right"
+          }
+        }
+      ]
+    },
+    {
+      "cardId": "repeat",
+      "values": {
+        "count": "2"
+      },
+      "children": [
+        {
+          "cardId": "horizontal",
+          "values": {
+            "way": "out"
+          }
+        }
+      ]
+    },
+    {
+      "cardId": "repeat",
+      "values": {
+        "count": "2"
+      },
+      "children": [
+        {
+          "cardId": "vertical",
+          "values": {
+            "direction": "up"
+          }
+        }
+      ]
+    },
+    {
+      "cardId": "pick"
+    },
+    {
+      "cardId": "repeat",
+      "values": {
+        "count": "2"
+      },
+      "children": [
+        {
+          "cardId": "horizontal",
+          "values": {
+            "way": "out"
+          }
+        }
+      ]
+    },
+    {
+      "cardId": "vertical",
+      "values": {
+        "direction": "up"
+      }
+    },
+    {
+      "cardId": "pick"
+    },
+    {
+      "cardId": "report",
+      "values": {
+        "key": "ticket"
+      }
+    },
+    {
+      "cardId": "vertical",
+      "values": {
+        "direction": "up"
+      }
+    },
+    {
+      "cardId": "repeat",
+      "values": {
+        "count": "4"
+      },
+      "children": [
+        {
+          "cardId": "horizontal",
+          "values": {
+            "way": "back"
+          }
+        }
+      ]
+    }
+  ]
+}

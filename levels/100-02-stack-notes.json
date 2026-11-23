@@ -1,0 +1,428 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "stack-notes",
+  "order": 1001,
+  "unit": {
+    "id": "structures",
+    "order": 40,
+    "title": {
+      "zh": "数据结构",
+      "en": "Data Structures"
+    }
+  },
+  "topic": {
+    "id": "stacks",
+    "order": 2,
+    "title": {
+      "zh": "栈",
+      "en": "Stacks"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "栈",
+    "en": "Stacks"
+  },
+  "concept": {
+    "zh": "栈顶与后进先出",
+    "en": "The top of a stack and last in, first out"
+  },
+  "brief": {
+    "zh": "把维修站的电池一块块叠上去，再从顶上拿。看看新电池放到哪里，拿走后谁又成了栈顶。",
+    "en": "Pile up the repair station’s batteries, then take them from the top. Watch where each new battery goes and which one is on top after a removal."
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "只往栈顶放",
+        "en": "Put each battery on top"
+      },
+      "body": {
+        "zh": "用列表表示栈时，列表的末尾就是栈顶。每执行一次 append，新电池就放在原来那块的上面。",
+        "en": "When a list represents a stack, its end is the top. Each append puts a new battery above the previous one."
+      }
+    },
+    {
+      "title": {
+        "zh": "先拿最后放进去的",
+        "en": "Take the last battery added"
+      },
+      "body": {
+        "zh": "pop() 从末尾拿走一块电池，并把它交给程序。最晚放进去的电池在栈顶，所以最先被拿走。",
+        "en": "pop() removes one battery from the end and gives it back. The last battery added is on top, so it comes out first."
+      }
+    },
+    {
+      "title": {
+        "zh": "看到新的栈顶",
+        "en": "Find the new top"
+      },
+      "body": {
+        "zh": "拿走 C 后，原来在下面的 B 露出来。再拿一次就是 B，最后只剩 A。用列表记录剩余电池时，从栈底写到栈顶。",
+        "en": "Taking C exposes B. The next pop gives B, leaving just A. The list of remaining batteries is written from bottom to top."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "先放 A，再放 B，再放 C。执行一次 pop()，拿走的是哪块？",
+      "en": "Put in A, then B, then C. Which battery comes out with one pop()?"
+    },
+    "options": [
+      {
+        "zh": "A 号",
+        "en": "A"
+      },
+      {
+        "zh": "B 号",
+        "en": "B"
+      },
+      {
+        "zh": "C 号",
+        "en": "C"
+      }
+    ],
+    "correct": 2,
+    "feedback": {
+      "zh": "C 最后放进去，就在栈顶。拿走 C 后，B 成为新栈顶。",
+      "en": "C went in last and is on top. When C comes out, B becomes the new top."
+    }
+  },
+  "animation": {
+    "layout": "stack",
+    "frames": [
+      {
+        "caption": {
+          "zh": "先放 A，A 同时也是栈顶。",
+          "en": "Place A first. It is also the top."
+        },
+        "items": [
+          {
+            "id": "battery-a",
+            "label": {
+              "zh": "A 号",
+              "en": "A"
+            },
+            "value": {
+              "zh": "栈顶",
+              "en": "Top"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "再放 B 和 C，C 最后放进去，现在就在顶上。",
+          "en": "Add B and then C. C went in last, so it is on top."
+        },
+        "items": [
+          {
+            "id": "battery-c",
+            "label": {
+              "zh": "C 号",
+              "en": "C"
+            },
+            "value": {
+              "zh": "栈顶",
+              "en": "Top"
+            },
+            "state": "active"
+          },
+          {
+            "id": "battery-b",
+            "label": {
+              "zh": "B 号",
+              "en": "B"
+            },
+            "state": "done"
+          },
+          {
+            "id": "battery-a",
+            "label": {
+              "zh": "A 号",
+              "en": "A"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "从顶上拿走 C，B 就露出来了。",
+          "en": "Take C from the top to expose B."
+        },
+        "items": [
+          {
+            "id": "battery-b",
+            "label": {
+              "zh": "B 号",
+              "en": "B"
+            },
+            "value": {
+              "zh": "栈顶",
+              "en": "Top"
+            },
+            "state": "active"
+          },
+          {
+            "id": "battery-a",
+            "label": {
+              "zh": "A 号",
+              "en": "A"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "再拿走 B，栈里只剩 A。",
+          "en": "Take B next. Only A remains."
+        },
+        "items": [
+          {
+            "id": "battery-a",
+            "label": {
+              "zh": "A 号",
+              "en": "A"
+            },
+            "value": {
+              "zh": "栈顶",
+              "en": "Top"
+            },
+            "state": "active"
+          }
+        ]
+      }
+    ]
+  },
+  "execution": {
+    "source": "stack = []\ntaken = []\nstack.append(\"A\")\nstack.append(\"B\")\nstack.append(\"C\")\ntaken.append(stack.pop())\ntaken.append(stack.pop())\nsay(str(taken))\nsay(str(stack))",
+    "cases": [],
+    "stackLesson": {
+      "cases": [
+        {
+          "label": {
+            "zh": "维修站的三块电池",
+            "en": "Three batteries at the repair station"
+          },
+          "batteries": [
+            {
+              "name": "A",
+              "charge": 2
+            },
+            {
+              "name": "B",
+              "charge": 4
+            },
+            {
+              "name": "C",
+              "charge": 6
+            }
+          ],
+          "operations": [
+            {
+              "kind": "push",
+              "battery": "A"
+            },
+            {
+              "kind": "push",
+              "battery": "B"
+            },
+            {
+              "kind": "push",
+              "battery": "C"
+            },
+            {
+              "kind": "pop"
+            },
+            {
+              "kind": "pop"
+            }
+          ],
+          "expected": {
+            "popped": [
+              "C",
+              "B"
+            ],
+            "remaining": [
+              "A"
+            ]
+          }
+        },
+        {
+          "label": {
+            "zh": "边叠边取",
+            "en": "Stack and take in turns"
+          },
+          "batteries": [
+            {
+              "name": "P",
+              "charge": 5
+            },
+            {
+              "name": "R",
+              "charge": 2
+            },
+            {
+              "name": "Q",
+              "charge": 0
+            },
+            {
+              "name": "S",
+              "charge": 4
+            }
+          ],
+          "operations": [
+            {
+              "kind": "push",
+              "battery": "P"
+            },
+            {
+              "kind": "push",
+              "battery": "R"
+            },
+            {
+              "kind": "pop"
+            },
+            {
+              "kind": "push",
+              "battery": "Q"
+            },
+            {
+              "kind": "push",
+              "battery": "S"
+            },
+            {
+              "kind": "pop"
+            }
+          ],
+          "expected": {
+            "popped": [
+              "R",
+              "S"
+            ],
+            "remaining": [
+              "P",
+              "Q"
+            ]
+          },
+          "predictions": {
+            "popped": [
+              [
+                "P",
+                "Q"
+              ],
+              [
+                "R",
+                "S"
+              ],
+              [
+                "S",
+                "R"
+              ]
+            ],
+            "remaining": [
+              [
+                "Q",
+                "P"
+              ],
+              [
+                "P",
+                "Q"
+              ],
+              [
+                "R",
+                "S"
+              ]
+            ]
+          },
+          "source": "stack = []\ntaken = []\nstack.append(\"P\")\nstack.append(\"R\")\ntaken.append(stack.pop())\nstack.append(\"Q\")\nstack.append(\"S\")\ntaken.append(stack.pop())\nsay(str(taken))\nsay(str(stack))"
+        },
+        {
+          "label": {
+            "zh": "取到空栈",
+            "en": "Take until the stack is empty"
+          },
+          "batteries": [
+            {
+              "name": "K",
+              "charge": 3
+            },
+            {
+              "name": "L",
+              "charge": 1
+            },
+            {
+              "name": "M",
+              "charge": 0
+            }
+          ],
+          "operations": [
+            {
+              "kind": "push",
+              "battery": "K"
+            },
+            {
+              "kind": "push",
+              "battery": "L"
+            },
+            {
+              "kind": "pop"
+            },
+            {
+              "kind": "pop"
+            },
+            {
+              "kind": "push",
+              "battery": "M"
+            },
+            {
+              "kind": "pop"
+            }
+          ],
+          "expected": {
+            "popped": [
+              "L",
+              "K",
+              "M"
+            ],
+            "remaining": []
+          },
+          "predictions": {
+            "popped": [
+              [
+                "K",
+                "L",
+                "M"
+              ],
+              [
+                "L",
+                "K",
+                "M"
+              ],
+              [
+                "M",
+                "L",
+                "K"
+              ]
+            ],
+            "remaining": [
+              [
+                "M"
+              ],
+              [],
+              [
+                "K"
+              ]
+            ]
+          },
+          "source": "stack = []\ntaken = []\nstack.append(\"K\")\nstack.append(\"L\")\ntaken.append(stack.pop())\ntaken.append(stack.pop())\nstack.append(\"M\")\ntaken.append(stack.pop())\nsay(str(taken))\nsay(str(stack))"
+        }
+      ]
+    }
+  }
+}

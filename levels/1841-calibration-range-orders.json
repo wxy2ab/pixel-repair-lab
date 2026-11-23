@@ -1,0 +1,384 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-calibration-range-orders",
+  "order": 1841,
+  "difficulty": "intermediate",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "binary-search"
+    },
+    {
+      "unit": "structures",
+      "topic": "lists"
+    }
+  ],
+  "title": {
+    "zh": "校准货架范围单",
+    "en": "Calibration Shelf Range Orders"
+  },
+  "concept": {
+    "zh": "查找上下界 · 同值电池 · 多张工单",
+    "en": "Both search bounds · Duplicate readings · Multiple orders"
+  },
+  "brief": {
+    "zh": "readings 按电量从小到大排列，同电量可以出现多次。bands 中每张工单要求电量在 [下限, 上限] 内，包含两端。对每张工单交出 [第一块的位置, 最后一块的位置, 共几块]，位置从 0 开始。没有合适电池交 [-1, -1, 0]。保持工单原顺序。",
+    "en": "readings is sorted from lowest to highest charge and may have duplicates. Each order in bands asks for charges between its lower and upper bounds, both inclusive. For each order, report [first matching index, last matching index, matching count]. Indices start at zero. Use [-1, -1, 0] for no match. Keep the input order of the orders."
+  },
+  "hints": [],
+  "functionName": "calibration_orders",
+  "starterCode": "def calibration_orders(readings, bands):\n    pass\n",
+  "solutionCode": "def first_at_least(readings, target):\n    left = 0\n    right = len(readings)\n    while left < right:\n        middle = (left + right) // 2\n        if readings[middle] < target:\n            left = middle + 1\n        else:\n            right = middle\n    return left\n\ndef calibration_orders(readings, bands):\n    report = []\n    for band in bands:\n        first = first_at_least(readings, band[0])\n        after_last = first_at_least(readings, band[1] + 1)\n        if first >= after_last:\n            report.append([-1, -1, 0])\n        else:\n            report.append([first, after_last - 1, after_last - first])\n    return report\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "工单循环",
+        "en": "Loop over orders"
+      },
+      "code": "    for band in bands:\n        lower = band[0]\n        upper = band[1]"
+    },
+    {
+      "label": {
+        "zh": "选择中间位置",
+        "en": "Choose a midpoint"
+      },
+      "code": "    middle = (left + right) // 2"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          2,
+          2,
+          5,
+          7,
+          7
+        ],
+        [
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            7,
+            7
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          1,
+          3,
+          3
+        ],
+        [
+          4,
+          4,
+          1
+        ],
+        [
+          5,
+          6,
+          2
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          -7,
+          -2,
+          -2,
+          0,
+          1,
+          3
+        ],
+        [
+          [
+            -4,
+            0
+          ],
+          [
+            -7,
+            -7
+          ],
+          [
+            -2,
+            -1
+          ],
+          [
+            -100,
+            100
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          1,
+          3,
+          3
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          2,
+          2
+        ],
+        [
+          0,
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          4,
+          8,
+          12,
+          19
+        ],
+        [
+          [
+            5,
+            7
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            20,
+            40
+          ],
+          [
+            12,
+            19
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          -1,
+          -1,
+          0
+        ],
+        [
+          -1,
+          -1,
+          0
+        ],
+        [
+          -1,
+          -1,
+          0
+        ],
+        [
+          2,
+          3,
+          2
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          6
+        ],
+        [
+          [
+            1,
+            5
+          ],
+          [
+            7,
+            10
+          ],
+          [
+            6,
+            6
+          ],
+          [
+            0,
+            30
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          -1,
+          -1,
+          0
+        ],
+        [
+          -1,
+          -1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "args": [
+        [],
+        [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            100
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          -1,
+          -1,
+          0
+        ],
+        [
+          -1,
+          -1,
+          0
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          [
+            0,
+            0
+          ],
+          [
+            -2,
+            -1
+          ],
+          [
+            -1,
+            1
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          0,
+          3,
+          4
+        ],
+        [
+          -1,
+          -1,
+          0
+        ],
+        [
+          0,
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          7,
+          9
+        ],
+        []
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          2,
+          3,
+          8,
+          8,
+          8,
+          14
+        ],
+        [
+          [
+            2,
+            3
+          ],
+          [
+            4,
+            13
+          ],
+          [
+            3,
+            14
+          ],
+          [
+            8,
+            8
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          2,
+          4,
+          3
+        ],
+        [
+          1,
+          5,
+          5
+        ],
+        [
+          2,
+          4,
+          3
+        ]
+      ]
+    }
+  ]
+}

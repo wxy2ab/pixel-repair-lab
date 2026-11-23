@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "kind": "replay",
+  "unit": {
+    "id": "algorithm-advanced",
+    "order": 70,
+    "title": {
+      "zh": "算法高级",
+      "en": "Advanced Algorithms"
+    }
+  },
+  "stage": "demo",
+  "topic": { "id": "dynamic-programming", "order": 1, "title": { "zh": "动态规划", "en": "Dynamic Programming" } },
+  "id": "rolling-scores-demo",
+  "order": 612,
+  "title": {
+    "zh": "观察两格记忆",
+    "en": "Watch two memory cells"
+  },
+  "brief": {
+    "zh": "两个内存格记录旧值和最佳分数。换一列补给，比较最终分数。",
+    "en": "Two cells store the previous and best scores. Switch supply rows and compare results."
+  },
+  "concept": {
+    "zh": "滚动更新状态",
+    "en": "Rolling state"
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "补给 3、8、5",
+        "en": "Supplies 3, 8, 5"
+      },
+      "source": "earlier = 0\nbest = 0\nfor points in scan():\n    taking = earlier + points\n    earlier = best\n    if taking > best:\n        best = taking\n    store(0, earlier)\n    store(1, best)",
+      "scenario": {
+        "tiles": [
+          "#####",
+          "#...#",
+          "#####"
+        ],
+        "start": {
+          "x": 1,
+          "y": 1
+        },
+        "memory": [
+          0,
+          0
+        ],
+        "input": [
+          3,
+          8,
+          5
+        ],
+        "allowedApi": [
+          "scan",
+          "store"
+        ],
+        "objectives": [
+          {
+            "type": "memory",
+            "address": 1,
+            "value": 8
+          }
+        ]
+      }
+    },
+    {
+      "title": {
+        "zh": "补给 4、2、7、1",
+        "en": "Supplies 4, 2, 7, 1"
+      },
+      "source": "earlier = 0\nbest = 0\nfor points in scan():\n    taking = earlier + points\n    earlier = best\n    if taking > best:\n        best = taking\n    store(0, earlier)\n    store(1, best)",
+      "scenario": {
+        "tiles": [
+          "#####",
+          "#...#",
+          "#####"
+        ],
+        "start": {
+          "x": 1,
+          "y": 1
+        },
+        "memory": [
+          0,
+          0
+        ],
+        "input": [
+          4,
+          2,
+          7,
+          1
+        ],
+        "allowedApi": [
+          "scan",
+          "store"
+        ],
+        "objectives": [
+          {
+            "type": "memory",
+            "address": 1,
+            "value": 11
+          }
+        ]
+      }
+    }
+  ]
+}

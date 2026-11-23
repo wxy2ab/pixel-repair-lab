@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "challenge-ring-pressure-drops",
+  "order": 1910,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "prerequisites": [{"unit": "architecture", "topic": "memory"}, {"unit": "architecture", "topic": "registers"}, {"unit": "architecture", "topic": "instructions"}],
+  "title": {"zh": "环管压力落差", "en": "Pressure Around the Ring"},
+  "concept": {"zh": "环形相邻差与原始读数", "en": "Circular differences with original readings"},
+  "brief": {"zh": "四个表按 0、1、2、3 排成环。每格都要换成本表旧读数减去上一表旧读数；0 的上一表是 3。地址 4 留存原来的 3 号读数。最后 ACC 报告从 0 到 3 的净变化（原来的 3 号减原来的 0 号）。", "en": "Four pressure gauges numbered 0, 1, 2 and 3 form a ring. Replace each reading with its original value minus the previous gauge’s original value. Gauge 3 precedes gauge 0. Address 4 must hold the original reading from gauge 3. Halt with the original reading at 3 minus that at 0 in ACC."},
+  "hints": [],
+  "allowedOps": ["LOAD", "ADD", "SUB", "STORE", "HALT"],
+  "starterCode": "HALT\n",
+  "solutionCode": "LOAD 3\nSTORE 4\nSUB 2\nSTORE 3\nLOAD 2\nSUB 1\nSTORE 2\nLOAD 1\nSUB 0\nSTORE 1\nLOAD 0\nSUB 4\nSTORE 0\nSUB 0\nSUB 0\nHALT\n",
+  "cases": [
+    {"label": {"zh": "验收样本 1", "en": "Acceptance sample 1"}, "memory": [7, 4, 9, 16, 99], "accumulator": -4, "goal": {"memory": [{"address": 0, "value": -9}, {"address": 1, "value": -3}, {"address": 2, "value": 5}, {"address": 3, "value": 7}, {"address": 4, "value": 16}], "accumulator": 9}},
+    {"label": {"zh": "验收样本 2", "en": "Acceptance sample 2"}, "memory": [0, -3, 12, -1, -77], "accumulator": 5, "goal": {"memory": [{"address": 0, "value": 1}, {"address": 1, "value": -3}, {"address": 2, "value": 15}, {"address": 3, "value": -13}, {"address": 4, "value": -1}], "accumulator": -1}},
+    {"label": {"zh": "验收样本 3", "en": "Acceptance sample 3"}, "memory": [3, 3, 3, 3, -8], "accumulator": 14, "goal": {"memory": [{"address": 0, "value": 0}, {"address": 1, "value": 0}, {"address": 2, "value": 0}, {"address": 3, "value": 0}, {"address": 4, "value": 3}], "accumulator": 0}},
+    {"label": {"zh": "验收样本 4", "en": "Acceptance sample 4"}, "memory": [7, 0, 0, 0, 5], "accumulator": 7, "goal": {"memory": [{"address": 0, "value": 7}, {"address": 1, "value": -7}, {"address": 2, "value": 0}, {"address": 3, "value": 0}, {"address": 4, "value": 0}], "accumulator": -7}},
+    {"label": {"zh": "验收样本 5", "en": "Acceptance sample 5"}, "memory": [-3, -2, 5, 8, 14], "accumulator": 0, "goal": {"memory": [{"address": 0, "value": -11}, {"address": 1, "value": 1}, {"address": 2, "value": 7}, {"address": 3, "value": 3}, {"address": 4, "value": 8}], "accumulator": 11}}
+  ]
+}

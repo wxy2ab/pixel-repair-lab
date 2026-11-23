@@ -1,0 +1,318 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "structures-notes",
+  "order": 103,
+  "unit": {
+    "id": "structures",
+    "order": 40,
+    "title": {
+      "zh": "数据结构",
+      "en": "Data Structures"
+    }
+  },
+  "overview": true,
+  "stage": "explain",
+  "title": {
+    "zh": "同一批电池，四种取法",
+    "en": "Four Ways to Pick a Battery"
+  },
+  "brief": {
+    "zh": "维修站来了同一批电池。亲手试四种取法，看看找到的电池和剩下的电池有什么变化。",
+    "en": "Try four ways to choose from the same batch of batteries. See which battery you get and what stays in the batch."
+  },
+  "concept": {
+    "zh": "列表按索引，栈按顶端，队列按先后，字典按名字",
+    "en": "Index with a list, take the top with a stack, serve in order with a queue, and look up a name with a dictionary"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "列表按位置取",
+        "en": "A list finds items by position"
+      },
+      "body": {
+        "zh": "托盘上的位置从 0 数起。索引 1 会取到第 2 块 C，原来的摆放顺序还在。",
+        "en": "Tray positions start at 0. Index 1 reads the second battery, C, and leaves the tray in order."
+      }
+    },
+    {
+      "title": {
+        "zh": "栈从顶上拿",
+        "en": "A stack takes from the top"
+      },
+      "body": {
+        "zh": "按到达顺序往上叠，最后放的 D 在最上面。用 pop() 拿走它，下一块才露出来。",
+        "en": "Stack the batteries in arrival order. The last one, D, ends up on top. pop() removes it and exposes the next battery."
+      }
+    },
+    {
+      "title": {
+        "zh": "队列先到先取",
+        "en": "A queue serves the first arrival"
+      },
+      "body": {
+        "zh": "先到的 A 在队头，后到的排在后面。这个短队列用列表演示，pop(0) 拿走队头。",
+        "en": "A arrived first, so it waits at the front. Later arrivals line up behind it. Here a list shows the short queue, and pop(0) removes its front item."
+      }
+    },
+    {
+      "title": {
+        "zh": "字典按名字找",
+        "en": "A dictionary looks up a name"
+      },
+      "body": {
+        "zh": "名字是字典的键。用 B 号来查，会找到 B 的电池记录；这条记录仍留在字典里。",
+        "en": "The battery name is the dictionary key. Looking up B reads its battery record and leaves that record in the dictionary."
+      }
+    }
+  ],
+  "animation": {
+    "layout": "row",
+    "frames": [
+      {
+        "caption": {
+          "zh": "列表按位置读取，索引 1 对应第 2 块。",
+          "en": "A list reads by position. Index 1 is the second slot."
+        },
+        "items": [
+          {
+            "id": "method",
+            "label": {
+              "zh": "列表",
+              "en": "List"
+            },
+            "value": {
+              "zh": "索引 1",
+              "en": "Index 1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "selection",
+            "label": {
+              "zh": "取到的电池",
+              "en": "Selected battery"
+            },
+            "value": {
+              "zh": "C 号",
+              "en": "C"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "栈拿走最顶上一块，也就是最后放进去的。",
+          "en": "A stack removes the top battery, which was added last."
+        },
+        "items": [
+          {
+            "id": "method",
+            "label": {
+              "zh": "栈",
+              "en": "Stack"
+            },
+            "value": {
+              "zh": "从顶部拿",
+              "en": "Take from the top"
+            },
+            "state": "active"
+          },
+          {
+            "id": "selection",
+            "label": {
+              "zh": "取到的电池",
+              "en": "Selected battery"
+            },
+            "value": {
+              "zh": "D 号",
+              "en": "D"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "队列先取最早到的一块。",
+          "en": "A queue removes the battery that arrived first."
+        },
+        "items": [
+          {
+            "id": "method",
+            "label": {
+              "zh": "队列",
+              "en": "Queue"
+            },
+            "value": {
+              "zh": "从队头取",
+              "en": "Take from the front"
+            },
+            "state": "active"
+          },
+          {
+            "id": "selection",
+            "label": {
+              "zh": "取到的电池",
+              "en": "Selected battery"
+            },
+            "value": {
+              "zh": "A 号",
+              "en": "A"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "字典用名字直接找到对应记录。",
+          "en": "A dictionary uses the name to find the matching record."
+        },
+        "items": [
+          {
+            "id": "method",
+            "label": {
+              "zh": "字典",
+              "en": "Dictionary"
+            },
+            "value": {
+              "zh": "查名字 B",
+              "en": "Look up B"
+            },
+            "state": "active"
+          },
+          {
+            "id": "selection",
+            "label": {
+              "zh": "取到的电池",
+              "en": "Selected battery"
+            },
+            "value": {
+              "zh": "B 号",
+              "en": "B"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  },
+  "question": {
+    "prompt": {
+      "zh": "维修站要先处理最早送来的电池。用哪种结构最合适？",
+      "en": "The repair station needs to work on the first battery that arrived. Which structure fits best?"
+    },
+    "options": [
+      {
+        "zh": "栈",
+        "en": "Stack"
+      },
+      {
+        "zh": "列表",
+        "en": "List"
+      },
+      {
+        "zh": "队列",
+        "en": "Queue"
+      },
+      {
+        "zh": "字典",
+        "en": "Dictionary"
+      }
+    ],
+    "correct": 2,
+    "feedback": {
+      "zh": "队列把最早到的一块放在队头，先取队头。",
+      "en": "A queue keeps the earliest arrival at the front and serves it first."
+    }
+  },
+  "execution": {
+    "source": "batteries = read_battery_batch()\nposition = scan()\npicked = batteries[position]\nsay(picked[\"name\"])",
+    "cases": [],
+    "structures": {
+      "sources": {
+        "stack": "batteries = read_battery_batch()\npicked = batteries.pop()\nsay(picked[\"name\"])",
+        "queue": "batteries = read_battery_batch()\npicked = batteries.pop(0)\nsay(picked[\"name\"])",
+        "dictionary": "directory = read_battery_directory()\nname = read_battery_key()\npicked = directory[name]\nsay(picked[\"name\"])"
+      },
+      "demo": {
+        "batteries": [
+          {
+            "name": "A",
+            "charge": 2
+          },
+          {
+            "name": "C",
+            "charge": 4
+          },
+          {
+            "name": "B",
+            "charge": 6
+          },
+          {
+            "name": "D",
+            "charge": 3
+          }
+        ],
+        "index": 1,
+        "key": "B"
+      },
+      "practice": {
+        "batteries": [
+          {
+            "name": "P",
+            "charge": 5
+          },
+          {
+            "name": "R",
+            "charge": 2
+          },
+          {
+            "name": "Q",
+            "charge": 0
+          },
+          {
+            "name": "S",
+            "charge": 4
+          }
+        ],
+        "index": 2,
+        "key": "R",
+        "tasks": [
+          {
+            "kind": "queue",
+            "prompt": {
+              "zh": "维修单要求先处理最早送到的电池。",
+              "en": "The work order asks for the battery that arrived first."
+            }
+          },
+          {
+            "kind": "dictionary",
+            "prompt": {
+              "zh": "维修单只写了名字 R，请找到这块电池的记录。",
+              "en": "The work order only gives the name R. Find that battery’s record."
+            }
+          },
+          {
+            "kind": "list",
+            "prompt": {
+              "zh": "维修单要求读出托盘从左边数第 3 块电池。",
+              "en": "The work order asks for the third battery from the left on the tray."
+            }
+          },
+          {
+            "kind": "stack",
+            "prompt": {
+              "zh": "按到达顺序把电池一块块往上叠，只拿最顶上的一块。",
+              "en": "Pile the batteries in arrival order, then take the one at the top."
+            }
+          }
+        ]
+      }
+    }
+  }
+}

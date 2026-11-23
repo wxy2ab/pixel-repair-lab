@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "unit": {
+    "id": "algorithm-advanced",
+    "order": 70,
+    "title": {
+      "zh": "算法高级",
+      "en": "Advanced Algorithms"
+    }
+  },
+  "stage": "exercise",
+  "topic": { "id": "dynamic-programming", "order": 1, "title": { "zh": "动态规划", "en": "Dynamic Programming" } },
+  "id": "count-stair-routes",
+  "order": 613,
+  "title": {
+    "zh": "有几种爬楼梯的方法",
+    "en": "Count the ways upstairs"
+  },
+  "brief": {
+    "zh": "实现 count_stair_routes(n)。每次上 1 或 2 阶，返回恰好达到第 n 阶的不同走法数。站在第 0 阶算 1 种。",
+    "en": "Implement count_stair_routes(n). Each move climbs one or two steps. Count routes ending exactly at n. Staying at step zero counts as one."
+  },
+  "concept": {
+    "zh": "计数状态与边界值",
+    "en": "Counting states and base cases"
+  },
+  "hints": [
+    {
+      "zh": "最后一步可能来自前一阶或前两阶，把两类走法相加。",
+      "en": "The last move comes from one or two steps back. Add the two counts."
+    }
+  ],
+  "functionName": "count_stair_routes",
+  "starterCode": "def count_stair_routes(n):\n    previous = 1\n    current = 1\n    return current",
+  "solutionCode": "def count_stair_routes(n):\n    previous = 1\n    current = 1\n    for step in range(2, n + 1):\n        next_count = previous + current\n        previous = current\n        current = next_count\n    return current",
+  "snippets": [
+    {
+      "label": {
+        "zh": "从第 2 阶开始",
+        "en": "Start at step two"
+      },
+      "code": "    for step in range(2, n + 1):\n        next_count = previous + current"
+    },
+    {
+      "label": {
+        "zh": "向前更新两个值",
+        "en": "Shift the two values"
+      },
+      "code": "        previous = current\n        current = next_count"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        0
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        1
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        2
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        3
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        6
+      ],
+      "expected": 13
+    },
+    {
+      "args": [
+        9
+      ],
+      "expected": 55
+    }
+  ]
+}

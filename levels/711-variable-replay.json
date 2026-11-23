@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "kind": "replay",
+  "id": "variable-replay",
+  "order": 711,
+  "unit": {
+    "id": "foundations",
+    "order": 10,
+    "title": {
+      "zh": "Python 基础",
+      "en": "Python Foundations"
+    }
+  },
+  "topic": {
+    "id": "variables",
+    "order": 2,
+    "title": {
+      "zh": "变量与算术",
+      "en": "Variables and Arithmetic"
+    }
+  },
+  "stage": "demo",
+  "title": {
+    "zh": "给读数贴标签",
+    "en": "Give a Reading a Name"
+  },
+  "concept": {
+    "zh": "保存、读取和更新数值",
+    "en": "Store, read, and update a value"
+  },
+  "brief": {
+    "zh": "分别看看给电池补电和给灯预留电量。两次计算的结果都存进有名字的变量里。",
+    "en": "Watch one program add charge and another reserve power for a light. Both store their results under a name."
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "往变量中多存四格电量",
+        "en": "Add four units to the stored charge"
+      },
+      "source": "charge = scan()\ncharge = charge + 4\nsay(str(charge))\nsubmit(charge)",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "allowedApi": [
+          "scan",
+          "say",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              10
+            ]
+          }
+        ],
+        "input": 6
+      }
+    },
+    {
+      "title": {
+        "zh": "预留三格电量，查看余量",
+        "en": "Reserve three units and check what remains"
+      },
+      "source": "charge = scan()\nreserve = 3\nusable = charge - reserve\nsubmit(usable)",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "allowedApi": [
+          "scan",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              9
+            ]
+          }
+        ],
+        "input": 12
+      }
+    }
+  ]
+}

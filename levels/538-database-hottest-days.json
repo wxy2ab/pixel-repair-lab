@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "database-hottest-days-query",
+  "order": 538,
+  "stage": "exercise",
+  "unit": { "id": "database", "order": 130, "title": { "zh": "数据库", "en": "Databases" } },
+  "topic": { "id": "sql-groups", "order": 2, "title": { "zh": "SQL 分组汇总", "en": "Grouped SQL queries" } },
+  "title": { "zh": "哪几天平均温度偏高", "en": "Find the Warmer Days" },
+  "brief": { "zh": "把一天里的读数汇总为一个平均值，再按温度决定巡查顺序。", "en": "Calculate one average per day, then use the temperature to plan the inspection order." },
+  "concept": { "zh": "HAVING 可以按组内平均值筛选，ORDER BY 能把最高平均温度排在前面。", "en": "HAVING can filter by each group’s average, and ORDER BY can put the highest average first." },
+  "hints": [{ "zh": "第 1 天的平均温度不到 24°C。保留第 2 至 4 天，把最热的一天排在第一行。", "en": "Day 1 averages below 24°C. Keep days 2 through 4 and put the warmest day first." }],
+  "steps": [
+    {
+      "operation": "sql-group",
+      "input": "clean",
+      "label": { "zh": "按日求均值，再筛选和排序", "en": "Average by day, then filter and sort" },
+      "prompt": { "zh": "显示平均温度至少 24°C 的日期及平均温度，按平均温度从高到低排。", "en": "Return dates with a mean temperature of at least 24°C and sort highest mean first." },
+      "initial": { "by": "zone", "statistic": "count", "minimum": 0, "sort": "key" },
+      "goal": { "columns": ["day", "mean"], "rows": [[4, 30], [2, 25], [3, 24.67]] },
+      "solution": { "by": "day", "statistic": "mean", "minimum": 24, "sort": "value-desc" }
+    }
+  ]
+}

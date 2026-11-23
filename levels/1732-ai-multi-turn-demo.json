@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "ai-multi-turn-demo",
+  "order": 1732,
+  "unit": {
+    "id": "ai-review",
+    "order": 170,
+    "title": {
+      "zh": "核对与修正",
+      "en": "Review and Revision"
+    }
+  },
+  "topic": {
+    "id": "multi-turn",
+    "order": 3,
+    "title": {
+      "zh": "多轮修正",
+      "en": "Revise Across Turns"
+    }
+  },
+  "stage": "demo",
+  "title": {
+    "zh": "看两次修正如何接力",
+    "en": "Watch Two Corrections in Sequence"
+  },
+  "brief": {
+    "zh": "给演练区准备一条毛巾和两瓶水。清洁剂需要留在储物柜里。逐轮核对，观察第一次修正后出现的新问题。",
+    "en": "Pack one towel and two water bottles for a practice drill. Keep the cleaner in the cabinet. Review each round and watch for a new issue after the first correction."
+  },
+  "concept": {
+    "zh": "修正当前错误后，下一轮仍要按原任务核对每一项。",
+    "en": "After fixing an error, review every item against the original assignment again."
+  },
+  "hints": [
+    {
+      "zh": "对照上一轮，看看毛巾已经修好时，清洁剂的那一行有没有变化。",
+      "en": "Compare with the previous round. After the towel is fixed, see whether the cleaner row changed."
+    }
+  ],
+  "inventory": [
+    {
+      "id": "towel",
+      "label": {
+        "zh": "毛巾",
+        "en": "Towel"
+      },
+      "aliases": [
+        "towels",
+        "巾"
+      ]
+    },
+    {
+      "id": "water",
+      "label": {
+        "zh": "水",
+        "en": "Water bottle"
+      },
+      "aliases": [
+        "water bottles",
+        "瓶水",
+        "饮用水"
+      ]
+    },
+    {
+      "id": "cleaner",
+      "label": {
+        "zh": "清洁剂",
+        "en": "Cleaner"
+      },
+      "aliases": [
+        "cleaning solution"
+      ]
+    }
+  ],
+  "required": {
+    "towel": 1,
+    "water": 2
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "towel",
+        "quantity": 0
+      },
+      {
+        "itemId": "cleaner",
+        "quantity": 1
+      }
+    ],
+    "cards": [
+      {
+        "zh": "毛巾改为 1 条。",
+        "en": "Set towels to 1."
+      },
+      {
+        "zh": "去掉清洁剂。",
+        "en": "Remove the cleaner."
+      },
+      {
+        "zh": "其他项目保持原样。",
+        "en": "Keep the other entries."
+      }
+    ]
+  },
+  "examplePrompts": {
+    "zh": [
+      "准备 1 件毛巾和 2 瓶水。不要放清洁剂。",
+      "毛巾改为 1 条。其他项目保持原样。",
+      "去掉清洁剂。其他项目保持原样。"
+    ],
+    "en": [
+      "Pack 1 towel and 2 water bottles. Leave out the cleaner.",
+      "Set towels to 1. Keep the other entries.",
+      "Remove the cleaner. Keep the other entries."
+    ]
+  }
+}

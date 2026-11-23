@@ -1,0 +1,15 @@
+.dictionary-prediction-table {
+  inline-size: min(100%, 340px); table-layout: fixed; border-collapse: collapse;
+  color: #e1efff; font-size: 13px; text-align: start;
+}
+.dictionary-prediction-table th, .dictionary-prediction-table td {
+  padding: 4px 8px; border: 1px solid #526782; overflow-wrap: anywhere;
+}
+.dictionary-prediction-table thead { background: #1d3148; }
+.dictionary-prediction-table tbody { background: #17283d; font-family: var(--mono); }
+.dictionary-prediction-table th { text-align: start; }
+.dictionary-prediction-steps { display: grid; gap: 3px; min-inline-size: 0; margin: 4px 0 0; padding-inline-start: 1.5em; color: #bdd0e7; }
+.dictionary-prediction-steps li { overflow-wrap: anywhere; }
+.dictionary-prediction [data-dictionary-field='records'] .charge-prediction-options { display: grid; grid-template-columns: minmax(0, 1fr); }
+.dictionary-prediction [data-dictionary-field='records'] .charge-prediction-options button { min-width: 0; text-align: start; }
+.dictionary-prediction [data-dictionary-field='records'] .charge-prediction-options .collection-prediction-entries { justify-content: start; }

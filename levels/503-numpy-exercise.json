@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "numpy-three-batteries",
+  "order": 503,
+  "stage": "exercise",
+  "unit": {
+    "id": "numpy",
+    "order": 100,
+    "title": {
+      "zh": "NumPy",
+      "en": "NumPy"
+    }
+  },
+  "topic": {
+    "id": "masks",
+    "order": 2,
+    "title": {
+      "zh": "布尔掩码",
+      "en": "Boolean masks"
+    }
+  },
+  "title": {
+    "zh": "留下达到警戒线的三条读数",
+    "en": "Keep the Three Readings That Reach the Alert Line"
+  },
+  "brief": {
+    "zh": "巡检员查看温度达到 30 °C 的传感器记录。",
+    "en": "The inspection team reviews sensor readings that reach 30 °C."
+  },
+  "concept": {
+    "zh": "达到警戒线包含恰好等于警戒线。",
+    "en": "Reaching the alert line includes values exactly on the line."
+  },
+  "hints": [
+    {
+      "zh": "检查温度 30 °C 的记录有没有保留。",
+      "en": "Check whether the 30 °C reading stays."
+    }
+  ],
+  "steps": [
+    {
+      "operation": "mask",
+      "input": "clean",
+      "label": {
+        "zh": "筛出高温记录",
+        "en": "Filter high readings"
+      },
+      "prompt": {
+        "zh": "保留温度达到或超过 30 °C 的完整记录。",
+        "en": "Keep every complete record at or above 30 °C."
+      },
+      "initial": {
+        "column": "reading",
+        "comparison": "gte",
+        "threshold": 20
+      },
+      "solution": {
+        "column": "reading",
+        "comparison": "gte",
+        "threshold": 30
+      },
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            8,
+            3,
+            "workshop",
+            32
+          ],
+          [
+            10,
+            4,
+            "hangar",
+            30
+          ],
+          [
+            13,
+            4,
+            "workshop",
+            36
+          ]
+        ]
+      }
+    }
+  ]
+}

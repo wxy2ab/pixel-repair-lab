@@ -1,0 +1,33 @@
+.experiment-inputs { min-width: 0; margin-block-end: 12px; }
+.experiment-inputs > :first-child { margin-top: 0; }
+.experiment-inputs > :last-child { margin-bottom: 0; }
+.device-window .experiment-receipt { margin: 8px 0; padding: 8px 10px; color: #dcefe4; border-inline-start: 3px solid #78bca2; background: #203f3c; line-height: 1.5; }
+.device-window :is(.machine-actions, .vision-actions, .data-actions) { margin-block: 10px; }
+.device-window .bit-buttons { margin: 10px 0; }
+.device-window .circuit-workbench { margin-inline: 0; background: #142d2b; }
+.device-window .gate-options { display: flex; flex-wrap: wrap; width: fit-content; margin: 0 auto 7px; }
+.device-window .binary-sum { color: #c7e1d7; font: 600 14px var(--mono); }
+.gate-input-pins { display: grid; gap: 5px; }
+.gate-input-pins span { display: flex; align-items: center; gap: 4px; color: #a6b9c6; font: 650 13px var(--mono); }
+.gate-input-pins span::after { content: ''; width: 16px; border-top: 2px solid currentColor; }
+.gate-input-pins [data-live='true'] { color: #9df1bf; }
+.gate-input-rack { padding-inline-end: 20px; }
+.gate-input-rack .bit-buttons { display: grid; gap: 6px; }
+.gate-input-rack .bit-switch { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 36px; }
+.gate-input-rack .bit-switch::after { content: ''; position: absolute; inset-inline-start: 100%; top: 50%; width: 21px; border-top: 2px solid #819da5; }
+.gate-input-rack .bit-switch[aria-pressed='true']::after { border-color: #8ae8ba; }
+.gate-input-rack .bit-switch[data-unwired]::after { width: 6px; border-color: #799296; }
+.gate-input-rack + .gate-symbol { min-height: 61px; }
+.gate-lamp-label { margin-inline-start: 5px; font-size: 12px; }
+.device-window .data-results, .device-window .vision-panel, .device-window .machine-state, .device-window .circuit-panel, .device-window .lab-output {
+  padding: 0; border: 0; background: transparent;
+}
+.device-window .data-source .data-table-wrap { max-height: 205px; overflow: auto; }
+.device-window .data-source { margin: 0 0 12px; }
+.device-window .vision-fields, .device-window .data-fields { grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); padding: 7px 10px 10px; }
+.device-window .ai-sent-message { justify-self: end; max-width: 90%; padding: 9px 12px; border-radius: 12px 12px 2px; color: #edf8fa; background: #244e62; }
+.device-window .ai-sent-message p { margin: 4px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.device-window .ai-result { padding: 10px 0; }
+.device-window .ai-form { padding: 10px 0 0; border: 0; background: transparent; }
+.device-window .lab-sim-parameters { margin-bottom: 14px; }
+.device-window .lab-sim-parameters input[type='range'] { width: 100%; accent-color: var(--mint); }

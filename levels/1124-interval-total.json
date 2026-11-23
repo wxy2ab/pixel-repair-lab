@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "interval-total",
+  "order": 1124,
+  "unit": {
+    "id": "algorithm-intro",
+    "order": 50,
+    "title": {
+      "zh": "算法初级",
+      "en": "Introductory Algorithms"
+    }
+  },
+  "stage": "exercise",
+  "topic": {
+    "id": "prefix-totals",
+    "order": 4,
+    "title": {
+      "zh": "前缀和",
+      "en": "Prefix sums"
+    }
+  },
+  "title": {
+    "zh": "复用累计表查一段",
+    "en": "Reuse a prefix table for a range"
+  },
+  "brief": {
+    "zh": "实现 interval_total(values, start, end)。使用 prefix_totals 预处理，算 start 到 end 前的合计。start 和 end 相等时结果是 0。",
+    "en": "Implement interval_total(values, start, end). Use prefix_totals, then return the sum from start up to end. Equal endpoints give zero."
+  },
+  "concept": {
+    "zh": "预处理与查询分开",
+    "en": "Separate preparation from queries"
+  },
+  "hints": [
+    {
+      "zh": "课程函数和自己保存的函数都会给你一张以 0 开头的累计表。",
+      "en": "Both the provided and saved versions return a prefix table that starts with zero."
+    }
+  ],
+  "functionName": "interval_total",
+  "starterCode": "def interval_total(values, start, end):\n    return 0",
+  "solutionCode": "from algorithms import prefix_totals\n\ndef interval_total(values, start, end):\n    table = prefix_totals(values)\n    return table[end] - table[start]",
+  "snippets": [
+    {
+      "label": {
+        "zh": "建立累计表",
+        "en": "Build the prefix table"
+      },
+      "code": "    table = prefix_totals(values)"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          3,
+          4,
+          5,
+          6
+        ],
+        1,
+        3
+      ],
+      "expected": 9
+    },
+    {
+      "args": [
+        [
+          -1,
+          10,
+          0
+        ],
+        0,
+        2
+      ],
+      "expected": 9
+    },
+    {
+      "args": [
+        [
+          2,
+          4
+        ],
+        0,
+        2
+      ],
+      "expected": 6
+    },
+    {
+      "args": [
+        [
+          8,
+          3
+        ],
+        1,
+        1
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [],
+        0,
+        0
+      ],
+      "expected": 0
+    }
+  ],
+  "helpers": [
+    "prefix_totals"
+  ]
+}

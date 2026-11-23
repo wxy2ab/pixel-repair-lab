@@ -1,0 +1,16 @@
+.classroom-demonstration > .visual-program-stages { grid-column: 1 / -1; }
+.battery-memory { min-width: 0; margin: 0; padding: 10px 12px 14px; border: 1px dashed #9fc2b580; border-radius: 6px; }
+.battery-memory > figcaption { margin-bottom: 11px; font-size: 14px; font-weight: 650; }
+.battery-memory ol { display: flex; align-items: stretch; flex-wrap: wrap; gap: 7px; margin: 0; padding: 0; list-style: none; }
+.battery-memory li { display: grid; gap: 3px; justify-items: center; align-content: start; min-width: 42px; }
+.battery-memory li > span { width: 100%; text-align: center; padding: 3px 6px; border: 1px solid #adcec1; border-radius: 4px; color: #e8f4df; font: 650 16px/1.4 var(--mono); }
+.battery-memory i { font: inherit; color: #abd3bc; }
+.battery-memory small { color: #d5e8dc; font-size: 11px; }
+.battery-memory small:empty { display: none; }
+.battery-memory [data-current] > span { background: #37604e; border-color: #e5e3a6; color: #fff7c5; }
+.battery-memory[data-structure='stack'] ol { flex-flow: column; align-items: start; gap: 2px; }
+.battery-memory[data-structure='stack'] li { grid-template-columns: 68px auto; align-items: center; gap: 8px; }
+.battery-memory p { color: #cddfd3; font-size: 14px; }
+.battery-memory-register { display: grid; gap: 3px; margin-top: 10px; padding-top: 6px; border-top: 1px solid #455f6b; }
+.battery-memory-register span { color: #b3ced2; font-size: 12px; }
+.battery-memory-register code { color: #dbfbe4; white-space: pre-wrap; overflow-wrap: anywhere; }

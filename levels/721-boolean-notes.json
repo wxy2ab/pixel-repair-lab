@@ -1,0 +1,320 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "boolean-notes",
+  "order": 721,
+  "unit": {
+    "id": "foundations",
+    "order": 10,
+    "title": {
+      "zh": "Python 基础",
+      "en": "Python Foundations"
+    }
+  },
+  "topic": {
+    "id": "booleans",
+    "order": 3,
+    "title": {
+      "zh": "比较与布尔值",
+      "en": "Comparisons and Booleans"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "比较与布尔值",
+    "en": "Comparisons and Booleans"
+  },
+  "concept": {
+    "zh": "大于或等于，以及两个条件同时成立",
+    "en": "Greater than or equal to, and requiring both conditions"
+  },
+  "brief": {
+    "zh": "芽芽补完电了。先看看哪些电量够出发，再检查安全门。",
+    "en": "Sprout has finished charging. First see which readings are high enough to leave, then check the safety door."
+  },
+  "hints": [],
+  "execution": {
+    "source": "result = scan()\nenough = result >= 4\ndoor = door_open()\ncan_leave = enough and door\nsay(str(can_leave))",
+    "boolean": {
+      "threshold": 4
+    },
+    "cases": [
+      {
+        "label": {
+          "zh": "补电后 3 格",
+          "en": "3 units after charging"
+        },
+        "input": 3,
+        "doorOpen": true,
+        "activity": "compare",
+        "expected": "False"
+      },
+      {
+        "label": {
+          "zh": "补电后 4 格",
+          "en": "4 units after charging"
+        },
+        "input": 4,
+        "doorOpen": true,
+        "activity": "compare",
+        "expected": "True"
+      },
+      {
+        "label": {
+          "zh": "补电后 5 格",
+          "en": "5 units after charging"
+        },
+        "input": 5,
+        "doorOpen": true,
+        "activity": "compare",
+        "expected": "True"
+      },
+      {
+        "label": {
+          "zh": "补电后 4 格，门关着",
+          "en": "4 units, door closed"
+        },
+        "input": 4,
+        "doorOpen": false,
+        "activity": "combine",
+        "expected": "False"
+      },
+      {
+        "label": {
+          "zh": "补电后 4 格，门开着",
+          "en": "4 units, door open"
+        },
+        "input": 4,
+        "doorOpen": true,
+        "activity": "combine",
+        "expected": "True"
+      },
+      {
+        "label": {
+          "zh": "补电后 3 格，门开着",
+          "en": "3 units, door open"
+        },
+        "input": 3,
+        "doorOpen": true,
+        "activity": "predict",
+        "expected": "False"
+      },
+      {
+        "label": {
+          "zh": "补电后 5 格，门关着",
+          "en": "5 units, door closed"
+        },
+        "input": 5,
+        "doorOpen": false,
+        "activity": "predict",
+        "expected": "False"
+      },
+      {
+        "label": {
+          "zh": "补电后 5 格，门开着",
+          "en": "5 units, door open"
+        },
+        "input": 5,
+        "doorOpen": true,
+        "activity": "predict",
+        "expected": "True"
+      }
+    ]
+  },
+  "sections": [
+    {
+      "title": {
+        "zh": "等于 4 也算达到门槛",
+        "en": "Exactly 4 meets the limit"
+      },
+      "body": {
+        "zh": "数轴上，3 在 4 的左边，电量不够。4 正好达到门槛，5 超过门槛，这两个电量都够。程序用 True 表示真，用 False 表示假。",
+        "en": "On the number line, 3 is to the left of 4 and is too low. Exactly 4 meets the limit, and 5 is higher. The program uses True and False for the two possible answers."
+      }
+    },
+    {
+      "title": {
+        "zh": "两项都为真才能出发",
+        "en": "Both conditions must be true to leave"
+      },
+      "body": {
+        "zh": "电量判断和安全门各有一个布尔值。and 把两个条件合在一起。电量足够且门开着，芽芽才可以出发。",
+        "en": "The charge check and the safety door each have a Boolean value. The word and combines the two conditions. Sprout can leave when the charge is high enough and the door is open."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "电量正好 4 格，安全门关着。芽芽能出发吗？",
+      "en": "There are exactly 4 units of charge and the safety door is closed. Can Sprout leave?"
+    },
+    "options": [
+      {
+        "zh": "能出发",
+        "en": "Can leave"
+      },
+      {
+        "zh": "不能出发",
+        "en": "Cannot leave"
+      }
+    ],
+    "correct": 1,
+    "feedback": {
+      "zh": "4 格满足电量条件，但门关着。and 需要两个条件都为真。",
+      "en": "Four units meets the charge condition, but the door is closed. Both conditions need to be true."
+    }
+  },
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": {
+          "zh": "3 在 4 的左边，电量条件为假。",
+          "en": "Three is to the left of four, so the charge condition is false."
+        },
+        "items": [
+          {
+            "id": "charge",
+            "label": {
+              "zh": "电量条件",
+              "en": "Charge condition"
+            },
+            "value": {
+              "zh": "3 >= 4 → False",
+              "en": "3 >= 4 → False"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "正好 4 格，电量条件为真。",
+          "en": "Exactly four units makes the charge condition true."
+        },
+        "items": [
+          {
+            "id": "charge",
+            "label": {
+              "zh": "电量条件",
+              "en": "Charge condition"
+            },
+            "value": {
+              "zh": "4 >= 4 → True",
+              "en": "4 >= 4 → True"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "5 超过 4，电量条件也为真。",
+          "en": "Five is above four, so the charge condition is also true."
+        },
+        "items": [
+          {
+            "id": "charge",
+            "label": {
+              "zh": "电量条件",
+              "en": "Charge condition"
+            },
+            "value": {
+              "zh": "5 >= 4 → True",
+              "en": "5 >= 4 → True"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "电量够，门关着。两个条件中有一个为假，芽芽还不能出发。",
+          "en": "The charge is high enough and the door is closed. One condition is false, so Sprout cannot leave yet."
+        },
+        "items": [
+          {
+            "id": "charge",
+            "label": {
+              "zh": "电量条件",
+              "en": "Charge condition"
+            },
+            "value": {
+              "zh": "True",
+              "en": "True"
+            },
+            "state": "done"
+          },
+          {
+            "id": "door",
+            "label": {
+              "zh": "安全门条件",
+              "en": "Safety door condition"
+            },
+            "value": {
+              "zh": "False",
+              "en": "False"
+            },
+            "state": "active"
+          },
+          {
+            "id": "decision",
+            "label": {
+              "zh": "能否出发",
+              "en": "Can Sprout leave?"
+            },
+            "value": {
+              "zh": "False",
+              "en": "False"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "门打开了，两项都为真，芽芽可以出发。",
+          "en": "The door is open. Both conditions are true and Sprout can leave."
+        },
+        "items": [
+          {
+            "id": "charge",
+            "label": {
+              "zh": "电量条件",
+              "en": "Charge condition"
+            },
+            "value": {
+              "zh": "True",
+              "en": "True"
+            },
+            "state": "done"
+          },
+          {
+            "id": "door",
+            "label": {
+              "zh": "安全门条件",
+              "en": "Safety door condition"
+            },
+            "value": {
+              "zh": "True",
+              "en": "True"
+            },
+            "state": "active"
+          },
+          {
+            "id": "decision",
+            "label": {
+              "zh": "能否出发",
+              "en": "Can Sprout leave?"
+            },
+            "value": {
+              "zh": "True",
+              "en": "True"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  }
+}

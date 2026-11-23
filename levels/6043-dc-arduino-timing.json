@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "kind": "arduino",
+  "id": "dc-arduino-timing",
+  "order": 6043,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "arduino-io",
+    "order": 5,
+    "title": {
+      "zh": "Arduino 输入与输出",
+      "en": "Arduino Inputs and Outputs"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "调出短闪、长停的节拍",
+    "en": "Make a Short Flash and a Long Pause"
+  },
+  "brief": {
+    "zh": "巡查车要用短闪报到。让 L 每次亮 250 毫秒，再灭 1000 毫秒。调整两段等待，运行后检查一整轮。",
+    "en": "The patrol cart checks in with a short flash. Light L for 250 ms and leave it off for 1000 ms. Adjust the two waits and check a complete cycle."
+  },
+  "concept": {
+    "zh": "分别控制亮灯与熄灯时间",
+    "en": "Set independent on and off times"
+  },
+  "hints": [],
+  "sketch": {
+    "mode": "blink",
+    "onMs": 500,
+    "offMs": 500,
+    "delayChoices": [
+      250,
+      500,
+      1000
+    ],
+    "goal": {
+      "onMs": 250,
+      "offMs": 1000
+    }
+  }
+}

@@ -1,0 +1,18 @@
+.challenge-failure-review {
+  margin-block-start: 10px;
+  padding: 10px 12px;
+  border: 1px solid #785b47;
+  border-radius: 8px;
+  background: #252738;
+  color: #e4edf9;
+}
+.challenge-review-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.challenge-review-actions > button:first-child { color: #ffdfad; border-color: #8c7252; }
+.challenge-review-body { margin-block-start: 10px; overflow-wrap: anywhere; }
+.challenge-review-body h3 { margin: 10px 0 4px; color: #ffdfad; font-size: 14px; }
+.challenge-review-body p, .challenge-review-gaps { margin: 4px 0; font-size: 14px; }
+.challenge-review-gaps { padding-inline-start: 20px; }
+.challenge-review-lessons { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 0; }
+.challenge-review-lessons > li { min-width: 0; max-width: 100%; }
+.challenge-review-lessons button { height: auto; text-align: start; white-space: normal; overflow-wrap: anywhere; }
+.challenge-review-lessons button span { margin-inline-end: 6px; font-size: 12px; color: #a5dfce; }

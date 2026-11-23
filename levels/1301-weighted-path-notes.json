@@ -1,0 +1,307 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "weighted-path-notes",
+  "order": 1301,
+  "unit": {
+    "id": "algorithm-advanced",
+    "order": 70,
+    "title": {
+      "zh": "算法高级",
+      "en": "Advanced Algorithms"
+    }
+  },
+  "topic": {
+    "id": "weighted-path",
+    "order": 2,
+    "title": {
+      "zh": "带权路径",
+      "en": "Weighted Paths"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "多走几步也能少耗电",
+    "en": "A Longer Route Can Use Less Energy"
+  },
+  "brief": {
+    "zh": "地板的耗电量不一样。观察路线步数和总耗电量如何一起影响选择。",
+    "en": "Tiles use different amounts of energy. Compare step counts and total energy for two routes."
+  },
+  "concept": {
+    "zh": "按累计代价探索地图，找到最省的路线",
+    "en": "Explore by cumulative cost to find the cheapest route"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "每一步有代价",
+        "en": "Each step has a cost"
+      },
+      "body": {
+        "zh": "起点已经站在脚下，不收费。跨入下一格时，才把该格的代价加进路线总和。",
+        "en": "You already occupy the start tile, so it costs nothing. Add a tile’s cost when you enter it."
+      }
+    },
+    {
+      "title": {
+        "zh": "先扩展累计代价最小的格子",
+        "en": "Expand the lowest known cost first"
+      },
+      "body": {
+        "zh": "记录到每格的最低已知代价。每次取待探索中代价最小的一格，尝试更新相邻格。因为每一步的代价都为正，取出终点时就已经找到最小代价。",
+        "en": "Track the lowest known cost to each tile. Expand the frontier tile with the lowest cost and try improving its neighbors. With positive step costs, the goal’s cost is final when it is popped."
+      }
+    }
+  ],
+  "animation": {
+    "layout": "bars",
+    "frames": [
+      {
+        "caption": {
+          "zh": "从起点比较两条路。每格上的数字是进入它要用的电量。",
+          "en": "Compare two routes from the start. Each tile shows how much charge it costs to enter."
+        },
+        "items": [
+          {
+            "id": "cost",
+            "label": {
+              "zh": "累计耗电",
+              "en": "Charge used"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "直走进入耗电 8 的格子。",
+          "en": "The direct route enters the tile that costs 8."
+        },
+        "items": [
+          {
+            "id": "cost",
+            "label": {
+              "zh": "累计耗电",
+              "en": "Charge used"
+            },
+            "value": {
+              "zh": "8",
+              "en": "8"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "直走两步到电池，耗电 8 + 1 = 9。",
+          "en": "The direct route reaches the battery in two moves, spending 8 + 1 = 9."
+        },
+        "items": [
+          {
+            "id": "cost",
+            "label": {
+              "zh": "直走总耗电",
+              "en": "Direct cost"
+            },
+            "value": {
+              "zh": "9",
+              "en": "9"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "回到起点，用相同的起始电量试试下面的通道。",
+          "en": "Return to the start with the same charge and try the lower passage."
+        },
+        "items": [
+          {
+            "id": "cost",
+            "label": {
+              "zh": "绕行累计耗电",
+              "en": "Detour total"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "绕行第 1 步，这一格耗电 1，累计 1。",
+          "en": "Detour move 1 costs one unit, bringing the total to 1."
+        },
+        "items": [
+          {
+            "id": "cost",
+            "label": {
+              "zh": "累计耗电",
+              "en": "Charge used"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "绕行第 2 步，这一格耗电 1，累计 2。",
+          "en": "Detour move 2 costs one unit, bringing the total to 2."
+        },
+        "items": [
+          {
+            "id": "cost",
+            "label": {
+              "zh": "累计耗电",
+              "en": "Charge used"
+            },
+            "value": {
+              "zh": "2",
+              "en": "2"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "绕行第 3 步，这一格耗电 1，累计 3。",
+          "en": "Detour move 3 costs one unit, bringing the total to 3."
+        },
+        "items": [
+          {
+            "id": "cost",
+            "label": {
+              "zh": "累计耗电",
+              "en": "Charge used"
+            },
+            "value": {
+              "zh": "3",
+              "en": "3"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "绕行四步到电池，耗电 4。和直走的 9 相比，多走两步反而省了 5 格电。",
+          "en": "The four-move detour costs 4. Compared with the direct cost of 9, two extra moves save 5 units."
+        },
+        "items": [
+          {
+            "id": "direct",
+            "label": {
+              "zh": "直走",
+              "en": "Direct"
+            },
+            "value": {
+              "zh": "9",
+              "en": "9"
+            },
+            "state": "active"
+          },
+          {
+            "id": "detour",
+            "label": {
+              "zh": "绕行",
+              "en": "Detour"
+            },
+            "value": {
+              "zh": "4",
+              "en": "4"
+            },
+            "state": "active"
+          }
+        ]
+      }
+    ],
+    "workstation": {
+      "kind": "weighted-path",
+      "checkpoints": [
+        {
+          "line": 8
+        },
+        {
+          "line": 11
+        },
+        {
+          "line": 12
+        },
+        {
+          "line": 8,
+          "visit": 2
+        },
+        {
+          "line": 11,
+          "visit": 3
+        },
+        {
+          "line": 11,
+          "visit": 4
+        },
+        {
+          "line": 11,
+          "visit": 5
+        },
+        {
+          "line": 12,
+          "visit": 2
+        }
+      ]
+    }
+  },
+  "question": {
+    "prompt": {
+      "zh": "另一份路线计划的三步分别耗电 1、5、1。和刚才耗电 4 的绕行相比，哪份计划更省？",
+      "en": "A different route plan uses 1, 5, and 1 energy over three steps. Which plan is cheaper, that one or the detour costing 4?"
+    },
+    "options": [
+      {
+        "zh": "三步路线",
+        "en": "Three-step route"
+      },
+      {
+        "zh": "四步绕行",
+        "en": "Four-step detour"
+      },
+      {
+        "zh": "耗电一样",
+        "en": "Same energy"
+      }
+    ],
+    "correct": 1,
+    "feedback": {
+      "zh": "三步一共耗电 7，四步绕行一共耗电 4。",
+      "en": "The three-step route costs 7. The four-step detour costs 4."
+    }
+  },
+  "execution": {
+    "source": "terrain = [[0, 8, 1], [1, 1, 1]]\nstart = [0, 0]\ngoal = [2, 0]\nroutes = [[[1, 0], goal], [[0, 1], [1, 1], [2, 1], goal]]\ntotals = []\nfor route in routes:\n    trail = [start]\n    cost = 0\n    for cell in route:\n        trail.append(cell)\n        cost = cost + terrain[cell[1]][cell[0]]\n    totals.append(cost)\nsay(str(totals[1]))",
+    "cases": [
+      {
+        "label": {
+          "zh": "多走几步也能少耗电",
+          "en": "A Longer Route Can Use Less Energy"
+        },
+        "input": 0,
+        "expected": "4"
+      }
+    ]
+  }
+}

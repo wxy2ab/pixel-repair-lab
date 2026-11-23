@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "row-total",
+  "order": 921,
+  "unit": { "id": "python-advanced", "order": 30, "title": { "zh": "Python 高级", "en": "Advanced Python" } },
+  "topic": { "id": "nested-loops", "order": 2, "title": { "zh": "嵌套循环", "en": "Nested Loops" } },
+  "stage": "exercise",
+  "title": { "zh": "先写好一排的合计", "en": "Write the Single-Row Total" },
+  "brief": { "zh": "完成独立函数 row_total(values)。返回一排零件数的合计，空排返回 0。通过后可以保存供其他任务导入。", "en": "Complete the standalone row_total(values). Return the sum for one row of parts, or 0 for an empty row. After it passes, save it to import in other tasks." },
+  "concept": { "zh": "独立测试处理单排的内层逻辑", "en": "Test the inner work for a single row on its own" },
+  "hints": [
+    { "zh": "合计初始是 0，把每个数字加一次。", "en": "Start at 0 and add each value once." },
+    { "zh": "return 放在循环后面，这样空排也能返回 0。", "en": "Put return after the loop so even an empty row returns 0." }
+  ],
+  "functionName": "row_total",
+  "starterCode": "def row_total(values):\n    total = 0\n    return total\n",
+  "solutionCode": "def row_total(values):\n    total = 0\n    for value in values:\n        total = total + value\n    return total\n",
+  "snippets": [
+    { "label": { "zh": "循环累加这一排", "en": "Loop through and add the row" }, "code": "    for value in values:\n        total = total + value" },
+    { "label": { "zh": "返回最后合计", "en": "Return the final total" }, "code": "    return total" }
+  ],
+  "cases": [
+    { "args": [[2, 7, 1]], "expected": 10 },
+    { "args": [[]], "expected": 0 },
+    { "args": [[6]], "expected": 6 },
+    { "args": [[0, 4, 0, 2]], "expected": 6 },
+    { "args": [[8, 8, 8, 8, 8]], "expected": 40 }
+  ]
+}

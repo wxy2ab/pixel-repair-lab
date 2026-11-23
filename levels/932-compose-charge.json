@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "compose-charge",
+  "order": 932,
+  "unit": { "id": "python-advanced", "order": 30, "title": { "zh": "Python 高级", "en": "Advanced Python" } },
+  "topic": { "id": "modules", "order": 3, "title": { "zh": "模块", "en": "Modules" } },
+  "stage": "exercise",
+  "title": { "zh": "完成两轮充电", "en": "Add Two Rounds of Charge" },
+  "brief": { "zh": "完成 charge_twice(current, first, second)。导入 charge_total，把第一轮的结果用作第二轮的起点，再返回最终电量。", "en": "Complete charge_twice(current, first, second). Import charge_total, use the result of the first round as the starting charge of the second, and return the final charge." },
+  "concept": { "zh": "在新函数中重复调用导入的函数", "en": "Call an imported helper twice inside a new function" },
+  "hints": [
+    { "zh": "第一次调用用参数 current 和 first。把返回值交给 after_first。", "en": "Call the helper with current and first, and store the result in after_first." },
+    { "zh": "第二次把 after_first 和 second 交给同一个函数。", "en": "Give after_first and second to the same helper on the second call." }
+  ],
+  "functionName": "charge_twice",
+  "helpers": ["charge_total"],
+  "starterCode": "from algorithms import charge_total\n\ndef charge_twice(current, first, second):\n    return None\n",
+  "solutionCode": "from algorithms import charge_total\n\ndef charge_twice(current, first, second):\n    after_first = charge_total(current, first)\n    return charge_total(after_first, second)\n",
+  "snippets": [
+    { "label": { "zh": "第一轮充电", "en": "First round of charge" }, "code": "    after_first = charge_total(current, first)" },
+    { "label": { "zh": "第二轮充电并返回", "en": "Add the second round and return" }, "code": "    return charge_total(after_first, second)" }
+  ],
+  "cases": [
+    { "args": [20, 15, 8], "expected": 43 },
+    { "args": [12, 0, 5], "expected": 17 },
+    { "args": [0, 7, 0], "expected": 7 },
+    { "args": [55, 11, 22], "expected": 88 }
+  ]
+}

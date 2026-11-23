@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "routing",
+    "order": 60,
+    "title": {
+      "zh": "算法进阶",
+      "en": "Intermediate Algorithms"
+    }
+  },
+  "kind": "replay",
+  "id": "depth-first-replay",
+  "order": 1221,
+  "stage": "demo",
+  "topic": {
+    "id": "depth-first",
+    "order": 3,
+    "title": {
+      "zh": "深度优先搜索",
+      "en": "Depth-first search"
+    }
+  },
+  "title": {
+    "zh": "先探一条路，再回头",
+    "en": "Explore one branch, then turn back"
+  },
+  "concept": {
+    "zh": "栈决定访问顺序",
+    "en": "The stack decides visit order"
+  },
+  "brief": {
+    "zh": "芽芽每次只报告第一次访问的房间。留意分支顺序，并观察它如何在有环的地图停止。",
+    "en": "Sprout reports first visits only. Look at the order of branches and see why the search stops even with a cycle."
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "先查最后压入的房间",
+        "en": "Visit the room pushed last first"
+      },
+      "source": "data = scan()\ngraph = data[\"graph\"]\nstack = [data[\"start\"]]\nseen = {}\nwhile len(stack) > 0:\n    node = stack.pop()\n    if node in seen:\n        continue\n    seen[node] = True\n    submit(node)\n    for neighbor in graph[node]:\n        if neighbor not in seen:\n            stack.append(neighbor)",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "input": {
+          "graph": {
+            "hall": [
+              "lab",
+              "store"
+            ],
+            "lab": [],
+            "store": [
+              "dock"
+            ],
+            "dock": []
+          },
+          "start": "hall"
+        },
+        "allowedApi": [
+          "scan",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              "hall",
+              "store",
+              "dock",
+              "lab"
+            ],
+            "origin": "stack-pop",
+            "sameContainer": true
+          }
+        ]
+      }
+    },
+    {
+      "title": {
+        "zh": "绕回起点时不重复报告",
+        "en": "Return to the start without reporting it twice"
+      },
+      "source": "data = scan()\ngraph = data[\"graph\"]\nstack = [data[\"start\"]]\nseen = {}\nwhile len(stack) > 0:\n    node = stack.pop()\n    if node in seen:\n        continue\n    seen[node] = True\n    submit(node)\n    for neighbor in graph[node]:\n        if neighbor not in seen:\n            stack.append(neighbor)",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "input": {
+          "graph": {
+            "port": [
+              "shed"
+            ],
+            "shed": [
+              "port",
+              "yard"
+            ],
+            "yard": [
+              "shed"
+            ]
+          },
+          "start": "port"
+        },
+        "allowedApi": [
+          "scan",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              "port",
+              "shed",
+              "yard"
+            ],
+            "origin": "stack-pop",
+            "sameContainer": true
+          }
+        ]
+      }
+    }
+  ]
+}

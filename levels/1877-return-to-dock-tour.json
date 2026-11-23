@@ -1,0 +1,187 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-return-to-dock-tour",
+  "order": 1877,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "depth-first"
+    },
+    {
+      "unit": "python-advanced",
+      "topic": "function-design"
+    }
+  ],
+  "title": {
+    "zh": "巡检车回库令",
+    "en": "Return-to-Dock Tour"
+  },
+  "concept": {
+    "zh": "单向巡回路线与最低总费",
+    "en": "Cheapest full tour with one-way connections"
+  },
+  "brief": {
+    "zh": "fares 是方阵，fares[a][b] 表示从 a 直达 b 的非负费用，-1 表示没有这条单向通道。从 0 号库出发，其他每一站都要恰好停一次，然后回到 0。返回最低总费，无法完成巡回时返回 -1。空表或只有车库时返回 0。",
+    "en": "fares is a square matrix. fares[a][b] is the nonnegative cost of a direct trip from a to b, or -1 for a missing one-way link. Leave dock 0, visit every other station exactly once, then return to 0. Return the lowest total fare or -1 when no tour is possible. An empty table or a lone dock costs 0."
+  },
+  "hints": [],
+  "functionName": "dock_tour",
+  "starterCode": "def dock_tour(fares):\n    pass\n",
+  "solutionCode": "def dock_tour(fares):\n    if len(fares) < 2:\n        return 0\n    used = []\n    for row in fares:\n        used.append(False)\n    used[0] = True\n    return tour_tail(fares, used, 0, 1)\ndef tour_tail(fares, used, here, count):\n    if count == len(fares):\n        return fares[here][0]\n    best = -1\n    for dest in range(1, len(fares)):\n        edge = fares[here][dest]\n        if used[dest] == False and edge >= 0:\n            used[dest] = True\n            rest = tour_tail(fares, used, dest, count + 1)\n            used[dest] = False\n            if rest >= 0:\n                price = edge + rest\n                if best < 0 or price < best:\n                    best = price\n    return best\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "检查回库通道",
+        "en": "Check the return link"
+      },
+      "code": "def tour_tail(fares, used, here, count):\n    if count == len(fares):\n        return fares[here][0]\n    best = -1"
+    },
+    {
+      "label": {
+        "zh": "按从车库出发的方向读取报价",
+        "en": "Price the link leaving the dock"
+      },
+      "code": "def tour_tail(fares, used, here, count):\n    if count == len(fares):\n        return fares[0][here]\n    best = -1"
+    },
+    {
+      "label": {
+        "zh": "从车库派出巡检车",
+        "en": "Dispatch the vehicle from the dock"
+      },
+      "code": "    if len(fares) < 2:\n        return 0\n    used = []\n    for row in fares:\n        used.append(False)\n    used[0] = True\n    return tour_tail(fares, used, 0, 1)"
+    },
+    {
+      "label": {
+        "zh": "返回当前最低巡回费用",
+        "en": "Return the best remaining fare"
+      },
+      "code": "    return best"
+    },
+    {
+      "label": {
+        "zh": "试走一站再归还通行牌",
+        "en": "Try a stop and release its pass"
+      },
+      "code": "    for dest in range(1, len(fares)):\n        edge = fares[here][dest]\n        if used[dest] == False and edge >= 0:\n            used[dest] = True\n            rest = tour_tail(fares, used, dest, count + 1)\n            used[dest] = False\n            if rest >= 0:\n                price = edge + rest\n                if best < 0 or price < best:\n                    best = price"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            6,
+            0,
+            20
+          ],
+          [
+            4,
+            2,
+            0
+          ]
+        ]
+      ],
+      "expected": 11
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            1,
+            -1
+          ],
+          [
+            -1,
+            0,
+            2
+          ],
+          [
+            -1,
+            -1,
+            0
+          ]
+        ]
+      ],
+      "expected": -1
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ]
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          [
+            0
+          ]
+        ]
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            1,
+            10,
+            -1
+          ],
+          [
+            -1,
+            0,
+            1,
+            7
+          ],
+          [
+            3,
+            -1,
+            0,
+            2
+          ],
+          [
+            4,
+            -1,
+            -1,
+            0
+          ]
+        ]
+      ],
+      "expected": 8
+    }
+  ]
+}

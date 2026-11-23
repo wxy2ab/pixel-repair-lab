@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "stack-reverse",
+  "order": 1003,
+  "unit": {
+    "id": "structures",
+    "order": 40,
+    "title": {
+      "zh": "数据结构",
+      "en": "Data Structures"
+    }
+  },
+  "topic": {
+    "id": "stacks",
+    "order": 2,
+    "title": {
+      "zh": "栈",
+      "en": "Stacks"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "写一个反向出栈函数",
+    "en": "Write a Stack Reversal Function"
+  },
+  "concept": {
+    "zh": "循环出栈并收集结果",
+    "en": "Pop repeatedly and collect the results"
+  },
+  "brief": {
+    "zh": "写好 stack_reverse(values)。按原顺序把货物放到栈上，再把每次弹出的货物放进新列表。返回这个新列表。",
+    "en": "Complete stack_reverse(values). Push the supplies in their original order. Put each popped item into a new list and return that list."
+  },
+  "hints": [
+    {
+      "zh": "起始代码已经把全部物品放进了 stack。只要它还有东西，就用 pop() 取走栈顶，把取到的物品添加到 result。",
+      "en": "The starter already pushes every item onto stack. While it contains an item, pop the top and append the item to result."
+    },
+    {
+      "zh": "光标点到代码末尾，按顺序添加两张补写卡，再运行并保存函数。",
+      "en": "Click at the end of the code, insert both snippets in order, then run and save your function."
+    }
+  ],
+  "functionName": "stack_reverse",
+  "starterCode": "def stack_reverse(values):\n    stack = []\n    for item in values:\n        stack.append(item)\n    result = []\n",
+  "solutionCode": "def stack_reverse(values):\n    stack = []\n    for item in values:\n        stack.append(item)\n    result = []\n    while len(stack) > 0:\n        result.append(stack.pop())\n    return result",
+  "snippets": [
+    {
+      "label": {
+        "zh": "一直取出栈顶并保存",
+        "en": "Pop and save until the stack is empty"
+      },
+      "code": "    while len(stack) > 0:\n        result.append(stack.pop())"
+    },
+    {
+      "label": {
+        "zh": "返回全部出栈结果",
+        "en": "Return all popped items"
+      },
+      "code": "    return result"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          "washer",
+          "spring",
+          "bolt"
+        ]
+      ],
+      "expected": [
+        "bolt",
+        "spring",
+        "washer"
+      ]
+    },
+    {
+      "args": [
+        [
+          "gear",
+          "gear",
+          "wire",
+          "gear"
+        ]
+      ],
+      "expected": [
+        "gear",
+        "wire",
+        "gear",
+        "gear"
+      ]
+    },
+    {
+      "args": [
+        [
+          "ring"
+        ]
+      ],
+      "expected": [
+        "ring"
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          0,
+          2,
+          5,
+          1
+        ]
+      ],
+      "expected": [
+        1,
+        5,
+        2,
+        0
+      ]
+    }
+  ]
+}

@@ -1,0 +1,273 @@
+{
+  "version": 1,
+  "kind": "arena",
+  "id": "challenge-blackout-extraction",
+  "order": 1804,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "prerequisites": [
+    { "unit": "routing", "topic": "breadth-first" },
+    { "unit": "algorithm-advanced", "topic": "rival-strategy" }
+  ],
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "断电区撤离",
+    "en": "Blackout Extraction"
+  },
+  "concept": {
+    "zh": "双电池撤离 · 追踪与巡逻",
+    "en": "Two-battery extraction · Pursuit and patrol"
+  },
+  "brief": {
+    "zh": "带走两块电池，再从出口撤离。追踪号会追向你，守门号沿固定路线巡逻。同格相撞或迎面交换位置都会被抓。用完回合仍未撤离也算失败。从容模式下，同一程序要在三张地图都撤离。",
+    "en": "Collect both batteries and reach the exit. Tracker pursues you while Gatekeeper follows a fixed patrol. Landing on the same tile or trading places head-on gets you caught. Running out of turns also loses. In Relaxed mode, one program must escape all three maps."
+  },
+  "hints": [],
+  "tiles": [
+    "#########",
+    "#.......#",
+    "#..##...#",
+    "#...#...#",
+    "#.#...#.#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 3,
+    "y": 3
+  },
+  "opponents": [
+    {
+      "id": "seeker",
+      "title": {
+        "zh": "追踪号",
+        "en": "Tracker"
+      },
+      "start": {
+        "x": 4,
+        "y": 1
+      },
+      "policy": {
+        "kind": "pursue"
+      }
+    },
+    {
+      "id": "gatekeeper",
+      "title": {
+        "zh": "守门号",
+        "en": "Gatekeeper"
+      },
+      "start": {
+        "x": 3,
+        "y": 4
+      },
+      "policy": {
+        "kind": "patrol",
+        "path": [
+          {
+            "x": 3,
+            "y": 4
+          },
+          {
+            "x": 4,
+            "y": 4
+          }
+        ]
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": "battery-a",
+      "x": 3,
+      "y": 5
+    },
+    {
+      "id": "battery-b",
+      "x": 1,
+      "y": 3
+    }
+  ],
+  "maxTurns": 14,
+  "objective": {
+    "kind": "escape",
+    "exit": {
+      "x": 6,
+      "y": 3
+    },
+    "itemIds": [
+      "battery-a",
+      "battery-b"
+    ]
+  },
+  "starterCode": "while True:\n    wait()\n",
+  "solutionCode": "def graph_for(board, width):\n    graph = {}\n    for y in range(len(board)):\n        for x in range(width):\n            if board[y][x] == \"#\":\n                continue\n            neighbors = []\n            for step in [[0,-1,\"up\"],[1,0,\"right\"],[0,1,\"down\"],[-1,0,\"left\"]]:\n                nx = x + step[0]\n                ny = y + step[1]\n                if 0 <= nx and nx < width and 0 <= ny and ny < len(board) and board[ny][nx] == \".\":\n                    neighbors.append([ny * width + nx, step[2]])\n            graph[y * width + x] = neighbors\n    return graph\n\ndef routes(graph, cache, start):\n    if start in cache:\n        return cache[start]\n    queue = [start]\n    table = {start: [0, None]}\n    for cell in queue:\n        previous = table[cell]\n        for edge in graph[cell]:\n            neighbor = edge[0]\n            if neighbor in table:\n                continue\n            first = previous[1]\n            if first is None:\n                first = edge[1]\n            table[neighbor] = [previous[0] + 1, first]\n            queue.append(neighbor)\n    cache[start] = table\n    return table\n\ndef steps_to(table, cell):\n    if cell in table:\n        return table[cell][0]\n    return 999\n\ndef nearest_rival(rivals, cell):\n    nearest = 999\n    for rival in rivals:\n        steps = steps_to(rival, cell)\n        if steps < nearest:\n            nearest = steps\n    return nearest\n\ndef rival_routes(graph, cache, width, opponents):\n    result = []\n    for opponent in opponents:\n        result.append(routes(graph, cache, opponent[\"y\"] * width + opponent[\"x\"]))\n    return result\n\ndef separation(cell, width, opponent):\n    dx = cell % width - opponent[\"x\"]\n    dy = cell // width - opponent[\"y\"]\n    if dx < 0:\n        dx = -dx\n    if dy < 0:\n        dy = -dy\n    return dx + dy\n\ndef choose_target(state, width, mine, rivals):\n    if len(state[\"items\"]) == 0:\n        exit = state[\"exit\"]\n        return exit[1] * width + exit[0]\n    chosen = None\n    best_lead = -999\n    best_steps = 999\n    for item in state[\"items\"]:\n        cell = item[\"y\"] * width + item[\"x\"]\n        if cell not in mine:\n            continue\n        steps = mine[cell][0]\n        lead = nearest_rival(rivals, cell) - steps\n        if chosen is None or lead > best_lead or (lead == best_lead and steps < best_steps):\n            chosen = cell\n            best_lead = lead\n            best_steps = steps\n    return chosen\n\ndef options(state, graph, width, start):\n    legal = []\n    for item in state[\"items\"]:\n        if item[\"y\"] * width + item[\"x\"] == start:\n            legal.append([start, \"pick\"])\n    for edge in graph[start]:\n        legal.append(edge)\n    return legal\n\ndef decide(state, width, graph, cache):\n    opponents = state[\"opponents\"]\n    player = state[\"player\"]\n    start = player[1] * width + player[0]\n    mine = routes(graph, cache, start)\n    rivals = rival_routes(graph, cache, width, opponents)\n    target = choose_target(state, width, mine, rivals)\n    if target is None:\n        return \"wait\"\n    remaining = routes(graph, cache, target)\n    chosen = \"wait\"\n    best_risk = 999\n    best_steps = 999\n    best_room = -1\n    for option in options(state, graph, width, start):\n        cell = option[0]\n        action = option[1]\n        risk = 0\n        room = 999\n        for opponent in opponents:\n            distance = separation(cell, width, opponent)\n            if distance <= 1:\n                risk += 1\n            if distance < room:\n                room = distance\n        steps = steps_to(remaining, cell)\n        if action == \"pick\" and cell == target:\n            steps = -1\n        if risk < best_risk or (risk == best_risk and (steps < best_steps or (steps == best_steps and room > best_room))):\n            chosen = action\n            best_risk = risk\n            best_steps = steps\n            best_room = room\n    return chosen\n\nstate = scan()\nboard = state[\"tiles\"]\nwidth = len(board[0])\ngraph = graph_for(board, width)\ncache = {}\nwhile True:\n    action = decide(state, width, graph, cache)\n    if action == \"pick\":\n        pick()\n    elif action == \"wait\":\n        wait()\n    else:\n        move(action)\n    state = scan()\n",
+  "snippets": [],
+  "variants": [
+    {
+      "tiles": [
+        "#########",
+        "#.......#",
+        "#..#....#",
+        "#..#.#..#",
+        "#....#..#",
+        "#.......#",
+        "#########"
+      ],
+      "start": {
+        "x": 4,
+        "y": 2
+      },
+      "opponents": [
+        {
+          "id": "seeker",
+          "title": {
+            "zh": "追踪号",
+            "en": "Tracker"
+          },
+          "start": {
+            "x": 4,
+            "y": 5
+          },
+          "policy": {
+            "kind": "pursue"
+          }
+        },
+        {
+          "id": "gatekeeper",
+          "title": {
+            "zh": "守门号",
+            "en": "Gatekeeper"
+          },
+          "start": {
+            "x": 6,
+            "y": 2
+          },
+          "policy": {
+            "kind": "patrol",
+            "path": [
+              {
+                "x": 6,
+                "y": 2
+              },
+              {
+                "x": 5,
+                "y": 2
+              }
+            ]
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": "battery-a",
+          "x": 6,
+          "y": 4
+        },
+        {
+          "id": "battery-b",
+          "x": 2,
+          "y": 5
+        }
+      ],
+      "maxTurns": 17,
+      "objective": {
+        "kind": "escape",
+        "exit": {
+          "x": 7,
+          "y": 3
+        },
+        "itemIds": [
+          "battery-a",
+          "battery-b"
+        ]
+      }
+    },
+    {
+      "tiles": [
+        "#########",
+        "#.......#",
+        "#..#....#",
+        "#..#.#..#",
+        "#....#..#",
+        "#.......#",
+        "#########"
+      ],
+      "start": {
+        "x": 3,
+        "y": 5
+      },
+      "opponents": [
+        {
+          "id": "seeker",
+          "title": {
+            "zh": "追踪号",
+            "en": "Tracker"
+          },
+          "start": {
+            "x": 5,
+            "y": 1
+          },
+          "policy": {
+            "kind": "pursue"
+          }
+        },
+        {
+          "id": "gatekeeper",
+          "title": {
+            "zh": "守门号",
+            "en": "Gatekeeper"
+          },
+          "start": {
+            "x": 4,
+            "y": 5
+          },
+          "policy": {
+            "kind": "patrol",
+            "path": [
+              {
+                "x": 4,
+                "y": 5
+              },
+              {
+                "x": 5,
+                "y": 5
+              }
+            ]
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": "battery-a",
+          "x": 4,
+          "y": 2
+        },
+        {
+          "id": "battery-b",
+          "x": 2,
+          "y": 2
+        }
+      ],
+      "maxTurns": 14,
+      "objective": {
+        "kind": "escape",
+        "exit": {
+          "x": 7,
+          "y": 2
+        },
+        "itemIds": [
+          "battery-a",
+          "battery-b"
+        ]
+      }
+    }
+  ]
+}

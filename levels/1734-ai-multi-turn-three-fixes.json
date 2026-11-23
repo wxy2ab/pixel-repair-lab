@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "ai-multi-turn-three-fixes",
+  "order": 1734,
+  "unit": {
+    "id": "ai-review",
+    "order": 170,
+    "title": {
+      "zh": "核对与修正",
+      "en": "Review and Revision"
+    }
+  },
+  "topic": {
+    "id": "multi-turn",
+    "order": 3,
+    "title": {
+      "zh": "多轮修正",
+      "en": "Revise Across Turns"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "连续复查四轮清单",
+    "en": "Review Four Successive Manifests"
+  },
+  "brief": {
+    "zh": "维修车需要两块衬垫、三支记号笔和一个探头。这次不需要备用线圈。记录一轮轮的变化，直到整张清单符合要求。",
+    "en": "The repair cart needs two pads, three markers, and one probe. Leave the spare coil behind. Track each change until the whole manifest matches."
+  },
+  "concept": {
+    "zh": "漏装、数量错误和多装都可能在不同轮次出现。",
+    "en": "An omission, a wrong count, and an extra item can appear in different rounds."
+  },
+  "hints": [
+    {
+      "zh": "把不需要的物品当成目标数量为 0 来核对。",
+      "en": "Review an excluded item as a target count of zero."
+    }
+  ],
+  "inventory": [
+    {
+      "id": "pad",
+      "label": {
+        "zh": "衬垫",
+        "en": "Pad"
+      },
+      "aliases": [
+        "pads",
+        "垫片"
+      ]
+    },
+    {
+      "id": "marker",
+      "label": {
+        "zh": "记号笔",
+        "en": "Marker"
+      },
+      "aliases": [
+        "markers",
+        "马克笔"
+      ]
+    },
+    {
+      "id": "sensor",
+      "label": {
+        "zh": "探头",
+        "en": "Probe"
+      },
+      "aliases": [
+        "probes",
+        "传感探头"
+      ]
+    },
+    {
+      "id": "coil",
+      "label": {
+        "zh": "备用线圈",
+        "en": "Spare coil"
+      },
+      "aliases": [
+        "spare coils",
+        "备用绕组"
+      ]
+    }
+  ],
+  "required": {
+    "pad": 2,
+    "marker": 3,
+    "sensor": 1
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "pad",
+        "quantity": 0
+      },
+      {
+        "itemId": "marker",
+        "quantity": 2
+      },
+      {
+        "itemId": "coil",
+        "quantity": 1
+      }
+    ],
+    "cards": [
+      {
+        "zh": "衬垫改为 2 块。",
+        "en": "Set pads to 2."
+      },
+      {
+        "zh": "记号笔改为 3 支。",
+        "en": "Set markers to 3."
+      },
+      {
+        "zh": "去掉备用线圈。",
+        "en": "Remove the spare coil."
+      },
+      {
+        "zh": "其他项目保持原样。",
+        "en": "Keep the other entries."
+      }
+    ]
+  },
+  "examplePrompts": {
+    "zh": [
+      "准备 2 块衬垫、3 支记号笔、1 个探头。不要放备用线圈。",
+      "衬垫改为 2 块。其他项目保持原样。",
+      "记号笔改为 3 支。其他项目保持原样。",
+      "去掉备用线圈。其他项目保持原样。"
+    ],
+    "en": [
+      "Pack 2 pads, 3 markers, and 1 probe. Leave out the spare coil.",
+      "Set pads to 2. Keep the other entries.",
+      "Set markers to 3. Keep the other entries.",
+      "Remove the spare coil. Keep the other entries."
+    ]
+  }
+}

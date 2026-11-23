@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-six-step-detour",
+  "order": 1815,
+  "difficulty": "starter",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": { "zh": "挑战场", "en": "Challenge Arena" }
+  },
+  "stage": "challenge",
+  "prerequisites": [{ "unit": "python-intermediate", "topic": "branches" }],
+  "title": { "zh": "封道后的六步", "en": "Six-Step Detour" },
+  "concept": { "zh": "左右封道 · 两张地图 · 6 回合", "en": "Left or right closure · Two maps · Six turns" },
+  "brief": {
+    "zh": "施工封住了起点左侧或右侧的格子。同一份程序要在两张地图上都抵达出口，每张最多走 6 步。扫描能看到相邻格子的状态，不消耗回合。撞墙或超出步数就失败。",
+    "en": "Construction blocks the tile to the left or right of the start. Use one program to reach the exit on both maps in at most six moves each. Scanning reports adjacent tiles for free. Hitting a wall or exceeding the move limit ends the run."
+  },
+  "hints": [],
+  "tiles": [
+    "#######",
+    "#.....#",
+    "#.###.#",
+    "#.#...#",
+    "#######"
+  ],
+  "start": { "x": 3, "y": 3 },
+  "turnLimit": 6,
+  "allowedApi": ["scan", "move"],
+  "objectives": [{ "type": "exit", "x": 3, "y": 1 }],
+  "variants": [
+    {
+      "tiles": [
+        "#######",
+        "#.....#",
+        "#.###.#",
+        "#...#.#",
+        "#######"
+      ]
+    }
+  ],
+  "cards": [
+    { "id": "scan", "label": { "zh": "扫描四周", "en": "Scan around you" }, "template": "nearby = scan()" },
+    {
+      "id": "if-wall",
+      "label": { "zh": "如果这一侧是墙", "en": "If there is a wall on this side" },
+      "template": "if nearby[{{side}}] == \"wall\":",
+      "block": true,
+      "parameters": [
+        {
+          "name": "side",
+          "label": { "zh": "要检查哪一侧", "en": "Side to check" },
+          "choices": [
+            { "id": "left", "label": { "zh": "左侧", "en": "Left" }, "code": "\"left\"" },
+            { "id": "right", "label": { "zh": "右侧", "en": "Right" }, "code": "\"right\"" }
+          ]
+        }
+      ]
+    },
+    { "id": "otherwise", "label": { "zh": "否则", "en": "Otherwise" }, "template": "else:", "block": true },
+    { "id": "left", "label": { "zh": "向左", "en": "Left" }, "template": "move(\"left\")" },
+    { "id": "right", "label": { "zh": "向右", "en": "Right" }, "template": "move(\"right\")" },
+    { "id": "up", "label": { "zh": "向上", "en": "Up" }, "template": "move(\"up\")" }
+  ],
+  "solutionCards": [
+    { "cardId": "scan" },
+    {
+      "cardId": "if-wall",
+      "values": { "side": "left" },
+      "children": [
+        { "cardId": "right" }, { "cardId": "right" },
+        { "cardId": "up" }, { "cardId": "up" },
+        { "cardId": "left" }, { "cardId": "left" }
+      ]
+    },
+    {
+      "cardId": "otherwise",
+      "children": [
+        { "cardId": "left" }, { "cardId": "left" },
+        { "cardId": "up" }, { "cardId": "up" },
+        { "cardId": "right" }, { "cardId": "right" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,238 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "function-notes",
+  "order": 420,
+  "unit": {
+    "id": "python-advanced",
+    "order": 30,
+    "title": {
+      "zh": "Python 高级",
+      "en": "Advanced Python"
+    }
+  },
+  "stage": "explain",
+  "topic": { "id": "function-design", "order": 1, "title": { "zh": "函数设计", "en": "Function Design" } },
+  "title": {
+    "zh": "写一次，到处使用",
+    "en": "Write It Once, Use It Again"
+  },
+  "concept": {
+    "zh": "函数名、参数和返回值",
+    "en": "Function names, parameters, and return values"
+  },
+  "brief": {
+    "zh": "把重复的计算封装成函数，用不同参数调用它。",
+    "en": "Put a recurring calculation in a function and call it with different arguments."
+  },
+  "hints": [],
+  "execution": {
+    "source": "def charge_gap(current, target):\n    return target - current\n\ncharge = scan()\nfirst = charge_gap(charge, 8)\nsecond = charge_gap(charge, 10)\nsay(str(second))",
+    "cases": [
+      {
+        "label": { "zh": "起始电量 2 格", "en": "Start with 2 units" },
+        "input": 2,
+        "expected": "8"
+      },
+      {
+        "label": { "zh": "起始电量 5 格", "en": "Start with 5 units" },
+        "input": 5,
+        "expected": "5"
+      }
+    ]
+  },
+  "sections": [
+    {
+      "title": {
+        "zh": "用函数给一段计算起名",
+        "en": "Give a calculation a function name"
+      },
+      "body": {
+        "zh": "def 声明一个函数。调用函数时，括号里的值变成参数，函数用 return 把结果交回来。换一组参数，就能再做一次同样的计算。",
+        "en": "Use def to define a function. A call passes values into its parameters, and return sends the result back. Call it with new values to do the same calculation again."
+      }
+    },
+    {
+      "title": {
+        "zh": "给参数起能说明用途的名字",
+        "en": "Choose names that explain the parameters"
+      },
+      "body": {
+        "zh": "例如 charge_gap(current, target) 需要当前电量和目标电量。参数名能提示调用者该按什么顺序传值。",
+        "en": "For example, charge_gap(current, target) needs the current and target charges. The names help callers pass values in the right order."
+      }
+    },
+    {
+      "title": {
+        "zh": "接住返回值",
+        "en": "Use the returned value"
+      },
+      "body": {
+        "zh": "调用者可以用一个变量接住结果，还可以把结果交给另一个函数。用多组参数检查同一个函数。",
+        "en": "The caller can store the result in a variable or pass it to another function. Test the same function with several sets of arguments."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "函数 double(n) 返回 n * 2。先调用 double(3)，再调用 double(5)，依次得到什么？",
+      "en": "A function double(n) returns n * 2. What do double(3) and then double(5) return?"
+    },
+    "options": [
+      {
+        "zh": "6、6",
+        "en": "6, 6"
+      },
+      {
+        "zh": "3、5",
+        "en": "3, 5"
+      },
+      {
+        "zh": "6、10",
+        "en": "6, 10"
+      }
+    ],
+    "correct": 2,
+    "feedback": {
+      "zh": "每次调用都拿到自己的参数。第一次用 3 乘 2，第二次用 5 乘 2。",
+      "en": "Each call has its own parameter. The first multiplies 3 by 2 and the second multiplies 5 by 2."
+    }
+  },
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": {
+          "zh": "调用 double(3) 时，把 3 交给参数 n。",
+          "en": "The call double(3) puts 3 into the parameter n."
+        },
+        "items": [
+          {
+            "id": "call",
+            "label": {
+              "zh": "调用",
+              "en": "Call"
+            },
+            "value": {
+              "zh": "double(3)",
+              "en": "double(3)"
+            },
+            "state": "active"
+          },
+          {
+            "id": "argument",
+            "label": {
+              "zh": "参数",
+              "en": "Parameter"
+            },
+            "value": {
+              "zh": "n = 3",
+              "en": "n = 3"
+            },
+            "state": "done"
+          },
+          {
+            "id": "result",
+            "label": {
+              "zh": "结果",
+              "en": "Result"
+            },
+            "value": {
+              "zh": "?",
+              "en": "?"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "函数计算 n * 2，返回 6。",
+          "en": "The function calculates n * 2 and returns 6."
+        },
+        "items": [
+          {
+            "id": "call",
+            "label": {
+              "zh": "调用",
+              "en": "Call"
+            },
+            "value": {
+              "zh": "double(3)",
+              "en": "double(3)"
+            },
+            "state": "done"
+          },
+          {
+            "id": "argument",
+            "label": {
+              "zh": "计算",
+              "en": "Calculate"
+            },
+            "value": {
+              "zh": "3 × 2",
+              "en": "3 × 2"
+            },
+            "state": "active"
+          },
+          {
+            "id": "result",
+            "label": {
+              "zh": "结果",
+              "en": "Result"
+            },
+            "value": {
+              "zh": "6",
+              "en": "6"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "用新参数 5 调用同一个函数，返回 10。",
+          "en": "Call the same function with 5, and it returns 10."
+        },
+        "items": [
+          {
+            "id": "call",
+            "label": {
+              "zh": "新调用",
+              "en": "New call"
+            },
+            "value": {
+              "zh": "double(5)",
+              "en": "double(5)"
+            },
+            "state": "active"
+          },
+          {
+            "id": "argument",
+            "label": {
+              "zh": "计算",
+              "en": "Calculate"
+            },
+            "value": {
+              "zh": "5 × 2",
+              "en": "5 × 2"
+            },
+            "state": "done"
+          },
+          {
+            "id": "result",
+            "label": {
+              "zh": "结果",
+              "en": "Result"
+            },
+            "value": {
+              "zh": "10",
+              "en": "10"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  }
+}

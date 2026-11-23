@@ -1,0 +1,205 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "python-intermediate",
+    "order": 20,
+    "title": {
+      "zh": "Python 进阶",
+      "en": "Intermediate Python"
+    }
+  },
+  "kind": "grid",
+  "id": "countdown-track",
+  "order": 832,
+  "stage": "exercise",
+  "title": {
+    "zh": "倒计时维修轨道",
+    "en": "Countdown Repair Track"
+  },
+  "concept": {
+    "zh": "while 与循环结束条件",
+    "en": "While loops and stopping conditions"
+  },
+  "brief": {
+    "zh": "扫描维修轨道的长度。每移动一格，就把剩余步数减 1。减到 0 时，芽芽正好停在出口。",
+    "en": "Scan the track length. After each move, subtract one from the remaining steps. Stop at zero to reach the exit."
+  },
+  "hints": [
+    {
+      "zh": "移动和减 1 都要放在循环里，下一轮才会检查新的剩余步数。",
+      "en": "Put both the move and subtraction inside the loop so the next round checks the updated count."
+    }
+  ],
+  "tiles": [
+    "#######",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#######"
+  ],
+  "start": {
+    "x": 1,
+    "y": 2
+  },
+  "allowedApi": [
+    "scan",
+    "move"
+  ],
+  "objectives": [
+    {
+      "type": "exit",
+      "x": 4,
+      "y": 2
+    }
+  ],
+  "input": 3,
+  "cards": [
+    {
+      "id": "read",
+      "label": {
+        "zh": "读取剩余步数",
+        "en": "Read the remaining steps"
+      },
+      "template": "remaining = scan()"
+    },
+    {
+      "id": "while",
+      "label": {
+        "zh": "还有步数就重复",
+        "en": "Repeat while steps remain"
+      },
+      "template": "while remaining > {{stop}}:",
+      "parameters": [
+        {
+          "name": "stop",
+          "label": {
+            "zh": "停止的数值",
+            "en": "Stop at"
+          },
+          "choices": [
+            {
+              "id": "0",
+              "label": {
+                "zh": "0",
+                "en": "0"
+              },
+              "code": "0"
+            },
+            {
+              "id": "1",
+              "label": {
+                "zh": "1",
+                "en": "1"
+              },
+              "code": "1"
+            },
+            {
+              "id": "2",
+              "label": {
+                "zh": "2",
+                "en": "2"
+              },
+              "code": "2"
+            }
+          ]
+        }
+      ],
+      "block": true
+    },
+    {
+      "id": "advance",
+      "label": {
+        "zh": "沿维修轨道向右一格",
+        "en": "Move right along the track"
+      },
+      "template": "move(\"right\")"
+    },
+    {
+      "id": "count",
+      "label": {
+        "zh": "更新剩余步数",
+        "en": "Update the remaining steps"
+      },
+      "template": "remaining = remaining {{operator}} 1",
+      "parameters": [
+        {
+          "name": "operator",
+          "label": {
+            "zh": "增减",
+            "en": "Add or subtract"
+          },
+          "choices": [
+            {
+              "id": "minus",
+              "label": {
+                "zh": "减去",
+                "en": "Subtract"
+              },
+              "code": "-"
+            },
+            {
+              "id": "plus",
+              "label": {
+                "zh": "加上",
+                "en": "Add"
+              },
+              "code": "+"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "while",
+      "values": {
+        "stop": "0"
+      },
+      "children": [
+        {
+          "cardId": "advance"
+        },
+        {
+          "cardId": "count",
+          "values": {
+            "operator": "minus"
+          }
+        }
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "input": 4,
+      "objectives": [
+        {
+          "type": "exit",
+          "x": 5,
+          "y": 2
+        }
+      ]
+    },
+    {
+      "input": 1,
+      "objectives": [
+        {
+          "type": "exit",
+          "x": 2,
+          "y": 2
+        }
+      ]
+    }
+  ],
+  "topic": {
+    "id": "while-loops",
+    "order": 3,
+    "title": {
+      "zh": "while 循环",
+      "en": "While loops"
+    }
+  }
+}

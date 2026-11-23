@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "opencv-mask-lesson",
+  "order": 541,
+  "stage": "explain",
+  "unit": { "id": "opencv", "order": 140, "title": { "zh": "OpenCV", "en": "OpenCV" } },
+  "topic": { "id": "image-processing", "order": 3, "title": { "zh": "模糊与阈值处理", "en": "Blur and thresholding" } },
+  "title": { "zh": "把像素变成黑白图", "en": "Turn Pixels into Black and White" },
+  "brief": { "zh": "从四个亮度数字出发，看看阈值怎样生成一张黑白图。", "en": "See how a threshold turns four brightness values into a black-and-white image." },
+  "concept": { "zh": "每个像素都会和同一个亮度阈值比较", "en": "Each pixel is compared against the same brightness threshold" },
+  "hints": [],
+  "sections": [
+    { "title": { "zh": "图像是像素格子", "en": "Images are grids of pixels" }, "body": { "zh": "一张灰度图可以看成一格格的数字。0 是黑色，255 是白色，中间的数表示不同亮度。", "en": "A grayscale image is a grid of numbers. 0 is black, 255 is white, and values in between describe different brightness levels." } },
+    { "title": { "zh": "亮度超过阈值就保留", "en": "Keep pixels above the threshold" }, "body": { "zh": "用 OpenCV 的二值阈值处理时，亮度大于阈值的像素变白，其余变黑。白色像素连在一起就组成一个区域。", "en": "With OpenCV’s binary threshold, values strictly above the threshold turn white. The rest turn black. Touching white pixels form a region." } },
+    { "title": { "zh": "用相邻像素平滑边缘", "en": "Smooth edges with nearby pixels" }, "body": { "zh": "高斯模糊用周围一小片像素的加权值替换当前像素。先模糊再做阈值处理时，边缘的读数可能跨过阈值，让白色区域变大或变小。", "en": "Gaussian blur replaces each pixel with a weighted combination of nearby pixels. Blurring before thresholding can move edge values across the threshold, changing the size of the white regions." } }
+  ],
+  "animation": {
+    "layout": "grid",
+    "frames": [
+      { "caption": { "zh": "这张小图有四个像素。", "en": "This tiny image has four pixels." }, "items": [
+        { "id": "a", "swatch": "#2a2a2a", "label": { "zh": "左上", "en": "Top left" }, "value": { "zh": "42", "en": "42" } },
+        { "id": "b", "swatch": "#5c5c5c", "label": { "zh": "右上", "en": "Top right" }, "value": { "zh": "92", "en": "92" } },
+        { "id": "c", "swatch": "#939393", "label": { "zh": "左下", "en": "Bottom left" }, "value": { "zh": "147", "en": "147" } },
+        { "id": "d", "swatch": "#d3d3d3", "label": { "zh": "右下", "en": "Bottom right" }, "value": { "zh": "211", "en": "211" } }
+      ] },
+      { "caption": { "zh": "阈值是 100，只有下方两个像素超过它。", "en": "At a threshold of 100, only the bottom two pixels pass." }, "items": [
+        { "id": "a", "swatch": "#2a2a2a", "label": { "zh": "左上", "en": "Top left" }, "value": { "zh": "42 ≤ 100", "en": "42 ≤ 100" }, "state": "muted" },
+        { "id": "b", "swatch": "#5c5c5c", "label": { "zh": "右上", "en": "Top right" }, "value": { "zh": "92 ≤ 100", "en": "92 ≤ 100" }, "state": "muted" },
+        { "id": "c", "swatch": "#939393", "label": { "zh": "左下", "en": "Bottom left" }, "value": { "zh": "147 > 100", "en": "147 > 100" }, "state": "active" },
+        { "id": "d", "swatch": "#d3d3d3", "label": { "zh": "右下", "en": "Bottom right" }, "value": { "zh": "211 > 100", "en": "211 > 100" }, "state": "active" }
+      ] },
+      { "caption": { "zh": "下方两个像素变白。它们相邻，所以只算一个区域。", "en": "The bottom pixels turn white. They touch, so they make a single region." }, "items": [
+        { "id": "a", "swatch": "#000000", "label": { "zh": "左上", "en": "Top left" }, "value": { "zh": "黑色 0", "en": "Black 0" }, "state": "muted" },
+        { "id": "b", "swatch": "#000000", "label": { "zh": "右上", "en": "Top right" }, "value": { "zh": "黑色 0", "en": "Black 0" }, "state": "muted" },
+        { "id": "c", "swatch": "#ffffff", "label": { "zh": "左下", "en": "Bottom left" }, "value": { "zh": "白色 255", "en": "White 255" }, "state": "done" },
+        { "id": "d", "swatch": "#ffffff", "label": { "zh": "右下", "en": "Bottom right" }, "value": { "zh": "白色 255", "en": "White 255" }, "state": "done" }
+      ] }
+    ]
+  },
+  "question": {
+    "prompt": { "zh": "把阈值改成 200，几个像素会变白？", "en": "How many pixels turn white if you set the threshold to 200?" },
+    "options": [{ "zh": "0 个", "en": "0" }, { "zh": "1 个", "en": "1" }, { "zh": "2 个", "en": "2" }],
+    "correct": 1,
+    "feedback": { "zh": "只有亮度 211 大于 200。", "en": "Only the value 211 is greater than 200." }
+  }
+}

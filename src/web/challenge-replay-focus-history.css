@@ -1,0 +1,38 @@
+.focus-history, .focus-history-mode, .focus-history-card {
+  display: grid;
+  min-width: 0;
+  gap: 10px;
+}
+.focus-history-filters { justify-self: start; flex-wrap: wrap; }
+.focus-history-mode > h2 { margin: 2px 0 0; color: #b7def2; font-size: 16px; }
+.focus-history-card { height: 100%; margin: 0; padding: clamp(9px, 2.5vw, 14px); }
+.focus-history-card-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 10px;
+  overflow-wrap: anywhere;
+}
+.focus-history-card-heading h3 { margin: 0; color: #edf8ff; font-size: 15px; }
+.focus-history-card-heading time { color: #b7cddd; font-size: 12px; }
+.focus-history-card p { margin: 0; overflow-wrap: anywhere; }
+.focus-history-status { display: flex; flex-wrap: wrap; gap: 5px; }
+.focus-history-status > * {
+  padding: 3px 6px;
+  border-radius: 4px;
+  color: #f4dca9;
+  background: #403524;
+  font-size: 12px;
+}
+.focus-history-card[data-focus-history-status='improved'] .focus-history-status strong {
+  color: #b6f0d6;
+  background: #193b37;
+}
+.focus-history-status span { color: #cde8ff; background: #284158; }
+.focus-history-card dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin: 0; }
+.focus-history-card dl > div { min-width: 0; padding: 6px; border-radius: 4px; background: #223e4b; overflow-wrap: anywhere; }
+.focus-history-card dt { color: #c1d7e7; font-size: 12px; }
+.focus-history-card dd { margin: 2px 0 0; color: #edf7fe; font-size: 13px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.focus-history-retry { justify-self: start; }
+.focus-history-unavailable { color: #b7cddd; font-size: 13px; }

@@ -1,0 +1,156 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "python-intermediate",
+    "order": 20,
+    "title": {
+      "zh": "Python 进阶",
+      "en": "Intermediate Python"
+    }
+  },
+  "kind": "grid",
+  "id": "stop-before-wall",
+  "order": 833,
+  "stage": "exercise",
+  "topic": {
+    "id": "while-loops",
+    "order": 3,
+    "title": {
+      "zh": "while 循环",
+      "en": "While loops"
+    }
+  },
+  "title": {
+    "zh": "在路障前停住",
+    "en": "Stop before the wall"
+  },
+  "concept": {
+    "zh": "用扫描结果控制 while",
+    "en": "Use the scan to control a while loop"
+  },
+  "brief": {
+    "zh": "一直沿着通道向右走。每走一步都要重新检查右侧，在路障前的出口格停下。不同棋盘的路障位置不同。",
+    "en": "Follow the corridor to the right. Scan again after each step and stop at the exit just before the wall. Different boards have different wall positions."
+  },
+  "hints": [
+    {
+      "zh": "把扫描放进 while 的条件里，程序每次检查时都能看到芽芽当前位置右边是什么。",
+      "en": "Place scan inside the while condition so each check sees what is to the right of Sprout now."
+    }
+  ],
+  "tiles": [
+    "#######",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#######"
+  ],
+  "start": {
+    "x": 1,
+    "y": 2
+  },
+  "allowedApi": [
+    "scan",
+    "move"
+  ],
+  "objectives": [
+    {
+      "type": "exit",
+      "x": 5,
+      "y": 2
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "#######",
+        "#.....#",
+        "#...###",
+        "#.....#",
+        "#######"
+      ],
+      "objectives": [
+        {
+          "type": "exit",
+          "x": 3,
+          "y": 2
+        }
+      ]
+    },
+    {
+      "tiles": [
+        "#######",
+        "#.....#",
+        "#.#####",
+        "#.....#",
+        "#######"
+      ],
+      "objectives": [
+        {
+          "type": "exit",
+          "x": 1,
+          "y": 2
+        }
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "while-clear",
+      "label": {
+        "zh": "重复检查右侧",
+        "en": "Keep checking the right side"
+      },
+      "template": "while scan()[\"right\"] {{condition}} \"wall\":",
+      "block": true,
+      "parameters": [
+        {
+          "name": "condition",
+          "label": {
+            "zh": "什么时候继续",
+            "en": "When to continue"
+          },
+          "choices": [
+            {
+              "id": "equals",
+              "label": {
+                "zh": "看到墙",
+                "en": "When there is a wall"
+              },
+              "code": "=="
+            },
+            {
+              "id": "not-equals",
+              "label": {
+                "zh": "前方还没遇墙",
+                "en": "Until a wall"
+              },
+              "code": "!="
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right",
+      "label": {
+        "zh": "向右移动一格",
+        "en": "Move one tile right"
+      },
+      "template": "move(\"right\")"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "while-clear",
+      "children": [
+        {
+          "cardId": "right"
+        }
+      ],
+      "values": {
+        "condition": "not-equals"
+      }
+    }
+  ]
+}

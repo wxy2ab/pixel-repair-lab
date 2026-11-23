@@ -1,0 +1,275 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "computer-notes",
+  "order": 105,
+  "unit": {
+    "id": "computer",
+    "order": 80,
+    "title": {
+      "zh": "计算机原理",
+      "en": "Computer Systems"
+    }
+  },
+  "topic": {
+    "id": "binary",
+    "order": 1,
+    "title": {
+      "zh": "二进制",
+      "en": "Binary"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "从开关到 CPU",
+    "en": "From Switches to the CPU"
+  },
+  "concept": {
+    "zh": "二进制、位权与开关",
+    "en": "Binary, place values, and switches"
+  },
+  "brief": {
+    "zh": "用亮灯表示 1，熄灯表示 0。看每盏灯的位置如何改变它代表的数值。",
+    "en": "Use a lit switch for 1 and an unlit switch for 0. See how the position of a switch changes the amount it represents."
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "开和关表示两种状态",
+        "en": "On and off are two states"
+      },
+      "body": {
+        "zh": "每一位只能是 0 或 1，也叫一位 bit。几位连起来可以代表更大的数。",
+        "en": "Each position holds a 0 or a 1 and is called a bit. Several bits together can represent larger numbers."
+      }
+    },
+    {
+      "title": {
+        "zh": "每向左一位，位权翻倍",
+        "en": "Double the place value at each position to the left"
+      },
+      "body": {
+        "zh": "最右一位的位权是 1，往左是 2、4、8。把每个为 1 的位权加起来。二进制 101 等于 4 + 1，也就是 5。",
+        "en": "The rightmost place is worth 1. To its left the places are worth 2, 4, and 8. Add the places with a 1. Binary 101 is 4 + 1, which is 5."
+      }
+    },
+    {
+      "title": {
+        "zh": "最左边的 0 可以保留",
+        "en": "Keep leading zeros when a display has room"
+      },
+      "body": {
+        "zh": "四盏灯可以显示 0101。左边的 0 不增加数值，所以它和 101 都是 5。把最左灯点亮，就会再加上 8。",
+        "en": "Four switches can display 0101. The leading zero adds nothing, so it has the same value 5 as 101. Turning on the leftmost switch adds 8."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "四盏灯从左到右是 0、1、0、1。它显示的十进制数是多少？",
+      "en": "Four switches read 0, 1, 0, 1 from left to right. What decimal number do they show?"
+    },
+    "options": [
+      {
+        "zh": "3",
+        "en": "3"
+      },
+      {
+        "zh": "5",
+        "en": "5"
+      },
+      {
+        "zh": "10",
+        "en": "10"
+      }
+    ],
+    "correct": 1,
+    "feedback": {
+      "zh": "开着的是位权 4 和位权 1 的两盏灯。4 加 1 等于 5。",
+      "en": "The places worth 4 and 1 are on. Four plus one equals 5."
+    }
+  },
+  "animation": {
+    "layout": "row",
+    "hardware": {
+      "kind": "circuit",
+      "mode": "binary",
+      "frames": [
+        { "bits": [1, 0, 1], "bitIndex": 0 },
+        { "bits": [1, 0, 1], "bitIndex": 1 },
+        { "bits": [1, 0, 1], "bitIndex": 2 }
+      ]
+    },
+    "frames": [
+      {
+        "caption": {
+          "zh": "三盏灯是 101。最左灯亮，先把 4 加进去。",
+          "en": "The switches read 101. The left switch is on, so start by adding 4."
+        },
+        "items": [
+          {
+            "id": "four",
+            "label": {
+              "zh": "位权 4",
+              "en": "Place value 4"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "two",
+            "label": {
+              "zh": "位权 2",
+              "en": "Place value 2"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "one",
+            "label": {
+              "zh": "位权 1",
+              "en": "Place value 1"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "total",
+            "label": {
+              "zh": "当前合计",
+              "en": "Running total"
+            },
+            "value": {
+              "zh": "4",
+              "en": "4"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "中间灯熄灭，位权 2 对合计没有贡献。",
+          "en": "The middle switch is off. Its place value of 2 adds nothing."
+        },
+        "items": [
+          {
+            "id": "four",
+            "label": {
+              "zh": "位权 4",
+              "en": "Place value 4"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "done"
+          },
+          {
+            "id": "two",
+            "label": {
+              "zh": "位权 2",
+              "en": "Place value 2"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "active"
+          },
+          {
+            "id": "one",
+            "label": {
+              "zh": "位权 1",
+              "en": "Place value 1"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "done"
+          },
+          {
+            "id": "total",
+            "label": {
+              "zh": "当前合计",
+              "en": "Running total"
+            },
+            "value": {
+              "zh": "4",
+              "en": "4"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "右灯亮，再加上 1。101 表示十进制的 5。",
+          "en": "The right switch is on, so add 1. Binary 101 represents decimal 5."
+        },
+        "items": [
+          {
+            "id": "four",
+            "label": {
+              "zh": "位权 4",
+              "en": "Place value 4"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "done"
+          },
+          {
+            "id": "two",
+            "label": {
+              "zh": "位权 2",
+              "en": "Place value 2"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "one",
+            "label": {
+              "zh": "位权 1",
+              "en": "Place value 1"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "total",
+            "label": {
+              "zh": "当前合计",
+              "en": "Running total"
+            },
+            "value": {
+              "zh": "5",
+              "en": "5"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  }
+}

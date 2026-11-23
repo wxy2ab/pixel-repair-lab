@@ -1,0 +1,175 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "limited-battery-salvage",
+  "order": 1801,
+  "difficulty": "starter",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "stage": "challenge",
+  "prerequisites": [{ "unit": "foundations", "topic": "sequence" }],
+  "title": {
+    "zh": "限步回收",
+    "en": "Salvage on a Budget"
+  },
+  "brief": {
+    "zh": "17 回合内拾取全部三块电池并抵达出口。每次移动或拾取都消耗 1 回合。",
+    "en": "Pick up all three batteries and reach the exit within 17 turns. Moving and picking up a battery each cost one turn."
+  },
+  "concept": {
+    "zh": "三块电池 · 17 回合",
+    "en": "Three batteries · 17 turns"
+  },
+  "hints": [],
+  "tiles": [
+    "#########",
+    "#..#....#",
+    "#.#....##",
+    "#.......#",
+    "###.....#",
+    "#.....#.#",
+    "#########"
+  ],
+  "start": {
+    "x": 2,
+    "y": 3
+  },
+  "turnLimit": 17,
+  "items": [
+    {
+      "x": 5,
+      "y": 2,
+      "id": "battery-1"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "id": "battery-2"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "id": "battery-3"
+    }
+  ],
+  "allowedApi": [
+    "move",
+    "pick"
+  ],
+  "objectives": [
+    {
+      "type": "collect",
+      "itemIds": [
+        "battery-1",
+        "battery-2",
+        "battery-3"
+      ]
+    },
+    {
+      "type": "exit",
+      "x": 6,
+      "y": 3
+    }
+  ],
+  "cards": [
+    {
+      "id": "up",
+      "label": {
+        "zh": "向上",
+        "en": "Up"
+      },
+      "template": "move(\"up\")"
+    },
+    {
+      "id": "right",
+      "label": {
+        "zh": "向右",
+        "en": "Right"
+      },
+      "template": "move(\"right\")"
+    },
+    {
+      "id": "down",
+      "label": {
+        "zh": "向下",
+        "en": "Down"
+      },
+      "template": "move(\"down\")"
+    },
+    {
+      "id": "left",
+      "label": {
+        "zh": "向左",
+        "en": "Left"
+      },
+      "template": "move(\"left\")"
+    },
+    {
+      "id": "pick",
+      "label": {
+        "zh": "拾取电池",
+        "en": "Pick up a battery"
+      },
+      "template": "pick()"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "left"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "pick"
+    },
+    {
+      "cardId": "left"
+    },
+    {
+      "cardId": "down"
+    },
+    {
+      "cardId": "down"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "pick"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "pick"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "down"
+    }
+  ]
+}

@@ -1,0 +1,169 @@
+.boolean-lesson { min-width: 0; container: boolean-lesson / inline-size; }
+.boolean-heading, .boolean-navigation { flex-wrap: wrap; }
+.boolean-navigation { display: flex; gap: 6px; }
+.boolean-navigation button { min-height: 40px; white-space: normal; }
+.boolean-body { display: grid; gap: 11px; min-width: 0; padding: 13px 15px 15px; }
+.boolean-heading h2, .boolean-description, .boolean-body > .error-message { margin: 0; }
+.boolean-description { color: #d8e6f8; overflow-wrap: anywhere; }
+
+.boolean-axis-panel {
+  display: grid;
+  gap: 8px;
+  padding: 12px 10px 9px;
+  border: 1px solid #455d78;
+  border-radius: 9px;
+  background: #182a40;
+}
+.boolean-axis-panel h3, .boolean-condition h3 { margin: 0; color: #e2efff; font-size: 14px; overflow-wrap: anywhere; }
+.boolean-axis-panel h3 { text-align: center; }
+.boolean-axis {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin: 0;
+  padding: 0 5px;
+  list-style: none;
+}
+.boolean-axis::before {
+  content: '';
+  position: absolute;
+  inset: 15px 3px auto;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #7189a7 50%, #a3ecbf 50%);
+}
+.boolean-axis::after {
+  content: '';
+  position: absolute;
+  inset: 12px 3px auto auto;
+  width: 7px;
+  height: 7px;
+  border-top: 2px solid #a3ecbf;
+  border-right: 2px solid #a3ecbf;
+  transform: rotate(45deg);
+}
+.boolean-axis li {
+  position: relative;
+  display: grid;
+  grid-template-rows: 30px auto minmax(34px, auto) 25px;
+  justify-items: center;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  padding: 0 2px;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+.boolean-axis-dot {
+  width: 10px;
+  height: 10px;
+  border: 2px solid #b2c8e2;
+  border-radius: 50%;
+  background: #253c55;
+}
+.boolean-axis [data-threshold] .boolean-axis-dot { border-color: #a3ecbf; background: #a3ecbf; }
+.boolean-axis [data-active] .boolean-axis-dot { box-shadow: 0 0 0 5px #f8d69554; }
+.boolean-axis li strong { color: #ecf4ff; font: 700 21px/1.2 var(--mono); }
+.boolean-axis [data-threshold] strong { color: #c2f5d0; }
+.boolean-axis [data-active] strong { color: #ffe3b2; }
+.boolean-axis-relation { color: #bcd1e8; font-size: 12px; }
+.boolean-axis-result { align-self: start; }
+
+.boolean-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 1px 5px;
+  border: 1px solid #83bc9d;
+  border-radius: 5px;
+  background: #244939;
+  color: #d5ffe0;
+  font-size: 12px;
+}
+.boolean-value[data-value='false'] { border-color: #ce9b78; background: #533b38; color: #ffdbca; }
+.boolean-value code { color: inherit; font-weight: 700; }
+
+.boolean-flow { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr) auto) minmax(0, 1fr); gap: 6px; }
+.boolean-condition {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  min-width: 0;
+  gap: 7px;
+  padding: 10px 9px;
+  border: 1px solid #415a75;
+  border-radius: 8px;
+  background: #192b40;
+}
+.boolean-condition[data-active] { border-color: #97dfc3; background: #203b3e; }
+.boolean-condition-reading {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 24px;
+  min-width: 0;
+  color: #d7e5f4;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+.boolean-battery, .boolean-gate, .boolean-route { position: relative; display: block; flex: 0 0 20px; height: 15px; }
+.boolean-battery { margin-inline-end: 3px; border: 2px solid #afedba; border-radius: 4px; }
+.boolean-battery::after { content: ''; position: absolute; inset: 3px auto 3px 100%; width: 5px; background: #afedba; }
+.boolean-gate { align-self: center; height: 20px; border: 2px solid #b3cce2; border-radius: 4px; }
+.boolean-gate::before, .boolean-gate::after {
+  content: '';
+  position: absolute;
+  inset: 1px auto 1px 0;
+  width: 38%;
+  border: 1px solid #97b2cd;
+  background: #445f7b;
+}
+.boolean-gate::after { inset-inline: auto 0; }
+.boolean-gate[data-open='true'] { border-color: #a1e8b1; }
+.boolean-gate[data-open='true']::before, .boolean-gate[data-open='true']::after { width: 20%; background: #71a88b; }
+.boolean-gate[data-open='false'] { border-color: #e3ab88; }
+.boolean-route { height: 0; border-block-start: 2px dashed #9db5ce; }
+.boolean-route[data-clear='true'] { border-block-start-style: solid; border-color: #a0e9b5; }
+.boolean-route[data-clear='false'] { border-color: #e3ac88; }
+.boolean-connector { align-self: center; color: #aeecd1; font: 700 13px/1.25 var(--mono); }
+.boolean-connector:not(.boolean-arrow):not(:empty) { padding: 3px 4px; border: 1px solid #5b8a83; border-radius: 4px; background: #284b4b; }
+.boolean-arrow { font-size: 17px; }
+
+.boolean-source {
+  list-style: none;
+  padding: 3px 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid #3d536d;
+  border-radius: 7px;
+  background: #101c2c;
+  color: #bed2e5;
+  font: 13px/1.5 var(--mono);
+  font-variant-ligatures: none;
+}
+.boolean-source li {
+  display: grid;
+  grid-template-columns: 1.8rem minmax(0, 1fr);
+  padding: 3px 6px 3px 0;
+  border-inline-start: 3px solid transparent;
+}
+.boolean-source li > span { padding-inline-end: 7px; color: #a2b8d0; text-align: end; user-select: none; }
+.boolean-source li[aria-current='step'] { border-inline-start-color: #91dfc3; background: #203d3e; color: #e9fff6; }
+.boolean-source code { color: inherit; overflow-wrap: anywhere; white-space: pre-wrap; }
+.boolean-source mark { padding: 1px; border-radius: 3px; color: inherit; background: transparent; }
+.boolean-source li[aria-current='step'] mark { background: #684b32; color: #ffebc8; }
+
+@container boolean-lesson (max-width: 540px) {
+  .boolean-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .boolean-condition[data-boolean-part='decision'] { grid-column: 1 / -1; }
+  .boolean-connector { grid-column: 1 / -1; justify-self: center; }
+  .boolean-connector:not(.boolean-arrow) { grid-row: 2; }
+  .boolean-connector:empty { display: none; }
+  .boolean-arrow { display: none; }
+}
+@container boolean-lesson (max-width: 360px) {
+  .boolean-body { padding-inline: 9px; }
+  .boolean-condition, .boolean-axis-panel { padding-inline: 6px; }
+}

@@ -1,0 +1,756 @@
+{
+  "version": 1,
+  "id": "challenge-pressure-extremes",
+  "order": 1884,
+  "kind": "grid",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": {
+    "zh": "泄压阀极差报告",
+    "en": "Pressure Range Report"
+  },
+  "concept": {
+    "zh": "三支探头、边界读数、跨区回收",
+    "en": "Three probes, extreme readings and a cross-bay recovery"
+  },
+  "brief": {
+    "zh": "收回三支探头并到出口。readings 字典列出读数。地址 0 要保留最低值，地址 1 要保留最高值，地址 2 要保留两者之差。提交一个从内存读出的极差。 限 25 回合，避开巡逻。scan() 列出巡线、目标坐标和 compass 方向表。第二张地图将图纸旋转半圈。",
+    "en": "Recover all three probes and reach the exit. Their readings are in the readings dictionary. Leave the minimum in cell 0, the maximum in cell 1 and the difference in cell 2. Submit the range using a memory read. Avoid patrols within 25 turns. scan() lists patrol cycles, goal locations and the compass for plan directions. The second map rotates the plan by 180 degrees."
+  },
+  "prerequisites": [
+    {
+      "unit": "structures",
+      "topic": "dictionaries"
+    },
+    {
+      "unit": "python-intermediate",
+      "topic": "branches"
+    },
+    {
+      "unit": "architecture",
+      "topic": "memory"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "#############",
+    "#...#.#.....#",
+    "###.#.#.###.#",
+    "#...........#",
+    "#.#.#######.#",
+    "#...........#",
+    "#############"
+  ],
+  "start": {
+    "x": 7,
+    "y": 5
+  },
+  "items": [
+    {
+      "id": "gauge-a",
+      "x": 11,
+      "y": 1
+    },
+    {
+      "id": "gauge-b",
+      "x": 4,
+      "y": 3
+    },
+    {
+      "id": "gauge-c",
+      "x": 10,
+      "y": 5
+    }
+  ],
+  "enemies": [
+    {
+      "path": [
+        {
+          "x": 10,
+          "y": 3
+        },
+        {
+          "x": 9,
+          "y": 3
+        },
+        {
+          "x": 8,
+          "y": 3
+        },
+        {
+          "x": 9,
+          "y": 3
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 8,
+          "y": 3
+        },
+        {
+          "x": 9,
+          "y": 3
+        },
+        {
+          "x": 10,
+          "y": 3
+        },
+        {
+          "x": 11,
+          "y": 3
+        },
+        {
+          "x": 10,
+          "y": 3
+        },
+        {
+          "x": 9,
+          "y": 3
+        }
+      ]
+    }
+  ],
+  "turnLimit": 25,
+  "input": {
+    "readings": {
+      "gauge-a": -3,
+      "gauge-b": 8,
+      "gauge-c": 2
+    },
+    "compass": {
+      "N": "up",
+      "E": "right",
+      "S": "down",
+      "W": "left"
+    },
+    "parts": {
+      "gauge-a": [
+        11,
+        1
+      ],
+      "gauge-b": [
+        4,
+        3
+      ],
+      "gauge-c": [
+        10,
+        5
+      ]
+    },
+    "exit": [
+      1,
+      1
+    ],
+    "patrols": [
+      [
+        [
+          10,
+          3
+        ],
+        [
+          9,
+          3
+        ],
+        [
+          8,
+          3
+        ],
+        [
+          9,
+          3
+        ]
+      ],
+      [
+        [
+          8,
+          3
+        ],
+        [
+          9,
+          3
+        ],
+        [
+          10,
+          3
+        ],
+        [
+          11,
+          3
+        ],
+        [
+          10,
+          3
+        ],
+        [
+          9,
+          3
+        ]
+      ]
+    ]
+  },
+  "objectives": [
+    {
+      "type": "collect",
+      "itemIds": [
+        "gauge-a",
+        "gauge-b",
+        "gauge-c"
+      ]
+    },
+    {
+      "type": "memory",
+      "address": 0,
+      "value": -3
+    },
+    {
+      "type": "memory",
+      "address": 1,
+      "value": 8
+    },
+    {
+      "type": "memory",
+      "address": 2,
+      "value": 11
+    },
+    {
+      "type": "submit",
+      "values": [
+        11
+      ],
+      "origin": "memory-load"
+    },
+    {
+      "type": "exit",
+      "x": 1,
+      "y": 1
+    }
+  ],
+  "memory": [
+    0,
+    0,
+    0
+  ],
+  "allowedApi": [
+    "move",
+    "pick",
+    "scan",
+    "submit",
+    "load",
+    "store"
+  ],
+  "cards": [
+    {
+      "id": "read",
+      "label": {
+        "zh": "读取图纸和工单",
+        "en": "Read plan and work order"
+      },
+      "template": "board = scan()"
+    },
+    {
+      "id": "N",
+      "label": {
+        "zh": "图纸北",
+        "en": "Plan north"
+      },
+      "template": "move(board[\"compass\"][\"N\"])"
+    },
+    {
+      "id": "E",
+      "label": {
+        "zh": "图纸东",
+        "en": "Plan east"
+      },
+      "template": "move(board[\"compass\"][\"E\"])"
+    },
+    {
+      "id": "S",
+      "label": {
+        "zh": "图纸南",
+        "en": "Plan south"
+      },
+      "template": "move(board[\"compass\"][\"S\"])"
+    },
+    {
+      "id": "W",
+      "label": {
+        "zh": "图纸西",
+        "en": "Plan west"
+      },
+      "template": "move(board[\"compass\"][\"W\"])"
+    },
+    {
+      "id": "grab",
+      "label": {
+        "zh": "拾取并读取件名",
+        "en": "Pick up and read the ID"
+      },
+      "template": "part = pick()"
+    },
+    {
+      "id": "first",
+      "label": {
+        "zh": "准备第一笔记录",
+        "en": "Mark the first reading"
+      },
+      "template": "first = True"
+    },
+    {
+      "id": "value",
+      "label": {
+        "zh": "查本件读数",
+        "en": "Look up this reading"
+      },
+      "template": "value = board[\"readings\"][part]"
+    },
+    {
+      "id": "low",
+      "label": {
+        "zh": "第一次或低于最低值",
+        "en": "First reading or a new low"
+      },
+      "template": "if first or value < low:",
+      "block": true
+    },
+    {
+      "id": "keep-low",
+      "label": {
+        "zh": "记下最低值",
+        "en": "Record the low"
+      },
+      "template": "low = value"
+    },
+    {
+      "id": "high",
+      "label": {
+        "zh": "第一次或高于最高值",
+        "en": "First reading or a new high"
+      },
+      "template": "if first or value > high:",
+      "block": true
+    },
+    {
+      "id": "keep-high",
+      "label": {
+        "zh": "记下最高值",
+        "en": "Record the high"
+      },
+      "template": "high = value"
+    },
+    {
+      "id": "next",
+      "label": {
+        "zh": "结束第一笔",
+        "en": "Mark first reading complete"
+      },
+      "template": "first = False"
+    },
+    {
+      "id": "save-low",
+      "label": {
+        "zh": "存最低值",
+        "en": "Store the low"
+      },
+      "template": "store(0, low)"
+    },
+    {
+      "id": "save-high",
+      "label": {
+        "zh": "存最高值",
+        "en": "Store the high"
+      },
+      "template": "store(1, high)"
+    },
+    {
+      "id": "save-range",
+      "label": {
+        "zh": "存极差",
+        "en": "Store the range"
+      },
+      "template": "store(2, high - low)"
+    },
+    {
+      "id": "report",
+      "label": {
+        "zh": "读内存并提交",
+        "en": "Submit the stored range"
+      },
+      "template": "submit(load(2))"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "first"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "value"
+    },
+    {
+      "cardId": "low",
+      "children": [
+        {
+          "cardId": "keep-low"
+        }
+      ]
+    },
+    {
+      "cardId": "high",
+      "children": [
+        {
+          "cardId": "keep-high"
+        }
+      ]
+    },
+    {
+      "cardId": "next"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "value"
+    },
+    {
+      "cardId": "low",
+      "children": [
+        {
+          "cardId": "keep-low"
+        }
+      ]
+    },
+    {
+      "cardId": "high",
+      "children": [
+        {
+          "cardId": "keep-high"
+        }
+      ]
+    },
+    {
+      "cardId": "next"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "value"
+    },
+    {
+      "cardId": "low",
+      "children": [
+        {
+          "cardId": "keep-low"
+        }
+      ]
+    },
+    {
+      "cardId": "high",
+      "children": [
+        {
+          "cardId": "keep-high"
+        }
+      ]
+    },
+    {
+      "cardId": "next"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "save-low"
+    },
+    {
+      "cardId": "save-high"
+    },
+    {
+      "cardId": "save-range"
+    },
+    {
+      "cardId": "report"
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "#############",
+        "#...........#",
+        "#.#######.#.#",
+        "#...........#",
+        "#.###.#.#.###",
+        "#.....#.#...#",
+        "#############"
+      ],
+      "start": {
+        "x": 5,
+        "y": 1
+      },
+      "items": [
+        {
+          "id": "gauge-a",
+          "x": 1,
+          "y": 5
+        },
+        {
+          "id": "gauge-b",
+          "x": 8,
+          "y": 3
+        },
+        {
+          "id": "gauge-c",
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "enemies": [
+        {
+          "path": [
+            {
+              "x": 2,
+              "y": 3
+            },
+            {
+              "x": 3,
+              "y": 3
+            },
+            {
+              "x": 4,
+              "y": 3
+            },
+            {
+              "x": 3,
+              "y": 3
+            }
+          ]
+        },
+        {
+          "path": [
+            {
+              "x": 4,
+              "y": 3
+            },
+            {
+              "x": 3,
+              "y": 3
+            },
+            {
+              "x": 2,
+              "y": 3
+            },
+            {
+              "x": 1,
+              "y": 3
+            },
+            {
+              "x": 2,
+              "y": 3
+            },
+            {
+              "x": 3,
+              "y": 3
+            }
+          ]
+        }
+      ],
+      "turnLimit": 25,
+      "input": {
+        "readings": {
+          "gauge-a": 7,
+          "gauge-b": 2,
+          "gauge-c": -5
+        },
+        "compass": {
+          "N": "down",
+          "E": "left",
+          "S": "up",
+          "W": "right"
+        },
+        "parts": {
+          "gauge-a": [
+            1,
+            5
+          ],
+          "gauge-b": [
+            8,
+            3
+          ],
+          "gauge-c": [
+            2,
+            1
+          ]
+        },
+        "exit": [
+          11,
+          5
+        ],
+        "patrols": [
+          [
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              3
+            ],
+            [
+              3,
+              3
+            ]
+          ],
+          [
+            [
+              4,
+              3
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              3
+            ]
+          ]
+        ]
+      },
+      "objectives": [
+        {
+          "type": "collect",
+          "itemIds": [
+            "gauge-a",
+            "gauge-b",
+            "gauge-c"
+          ]
+        },
+        {
+          "type": "memory",
+          "address": 0,
+          "value": -5
+        },
+        {
+          "type": "memory",
+          "address": 1,
+          "value": 7
+        },
+        {
+          "type": "memory",
+          "address": 2,
+          "value": 12
+        },
+        {
+          "type": "submit",
+          "values": [
+            12
+          ],
+          "origin": "memory-load"
+        },
+        {
+          "type": "exit",
+          "x": 11,
+          "y": 5
+        }
+      ],
+      "memory": [
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}

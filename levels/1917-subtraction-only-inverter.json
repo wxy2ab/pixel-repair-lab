@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "challenge-subtraction-only-inverter",
+  "order": 1917,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "prerequisites": [{"unit": "architecture", "topic": "memory"}, {"unit": "architecture", "topic": "registers"}, {"unit": "architecture", "topic": "instructions"}],
+  "title": {"zh": "减法机的双路反相", "en": "Subtraction-Only Inverter"},
+  "concept": {"zh": "指令缺失与带符号的参考电平", "en": "Missing opcodes and a signed reference"},
+  "brief": {"zh": "这台老控制器只接受 SUB、STORE、HALT。ACC 起初装着参考电平 V，地址 0、1 各有一个采样。把两路采样分别绕 V 镜像：低于 V 几格，就改成高于 V 几格，反之亦然。把原参考电平存到 2，两路新读数写回 0、1，地址 3 和 ACC 提交新 0 减新 1。", "en": "Only SUB, STORE and HALT work on this old controller. ACC starts with the reference voltage V. Reflect each sample at 0 and 1 about V: a reading three below V becomes three above it, and vice versa. Save V at 2 and the two reflected readings at 0 and 1. Put the new reading at 0 minus the new reading at 1 in both 3 and ACC."},
+  "hints": [],
+  "allowedOps": ["SUB", "STORE", "HALT"],
+  "starterCode": "HALT\n",
+  "solutionCode": "STORE 2\nSUB 2\nSUB 2\nSTORE 3\nSUB 3\nSUB 3\nSUB 3\nSUB 0\nSTORE 0\nSUB 0\nSUB 3\nSUB 3\nSUB 1\nSTORE 1\nSUB 1\nSUB 0\nSTORE 3\nSUB 3\nSUB 1\nSUB 3\nSTORE 3\nHALT\n",
+  "cases": [
+    {"label": {"zh": "验收样本 1", "en": "Acceptance sample 1"}, "memory": [3, 10, 77, -22], "accumulator": 6, "goal": {"memory": [{"address": 0, "value": 9}, {"address": 1, "value": 2}, {"address": 2, "value": 6}, {"address": 3, "value": 7}], "accumulator": 7}},
+    {"label": {"zh": "验收样本 2", "en": "Acceptance sample 2"}, "memory": [-4, -9, -6, 6], "accumulator": -5, "goal": {"memory": [{"address": 0, "value": -6}, {"address": 1, "value": -1}, {"address": 2, "value": -5}, {"address": 3, "value": -5}], "accumulator": -5}},
+    {"label": {"zh": "验收样本 3", "en": "Acceptance sample 3"}, "memory": [0, -8, 7, 0], "accumulator": 0, "goal": {"memory": [{"address": 0, "value": 0}, {"address": 1, "value": 8}, {"address": 2, "value": 0}, {"address": 3, "value": -8}], "accumulator": -8}},
+    {"label": {"zh": "验收样本 4", "en": "Acceptance sample 4"}, "memory": [4, 4, 1, -1], "accumulator": 4, "goal": {"memory": [{"address": 0, "value": 4}, {"address": 1, "value": 4}, {"address": 2, "value": 4}, {"address": 3, "value": 0}], "accumulator": 0}},
+    {"label": {"zh": "验收样本 5", "en": "Acceptance sample 5"}, "memory": [21, -5, 123, 71], "accumulator": -2, "goal": {"memory": [{"address": 0, "value": -25}, {"address": 1, "value": 1}, {"address": 2, "value": -2}, {"address": 3, "value": -26}], "accumulator": -26}}
+  ]
+}

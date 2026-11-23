@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "plan-charge",
+  "order": 799,
+  "unit": {
+    "id": "foundations",
+    "order": 10,
+    "title": {
+      "zh": "Python 基础",
+      "en": "Python Foundations"
+    }
+  },
+  "stage": "challenge",
+  "title": {
+    "zh": "安排下一次充电",
+    "en": "Plan the Next Charge"
+  },
+  "concept": {
+    "zh": "组合使用两个已经验证的函数",
+    "en": "Compose two tested helper functions"
+  },
+  "brief": {
+    "zh": "给你当前电量、充电时间和每分钟充入的电量。先用 charge_needed 算增加了多少，再交给 charge_total 得到充电后的电量。",
+    "en": "You know the current charge, minutes available, and charge added per minute. Use charge_needed to calculate the extra charge, then give that result to charge_total."
+  },
+  "hints": [
+    {
+      "zh": "先调用 charge_needed(minutes, per_minute)，把返回值存到 added，再返回 charge_total(current, added)。",
+      "en": "Call charge_needed(minutes, per_minute) and store the result in added. Then return charge_total(current, added)."
+    },
+    {
+      "zh": "如果已经保存了自己的函数，可以将任一导入改成 from my_algorithms import charge_total 或 from my_algorithms import charge_needed。课程版本也能完成挑战。",
+      "en": "After saving your own functions, you can use from my_algorithms import charge_total or from my_algorithms import charge_needed. The course versions also work."
+    }
+  ],
+  "functionName": "plan_charge",
+  "starterCode": "from algorithms import charge_total\nfrom algorithms import charge_needed\n\ndef plan_charge(current, minutes, per_minute):\n    pass\n",
+  "solutionCode": "from algorithms import charge_total\nfrom algorithms import charge_needed\n\ndef plan_charge(current, minutes, per_minute):\n    added = charge_needed(minutes, per_minute)\n    return charge_total(current, added)",
+  "snippets": [
+    {
+      "label": {
+        "zh": "导入我的电量相加函数",
+        "en": "Import my charge total function"
+      },
+      "code": "from my_algorithms import charge_total"
+    },
+    {
+      "label": {
+        "zh": "导入我的定时充电函数",
+        "en": "Import my charge schedule function"
+      },
+      "code": "from my_algorithms import charge_needed"
+    },
+    {
+      "label": {
+        "zh": "先计算新充入的电量",
+        "en": "Calculate the newly added charge"
+      },
+      "code": "    added = charge_needed(minutes, per_minute)"
+    },
+    {
+      "label": {
+        "zh": "返回充电后的电量",
+        "en": "Return the charge after charging"
+      },
+      "code": "    return charge_total(current, added)"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        4,
+        2,
+        3
+      ],
+      "expected": 10
+    },
+    {
+      "args": [
+        0,
+        4,
+        2
+      ],
+      "expected": 8
+    },
+    {
+      "args": [
+        7,
+        0,
+        5
+      ],
+      "expected": 7
+    },
+    {
+      "args": [
+        3,
+        8,
+        0
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        12,
+        5,
+        3
+      ],
+      "expected": 27
+    }
+  ],
+  "helpers": [
+    "charge_total",
+    "charge_needed"
+  ]
+}

@@ -1,0 +1,135 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-coolant-seal-press",
+  "order": 1865,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "structures",
+      "topic": "stacks"
+    },
+    {
+      "unit": "python-intermediate",
+      "topic": "while-loops"
+    }
+  ],
+  "title": {
+    "zh": "冷却片压模",
+    "en": "Coolant Seal Press"
+  },
+  "concept": {
+    "zh": "连续柱高与最大矩形",
+    "en": "Largest rectangle across adjacent columns"
+  },
+  "brief": {
+    "zh": "heights 是一排宽 1 格的冷却柱高度，均为非负整数。压模必须是一个完整矩形，横跨一段连续的整柱，顶边不能高于其中任何一柱。返回模具的最大面积。没有可用高度时返回 0。",
+    "en": "heights gives the nonnegative heights of unit-width cooling columns. Fit one rectangle across consecutive whole columns. Its top cannot rise above any covered column. Return its largest possible area, or 0 if there is no usable height."
+  },
+  "hints": [],
+  "functionName": "seal_area",
+  "starterCode": "def seal_area(heights):\n    pass\n",
+  "solutionCode": "def seal_area(heights):\n    stack = []\n    best = 0\n    for right in range(len(heights) + 1):\n        height = 0\n        if right < len(heights):\n            height = heights[right]\n        left = right\n        while len(stack) > 0 and stack[-1][1] >= height:\n            item = stack.pop()\n            left = item[0]\n            area = (right - left) * item[1]\n            if area > best:\n                best = area\n        stack.append([left, height])\n    return best\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "扫描整排及尾端",
+        "en": "Scan the row and its far edge"
+      },
+      "code": "    for right in range(len(heights) + 1):\n        height = 0\n        if right < len(heights):\n            height = heights[right]\n        left = right"
+    },
+    {
+      "label": {
+        "zh": "从本柱位置登记高度",
+        "en": "Register heights at the current column"
+      },
+      "code": "        stack.append([right, height])\n    return best"
+    },
+    {
+      "label": {
+        "zh": "准备候选柱与面积纪录",
+        "en": "Set up candidate columns and area"
+      },
+      "code": "    stack = []\n    best = 0"
+    },
+    {
+      "label": {
+        "zh": "记录仍能延伸的高度",
+        "en": "Record a height that can continue"
+      },
+      "code": "        stack.append([left, height])\n    return best"
+    },
+    {
+      "label": {
+        "zh": "结算被挡住的矩形",
+        "en": "Measure rectangles stopped here"
+      },
+      "code": "        while len(stack) > 0 and stack[-1][1] >= height:\n            item = stack.pop()\n            left = item[0]\n            area = (right - left) * item[1]\n            if area > best:\n                best = area"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          2,
+          1,
+          5,
+          6,
+          2,
+          3
+        ]
+      ],
+      "expected": 10
+    },
+    {
+      "args": [
+        [
+          4,
+          4,
+          4
+        ]
+      ],
+      "expected": 12
+    },
+    {
+      "args": [
+        [
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      ],
+      "expected": 9
+    },
+    {
+      "args": [
+        [
+          2,
+          0,
+          3,
+          3,
+          0,
+          4
+        ]
+      ],
+      "expected": 6
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": 0
+    }
+  ]
+}

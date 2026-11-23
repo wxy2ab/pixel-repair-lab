@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "python-intermediate",
+    "order": 20,
+    "title": {
+      "zh": "Python 进阶",
+      "en": "Intermediate Python"
+    }
+  },
+  "kind": "algorithm",
+  "id": "count-alerts",
+  "order": 824,
+  "stage": "exercise",
+  "topic": {
+    "id": "for-loops",
+    "order": 2,
+    "title": {
+      "zh": "for 循环",
+      "en": "For loops"
+    }
+  },
+  "title": {
+    "zh": "把警报计数封装成函数",
+    "en": "Turn alert counting into a function"
+  },
+  "concept": {
+    "zh": "循环、筛选与计数器",
+    "en": "Looping, filtering, and counting"
+  },
+  "brief": {
+    "zh": "实现 count_alerts(readings, limit)，返回达到或超过警戒线的读数个数。重复读数分别计算，空列表的结果是 0。",
+    "en": "Implement count_alerts(readings, limit) to return how many readings meet or exceed the limit. Count repeated readings separately and return 0 for an empty list."
+  },
+  "hints": [
+    {
+      "zh": "从 0 开始计数，只在读数 >= limit 时加 1。整个循环结束后再返回。",
+      "en": "Start the count at 0 and add 1 for each reading >= limit. Return after the loop ends."
+    }
+  ],
+  "functionName": "count_alerts",
+  "starterCode": "def count_alerts(readings, limit):\n    count = 0\n    \n    return count\n",
+  "solutionCode": "def count_alerts(readings, limit):\n    count = 0\n    for reading in readings:\n        if reading >= limit:\n            count += 1\n    return count\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "遍历读数",
+        "en": "Visit the readings"
+      },
+      "code": "    for reading in readings:"
+    },
+    {
+      "label": {
+        "zh": "达到警戒线就计数",
+        "en": "Count readings that reach the limit"
+      },
+      "code": "        if reading >= limit:\n            count += 1"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          6,
+          2,
+          6,
+          8
+        ],
+        6
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        [],
+        8
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          3
+        ],
+        4
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          -8,
+          -4,
+          -4,
+          -2
+        ],
+        -4
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        [
+          2.25,
+          2.5,
+          3
+        ],
+        2.5
+      ],
+      "expected": 2
+    }
+  ]
+}

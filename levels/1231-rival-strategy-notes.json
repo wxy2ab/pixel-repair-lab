@@ -1,0 +1,231 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "routing",
+    "order": 60,
+    "title": {
+      "zh": "算法进阶",
+      "en": "Intermediate Algorithms"
+    }
+  },
+  "kind": "lecture",
+  "id": "rival-strategy-notes",
+  "order": 1230,
+  "stage": "explain",
+  "topic": {
+    "id": "rival-strategy",
+    "order": 4,
+    "title": {
+      "zh": "对抗策略",
+      "en": "Rival strategy"
+    }
+  },
+  "title": {
+    "zh": "让策略跟着赛场变",
+    "en": "Make a strategy respond to the arena"
+  },
+  "concept": {
+    "zh": "观察、行动与重新规划",
+    "en": "Observe, act, and replan"
+  },
+  "brief": {
+    "zh": "在有对手的赛场，每次先看清眼前的状态，再做一个动作。下回合重新观察。",
+    "en": "In an arena with rivals, observe the current state before taking one action. Look again on the next turn."
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "一回合选一个动作",
+        "en": "Choose one action each turn"
+      },
+      "body": {
+        "zh": "移动和拾取都花一回合。到零件格才拾取。下一回合可以根据最新的赛场换目标。",
+        "en": "Moving and picking each take one turn. Pick only when you are on a part. You can change the next target after checking the updated arena."
+      }
+    },
+    {
+      "title": {
+        "zh": "对手也会行动",
+        "en": "Rivals act too"
+      },
+      "body": {
+        "zh": "固定巡逻机器人沿同一路线循环。追踪机器人会根据你刚才的位置缩短距离。先看对手的位置，再计划当前一步。",
+        "en": "A patrol bot repeats a fixed route. A tracker moves closer to where you just were. Check rival positions before planning the next action."
+      }
+    },
+    {
+      "title": {
+        "zh": "两种对抗节奏",
+        "en": "Two arena paces"
+      },
+      "body": {
+        "zh": "从容模式先写程序再看回放。紧张模式从点击开始后进入同步回合，用代码或鼠标每次给出一个动作。",
+        "en": "In Relaxed mode, write the program and inspect the replay. In Timed mode, turns begin after Start and you choose each action with code or the mouse."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "扫描看到右边的格子已被对手占住。你想安全计划下一步，接下来先做什么？",
+      "en": "A scan shows a rival in the tile to your right. What should you do to plan your next move safely?"
+    },
+    "options": [
+      {
+        "zh": "继续照旧路线向右走",
+        "en": "Keep following the old route to the right"
+      },
+      {
+        "zh": "把右边暂时当成障碍，试试其他可走方向",
+        "en": "Treat the occupied tile as blocked and look for another safe move"
+      },
+      {
+        "zh": "把扫描结果一直当成不会变化",
+        "en": "Assume the scan will stay true forever"
+      }
+    ],
+    "correct": 1,
+    "feedback": {
+      "zh": "占用情况会改变。先用当前扫描避开危险，每走一步再重新观察。",
+      "en": "Occupied tiles can change. Use the current scan to avoid danger, then check again after moving."
+    }
+  },
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": {
+          "zh": "观察地图。电池在右边，一台对手占住了中间的格子。",
+          "en": "Observe the floor. A battery is on the right, and a rival occupies the tile in between."
+        },
+        "items": [
+          {
+            "id": "scan",
+            "label": {
+              "zh": "扫描",
+              "en": "Scan"
+            },
+            "value": {
+              "zh": "(1,0)",
+              "en": "(1,0)"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "先看看芽芽右边的格子，检查有没有对手。",
+          "en": "Read the tile on Sprout’s right and check it for a rival."
+        },
+        "items": [
+          {
+            "id": "right",
+            "label": {
+              "zh": "待检查",
+              "en": "Check"
+            },
+            "value": {
+              "zh": "(1,0)",
+              "en": "(1,0)"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "右边被占住。把下一步的目的地改为下方的空格。",
+          "en": "The right tile is occupied. Set the destination to the open tile below."
+        },
+        "items": [
+          {
+            "id": "target",
+            "label": {
+              "zh": "目的地",
+              "en": "Destination"
+            },
+            "value": {
+              "zh": "(0,1)",
+              "en": "(0,1)"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "芽芽只向下走一步，这一回合结束。",
+          "en": "Sprout takes one step down to finish this turn."
+        },
+        "items": [
+          {
+            "id": "player",
+            "label": {
+              "zh": "芽芽",
+              "en": "Sprout"
+            },
+            "value": {
+              "zh": "(0,1)",
+              "en": "(0,1)"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "下一回合看到对手已经移动。接下来选路要用这张新地图。",
+          "en": "On the next turn the rival has moved. Use the new positions to plan the next action."
+        },
+        "items": [
+          {
+            "id": "rival",
+            "label": {
+              "zh": "对手",
+              "en": "Rival"
+            },
+            "value": {
+              "zh": "(2,1)",
+              "en": "(2,1)"
+            },
+            "state": "active"
+          }
+        ]
+      }
+    ],
+    "workstation": {
+      "kind": "rival-detour",
+      "checkpoints": [
+        {
+          "line": 4
+        },
+        {
+          "line": 5
+        },
+        {
+          "line": 7
+        },
+        {
+          "line": 10
+        },
+        {
+          "line": 11
+        }
+      ]
+    }
+  },
+  "execution": {
+    "source": "floor = [\"...\", \"...\"]\nposition = [0, 0]\nsupplies = [[2, 0]]\nopponents = [[1, 0]]\nright = [position[0] + 1, position[1]]\nif right in opponents:\n    target = [position[0], position[1] + 1]\nelse:\n    target = right\nposition = target\nopponents = [[2, 1]]\nsay(str(position[1]))",
+    "cases": [
+      {
+        "label": {
+          "zh": "让策略跟着赛场变",
+          "en": "Make a strategy respond to the arena"
+        },
+        "input": 0,
+        "expected": "1"
+      }
+    ]
+  }
+}

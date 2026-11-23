@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "weighted-path-cost",
+  "order": 1303,
+  "unit": { "id": "algorithm-advanced", "order": 70, "title": { "zh": "算法高级", "en": "Advanced Algorithms" } },
+  "topic": { "id": "weighted-path", "order": 2, "title": { "zh": "带权路径", "en": "Weighted Paths" } },
+  "stage": "exercise",
+  "title": { "zh": "算出一条路线的耗电量", "en": "Calculate the Cost of One Route" },
+  "brief": { "zh": "完成 path_cost(costs, route)。route 是从起点开始的 [x, y] 坐标列表。累加后来进入的每一格的耗电量。", "en": "Complete path_cost(costs, route). The route is a list of [x, y] coordinates starting with the start tile. Add the energy cost of every tile entered after that." },
+  "concept": { "zh": "按路径坐标读取二维表", "en": "Use route coordinates to index a grid of costs" },
+  "hints": [
+    { "zh": "从下标 1 开始循环，略过起点。先取 y 那一排，再取其中的 x。", "en": "Loop from index 1 to skip the start. Select row y first, then column x." },
+    { "zh": "站着不动的路线只有起点，耗电量是 0。", "en": "A route that stays put only has a starting tile and costs 0." }
+  ],
+  "functionName": "path_cost",
+  "starterCode": "def path_cost(costs, route):\n    total = 0\n    return total\n",
+  "solutionCode": "def path_cost(costs, route):\n    total = 0\n    for index in range(1, len(route)):\n        cell = route[index]\n        total += costs[cell[1]][cell[0]]\n    return total\n",
+  "snippets": [
+    { "label": { "zh": "从起点之后遍历", "en": "Start after the starting tile" }, "code": "    for index in range(1, len(route)):\n        cell = route[index]" },
+    { "label": { "zh": "累加进入的格子", "en": "Add the entered tile’s cost" }, "code": "        total += costs[cell[1]][cell[0]]" }
+  ],
+  "cases": [
+    { "args": [[[2, 6, 3], [1, 4, 2]], [[0, 0], [1, 0], [2, 0]]], "expected": 9 },
+    { "args": [[[2, 6, 3], [1, 4, 2]], [[0, 0], [0, 1], [1, 1], [2, 1], [2, 0]]], "expected": 10 },
+    { "args": [[[7]], [[0, 0]]], "expected": 0 },
+    { "args": [[[1, 2], [7, 8]], [[1, 0], [1, 1], [0, 1]]], "expected": 15 },
+    { "args": [[[5, 2]], [[0, 0], [1, 0], [0, 0]]], "expected": 7 }
+  ]
+}

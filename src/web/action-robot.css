@@ -1,0 +1,98 @@
+.pixel-bot.action-robot { background: none; pointer-events: none; }
+.action-robot__pose, .action-robot__body { position: absolute; inset: 0; display: block; }
+.action-robot__body {
+  background: center / contain no-repeat url('./station3d/sprout-portrait.webp');
+  transform-origin: 50% 85%;
+}
+.action-robot__effect, .action-robot__badge { position: absolute; pointer-events: none; }
+.action-robot__badge {
+  right: -9%; top: -7%; display: grid; place-items: center;
+  min-width: 42%; height: 42%; padding: 0 1px; border-radius: 28%;
+  border: 1px solid #365453; color: #16363b; background: #baf0d4;
+  font: 800 clamp(8px, 1.6vw, 14px)/1 system-ui, sans-serif;
+  box-shadow: 0 1px 2px #0a161c8c;
+}
+.action-robot[data-robot-action=scan] .action-robot__effect {
+  inset: 3%; border-radius: 50%; border: 2px solid #8bf5ce;
+  opacity: 0; animation: robot-scan .68s ease-out;
+}
+.action-robot[data-robot-action=read_map] .action-robot__badge {
+  background: #b5e4ff; border-radius: 2px; transform-origin: bottom left;
+  animation: robot-unfold .5s ease-out;
+}
+.action-robot:is([data-robot-action=pick],[data-robot-action=submit]) .action-robot__body { animation: robot-reach .48s ease-in-out; }
+.action-robot:is([data-robot-action=pick],[data-robot-action=submit]) .action-robot__effect {
+  width: 22%; height: 25%; top: 44%; right: 0; border-radius: 2px;
+  border: 1px solid #735634; background: #fccc79; opacity: 0;
+  animation: robot-take .55s ease-in;
+}
+.action-robot[data-robot-action=submit] .action-robot__effect { animation-direction: reverse; }
+.action-robot[data-robot-action=submit] .action-robot__badge { background: #ffdf9d; }
+.action-robot[data-pickup=chest] .action-robot__effect {
+  width: 42%; height: 18%; top: 59%; right: -7%; border-radius: 50% 50% 3px 3px; opacity: 1;
+  transform: rotate(-26deg); transform-origin: left bottom; animation: robot-lid .55s ease-out;
+}
+.action-robot[data-pickup=key] .action-robot__badge { color: #533710; background: #ffdc79; animation: robot-unfold .54s ease; }
+.action-robot[data-pickup=key] .action-robot__effect {
+  left: 57%; top: 39%; width: 21%; height: 21%; border: 2px solid #ffd778; border-radius: 50%;
+  transform: rotate(-25deg); animation: robot-lift-key .55s ease-out;
+}
+.action-robot[data-pickup=key] .action-robot__effect::after {
+  content: ''; position: absolute; left: 95%; top: 40%; width: 150%; height: 75%;
+  border-top: 2px solid #ffd778; border-right: 2px solid #ffd778;
+}
+.action-robot:is([data-robot-action=load],[data-robot-action=store]) .action-robot__badge {
+  background: #c2e4ff; border-radius: 12%; animation: robot-read .48s ease-out;
+}
+.action-robot[data-robot-action=store] .action-robot__badge { background: #f4daad; animation-direction: reverse; }
+.action-robot[data-robot-action=say] .action-robot__badge {
+  color: #243349; background: #fff5d5; border-radius: 50% 50% 50% 4%;
+  transform-origin: bottom left; animation: robot-unfold .4s ease-out;
+}
+.action-robot[data-robot-action=step] .action-robot__badge { color: #f4eaff; background: #645185; animation: robot-clock .55s ease; }
+.action-robot[data-robot-action=wait] .action-robot__badge {
+  color: #d6e3ef; background: #405468; border-radius: 50%; animation: robot-watch .55s ease-in-out;
+}
+.action-robot:is([data-robot-action=call],[data-robot-action=return]) .action-robot__badge {
+  border-radius: 2px; background: #ddc7ff; box-shadow: -2px 2px 0 #786499;
+  animation: robot-stack .54s ease-in-out;
+}
+.action-robot[data-robot-action=return] .action-robot__badge {
+  background: #cff5fd; animation-direction: reverse;
+}
+.action-robot[data-robot-action=if] .action-robot__body { animation: robot-choose .5s ease; }
+.action-robot[data-robot-action=if] .action-robot__badge { background: #c8f8cf; }
+.action-robot:is([data-robot-action=for],[data-robot-action=while]) .action-robot__badge {
+  border-radius: 50%; background: #b8e7ff; animation: robot-watch .56s ease;
+}
+.action-robot[data-robot-action=for] .action-robot__badge {
+  border-radius: 2px; animation-name: robot-read;
+}
+.action-robot[data-robot-action=break] .action-robot__badge { background: #ffc784; animation: robot-break .5s ease-out; }
+.action-robot[data-robot-action=continue] .action-robot__badge { background: #bde9ff; animation: robot-watch .55s ease-out; }
+.action-robot[data-condition=false] { --robot-side: -1; }
+.action-robot[data-condition=false] .action-robot__badge { background: #ffdda7; }
+.action-robot[data-robot-action=move] .action-robot__body { animation: robot-move .37s ease-in-out; }
+.action-robot[data-direction=left] { --robot-lean: -9deg; }
+.action-robot[data-failed] .action-robot__badge { background: #ffd1b2; color: #873a2e; border-color: #874632; animation: none; }
+.action-robot[data-failed] .action-robot__body { animation: robot-blocked .36s ease-in-out; }
+.action-robot[data-failed] .action-robot__effect { display: none; }
+@keyframes robot-scan {
+  from { transform: scale(.35); opacity: 1; } to { transform: scale(1.35); opacity: 0; }
+}
+@keyframes robot-unfold { from { transform: scale(.25); } 65% { transform: scale(1.12); } to { transform: scale(1); } }
+@keyframes robot-reach { 45% { transform: rotate(9deg) scaleY(.9); } }
+@keyframes robot-take { 0% { transform: translate(32%, 35%); opacity: .3; } 50% { opacity: 1; } 100% { transform: translate(-95%, -15%) scale(.6); opacity: 0; } }
+@keyframes robot-read { from { transform: translateX(33%); } 65% { transform: translateX(-24%); } to { transform: none; } }
+@keyframes robot-move { 45% { transform: translateY(-6%) rotate(var(--robot-lean, 7deg)); } }
+@keyframes robot-clock { 45% { transform: scale(1.24); } }
+@keyframes robot-blocked { 25%, 70% { transform: rotate(-7deg); } 45% { transform: rotate(6deg); } }
+@keyframes robot-watch { 0% { transform: rotate(-50deg) scale(.72); } 65% { transform: rotate(12deg); } }
+@keyframes robot-stack { from { transform: translate(16%, -70%) scale(.7); } 65% { transform: translate(-6%, 8%); } }
+@keyframes robot-choose { 55% { transform: rotate(calc(var(--robot-side, 1) * 12deg)); } }
+@keyframes robot-break { 50% { transform: translate(23%, -23%); } }
+@keyframes robot-lid { from { transform: rotate(0); } to { transform: rotate(-26deg); } }
+@keyframes robot-lift-key { from { transform: translateY(85%) rotate(-45deg); } to { transform: rotate(-25deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .pixel-bot.action-robot .action-robot__pose > * { animation: none; }
+}

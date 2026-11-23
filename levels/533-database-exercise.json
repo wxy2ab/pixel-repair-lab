@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "database-two-stock-rows",
+  "order": 533,
+  "stage": "exercise",
+  "unit": { "id": "database", "order": 130, "title": { "zh": "数据库", "en": "Databases" } },
+  "topic": { "id": "sql-rows", "order": 1, "title": { "zh": "SQL 筛选和排序", "en": "SQL filters and sorting" } },
+  "title": { "zh": "查到两条仓库温度记录", "en": "Find Two Storage Temperature Readings" },
+  "brief": { "zh": "记录员想查看仓库里达到 20°C 的温度记录。", "en": "The record keeper wants storage readings of at least 20°C." },
+  "concept": { "zh": "用 WHERE 把区域条件和温度条件一起应用到每一行。", "en": "Use WHERE to apply the area and temperature conditions to every row." },
+  "hints": [{ "zh": "保留全部列。仓库的三次测量是 20°C、16°C 和 24°C。", "en": "Keep all columns. Storage recorded 20°C, 16°C, and 24°C." }],
+  "steps": [
+    {
+      "operation": "query",
+      "input": "clean",
+      "label": { "zh": "设定区域和温度下限", "en": "Set the area and temperature floor" },
+      "prompt": { "zh": "输出仓库中温度至少 20°C 的记录，保留所有列并按记录编号排列。", "en": "Return storage readings at 20°C or above, with all columns, in ID order." },
+      "initial": { "columns": "all", "zone": "storage", "minimum": 16, "sort": "id" },
+      "goal": { "columns": ["id", "day", "zone", "reading"], "rows": [[3, 1, "storage", 20], [12, 4, "storage", 24]] },
+      "solution": { "columns": "all", "zone": "storage", "minimum": 20, "sort": "id" }
+    }
+  ]
+}

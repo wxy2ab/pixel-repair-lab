@@ -1,0 +1,339 @@
+{
+  "version": 1,
+  "kind": "arena",
+  "order": 1833,
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "id": "challenge-moving-platform-rush",
+  "title": {
+    "zh": "传送台追货",
+    "en": "Conveyor Rush"
+  },
+  "concept": {
+    "zh": "电池多次换位 · 对手从侧仓加入",
+    "en": "Repeat relocations · Rivals join from the annex"
+  },
+  "brief": {
+    "zh": "赛时 20 回合。第 4、9、14 回合结束后，传送台会改动未拾取电池的位置。第 9 回合结束后侧仓开门，两台对手可以进场。第 14 回合结束后再关门，有机器人或电池占住就保持开启。电池抢完或回合用尽时，必须独占第一。多人同回合拾取同一块电池时，优先权按记分板顺序轮换，第 1 回合从芽芽开始。从容模式下，同一份程序须通过 2 张地图。",
+    "en": "You have 20 turns. The conveyor moves unclaimed batteries after turns 4, 9, and 14. The annex opens after turn 9, letting two rivals enter. Its door closes after turn 14 unless occupied by a robot or battery. Finish first outright when the batteries run out or the turn limit is reached. For simultaneous pickups of the same battery, priority rotates in scoreboard order starting with Sprout on turn 1. In Relaxed mode, one program must win on all 2 maps."
+  },
+  "difficulty": "advanced",
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "rival-strategy"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "###########",
+    "#.........#",
+    "###########",
+    "#.........#",
+    "#.###.###.#",
+    "#.........#",
+    "###########"
+  ],
+  "start": {
+    "x": 1,
+    "y": 3
+  },
+  "items": [
+    {
+      "id": "battery-d",
+      "x": 7,
+      "y": 1
+    },
+    {
+      "id": "battery-a",
+      "x": 9,
+      "y": 1
+    },
+    {
+      "id": "battery-b",
+      "x": 9,
+      "y": 3
+    },
+    {
+      "id": "battery-c",
+      "x": 5,
+      "y": 5
+    },
+    {
+      "id": "battery-f",
+      "x": 5,
+      "y": 1
+    },
+    {
+      "id": "battery-g",
+      "x": 8,
+      "y": 1
+    }
+  ],
+  "opponents": [
+    {
+      "id": "rival-1",
+      "title": {
+        "zh": "石墨号",
+        "en": "Graphite"
+      },
+      "start": {
+        "x": 1,
+        "y": 1
+      },
+      "policy": {
+        "kind": "collect"
+      }
+    },
+    {
+      "id": "rival-2",
+      "title": {
+        "zh": "铜线号",
+        "en": "Copperwire"
+      },
+      "start": {
+        "x": 2,
+        "y": 1
+      },
+      "policy": {
+        "kind": "adaptive",
+        "style": "intercept"
+      }
+    }
+  ],
+  "maxTurns": 20,
+  "objective": {
+    "kind": "score"
+  },
+  "shifts": [
+    {
+      "turn": 4,
+      "moveItems": [
+        {
+          "id": "battery-a",
+          "x": 3,
+          "y": 3
+        },
+        {
+          "id": "battery-d",
+          "x": 7,
+          "y": 3
+        }
+      ]
+    },
+    {
+      "turn": 9,
+      "open": [
+        {
+          "x": 5,
+          "y": 2
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "battery-a",
+          "x": 4,
+          "y": 5
+        },
+        {
+          "id": "battery-b",
+          "x": 8,
+          "y": 5
+        }
+      ]
+    },
+    {
+      "turn": 14,
+      "close": [
+        {
+          "x": 5,
+          "y": 2
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "battery-d",
+          "x": 3,
+          "y": 5
+        },
+        {
+          "id": "battery-c",
+          "x": 7,
+          "y": 5
+        }
+      ]
+    }
+  ],
+  "starterCode": "while True:\n    state = scan()\n    wait()\n",
+  "solutionCode": "DIRS = [\"up\", \"right\", \"down\", \"left\"]\n\ndef magnitude(value):\n    if value < 0:\n        return -value\n    return value\n\ndef smaller(left, right):\n    if left < right:\n        return left\n    return right\n\ndef route_table(board, width, start):\n    visited = {start: [0, None]}\n    pending = [start]\n    offsets = [-width, 1, width, -1]\n    for cell in pending:\n        for d in range(4):\n            next_cell = cell + offsets[d]\n            if next_cell in visited or board[next_cell // width][next_cell % width] != \".\":\n                continue\n            distance = visited[cell][0]\n            first = visited[cell][1]\n            if first is None:\n                first = DIRS[d]\n            visited[next_cell] = [distance + 1, first]\n            pending.append(next_cell)\n    return visited\n\ndef decide(state):\n    board = state[\"tiles\"]\n    width = len(board[0])\n    player = state[\"player\"]\n    start = player[1] * width + player[0]\n    rivals = state[\"opponents\"]\n    own_routes = route_table(board, width, start)\n    best_merit = -100000\n    action = \"wait\"\n    for item in state[\"items\"]:\n        cell = item[\"y\"] * width + item[\"x\"]\n        if cell == start:\n            return \"pick\"\n        if cell not in own_routes:\n            continue\n        distance = own_routes[cell][0]\n        direction = own_routes[cell][1]\n        safety = 4\n        for index in range(len(rivals)):\n            rival = rivals[index]\n            remaining = magnitude(item[\"x\"] - rival[\"x\"]) + magnitude(item[\"y\"] - rival[\"y\"])\n            if remaining < distance:\n                safety = smaller(safety, 0)\n            elif remaining == distance:\n                priority = (state[\"turn\"] + distance) % (len(rivals) + 1)\n                if priority > 0 and index + 1 >= priority:\n                    safety = smaller(safety, 1)\n                else:\n                    safety = smaller(safety, 3)\n        merit = safety * 4 - distance * 8\n        if merit > best_merit:\n            action = direction\n            best_merit = merit\n    return action\nwhile True:\n    action = decide(scan())\n    if action == \"pick\":\n        pick()\n    elif action == \"wait\":\n        wait()\n    else:\n        move(action)\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "读当前位置与电池",
+        "en": "Read position and batteries"
+      },
+      "code": "state = scan()\nplayer = state[\"player\"]\nitems = state[\"items\"]"
+    },
+    {
+      "label": {
+        "zh": "查看同回合拾取优先权",
+        "en": "Check pickup priority"
+      },
+      "code": "state = scan()\ncount = len(state[\"opponents\"]) + 1\npriority = state[\"turn\"] % count"
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "###########",
+        "#.........#",
+        "###########",
+        "#.........#",
+        "#.###.###.#",
+        "#.........#",
+        "###########"
+      ],
+      "start": {
+        "x": 9,
+        "y": 3
+      },
+      "items": [
+        {
+          "id": "battery-d",
+          "x": 3,
+          "y": 1
+        },
+        {
+          "id": "battery-a",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "battery-b",
+          "x": 1,
+          "y": 3
+        },
+        {
+          "id": "battery-c",
+          "x": 5,
+          "y": 5
+        },
+        {
+          "id": "battery-f",
+          "x": 5,
+          "y": 1
+        },
+        {
+          "id": "battery-g",
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "opponents": [
+        {
+          "id": "rival-1",
+          "title": {
+            "zh": "石墨号",
+            "en": "Graphite"
+          },
+          "start": {
+            "x": 9,
+            "y": 1
+          },
+          "policy": {
+            "kind": "collect"
+          }
+        },
+        {
+          "id": "rival-2",
+          "title": {
+            "zh": "铜线号",
+            "en": "Copperwire"
+          },
+          "start": {
+            "x": 8,
+            "y": 1
+          },
+          "policy": {
+            "kind": "adaptive",
+            "style": "intercept"
+          }
+        }
+      ],
+      "maxTurns": 20,
+      "objective": {
+        "kind": "score"
+      },
+      "shifts": [
+        {
+          "turn": 4,
+          "moveItems": [
+            {
+              "id": "battery-a",
+              "x": 7,
+              "y": 3
+            },
+            {
+              "id": "battery-d",
+              "x": 3,
+              "y": 3
+            }
+          ]
+        },
+        {
+          "turn": 9,
+          "open": [
+            {
+              "x": 5,
+              "y": 2
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "battery-a",
+              "x": 6,
+              "y": 5
+            },
+            {
+              "id": "battery-b",
+              "x": 2,
+              "y": 5
+            }
+          ]
+        },
+        {
+          "turn": 14,
+          "close": [
+            {
+              "x": 5,
+              "y": 2
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "battery-d",
+              "x": 7,
+              "y": 5
+            },
+            {
+              "id": "battery-c",
+              "x": 3,
+              "y": 5
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

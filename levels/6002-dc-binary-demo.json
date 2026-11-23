@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "kind": "circuit",
+  "id": "dc-binary-demo",
+  "order": 6002,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "binary-lamps",
+    "order": 1,
+    "title": {
+      "zh": "二进制与信号灯",
+      "en": "Binary Signals"
+    }
+  },
+  "stage": "demo",
+  "title": {
+    "zh": "逐盏点亮站台牌",
+    "en": "Light the Bay Sign"
+  },
+  "brief": {
+    "zh": "先只拨最右边的开关，比较前后读数。再在第二组里只拨最左边的开关。两次各变了多少？",
+    "en": "Flip just the far-right switch in the first case. In the second case, flip just the far-left switch. How much does each reading change?"
+  },
+  "concept": {
+    "zh": "把开关位置对应到位权",
+    "en": "Connect each switch to its place value"
+  },
+  "hints": [],
+  "mode": "binary",
+  "cases": [
+    {
+      "label": {
+        "zh": "从 010 开始拨右灯",
+        "en": "Start at 010 and flip the right lamp"
+      },
+      "bits": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "label": {
+        "zh": "从 0011 开始拨左灯",
+        "en": "Start at 0011 and flip the left lamp"
+      },
+      "bits": [
+        0,
+        0,
+        1,
+        1
+      ]
+    }
+  ]
+}

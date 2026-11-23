@@ -1,0 +1,42 @@
+.repair-step-directory { min-width: 0; margin: 8px 0; }
+.repair-step-directory h4 { margin: 0 0 5px; color: #24473e; font-size: .89rem; }
+.repair-step-filters { display: flex; flex-wrap: wrap; gap: 4px; }
+.repair-step-filters button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  min-height: 30px; padding: 3px 8px; border: 1px solid #aebdad; border-radius: 6px;
+  background: #fbfcf6; color: #29483b; font-size: .79rem; font-weight: 650; line-height: 1.25;
+}
+.repair-step-filters button span { font-size: .72rem; font-variant-numeric: tabular-nums; }
+.repair-step-filters button[aria-pressed='true'] { background: #225f4c; color: #fff; border-color: #225f4c; }
+.repair-step-list {
+  position: relative; max-height: 9.5rem; overflow-y: auto; margin: 6px 0 0; padding: 0;
+  border: 1px solid #b4c2ae; border-radius: 6px; background: #fffef8; list-style: none;
+  scrollbar-color: #8ea99c #eef1e6; scrollbar-width: thin;
+}
+.repair-step-list li + li { border-top: 1px solid #dce3d5; }
+.repair-step-list button {
+  display: grid; grid-template-columns: 2em minmax(0, 1fr); gap: 5px; align-items: baseline;
+  width: 100%; min-height: 35px; padding: 5px 8px 5px 5px; text-align: start; white-space: normal;
+  border: 0; border-inline-start: 3px solid transparent; border-radius: 0;
+  background: transparent; color: #2d493d; font-size: .82rem; line-height: 1.35;
+}
+.repair-step-list button[aria-current='step'] { border-inline-start-color: #277452; background: #dceedd; font-weight: 700; }
+.repair-step-number { align-self: start; color: #44664f; text-align: center; font-variant-numeric: tabular-nums; }
+.repair-step-text { min-width: 0; overflow-wrap: anywhere; }
+.repair-step-text small { display: block; margin-top: 1px; color: #436052; font-size: .74rem; font-weight: 500; }
+.repair-step-directory button:focus-visible { outline: 2px solid #156b78; outline-offset: 1px; }
+.repair-step-list button:focus-visible { outline-offset: -3px; }
+.repair-step-empty {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;
+  margin-top: 7px; padding: 8px; border: 1px dashed #a9bda9; border-radius: 6px; color: #365442; font-size: .84rem;
+}
+.repair-step-empty button {
+  padding: 4px 6px; color: #185a45; background: transparent; border: 0; font-size: inherit;
+  font-weight: 650; text-decoration: underline; text-underline-offset: .15em;
+}
+.repair-step-pair { margin-top: 7px; }
+.repair-step-pair button { min-height: 36px; }
+.repair-step-pair p { margin: 0; color: #436052; font-size: .8rem; line-height: 1.45; }
+@media (hover: hover) {
+  .repair-step-filters button:not([aria-pressed='true']):hover, .repair-step-list button:not([aria-current='step']):hover { background: #eef4e8; }
+}

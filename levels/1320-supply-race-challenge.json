@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "kind": "arena",
+  "id": "advanced-supply-race",
+  "order": 1320,
+  "unit": { "id": "algorithm-advanced", "order": 70, "title": { "zh": "算法高级", "en": "Advanced Algorithms" } },
+  "stage": "challenge",
+  "title": { "zh": "四机补给竞赛", "en": "Four-Robot Supply Race" },
+  "brief": { "zh": "你和三台对手争抢九件补给。每回合重新扫描，用 choose_supply 决定目标。比赛结束时，你的补给数要超过任意一位对手。", "en": "Race three rivals for nine supplies. Scan every turn and use choose_supply to pick a target. Finish with more supplies than any rival." },
+  "concept": { "zh": "复用带对手预判的目标选择，并随赛况重新规划", "en": "Reuse a rival-aware target selector and replan as the race changes" },
+  "hints": [
+    { "zh": "把 scan() 的 items 和 opponents 分别转换成 [x, y] 列表，传给 choose_supply。已经通过练习并保存的同名函数也能从 my_algorithms 导入。", "en": "Convert the items and opponents from scan() into separate lists of [x, y] coordinates for choose_supply. A tested function saved under the same name can be imported from my_algorithms." },
+    { "zh": "脚下有目标就 pick()。否则只走一步，继续扫描。开阔场地里可以先对齐横坐标，再对齐纵坐标。", "en": "Pick if you are standing on your target. Otherwise take one step and scan again. In this open arena, align the horizontal coordinate, then the vertical one." },
+    { "zh": "回放里看谁先拿走补给。同一个程序还要适应起点和补给位置不同的两张赛场。", "en": "Watch who claims each supply in the replay. The same program also runs on two alternate layouts with different starts and supplies." }
+  ],
+  "helpers": ["choose_supply"],
+  "tiles": ["#########", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#########"],
+  "start": { "x": 4, "y": 2 },
+  "maxTurns": 18,
+  "objective": { "kind": "score" },
+  "opponents": [
+    { "id": "amber", "title": { "zh": "琥珀号", "en": "Amber" }, "start": { "x": 3, "y": 3 }, "policy": { "kind": "collect" } },
+    { "id": "jade", "title": { "zh": "青玉号", "en": "Jade" }, "start": { "x": 1, "y": 4 }, "policy": { "kind": "collect" } },
+    { "id": "cobalt", "title": { "zh": "钴蓝号", "en": "Cobalt" }, "start": { "x": 2, "y": 1 }, "policy": { "kind": "collect" } }
+  ],
+  "items": [
+    { "id": "supply-a", "x": 5, "y": 5 }, { "id": "supply-b", "x": 5, "y": 4 }, { "id": "supply-c", "x": 2, "y": 4 },
+    { "id": "supply-d", "x": 3, "y": 1 }, { "id": "supply-e", "x": 7, "y": 2 }, { "id": "supply-f", "x": 5, "y": 3 },
+    { "id": "supply-g", "x": 6, "y": 2 }, { "id": "supply-h", "x": 7, "y": 4 }, { "id": "supply-i", "x": 1, "y": 2 }
+  ],
+  "starterCode": "from algorithms import choose_supply\n\nwhile True:\n    state = scan()\n    wait()\n",
+  "solutionCode": "from algorithms import choose_supply\n\nwhile True:\n    state = scan()\n    player = state[\"player\"]\n    targets = []\n    for item in state[\"items\"]:\n        targets.append([item[\"x\"], item[\"y\"]])\n    rivals = []\n    for rival in state[\"opponents\"]:\n        rivals.append([rival[\"x\"], rival[\"y\"]])\n    target = choose_supply(player, targets, rivals)\n    if target is None:\n        wait()\n    elif target == player:\n        pick()\n    elif target[0] > player[0]:\n        move(\"right\")\n    elif target[0] < player[0]:\n        move(\"left\")\n    elif target[1] > player[1]:\n        move(\"down\")\n    else:\n        move(\"up\")\n",
+  "snippets": [
+    { "label": { "zh": "整理补给坐标", "en": "Collect supply coordinates" }, "code": "    player = state[\"player\"]\n    targets = []\n    for item in state[\"items\"]:\n        targets.append([item[\"x\"], item[\"y\"]])" },
+    { "label": { "zh": "读取对手并选目标", "en": "Read rivals and choose a target" }, "code": "    rivals = []\n    for rival in state[\"opponents\"]:\n        rivals.append([rival[\"x\"], rival[\"y\"]])\n    target = choose_supply(player, targets, rivals)" },
+    { "label": { "zh": "用一步行动替换等待", "en": "Replace waiting with a one-turn action" }, "code": "    if target is None:\n        wait()\n    elif target == player:\n        pick()\n    elif target[0] > player[0]:\n        move(\"right\")\n    elif target[0] < player[0]:\n        move(\"left\")\n    elif target[1] > player[1]:\n        move(\"down\")\n    else:\n        move(\"up\")" }
+  ],
+  "variants": [
+    {
+      "start": { "x": 3, "y": 1 },
+      "opponents": [
+        { "id": "amber", "title": { "zh": "琥珀号", "en": "Amber" }, "start": { "x": 3, "y": 3 }, "policy": { "kind": "collect" } },
+        { "id": "jade", "title": { "zh": "青玉号", "en": "Jade" }, "start": { "x": 4, "y": 3 }, "policy": { "kind": "collect" } },
+        { "id": "cobalt", "title": { "zh": "钴蓝号", "en": "Cobalt" }, "start": { "x": 7, "y": 3 }, "policy": { "kind": "collect" } }
+      ],
+      "items": [
+        { "id": "supply-a", "x": 7, "y": 4 }, { "id": "supply-b", "x": 2, "y": 2 }, { "id": "supply-c", "x": 3, "y": 4 },
+        { "id": "supply-d", "x": 5, "y": 2 }, { "id": "supply-e", "x": 5, "y": 1 }, { "id": "supply-f", "x": 2, "y": 4 },
+        { "id": "supply-g", "x": 3, "y": 2 }, { "id": "supply-h", "x": 2, "y": 1 }, { "id": "supply-i", "x": 4, "y": 2 }
+      ]
+    },
+    {
+      "start": { "x": 1, "y": 2 },
+      "opponents": [
+        { "id": "amber", "title": { "zh": "琥珀号", "en": "Amber" }, "start": { "x": 5, "y": 3 }, "policy": { "kind": "collect" } },
+        { "id": "jade", "title": { "zh": "青玉号", "en": "Jade" }, "start": { "x": 5, "y": 2 }, "policy": { "kind": "collect" } },
+        { "id": "cobalt", "title": { "zh": "钴蓝号", "en": "Cobalt" }, "start": { "x": 7, "y": 5 }, "policy": { "kind": "collect" } }
+      ],
+      "items": [
+        { "id": "supply-a", "x": 4, "y": 3 }, { "id": "supply-b", "x": 5, "y": 4 }, { "id": "supply-c", "x": 2, "y": 4 },
+        { "id": "supply-d", "x": 6, "y": 3 }, { "id": "supply-e", "x": 6, "y": 2 }, { "id": "supply-f", "x": 3, "y": 3 },
+        { "id": "supply-g", "x": 7, "y": 3 }, { "id": "supply-h", "x": 2, "y": 2 }, { "id": "supply-i", "x": 1, "y": 3 }
+      ]
+    }
+  ]
+}

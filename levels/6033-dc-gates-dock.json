@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "kind": "circuit",
+  "id": "dc-gates-dock",
+  "order": 6033,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "logic-signals",
+    "order": 4,
+    "title": {
+      "zh": "逻辑门与信号",
+      "en": "Logic Gates and Signals"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "让两边的夹具都到位",
+    "en": "Engage Both Dock Clamps"
+  },
+  "brief": {
+    "zh": "A 和 B 分别表示两边的夹具是否到位。固定使用 AND 门，让第一台设备亮起就绪灯，再让第二台的就绪灯熄灭。",
+    "en": "A and B tell you whether two dock clamps are in place. Use AND to turn the first dock’s ready light on and the second dock’s light off."
+  },
+  "concept": {
+    "zh": "从目标输出反推 AND 的输入",
+    "en": "Choose AND inputs for a target output"
+  },
+  "hints": [],
+  "mode": "logic",
+  "gateChoices": [
+    "AND"
+  ],
+  "cases": [
+    {
+      "label": {
+        "zh": "左夹具已到位，让就绪灯亮",
+        "en": "Left clamp ready · turn the light on"
+      },
+      "bits": [
+        1,
+        0
+      ],
+      "gate": "AND",
+      "goal": {
+        "output": 1
+      },
+      "solution": {
+        "bits": [
+          1,
+          1
+        ],
+        "gate": "AND"
+      }
+    },
+    {
+      "label": {
+        "zh": "两夹具都到位，解除就绪状态",
+        "en": "Both clamps ready · clear the ready light"
+      },
+      "bits": [
+        1,
+        1
+      ],
+      "gate": "AND",
+      "goal": {
+        "output": 0
+      },
+      "solution": {
+        "bits": [
+          1,
+          0
+        ],
+        "gate": "AND"
+      }
+    }
+  ]
+}

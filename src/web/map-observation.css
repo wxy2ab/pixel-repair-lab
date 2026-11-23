@@ -1,0 +1,13 @@
+.map-observation {
+  margin: 8px 12px;
+  padding: 9px 12px;
+  border: 1px solid #486478;
+  border-radius: 8px;
+  background: #1b2d40;
+  color: #e5f0f9;
+}
+.map-observation-heading,
+.map-observation-playback { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.map-observation-heading { justify-content: space-between; font-size: .88rem; }
+.map-observation-playback { margin-top: 7px; }
+.map-observation button { min-height: 34px; padding: 3px 10px; font-size: .84rem; }

@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "kind": "replay",
+  "id": "prefix-totals-replay",
+  "order": 1122,
+  "unit": {
+    "id": "algorithm-intro",
+    "order": 50,
+    "title": {
+      "zh": "算法初级",
+      "en": "Introductory Algorithms"
+    }
+  },
+  "stage": "demo",
+  "topic": {
+    "id": "prefix-totals",
+    "order": 4,
+    "title": {
+      "zh": "前缀和",
+      "en": "Prefix sums"
+    }
+  },
+  "title": {
+    "zh": "看累计表怎样回答区间问题",
+    "en": "Watch a prefix table answer a range query"
+  },
+  "brief": {
+    "zh": "先输出每次累加，再用表里的两个值回答区间问题。",
+    "en": "Watch the cumulative entries appear before subtracting two entries for the range."
+  },
+  "concept": {
+    "zh": "多问一次也能复用旧表",
+    "en": "Reuse a table for another query"
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "从第 1 箱到第 3 箱之前",
+        "en": "From index 1 to before 3"
+      },
+      "source": "plan = scan()\nprefix = [0]\nrunning = 0\nfor value in plan[\"weights\"]:\n    running += value\n    prefix.append(running)\n    say(str(prefix))\nsubmit(prefix[plan[\"end\"]] - prefix[plan[\"start\"]])",
+      "scenario": {
+        "tiles": [
+          "#####",
+          "#...#",
+          "#####"
+        ],
+        "start": {
+          "x": 1,
+          "y": 1
+        },
+        "input": {
+          "weights": [
+            6,
+            2,
+            5,
+            4
+          ],
+          "start": 1,
+          "end": 3
+        },
+        "allowedApi": [
+          "scan",
+          "say",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              7
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "title": {
+        "zh": "包含一次扣减",
+        "en": "A range with a deduction"
+      },
+      "source": "plan = scan()\nprefix = [0]\nrunning = 0\nfor value in plan[\"weights\"]:\n    running += value\n    prefix.append(running)\n    say(str(prefix))\nsubmit(prefix[plan[\"end\"]] - prefix[plan[\"start\"]])",
+      "scenario": {
+        "tiles": [
+          "#####",
+          "#...#",
+          "#####"
+        ],
+        "start": {
+          "x": 1,
+          "y": 1
+        },
+        "input": {
+          "weights": [
+            7,
+            -2,
+            5
+          ],
+          "start": 0,
+          "end": 2
+        },
+        "allowedApi": [
+          "scan",
+          "say",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              5
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

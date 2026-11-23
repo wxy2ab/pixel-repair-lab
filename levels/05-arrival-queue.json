@@ -1,0 +1,316 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "arrival-queue",
+  "order": 5,
+  "unit": {
+    "id": "structures",
+    "order": 40,
+    "title": {
+      "zh": "数据结构",
+      "en": "Data Structures"
+    }
+  },
+  "topic": {
+    "id": "queues",
+    "order": 3,
+    "title": {
+      "zh": "队列",
+      "en": "Queues"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "先来的先发货",
+    "en": "First in Line"
+  },
+  "concept": {
+    "zh": "队列与先进先出",
+    "en": "Queues and first in, first out"
+  },
+  "brief": {
+    "zh": "货箱按到达顺序排队。依次发完所有货箱，再沿中间的通道到出口。巡逻机器人会在上方通道来回巡视。",
+    "en": "Queue the boxes in arrival order. Send every box in turn, then take the middle passage to the exit. A guard bot patrols the upper passage."
+  },
+  "hints": [
+    {
+      "zh": "用 append() 把后来者接到队尾。哪一个索引对应队伍最前面？",
+      "en": "Use append() to add each arrival to the back. Which index is at the front of the queue?"
+    },
+    {
+      "zh": "pop(0) 取走队伍最前面的货箱。发完货后，从中间通道向右到出口。",
+      "en": "pop(0) removes the box at the front. After sending the boxes, go right along the middle passage to the exit."
+    }
+  ],
+  "tiles": [
+    "#########",
+    "#.......#",
+    "#.##.##.#",
+    "#.......#",
+    "#.#...#.#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 2,
+    "y": 3
+  },
+  "input": [
+    "lime",
+    "rose",
+    "navy"
+  ],
+  "enemies": [
+    {
+      "path": [
+        {
+          "x": 4,
+          "y": 1
+        },
+        {
+          "x": 5,
+          "y": 1
+        },
+        {
+          "x": 6,
+          "y": 1
+        },
+        {
+          "x": 5,
+          "y": 1
+        }
+      ]
+    }
+  ],
+  "allowedApi": [
+    "scan",
+    "submit",
+    "move"
+  ],
+  "objectives": [
+    {
+      "type": "submit",
+      "values": [
+        "lime",
+        "rose",
+        "navy"
+      ],
+      "origin": "queue-pop",
+      "sameContainer": true
+    },
+    {
+      "type": "exit",
+      "x": 6,
+      "y": 3
+    }
+  ],
+  "variants": [
+    {
+      "input": [
+        "copper",
+        "indigo",
+        "pearl",
+        "jade"
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            "copper",
+            "indigo",
+            "pearl",
+            "jade"
+          ],
+          "origin": "queue-pop",
+          "sameContainer": true
+        },
+        {
+          "type": "exit",
+          "x": 6,
+          "y": 3
+        }
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "read-arrivals",
+      "label": {
+        "zh": "读取到货顺序",
+        "en": "Read arrivals"
+      },
+      "template": "arrivals = scan()"
+    },
+    {
+      "id": "new-cargo",
+      "label": {
+        "zh": "建一个空列表",
+        "en": "Make an empty list"
+      },
+      "template": "cargo = []"
+    },
+    {
+      "id": "each-arrival",
+      "label": {
+        "zh": "逐件查看到货",
+        "en": "For each arrival"
+      },
+      "template": "for box in arrivals:",
+      "block": true
+    },
+    {
+      "id": "add-cargo",
+      "label": {
+        "zh": "把货箱放到末尾",
+        "en": "Append the box"
+      },
+      "template": "cargo.append(box)"
+    },
+    {
+      "id": "each-cargo",
+      "label": {
+        "zh": "有几箱就发几次",
+        "en": "Send once per box"
+      },
+      "template": "for turn in range(len(cargo)):",
+      "block": true
+    },
+    {
+      "id": "send-cargo",
+      "label": {
+        "zh": "取一箱并发送",
+        "en": "Remove and send a box"
+      },
+      "template": "submit(cargo.{{take}})",
+      "parameters": [
+        {
+          "name": "take",
+          "label": {
+            "zh": "从哪一端取",
+            "en": "Which end"
+          },
+          "choices": [
+            {
+              "id": "last",
+              "label": {
+                "zh": "末尾",
+                "en": "Last"
+              },
+              "code": "pop()"
+            },
+            {
+              "id": "first",
+              "label": {
+                "zh": "开头",
+                "en": "First"
+              },
+              "code": "pop(0)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "move",
+      "label": {
+        "zh": "移动",
+        "en": "Move"
+      },
+      "template": "move({{direction}})",
+      "parameters": [
+        {
+          "name": "direction",
+          "label": {
+            "zh": "方向",
+            "en": "Direction"
+          },
+          "choices": [
+            {
+              "id": "right",
+              "label": {
+                "zh": "右",
+                "en": "Right"
+              },
+              "code": "\"right\""
+            },
+            {
+              "id": "up",
+              "label": {
+                "zh": "上",
+                "en": "Up"
+              },
+              "code": "\"up\""
+            },
+            {
+              "id": "left",
+              "label": {
+                "zh": "左",
+                "en": "Left"
+              },
+              "code": "\"left\""
+            },
+            {
+              "id": "down",
+              "label": {
+                "zh": "下",
+                "en": "Down"
+              },
+              "code": "\"down\""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read-arrivals"
+    },
+    {
+      "cardId": "new-cargo"
+    },
+    {
+      "cardId": "each-arrival",
+      "children": [
+        {
+          "cardId": "add-cargo"
+        }
+      ]
+    },
+    {
+      "cardId": "each-cargo",
+      "children": [
+        {
+          "cardId": "send-cargo",
+          "values": {
+            "take": "first"
+          }
+        }
+      ]
+    },
+    {
+      "cardId": "move",
+      "values": {
+        "direction": "right"
+      }
+    },
+    {
+      "cardId": "move",
+      "values": {
+        "direction": "right"
+      }
+    },
+    {
+      "cardId": "move",
+      "values": {
+        "direction": "right"
+      }
+    },
+    {
+      "cardId": "move",
+      "values": {
+        "direction": "right"
+      }
+    }
+  ]
+}

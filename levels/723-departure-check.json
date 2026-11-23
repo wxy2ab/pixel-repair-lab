@@ -1,0 +1,228 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "departure-check",
+  "order": 723,
+  "unit": {
+    "id": "foundations",
+    "order": 10,
+    "title": {
+      "zh": "Python 基础",
+      "en": "Python Foundations"
+    }
+  },
+  "topic": {
+    "id": "booleans",
+    "order": 3,
+    "title": {
+      "zh": "比较与布尔值",
+      "en": "Comparisons and Booleans"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "打开维修站出发灯",
+    "en": "Turn On the Departure Lamp"
+  },
+  "concept": {
+    "zh": "用 and 合并两个条件",
+    "en": "Combine two conditions with and"
+  },
+  "brief": {
+    "zh": "扫描数据的第一项是电量，第二项是安全门是否打开。只有电量至少为 4 且安全门打开，才提交 True。",
+    "en": "The first scanned value is the charge and the second tells you whether the safety door is open. Submit True only if the charge is at least 4 and the door is open."
+  },
+  "hints": [
+    {
+      "zh": "先分别读出两个值。一个比较和一个布尔值可以用 and 接起来。",
+      "en": "Read the two values separately. Join the comparison and the door’s boolean value with and."
+    }
+  ],
+  "tiles": [
+    "#######",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#######"
+  ],
+  "start": {
+    "x": 2,
+    "y": 2
+  },
+  "allowedApi": [
+    "scan",
+    "submit"
+  ],
+  "objectives": [
+    {
+      "type": "submit",
+      "values": [
+        false
+      ]
+    }
+  ],
+  "input": [
+    3,
+    true
+  ],
+  "cards": [
+    {
+      "id": "read",
+      "label": {
+        "zh": "扫描两个出发条件",
+        "en": "Scan the two departure conditions"
+      },
+      "template": "status = scan()"
+    },
+    {
+      "id": "charge",
+      "label": {
+        "zh": "检查电量是否够用",
+        "en": "Check if the charge is enough"
+      },
+      "template": "enough_charge = status[0] {{compare}} 4",
+      "parameters": [
+        {
+          "name": "compare",
+          "label": {
+            "zh": "比较方法",
+            "en": "Comparison"
+          },
+          "choices": [
+            {
+              "id": "greater",
+              "label": {
+                "zh": "高于",
+                "en": "Greater than"
+              },
+              "code": ">"
+            },
+            {
+              "id": "enough",
+              "label": {
+                "zh": "至少",
+                "en": "At least"
+              },
+              "code": ">="
+            },
+            {
+              "id": "less",
+              "label": {
+                "zh": "小于",
+                "en": "Less than"
+              },
+              "code": "<"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "door",
+      "label": {
+        "zh": "读出安全门状态",
+        "en": "Read the safety door status"
+      },
+      "template": "door_open = status[1]"
+    },
+    {
+      "id": "combine",
+      "label": {
+        "zh": "合并两个条件并提交",
+        "en": "Combine both conditions and submit"
+      },
+      "template": "submit(enough_charge {{rule}} door_open)",
+      "parameters": [
+        {
+          "name": "rule",
+          "label": {
+            "zh": "两项之间的关系",
+            "en": "How to join the checks"
+          },
+          "choices": [
+            {
+              "id": "or",
+              "label": {
+                "zh": "或",
+                "en": "Or"
+              },
+              "code": "or"
+            },
+            {
+              "id": "and",
+              "label": {
+                "zh": "并且",
+                "en": "And"
+              },
+              "code": "and"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "charge",
+      "values": {
+        "compare": "enough"
+      }
+    },
+    {
+      "cardId": "door"
+    },
+    {
+      "cardId": "combine",
+      "values": {
+        "rule": "and"
+      }
+    }
+  ],
+  "variants": [
+    {
+      "input": [
+        4,
+        true
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            true
+          ]
+        }
+      ]
+    },
+    {
+      "input": [
+        8,
+        false
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            false
+          ]
+        }
+      ]
+    },
+    {
+      "input": [
+        0,
+        false
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            false
+          ]
+        }
+      ]
+    }
+  ]
+}

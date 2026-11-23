@@ -1,0 +1,373 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-power-network-reconnect",
+  "order": 1845,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "depth-first"
+    },
+    {
+      "unit": "structures",
+      "topic": "lists"
+    }
+  ],
+  "title": {
+    "zh": "重接供电网",
+    "en": "Power Network Reconnect"
+  },
+  "concept": {
+    "zh": "连通组 · 逐次合并 · 即时查线",
+    "en": "Connected groups · Incremental links · Live checks"
+  },
+  "brief": {
+    "zh": "有 size 个供电柜，编号 0 到 size−1，起初互不连接。按顺序处理 events。[\"link\", a, b] 在两柜间接一条双向线，重复接线无额外影响。[\"probe\", a, b] 要报告 [a 所在连通组的柜数, b 是否也在组内]，柜数含 a，第二项是布尔值。只返回各次 probe 的报告。没有连线也算与自己连通。",
+    "en": "There are size power cabinets numbered zero through size−1. They start disconnected. Process events in order. [\"link\", a, b] adds a two-way cable, with no extra effect for repeated links. [\"probe\", a, b] reports [number of cabinets reachable from a, whether b is reachable from a]. Include a in the count and use a boolean for the second item. Return the probe reports only. A cabinet can always reach itself."
+  },
+  "hints": [],
+  "functionName": "reconnect_network",
+  "starterCode": "def reconnect_network(size, events):\n    pass\n",
+  "solutionCode": "def cabinet_group(parent, cabinet):\n    while parent[cabinet] != cabinet:\n        cabinet = parent[cabinet]\n    return cabinet\n\ndef reconnect_network(size, events):\n    parent = []\n    counts = []\n    for cabinet in range(size):\n        parent.append(cabinet)\n        counts.append(1)\n    report = []\n    for event in events:\n        a = cabinet_group(parent, event[1])\n        b = cabinet_group(parent, event[2])\n        if event[0] == \"probe\":\n            report.append([counts[a], a == b])\n        elif a != b:\n            if counts[a] < counts[b]:\n                saved = a\n                a = b\n                b = saved\n            parent[b] = a\n            counts[a] += counts[b]\n    return report\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "读取接线事件",
+        "en": "Read a cable event"
+      },
+      "code": "    for event in events:\n        operation = event[0]\n        a = event[1]\n        b = event[2]"
+    },
+    {
+      "label": {
+        "zh": "按编号初始化柜子",
+        "en": "Initialize cabinets by ID"
+      },
+      "code": "    parent = []\n    for cabinet in range(size):\n        parent.append(cabinet)"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        5,
+        [
+          [
+            "probe",
+            0,
+            1
+          ],
+          [
+            "link",
+            0,
+            1
+          ],
+          [
+            "link",
+            1,
+            2
+          ],
+          [
+            "probe",
+            0,
+            2
+          ],
+          [
+            "probe",
+            3,
+            0
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          1,
+          false
+        ],
+        [
+          3,
+          true
+        ],
+        [
+          1,
+          false
+        ]
+      ]
+    },
+    {
+      "args": [
+        4,
+        [
+          [
+            "link",
+            0,
+            1
+          ],
+          [
+            "link",
+            1,
+            0
+          ],
+          [
+            "link",
+            0,
+            0
+          ],
+          [
+            "probe",
+            0,
+            2
+          ],
+          [
+            "probe",
+            1,
+            0
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          2,
+          false
+        ],
+        [
+          2,
+          true
+        ]
+      ]
+    },
+    {
+      "args": [
+        1,
+        [
+          [
+            "probe",
+            0,
+            0
+          ],
+          [
+            "link",
+            0,
+            0
+          ],
+          [
+            "probe",
+            0,
+            0
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          1,
+          true
+        ],
+        [
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "args": [
+        0,
+        []
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        5,
+        [
+          [
+            "link",
+            1,
+            2
+          ],
+          [
+            "link",
+            3,
+            4
+          ]
+        ]
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        6,
+        [
+          [
+            "link",
+            0,
+            1
+          ],
+          [
+            "link",
+            2,
+            3
+          ],
+          [
+            "link",
+            4,
+            5
+          ],
+          [
+            "link",
+            3,
+            4
+          ],
+          [
+            "probe",
+            5,
+            2
+          ],
+          [
+            "probe",
+            0,
+            5
+          ],
+          [
+            "link",
+            5,
+            0
+          ],
+          [
+            "probe",
+            0,
+            2
+          ],
+          [
+            "probe",
+            1,
+            3
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          4,
+          true
+        ],
+        [
+          2,
+          false
+        ],
+        [
+          6,
+          true
+        ],
+        [
+          6,
+          true
+        ]
+      ]
+    },
+    {
+      "args": [
+        4,
+        [
+          [
+            "probe",
+            2,
+            2
+          ],
+          [
+            "probe",
+            2,
+            3
+          ],
+          [
+            "link",
+            1,
+            2
+          ],
+          [
+            "link",
+            2,
+            3
+          ],
+          [
+            "link",
+            3,
+            1
+          ],
+          [
+            "probe",
+            2,
+            0
+          ],
+          [
+            "probe",
+            3,
+            1
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          1,
+          true
+        ],
+        [
+          1,
+          false
+        ],
+        [
+          3,
+          false
+        ],
+        [
+          3,
+          true
+        ]
+      ]
+    },
+    {
+      "args": [
+        5,
+        [
+          [
+            "link",
+            1,
+            2
+          ],
+          [
+            "link",
+            3,
+            2
+          ],
+          [
+            "link",
+            4,
+            2
+          ],
+          [
+            "link",
+            0,
+            3
+          ],
+          [
+            "probe",
+            1,
+            4
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          5,
+          true
+        ]
+      ]
+    }
+  ]
+}

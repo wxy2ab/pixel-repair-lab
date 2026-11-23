@@ -1,0 +1,70 @@
+# 像素维修站关卡协作说明
+
+- 新增关卡时，在 `levels/` 放入一份符合 [level.schema.json](level.schema.json) 的 UTF-8 JSON。填写唯一的 `id` 和用于排序的 `order`。运行时会自动读取目录。更新现有关卡时保留 `id`，浏览器用这个值记录进度。
+- 用 `unit` 的 `id`、`order` 和双语 `title` 指定单元。复用已有单元时保持这三项一致。`stage` 可填 `explain`、`demo`、`exercise` 或 `challenge`，对应讲解、演示、练习、实践。一个单元可以只提供其中的几个阶段，每项都能直接进入。
+- 连续课程用 `topic: {id, order, title}` 把动画讲解、独立代码演示和至少两道练习放在同一主题下，标题保持双语。先按主题顺序，再按阶段和关卡 `order` 排列。综合挑战用 `stage: "challenge"` 并省略 `topic`。
+- 通用概念可先放在一个 `overview: true` 的讲解关，声明 `unit` 并省略 `topic`。它排在单元的细分主题之前。`execution` 可以给讲解提供实际运行的 `source`，每个 `cases` 项填写双语 `label`、`scan()` 的整数 `input` 和 `say()` 的预期字符串 `expected`。参考 [一段程序是怎么跑起来的？](levels/700-python-program-overview.json)。
+- 补电课的 `execution.intro` 使用 `mode: "basics"` 展示输入、处理和输出，或用 `mode: "interfaces"` 呈现一节独立的操作和回放。后者的 `interface` 填 `cli`、`gui` 或 `web`，命令行课额外填 `command`。旧配置省略 `interface` 时按命令行课显示。两种模式都填双语 `rule`，每个输入应输出一个结果。Web 示例在服务器上运行已登记的关卡样例，导入关卡试玩时在本地模拟。参考 [什么是程序？](levels/698-what-is-a-program.json)、[命令行程序](levels/699-program-interfaces.json)、[图形界面程序](levels/6991-program-gui.json) 和 [Web 程序](levels/6992-program-web.json)。
+- `execution.visual` 可以先用图卡讲程序。每条代码用唯一图卡 `id` 对应一个从 1 开始的 `line`。`main` 按源代码顺序列出可移动的动作，函数用 `functions` 包住定义与缩进的函数体，调用图卡的 `calls` 指向对应函数。`practice[].order` 放入未排好的主程序图卡 ID。校验器会执行正确程序和练习的初始顺序。
+- 分步运行课设 `execution.guided: true` 并填写 `visual`，其中 `practice` 可以为空。首个 `cases` 项用于观察，后续项用不同的输入做预测。每个预测场景的 `predictions` 提供 2 至 4 个不同的输出选项，并包含该场景的 `expected`。课堂验证会运行同一份 `source`。
+- 单独讲解一次函数调用时，在分步运行课里加 `execution.functionLesson`，填写 `functionName`、`parameter` 和主程序接收返回值的 `resultVariable`。主程序和函数的参数使用同一个变量名来展示不同作用域。预测选项同时包含起始电量和返回值，验证从实际返回步骤和最终的主程序变量读取答案。参考 [函数与参数](levels/731-foundation-functions-notes.json)。
+- 指令顺序课用 `execution.sequence` 配置 `arrange`、`broken` 和 `repair` 三组不同的图卡顺序。源程序的三张图卡按读取、计算、显示排列，图标填 `battery`、`compute`、`display`。`broken` 在成功读取后提前显示，让孩子观察真实的缺值错误。前两段使用第一项 `cases`，修复段使用第二项。参考 [指令与顺序](levels/701-sequence-notes.json)。
+- 变量赋值课用 `execution.source` 演示把结果存到新变量，用 `execution.assignment.overwriteSource` 演示写回原变量。两段程序都按读取、计算赋值、显示的顺序执行，并用 `assignment.inputVariable` 和 `assignment.resultVariable` 指定两个不同的变量名。首项 `cases` 用于观察，后续场景的 `predictions` 同时包含起始电量和预期结果。课堂用两次运行后实际保存的变量值验证预测。参考 [变量与算术](levels/101-foundation-notes.json)。
+- 比较课在 `execution.boolean.threshold` 填数轴门槛。每个 `cases` 项填补电后的整数 `input`、安全门状态 `doorOpen`、用途 `activity` 和实际结果 `expected`（`True` 或 `False`）。先用 `compare` 依次展示略低、正好达到、略高；接着用 `combine` 在同一足够电量下先关门、再开门；最后用不同组合的 `predict`。程序读入数值后依次比较电量、用 `door_open()` 读取门、计算组合条件，再显示结果。参考 [比较与布尔值](levels/721-boolean-notes.json)。
+- 条件分支课用 `execution.branchLesson` 指定电量门槛 `threshold` 和双语 `actions.if`、`actions.else`。用两个 `activity: "branch"` 的案例在同一足够电量下先开门、再关门，再用不同组合的 `predict` 练习。程序先算电量和门的组合条件，再用 `if` 或 `else` 执行所选分支中的动作。校验检查实际进入的分支和该分支的输出。参考 [条件分支](levels/410-control-flow-notes.json)。
+- for 遍历课用 `execution.forLoop` 配置每次增加的电量 `increment` 和一组列表案例，外层 `execution.cases` 填空数组。首组用来观察，后续组用 `predictions.rounds` 和 `predictions.results` 提供次数与结果顺序的选项。每组的 `batteries` 提供起始电量，`expected` 提供按原顺序补电后的电量。程序用 `read_batteries()` 读取列表，每轮计算并追加一条结果，最后显示列表。参考 [for 遍历](levels/804-for-loop-notes.json)。
+- while 补电课在 `execution.whileLoop` 配置达标电量 `threshold` 和每轮补电量 `increment`。前两个 `cases` 项分别演示需要补电和起始即达标。后续项的 `roundPredictions` 和 `predictions` 分别填写循环次数和最终电量的选项。校验会核对实际条件、每轮更新和最终输出。参考 [while 循环](levels/807-while-loop-notes.json)。
+- 列表与字典补电课用 `execution.collectionLesson` 填写从 0 开始的 `index`、电池名字 `key`、补电量 `increment` 和 `cases`，外层 `execution.cases` 填空数组。程序用 `read_batteries()` 和 `read_named_batteries()` 读入同一排电池，依次按位置读取、按键查找、更新并显示记录。首组用来观察，后续组为 `position`、`named` 和 `records` 分别提供预测选项。参考 [列表与字典](levels/810-collections-notes.json)。
+- 嵌套循环补电课用 `execution.nestedLoops` 配置补电量 `increment` 和 `cases`，外层 `execution.cases` 填空数组。每个案例的 `rows` 是电池电量的二维列表，允许各排长短不同或留空。程序用 `read_battery_rows()` 读入，外层按排处理，内层逐块补电并记录，最后显示每排结果。首组用来观察，后续组用 `predictions.rounds` 和 `predictions.rows` 提供总次数及结果选项。参考 [嵌套循环](levels/910-nested-loops-notes.json)。
+- 模块补电课在 `execution.source` 填主程序，在 `execution.moduleLesson.source` 填模块源码。`moduleName` 决定导入名，`functionName`、`parameter`、`resultVariable` 和 `increment` 分别说明函数、参数、主程序接收返回值的变量和补电量。首个 `cases` 项用于观察，后续项用数值选项预测实际输出。参考 [模块](levels/930-modules-notes.json)。
+- 调试补电课在 `execution.source` 保留循环内提前返回的代码，用 `execution.debugging.loopLine` 和 `returnLine` 填对应行号，外层 `execution.cases` 填空数组。内层案例先用一块，再用一排，后续场景用 `predictions` 提供按原顺序预测的电量列表。移出循环后，以修好的源代码重跑这些场景。参考 [调试](levels/940-debugging-notes.json)。
+- 数据结构开篇在 `execution.source` 放列表程序，在 `execution.structures.sources` 放栈、队列和字典程序，外层 `execution.cases` 填空数组。`demo` 和 `practice` 各给一批按到达顺序排列的电池，以及位置 `index` 和名字 `key`。练习的 `tasks` 为四种结构各给一张双语取件单。校验会运行每种取法并核对选中的电池和剩余记录。参考 [同一批电池，四种取法](levels/103-structures-notes.json)。
+- 列表位置课用 `execution.listPositions.cases` 填原有电池、备用电池 `spare` 和从 0 开始的 `readIndex`、`insertIndex`、`removeIndex`、`pickIndex`，外层 `execution.cases` 填空数组。移走位置按照插入后的列表填写。首组用于动手演示，后续组填写最终顺序和最后取到的电池，并为两项都提供预测选项。参考 [列表](levels/1031-list-positions.json)。
+- 电池栈课用 `execution.stackLesson.cases` 填电池、`push` 或 `pop` 操作，以及预期的取出顺序和剩余栈。`remaining` 按底到顶填写，可以为空。首组用 `execution.source`，后续案例可用自己的 `source` 并提供 `predictions.popped` 和 `predictions.remaining`。外层 `execution.cases` 填空数组。参考 [栈](levels/100-02-stack-notes.json)。
+- 电池队列课用 `execution.queueLesson.cases` 配置电池和操作。`push` 对应从队尾加入，`pop` 对应从队头取出。`remaining` 按队头到队尾填写，可以为空。演示从 `execution.source` 运行，后续案例可以提供各自的 `source`。外层 `execution.cases` 填空数组。参考 [队列](levels/100-05-queue-notes.json)。
+- 电池字典课用 `execution.dictionaryLesson.cases` 填已登记的电池、要查和更新的 `key`、新来的 `arrival` 及增加的电量 `increment`。首组用 `execution.source`，后续组可以提供各自的 `source`，并给出更新前的读数 `readings` 和最终字典 `records` 的预测选项。外层 `execution.cases` 填空数组。参考 [字典](levels/100-08-dictionary-notes.json)。
+- 电池查找课用 `execution.batterySearch` 配置 `demo` 和 `practice`。按电量升序填写各组电池，演示另用 `manualOrder` 指定手动查看的初始顺序，练习提供两种查找的比较次数选项。`execution.source` 和 `binarySource` 分别编写逐块查找与折半查找，两份程序的 `find_battery(charges, target)` 都返回 `[索引, 比较次数]`。外层 `execution.cases` 填空数组。参考 [在维修站找电池](levels/601-linear-search-notes.json)。
+- 第一块同电量课用 `execution.firstBatterySearch` 配置 `demo.unique`、`demo.repeated` 和新一排的 `practice`。所有电池按电量升序排列，重复组在原有电池之间加同电量的新电池。`execution.source` 运行普通二分，`firstSource` 的 `find_first_battery(charges, target)` 记住匹配位置并继续查左边。用 `practice.expected.ranges` 和 `practice.predictions.ranges` 配置每次缩小后的两端位置，含最终的空范围。外层 `execution.cases` 填空数组。参考 [找出第一块同电量的电池](levels/1201-binary-search-notes.json)。
+- 电池广度优先搜索课用 `execution.breadthFirstLesson` 配置两张地图，`tiles` 用 `.` 表示空地、`#` 表示墙，位置写成 `[x, y]`。程序按上、右、下、左查邻格，`find_battery_route(board, start, goal)` 返回 `[取出队头的顺序, 最短路线]`，两项都包含起点和电池。`practice.predictions` 提供 `orders` 与 `paths` 选项。外层 `execution.cases` 填空数组。参考 [一层层找电池](levels/107-routing-notes.json)。
+- 电池选择排序课用 `execution.selectionSort` 配置 `demo` 和 `practice` 的未排序电池。每组的 `expected.selected` 按轮记录选中的电池，最后一块无需再选。`expected.order` 按最终顺序列出全部电池名字。`execution.source` 的 `sort_batteries(batteries)` 返回 `[每轮选中的名字, 排好的电池]`，电池用 `[名字, 电量]` 表示。外层 `execution.cases` 填空数组。参考 [按电量排好电池](levels/1101-selection-sort-notes.json)。
+- 电池双指针课用 `execution.twoPointerLesson` 配置 `demo` 和 `practice` 的升序电池与目标电量。`expected.moves` 中的 `left` 和 `right` 表示把对应端向中间移动一格，`expected.pair` 从左到右填写找到的两块电池。`execution.source` 的 `find_pair(charges, target)` 返回两个位置，找不到时返回空列表。外层 `execution.cases` 填空数组。参考 [从两头给电池配对](levels/1111-two-pointer-notes.json)。
+- 电池前缀和课用 `execution.prefixTotalsLesson` 配置 `demo.batteries` 和换一排的 `practice`。演示允许选任意连续区间，练习的 `left` 和 `right` 从 0 编号并包含两端。`expected.prefix` 以 0 开头，之后按顺序记录每块电池下的累计值。`execution.source` 的 `battery_totals(charges, left, right)` 返回 `[逐块相加的总量, 累计表, 两个累计值相减的总量]`。练习用 `predictions.prefix` 和 `predictions.totals` 提供选项。外层 `execution.cases` 填空数组。参考 [算一段电池的总电量](levels/1121-prefix-totals-notes.json)。
+- 需要复用函数的算法、网格或竞技场关卡用 `helpers` 列出函数名。每个名字应有唯一对应的独立算法练习。参考解法用 `from algorithms import 名称`，玩家可导入自己保存的 `my_algorithms` 版本。
+- 网格场景和变体可用 `devices` 配置炮台、激光、镜子、开关、炸弹、钥匙、锁门和宝箱。用机关的 `id` 关联钥匙、开关和收集目标。参考[拐弯的光廊](levels/1922-bent-light-gallery.json)和[双锁档案库](levels/1925-double-seal-vault.json)。
+- 整条最短路练习可设 `pathGrading: "shortest"`，用例输入依次为矩形地图和两个 `[x, y]` 坐标。所有能走到终点且步数最少的方向列表都能通过。参考[设计整条最短路线](levels/1214-design-shortest-route.json)及复用该函数的[三仓导航派送](levels/1926-three-depot-dispatch.json)。
+- 电池架综合挑战用 `chargingChallenge.trialCase` 选定起始代码提前返回的小例子，用 `predictions` 引用不同的测试用例索引并提供整架电池的预测结果。`cases` 的参数依次为电池架和每块增加的电量。保持 `stage: "challenge"`，通过试跑和最终验证都使用玩家实际导入的函数。参考 [给整架电池补电](levels/950-python-advanced-capstone.json)。
+- 电池交接综合挑战用 `batteryDispatch.trialCase` 选小例子，`predictions` 用不同的用例索引配置取件顺序 `orders` 和最终记录 `records` 的选项。`cases` 的参数依次为电池到达顺序、起始电量字典、补电量和工单操作。`stage` 表示取队头补电后叠放，`retrieve` 表示取栈顶并按名登记。预期结果依次为取件清单和电量字典。参考 [维修站的电池交接单](levels/100-11-dispatch-report.json)。
+- 电池工单综合挑战用 `batteryPipeline.trialCase` 选小例子，用 `prediction.caseIndex` 引用不同的练习用例，并提供 `orders`、`pairs`、`totals`。用例参数依次为原始电量列表、配对目标、排好后区间的左端和右端。两端从 0 编号且都计入。程序调用 `sort_ascending`、`sorted_has_pair`、`prefix_totals`，返回 `[排序后的列表, 配对电量, 区间总量]`。参考 [维修站的电池工单](levels/1199-ranked-shipment.json)。
+- `lecture` 的 `sections` 说明知识点，`question` 给出一次预测及反馈，正确选项 `correct` 从 0 编号。为讲解提供 `animation`，在 2 到 10 帧中展示值、位置或状态的变化。每帧用双语 `caption` 说明当前动作，用相同的 `items[].id` 表示跨帧的同一对象。布局支持 `row`、`stack`、`grid`、`bars`、`pipeline`。`replay` 为网格示例提供独立的地图、数据、目标和可执行的 `source`，示例应与对应练习使用不同数据。AI 回放使用配有双语初始提示和修正提示的内嵌示例。
+- 讲解动画中的 `items[].swatch` 可用六位十六进制色值展示像素和颜色通道。
+- 从同类型的现有关卡开始。网格任务参考 [把路线装进口袋](levels/03-pocket-route.json)，带敌人的网格参考 [先来的先发货](levels/05-arrival-queue.json)，AI 协作参考 [AI 补给搭档](levels/11-ai-supply-box.json)。修改地形、实体、可用指令、目标或初始数据时，使用配置里的字段。
+- 所有本地化文字都提供 `zh` 和 `en`。网格任务应能通过鼠标组合指令卡过关，因此 `cards` 要覆盖参考解法。数据结构目标用 `origin` 检查实际操作来源，并用 `variants` 检查同一解法能适应的数据变化。
+- 独立闯关任务放在 `challenge-zone` 单元，单元排序为 90，双语标题为「挑战场」和「Challenge Arena」。用 `stage: "challenge"`，任务说明写目标和胜负规则。网格可用 `turnLimit` 限制回合，移动、拾取和 CPU 单步各耗一回合，扫描免费。最后一回合刚好完成有效。
+- 挑战场关卡用 `prerequisites` 标注建议先学的课程，按推荐顺序填写 `{ "unit": "现有单元 ID", "topic": "该单元下的知识点 ID" }`。只推荐整个模块时省略 `topic`。标题从现有双语课程读取，课程校验会检查引用是否存在，玩家可以直接进入挑战。
+- 挑战场关卡填写 `difficulty`。`starter`（入门）适用于规则固定、可用少量操作或直接运用已学知识完成的关卡，`intermediate`（进阶）适用于需要组合知识或考虑对手行动的关卡，`advanced`（高难）适用于需要应对实时变化、多重限制，或设计更复杂算法的关卡。挑战场按关卡的 `kind` 分组，用配置中的难度排序和筛选。
+- 推荐会读取现有学习进度，选择前序课程必学关卡均已完成、且尚未通关的挑战，按难度从低到高最多推荐三关。按模块筛选会纳入该模块下被引用的知识点，也可选定单个知识点。
+- 准备进度只统计前序范围内的必学课节，重叠课节计一次。没有已准备好的推荐时，会优先显示还需补课最少的未通关挑战，课节数相同时优先较低难度。补课路线按前序配置和课程原有顺序继续，可随时返回原挑战。
+- 失败复盘用实际失败的回合、步骤或用例提示还没达到的目标，相关讲解和练习从原关卡的前序课程中选取。复盘内容限于本次失败的诊断和相关学习入口。
+- 通关总结从实际胜局记录成绩。按关卡、玩法和场景数比较上次通关与个人最好成绩。竞技积分越高越好，其余同等达标时优先更少的回合、检查、指令或协作轮次。有变体的网格和竞技场以主场景回合或得分进行比较，并显示通过场景数。
+- 成绩记录为新胜局保存成绩和通关时间，按关卡、玩法和场景数单独展示。旧版保存的最好和最近成绩保留为无日期的旧记录。趋势图标出当前指标的最好数值，成绩表标出按通关总结规则得到的个人最好成绩。
+- 从成绩记录设的小目标以上次通关成绩为起点，保存后使用固定的目标值。目标按关卡、玩法和测试范围分别记录，每次通关核对尚待达成的目标。
+- 挑战场的「我的小目标」汇总仍可按原玩法重玩的待达成目标。差距来自设定目标后的最近一次通关，列表提供按原玩法重玩及返回自由选关的入口。
+- 「进行中」的进度图按原玩法记录每次判定后的重玩，未通关单独标记。连续三次没有刷新最小差距时给出建议。调整目标保留已有重玩成绩，图上的差距按当前目标重算。
+- 点进度图上的记录可与同玩法最接近目标的一次对比。复盘使用精简的实际动作、得分和失败诊断，只在两次的主场景回合记录完整时列出动作或拾取差异。早期记录仍可查看已保存的成绩。
+- 可在复盘里为同一关、同一玩法的下一次重玩选一个改进点。重玩前的提醒可以跳过，对照使用实际的路段经过次数、用例判定或成绩。
+- 「改进记录」独立保存已判定的重玩改进点和对照结果。从记录再试时按原玩法打开，优先用所选记录的本次成绩作对照。没有可比成绩时沿用原来的对照值。
+- 「已达成」保存目标、达成时的成绩和设定后的重玩次数。重玩按整次挑战判定计数，达成的那次也计入。旧记录缺少次数时显示「未记录」。从达成成绩设新目标会保留原记录。
+- 「目标推荐」参考同一关卡、玩法和测试范围最近两到三次有时间记录的通关成绩。推荐以上次通关为起点改善一个单位，优先选近期曾达到的门槛。已有进行中目标的玩法不再推荐。
+- 动态竞技可在 `shifts` 依回合填写 `turn`、`open`、`close` 和 `moveItems`。指定回合结束时先开门，再移动尚未被收集的电池，最后关门。机器人或电池占住的门本次保持开启。策略通过 `scan()` 读取更新后的 `tiles` 和 `items`。`adaptive` 对手可选 `secure`、`intercept` 或 `flex`，行动取决于比分、目标位置和当前通道。
+- 网格的 `solutionCards` 必须能完成主场景和所有变体。算法与竞技场按 Schema 提供 `starterCode`、`solutionCode` 和补写片段，参考代码必须通过全部用例或变体。AI 任务的 `examplePrompts` 包含首轮请求和每次模拟错误后的参考修正。写完运行 `npm run levels:check -- levels/你的关卡.json`，需要机器可读结果时加 `--json`。
+- `circuit` 配置二进制、逻辑门和组合实验。每个案例提供初始开关 `bits`，有门时再提供初始 `gate`。练习和挑战声明 `goal` 与可通过的 `solution`。
+- 电路模式 `diode` 和 `transistor` 都用两位 `bits`。第一位表示开关闭合，第二位分别表示二极管正向或晶体管基极为高电平。`goal.output` 是指示灯的亮灭，可再指定开关、方向或基极状态。
+- `arduino` 的 `sketch.mode` 可选 `blink` 或 `button`。前者配置亮灭时长和可选毫秒数，后者用 `lightWhen` 选择按下或松开时点灯。演示只给初始值，练习和挑战在 `sketch.goal` 给出目标。结课项目用 `courseFinal: true` 计入主线进度。
+- `breadboard` 的 `board.initialParts` 与 `solutionParts` 用 `{kind, pins: [第一脚, 第二脚]}` 配置按钮、电阻和 LED，LED 的第一脚是阳极。空数组表示空板。省略初始元件时沿用旧版 A1–A6 的安装位置；省略参考元件时使用初始位置。`board.initialWires` 与 `solutionWires` 配置跳线。编号 1 至 6 各自连通同编号的 A–E 孔，每孔只能插一只元件脚或一根跳线。`series` 使用 `5V` 和 `GND`，`call-lamp` 使用 `uno-D2`、`uno-D13` 和 `GND`。`programId` 引用按下点亮的 Arduino 课程，`carryFrom` 可引用一关串联电路以带入玩家的元件和板内跳线。参考搭建需在两种按钮状态下都通过模拟。
+- 呼叫灯故障挑战在 `board.faults` 中配置维修单。每张维修单从同一份参考搭建开始。`{"kind":"reversed-led"}` 对调 LED 的两只脚。`{"kind":"wrong-jumper","wire":["B6","C2"],"wrongPin":"C5"}` 保留跳线的第一端，将第二端移到另一编号的空孔。校验器运行呼叫灯程序检查每张故障板按下按钮时灯灭，修复后的参考板按下点亮、松开熄灭。
+- `machine` 配置允许运行的 `allowedOps`、初始内存和可选初始累加器。演示的 `starterCode` 应能运行至 HALT。练习和挑战声明每一个案例的 `goal`，并提供能通过所有案例的 `solutionCode`。
+- `lab` 使用 `numpy`、`pandas`、`analysis`、`sql`、`opencv`、`yolox` 中的固定实验。实验代码提供测试数据和可调参数。练习阶段在 `goal` 给出目标计数和双语任务文案。
+- `data` 的 `steps` 配置数据课程实验。`input` 可选原始记录 `raw`、已经清洗的 `clean`，或上一步实际结果 `previous`。演示填 `initial`，练习和挑战同时填可比较的目标表 `goal` 和参考参数 `solution`。数据库结课项目用 `courseFinal: true` 计入主线进度。参考 [维修站温度巡查报告](levels/5391-station-temperature-project.json)。
+- `vision` 用 `mode` 选择像素、颜色、滤镜、检测、画框或双图项目。每个 `cases` 场景提供固定图像、双语任务和 `initial` 参数。练习与挑战提供可测量的 `goal` 和可通过的 `solution`。结课项目用 `courseFinal: true` 计入主线进度。参考 [视觉巡查项目](levels/561-vision-inspection-project.json)。
+- `ai` 的 `workflow` 可指定 `draft` 起始清单和双语提示词 `cards`。`faults` 按模拟轮次引入错误，数量为 0 表示漏放。`review: "manual"` 要求玩家指出所有差异后才能修正或确认。结课项目参考 [双点巡检的补给清单](levels/1751-ai-inspection-project.json)。
+- 在线 AI 的密钥属于服务器 `.env`。关卡文件可用网页的 **关卡预览** 导入和试玩。

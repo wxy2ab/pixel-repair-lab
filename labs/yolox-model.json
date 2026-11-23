@@ -1,0 +1,6 @@
+{
+  "name": "object_detection_yolox_2022nov.onnx",
+  "url": "https://media.githubusercontent.com/media/opencv/opencv_zoo/main/models/object_detection_yolox/object_detection_yolox_2022nov.onnx",
+  "size": 35858002,
+  "sha256": "c5c2d13e59ae883e6af3b45daea64af4833a4951c92d116ec270d9ddbe998063"
+}

@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "unit": {
+    "id": "algorithm-intro",
+    "order": 50,
+    "title": {
+      "zh": "算法初级",
+      "en": "Introductory Algorithms"
+    }
+  },
+  "stage": "exercise",
+  "id": "count-matches",
+  "order": 604,
+  "title": {
+    "zh": "找全重复编号",
+    "en": "Count all matches"
+  },
+  "brief": {
+    "zh": "实现 count_matches(values, target)，给出目标出现的总次数。",
+    "en": "Implement count_matches(values, target) and return the total number of matches."
+  },
+  "concept": {
+    "zh": "计数器与完整遍历",
+    "en": "Accumulators and complete traversal"
+  },
+  "hints": [
+    {
+      "zh": "遇到匹配只增加计数，循环结束后再返回。",
+      "en": "Increment on each match. Return only after the loop finishes."
+    }
+  ],
+  "functionName": "count_matches",
+  "starterCode": "def count_matches(values, target):\n    count = 0\n    return count",
+  "solutionCode": "def count_matches(values, target):\n    count = 0\n    for value in values:\n        if value == target:\n            count += 1\n    return count",
+  "snippets": [
+    {
+      "label": {
+        "zh": "遇到匹配就累加",
+        "en": "Add one per match"
+      },
+      "code": "    for value in values:\n        if value == target:\n            count += 1"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          2,
+          8,
+          2,
+          3,
+          2
+        ],
+        2
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        [
+          8,
+          8,
+          3
+        ],
+        0
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [],
+        2
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          "up",
+          "down",
+          "up"
+        ],
+        "up"
+      ],
+      "expected": 2
+    }
+  ],
+  "topic": {
+    "id": "linear-search",
+    "order": 1,
+    "title": {
+      "zh": "线性查找",
+      "en": "Linear search"
+    }
+  }
+}

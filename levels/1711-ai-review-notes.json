@@ -1,0 +1,256 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "ai-review-notes",
+  "order": 1711,
+  "unit": {
+    "id": "ai-review",
+    "order": 170,
+    "title": {
+      "zh": "核对与修正",
+      "en": "Review and Revision"
+    }
+  },
+  "topic": {
+    "id": "review",
+    "order": 1,
+    "title": {
+      "zh": "核对清单",
+      "en": "Review the Manifest"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "逐项核对 AI 清单",
+    "en": "Check the AI Manifest Item by Item"
+  },
+  "brief": {
+    "zh": "给维修车复查补给，找出少装、多装和漏装的物品。",
+    "en": "Check a repair cart for quantities that are too low, extra items, and missing items."
+  },
+  "concept": {
+    "zh": "把任务里的物品和数量逐项与 AI 清单对照。",
+    "en": "Compare each requested item and quantity with the AI manifest."
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "先看任务",
+        "en": "Start with the assignment"
+      },
+      "body": {
+        "zh": "把任务要求当作参照。需要两副护目镜、一卷胶带，磁铁需要留在外面。",
+        "en": "Use the assignment as your reference. It calls for two pairs of goggles, one roll of tape, and no magnet."
+      }
+    },
+    {
+      "title": {
+        "zh": "每一行都要看",
+        "en": "Inspect every row"
+      },
+      "body": {
+        "zh": "护目镜出现在表里，也可能数量不够。没有出现的胶带记作 0。还要找出意外混进清单的磁铁。",
+        "en": "Goggles can be listed with too few pairs. Count the absent tape as zero. Look for any extra magnet on the list."
+      }
+    }
+  ],
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": {
+          "zh": "从任务抄下三个目标数量，留在外面的物品目标是 0。",
+          "en": "Read the three target quantities from the assignment. An excluded item has a target of zero."
+        },
+        "items": [
+          {
+            "id": "goggles",
+            "label": {
+              "zh": "护目镜",
+              "en": "Goggles"
+            },
+            "value": {
+              "zh": "目标 2",
+              "en": "Target 2"
+            },
+            "state": "active"
+          },
+          {
+            "id": "tape",
+            "label": {
+              "zh": "胶带",
+              "en": "Tape"
+            },
+            "value": {
+              "zh": "目标 1",
+              "en": "Target 1"
+            }
+          },
+          {
+            "id": "magnet",
+            "label": {
+              "zh": "磁铁",
+              "en": "Magnet"
+            },
+            "value": {
+              "zh": "目标 0",
+              "en": "Target 0"
+            }
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "先对照数量。AI 找对了护目镜，但只准备了一副。",
+          "en": "Compare the quantities. The AI included goggles, with only one pair."
+        },
+        "items": [
+          {
+            "id": "goggles",
+            "label": {
+              "zh": "护目镜",
+              "en": "Goggles"
+            },
+            "value": {
+              "zh": "目标 2 · AI 1",
+              "en": "Target 2 · AI 1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "tape",
+            "label": {
+              "zh": "胶带",
+              "en": "Tape"
+            },
+            "value": {
+              "zh": "目标 1 · AI 0",
+              "en": "Target 1 · AI 0"
+            }
+          },
+          {
+            "id": "magnet",
+            "label": {
+              "zh": "磁铁",
+              "en": "Magnet"
+            },
+            "value": {
+              "zh": "目标 0 · AI 1",
+              "en": "Target 0 · AI 1"
+            }
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "胶带漏掉了。回到任务那一行，确认需要一卷。",
+          "en": "Tape was omitted. The assignment confirms that one roll is needed."
+        },
+        "items": [
+          {
+            "id": "goggles",
+            "label": {
+              "zh": "护目镜",
+              "en": "Goggles"
+            },
+            "value": {
+              "zh": "少装 1",
+              "en": "One too few"
+            }
+          },
+          {
+            "id": "tape",
+            "label": {
+              "zh": "胶带",
+              "en": "Tape"
+            },
+            "value": {
+              "zh": "目标 1 · AI 0",
+              "en": "Target 1 · AI 0"
+            },
+            "state": "active"
+          },
+          {
+            "id": "magnet",
+            "label": {
+              "zh": "磁铁",
+              "en": "Magnet"
+            },
+            "value": {
+              "zh": "目标 0 · AI 1",
+              "en": "Target 0 · AI 1"
+            }
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "磁铁的目标是 0。它也要标出来，三个差异都要修改。",
+          "en": "The magnet has a target of zero. Mark it as well. All three differences need attention."
+        },
+        "items": [
+          {
+            "id": "goggles",
+            "label": {
+              "zh": "护目镜",
+              "en": "Goggles"
+            },
+            "value": {
+              "zh": "少装 1",
+              "en": "One too few"
+            }
+          },
+          {
+            "id": "tape",
+            "label": {
+              "zh": "胶带",
+              "en": "Tape"
+            },
+            "value": {
+              "zh": "漏装",
+              "en": "Missing"
+            }
+          },
+          {
+            "id": "magnet",
+            "label": {
+              "zh": "磁铁",
+              "en": "Magnet"
+            },
+            "value": {
+              "zh": "多装 1",
+              "en": "One extra"
+            },
+            "state": "active"
+          }
+        ]
+      }
+    ]
+  },
+  "question": {
+    "prompt": {
+      "zh": "任务要两卷胶带，卡片上没写胶带。你要记录什么差异？",
+      "en": "The task asks for two rolls of tape. The manifest has no tape. What difference should you record?"
+    },
+    "options": [
+      {
+        "zh": "目标 2，清单 0",
+        "en": "Target 2, manifest 0"
+      },
+      {
+        "zh": "目标 0，清单 2",
+        "en": "Target 0, manifest 2"
+      },
+      {
+        "zh": "目标 2，清单 2",
+        "en": "Target 2, manifest 2"
+      }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "漏装的物品按数量 0 来核对。",
+      "en": "Compare a missing item as a quantity of zero."
+    }
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "python-intermediate",
+    "order": 20,
+    "title": {
+      "zh": "Python 进阶",
+      "en": "Intermediate Python"
+    }
+  },
+  "kind": "algorithm",
+  "id": "review-station",
+  "order": 850,
+  "stage": "challenge",
+  "title": {
+    "zh": "综合检修工作站",
+    "en": "Run a complete station check"
+  },
+  "concept": {
+    "zh": "复用算法并整理检查结果",
+    "en": "Reuse algorithms and organize results"
+  },
+  "brief": {
+    "zh": "用 charge_total 计算补充后的电量，用 count_alerts 计算达到警戒线的读数。返回包含 charge、alerts 和 ready 的字典。电量至少为 8 且没有警报时，ready 为 True。",
+    "en": "Use charge_total to calculate the topped-up charge and count_alerts to count readings that reach the limit. Return a dictionary with charge, alerts, and ready. Set ready to True if the charge is at least 8 and there are no alerts."
+  },
+  "hints": [
+    {
+      "zh": "可以从课程算法里导入两个函数，也可以调用自己已经通过检查并保存的版本。",
+      "en": "Use the course functions or your own versions after checking and saving them."
+    },
+    {
+      "zh": "先分别得到电量和警报数，再用 and 组合两个条件。最后用字典把三项结果装在一起。",
+      "en": "Calculate the charge and number of alerts separately. Join the two conditions with and, then bundle all three results in a dictionary."
+    }
+  ],
+  "functionName": "review_station",
+  "helpers": [
+    "charge_total",
+    "count_alerts"
+  ],
+  "starterCode": "def review_station(current, added, readings, limit):\n    return {\"charge\": 0, \"alerts\": 0, \"ready\": False}\n",
+  "solutionCode": "from algorithms import charge_total\nfrom algorithms import count_alerts\n\ndef review_station(current, added, readings, limit):\n    charge = charge_total(current, added)\n    alerts = count_alerts(readings, limit)\n    ready = charge >= 8 and alerts == 0\n    return {\"charge\": charge, \"alerts\": alerts, \"ready\": ready}\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "计算新电量",
+        "en": "Calculate the new charge"
+      },
+      "code": "    charge = charge_total(current, added)"
+    },
+    {
+      "label": {
+        "zh": "计算警报数量",
+        "en": "Count the alerts"
+      },
+      "code": "    alerts = count_alerts(readings, limit)"
+    },
+    {
+      "label": {
+        "zh": "判断是否准备好",
+        "en": "Decide whether it is ready"
+      },
+      "code": "    ready = charge >= 8 and alerts == 0"
+    },
+    {
+      "label": {
+        "zh": "返回检查结果",
+        "en": "Return the check results"
+      },
+      "code": "    return {\"charge\": charge, \"alerts\": alerts, \"ready\": ready}"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        3,
+        5,
+        [
+          1,
+          4,
+          2
+        ],
+        5
+      ],
+      "expected": {
+        "charge": 8,
+        "alerts": 0,
+        "ready": true
+      }
+    },
+    {
+      "args": [
+        7,
+        2,
+        [
+          1,
+          5,
+          5
+        ],
+        5
+      ],
+      "expected": {
+        "charge": 9,
+        "alerts": 2,
+        "ready": false
+      }
+    },
+    {
+      "args": [
+        4,
+        3,
+        [
+          3,
+          2
+        ],
+        5
+      ],
+      "expected": {
+        "charge": 7,
+        "alerts": 0,
+        "ready": false
+      }
+    },
+    {
+      "args": [
+        5,
+        5,
+        [],
+        1
+      ],
+      "expected": {
+        "charge": 10,
+        "alerts": 0,
+        "ready": true
+      }
+    },
+    {
+      "args": [
+        1,
+        4,
+        [
+          -3,
+          -2,
+          -1
+        ],
+        -2
+      ],
+      "expected": {
+        "charge": 5,
+        "alerts": 2,
+        "ready": false
+      }
+    }
+  ]
+}

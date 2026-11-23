@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "kind": "replay",
+  "id": "python-debugging-replay",
+  "order": 941,
+  "unit": { "id": "python-advanced", "order": 30, "title": { "zh": "Python 高级", "en": "Advanced Python" } },
+  "topic": { "id": "debugging", "order": 4, "title": { "zh": "调试", "en": "Debugging" } },
+  "stage": "demo",
+  "title": { "zh": "对照修复前后的结果", "en": "Compare Before and After the Fix" },
+  "brief": { "zh": "给两个版本同一组输入。观察 return 的缩进怎样改变累加过程。", "en": "Give two versions the same input and observe how return’s indentation changes the sum." },
+  "concept": { "zh": "用同一用例比较错误版本和修正版本", "en": "Use the same case to compare faulty and corrected code" },
+  "hints": [{ "zh": "第一次提交显示错误版本的实际结果，第二次提交显示修复后的结果。", "en": "The first submission shows what the faulty version returns. The second shows the result after the fix." }],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": { "zh": "同样的输入，两种缩进", "en": "One input, two indentations" },
+      "source": "def early_total(values):\n    total = 0\n    for value in values:\n        total = total + value\n        return total\n\ndef fixed_total(values):\n    total = 0\n    for value in values:\n        total = total + value\n    return total\n\nreadings = scan()\nsubmit(early_total(readings))\nsubmit(fixed_total(readings))",
+      "scenario": {
+        "tiles": ["######", "#....#", "#.#..#", "#....#", "######"],
+        "start": { "x": 3, "y": 2 },
+        "allowedApi": ["scan", "submit"],
+        "input": [4, 1, 6],
+        "objectives": [{ "type": "submit", "values": [4, 11] }]
+      }
+    }
+  ]
+}

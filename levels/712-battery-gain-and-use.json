@@ -1,0 +1,213 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "battery-gain-and-use",
+  "order": 712,
+  "unit": {
+    "id": "foundations",
+    "order": 10,
+    "title": {
+      "zh": "Python 基础",
+      "en": "Python Foundations"
+    }
+  },
+  "topic": {
+    "id": "variables",
+    "order": 2,
+    "title": {
+      "zh": "变量与算术",
+      "en": "Variables and Arithmetic"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "修理灯的电量账本",
+    "en": "Keep the Repair Lamp’s Charge"
+  },
+  "concept": {
+    "zh": "多次更新同一个变量",
+    "en": "Update the same variable twice"
+  },
+  "brief": {
+    "zh": "先把扫描到的电量存起来，充电增加 4 格，打开修理灯再用掉 2 格。最后提交剩下的电量。",
+    "en": "Save the battery reading, charge it by four units, then spend two units on the lamp. Submit the charge that remains."
+  },
+  "hints": [
+    {
+      "zh": "每次都用变量里当前的数值算出下一步的数值。",
+      "en": "Use the current value of the variable at each step to calculate its next value."
+    }
+  ],
+  "tiles": [
+    "#######",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#######"
+  ],
+  "start": {
+    "x": 2,
+    "y": 2
+  },
+  "allowedApi": [
+    "scan",
+    "submit"
+  ],
+  "objectives": [
+    {
+      "type": "submit",
+      "values": [
+        8
+      ]
+    }
+  ],
+  "input": 6,
+  "cards": [
+    {
+      "id": "read",
+      "label": {
+        "zh": "读出初始电量",
+        "en": "Read the starting charge"
+      },
+      "template": "charge = scan()"
+    },
+    {
+      "id": "add-energy",
+      "label": {
+        "zh": "增加电量",
+        "en": "Add charge"
+      },
+      "template": "charge = charge + {{amount}}",
+      "parameters": [
+        {
+          "name": "amount",
+          "label": {
+            "zh": "增加几格",
+            "en": "Units to add"
+          },
+          "choices": [
+            {
+              "id": "2",
+              "label": {
+                "zh": "2",
+                "en": "2"
+              },
+              "code": "2"
+            },
+            {
+              "id": "3",
+              "label": {
+                "zh": "3",
+                "en": "3"
+              },
+              "code": "3"
+            },
+            {
+              "id": "4",
+              "label": {
+                "zh": "4",
+                "en": "4"
+              },
+              "code": "4"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "use-energy",
+      "label": {
+        "zh": "用掉电量",
+        "en": "Use charge"
+      },
+      "template": "charge = charge - {{amount}}",
+      "parameters": [
+        {
+          "name": "amount",
+          "label": {
+            "zh": "用掉几格",
+            "en": "Units to use"
+          },
+          "choices": [
+            {
+              "id": "2",
+              "label": {
+                "zh": "2",
+                "en": "2"
+              },
+              "code": "2"
+            },
+            {
+              "id": "3",
+              "label": {
+                "zh": "3",
+                "en": "3"
+              },
+              "code": "3"
+            },
+            {
+              "id": "4",
+              "label": {
+                "zh": "4",
+                "en": "4"
+              },
+              "code": "4"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "report",
+      "label": {
+        "zh": "提交最终电量",
+        "en": "Submit the final charge"
+      },
+      "template": "submit(charge)"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "add-energy",
+      "values": {
+        "amount": "4"
+      }
+    },
+    {
+      "cardId": "use-energy",
+      "values": {
+        "amount": "2"
+      }
+    },
+    {
+      "cardId": "report"
+    }
+  ],
+  "variants": [
+    {
+      "input": 0,
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "input": 11,
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            13
+          ]
+        }
+      ]
+    }
+  ]
+}

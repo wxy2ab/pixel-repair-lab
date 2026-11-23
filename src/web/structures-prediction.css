@@ -1,0 +1,20 @@
+.structures-prediction, .structures-prediction .charge-prediction-body { min-inline-size: 0; }
+.structures-task-prompt {
+  padding: 8px 10px;
+  border-inline-start: 3px solid #72a6ba;
+  border-radius: 4px;
+  background: #1b2e43;
+  color: #e0ebf7;
+}
+.structures-prediction .charge-prediction-choices button { max-inline-size: 100%; overflow-wrap: anywhere; }
+.structures-prediction [data-passed='true'] span { color: #a1ebcc; }
+.structures-arrival { margin: 5px 0 0; color: #bdd0e7; font-size: 13px; }
+.structures-prediction-batteries button {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  min-inline-size: 44px;
+  padding-block: 4px;
+}
+.structures-prediction-batteries small { font-size: 11px; }
+.structures-prediction .structures-run-code { margin-block-end: 6px; overflow-wrap: anywhere; }

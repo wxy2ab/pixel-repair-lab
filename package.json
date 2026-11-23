@@ -1,0 +1,39 @@
+{
+  "name": "pixel-repair-lab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env --import tsx src/server/index.ts",
+    "start": "node --env-file-if-exists=.env --import tsx src/server/index.ts --production",
+    "build": "tsc --noEmit && vite build",
+    "package": "node scripts/package-portable.mjs",
+    "test": "node --import tsx --test tests/*.test.ts src/engine/*.test.ts src/ai/*.test.ts",
+    "test:browser": "playwright test",
+    "levels:check": "tsx src/server/check-levels.ts",
+    "labs:setup": "python labs/setup.py",
+    "test:labs": "node --import tsx --test src/labs/*.test.ts"
+  },
+  "dependencies": {
+    "@lezer/python": "^1.1.18",
+    "ajv": "^8.17.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "three": "^0.180.0",
+    "tsx": "^4.20.6"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@types/three": "^0.180.0",
+    "@vitejs/plugin-react": "^5.1.0",
+    "esbuild": "0.28.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.0"
+  }
+}

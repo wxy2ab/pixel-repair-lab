@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "kind": "circuit",
+  "id": "dc-diode-lamp",
+  "order": 6013,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "diode-loop",
+    "order": 2,
+    "title": {
+      "zh": "二极管与通路",
+      "en": "Diodes and Current Paths"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "让检修灯亮起来",
+    "en": "Light the Inspection Lamp"
+  },
+  "brief": {
+    "zh": "两盏检修灯都熄着。第一盏的开关断开了，第二盏的普通二极管装反了。分别恢复亮灯。",
+    "en": "Both inspection lamps are dark. One has an open switch and the other has a reversed diode. Get each lamp shining."
+  },
+  "concept": {
+    "zh": "闭合回路与二极管的方向",
+    "en": "A complete loop and diode polarity"
+  },
+  "hints": [],
+  "mode": "diode",
+  "cases": [
+    {
+      "label": {
+        "zh": "缺口在开关处",
+        "en": "A gap at the switch"
+      },
+      "bits": [
+        0,
+        1
+      ],
+      "goal": {
+        "output": 1
+      },
+      "solution": {
+        "bits": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "闭合开关上的暗灯",
+        "en": "Dark lamp with a closed switch"
+      },
+      "bits": [
+        1,
+        0
+      ],
+      "goal": {
+        "output": 1
+      },
+      "solution": {
+        "bits": [
+          1,
+          1
+        ]
+      }
+    }
+  ]
+}

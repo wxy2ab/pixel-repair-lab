@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "kind": "arena",
+  "order": 1838,
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "id": "challenge-evacuation-cargo-thief",
+  "title": {
+    "zh": "三机夺件撤离",
+    "en": "Cargo Thief Evacuation"
+  },
+  "concept": {
+    "zh": "两台追踪机 · 一台抢货机",
+    "en": "Two pursuers · One cargo thief"
+  },
+  "brief": {
+    "zh": "25 回合内取走 (9,1)、(6,5)、(10,4) 的三块电池并到达出口。(1,5) 的电池可取可留。石墨号和铜线号追向你，梭巡号会寻找最近的电池。若它拿到任何一块目标电池，就无法撤离成功。和对手同格或迎面换位会被抓。",
+    "en": "Collect the three batteries at (9,1), (6,5), and (10,4) and reach the exit within 25 turns. The battery at (1,5) is optional. Graphite and Copperwire pursue you, while Shuttle heads for the nearest battery. Once Shuttle claims a required battery, escape is impossible. Sharing a tile or swapping positions head-on with a rival gets you caught."
+  },
+  "difficulty": "advanced",
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "rival-strategy"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "#############",
+    "#...........#",
+    "#.###..#.#..#",
+    "#...#.......#",
+    "#.###.#.##..#",
+    "#...........#",
+    "#############"
+  ],
+  "start": {
+    "x": 3,
+    "y": 5
+  },
+  "items": [
+    {
+      "id": "battery-a",
+      "x": 9,
+      "y": 1
+    },
+    {
+      "id": "battery-b",
+      "x": 1,
+      "y": 5
+    },
+    {
+      "id": "battery-c",
+      "x": 10,
+      "y": 4
+    },
+    {
+      "id": "battery-f",
+      "x": 6,
+      "y": 5
+    }
+  ],
+  "opponents": [
+    {
+      "id": "rival-1",
+      "title": {
+        "zh": "石墨号",
+        "en": "Graphite"
+      },
+      "start": {
+        "x": 1,
+        "y": 1
+      },
+      "policy": {
+        "kind": "pursue"
+      }
+    },
+    {
+      "id": "rival-2",
+      "title": {
+        "zh": "铜线号",
+        "en": "Copperwire"
+      },
+      "start": {
+        "x": 3,
+        "y": 3
+      },
+      "policy": {
+        "kind": "pursue"
+      }
+    },
+    {
+      "id": "rival-3",
+      "title": {
+        "zh": "梭巡号",
+        "en": "Shuttle"
+      },
+      "start": {
+        "x": 1,
+        "y": 4
+      },
+      "policy": {
+        "kind": "collect"
+      }
+    }
+  ],
+  "maxTurns": 25,
+  "objective": {
+    "kind": "escape",
+    "exit": {
+      "x": 11,
+      "y": 1
+    },
+    "itemIds": [
+      "battery-a",
+      "battery-c",
+      "battery-f"
+    ]
+  },
+  "starterCode": "while True:\n    state = scan()\n    wait()\n",
+  "solutionCode": "plan = [\"right\",\"right\",\"right\",\"pick\",\"right\",\"right\",\"right\",\"right\",\"up\",\"pick\",\"up\",\"up\",\"up\",\"left\",\"pick\",\"left\",\"down\",\"down\",\"right\",\"right\",\"up\",\"right\",\"up\"]\nfor action in plan:\n    if action == \"pick\":\n        pick()\n    elif action == \"wait\":\n        wait()\n    else:\n        move(action)\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "查看对手位置",
+        "en": "Read opponent positions"
+      },
+      "code": "state = scan()\nfor robot in state[\"opponents\"]:\n    x = robot[\"x\"]\n    y = robot[\"y\"]"
+    },
+    {
+      "label": {
+        "zh": "迈向当前目标",
+        "en": "Step toward a target"
+      },
+      "code": "from algorithms import shortest_step\nstate = scan()\ntarget = state[\"exit\"]\ndirection = shortest_step(state[\"tiles\"], state[\"player\"], target)\nif direction is not None:\n    move(direction)"
+    }
+  ]
+}

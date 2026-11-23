@@ -1,0 +1,177 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "challenge-approved-spares-only",
+  "order": 1860,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "封存批次的替代件",
+    "en": "Substitutes for a Sealed Batch"
+  },
+  "concept": {
+    "zh": "换件比例 · 批次限制 · 多次审核",
+    "en": "Substitution ratio · Batch restrictions · Multi-round audit"
+  },
+  "brief": {
+    "zh": "维修单要求 5 个主电模块和 3 张绝缘贴。只有 2 个主模块通过检验，其余批次已封存。每缺 1 个主模块，改用 2 个合格备用电芯和 1 根连接线。两种方案都要一张通用校验卡，全箱共用 1 张。封存模块和测试电芯都不能装。让 AI 更新旧清单，逐轮核对，确认整箱能完成原任务。",
+    "en": "The ticket requests 5 main modules and 3 insulation pads. Only 2 main modules passed inspection. The rest of that batch is sealed. Replace each missing module with 2 certified spare cells and 1 connector lead. Either supply type needs the same check card, so include exactly 1 shared card. Exclude sealed modules and test cells. Update the old manifest with AI and audit each round before approval."
+  },
+  "prerequisites": [
+    {
+      "unit": "ai",
+      "topic": "constraints"
+    },
+    {
+      "unit": "ai-review",
+      "topic": "specific-correction"
+    },
+    {
+      "unit": "ai-review",
+      "topic": "multi-turn"
+    }
+  ],
+  "hints": [],
+  "inventory": [
+    {
+      "id": "main-module",
+      "label": {
+        "zh": "主电模块",
+        "en": "main module"
+      },
+      "aliases": [
+        "main modules"
+      ]
+    },
+    {
+      "id": "certified-cell",
+      "label": {
+        "zh": "合格备用电芯",
+        "en": "certified spare cell"
+      },
+      "aliases": [
+        "certified spare cells"
+      ]
+    },
+    {
+      "id": "lead",
+      "label": {
+        "zh": "连接线",
+        "en": "connector lead"
+      },
+      "aliases": [
+        "connector leads"
+      ]
+    },
+    {
+      "id": "pad",
+      "label": {
+        "zh": "绝缘贴",
+        "en": "insulation pad"
+      },
+      "aliases": [
+        "insulation pads"
+      ]
+    },
+    {
+      "id": "check-card",
+      "label": {
+        "zh": "校验卡",
+        "en": "check card"
+      },
+      "aliases": [
+        "check cards"
+      ]
+    },
+    {
+      "id": "sealed-module",
+      "label": {
+        "zh": "封存模块",
+        "en": "sealed module"
+      },
+      "aliases": [
+        "sealed modules"
+      ]
+    },
+    {
+      "id": "test-cell",
+      "label": {
+        "zh": "测试电芯",
+        "en": "test cell"
+      },
+      "aliases": [
+        "test cells"
+      ]
+    }
+  ],
+  "required": {
+    "main-module": 2,
+    "certified-cell": 6,
+    "lead": 3,
+    "pad": 3,
+    "check-card": 1
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "certified-cell",
+        "quantity": 3
+      },
+      {
+        "itemId": "sealed-module",
+        "quantity": 1
+      },
+      {
+        "itemId": "lead",
+        "quantity": 0
+      }
+    ],
+    "draft": {
+      "items": [
+        {
+          "id": "main-module",
+          "quantity": 5
+        },
+        {
+          "id": "pad",
+          "quantity": 3
+        },
+        {
+          "id": "check-card",
+          "quantity": 2
+        },
+        {
+          "id": "sealed-module",
+          "quantity": 1
+        },
+        {
+          "id": "test-cell",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  "examplePrompts": {
+    "zh": [
+      "放 2 个主电模块。放 6 个合格备用电芯。放 3 个连接线。放 3 个绝缘贴。放 1 个校验卡。移除封存模块。移除测试电芯。",
+      "放 6 个合格备用电芯。",
+      "移除封存模块。",
+      "放 3 个连接线。"
+    ],
+    "en": [
+      "Pack 2 main modules. Pack 6 certified spare cells. Pack 3 connector leads. Pack 3 insulation pads. Pack 1 check card. Remove the sealed module. Remove the test cell.",
+      "Pack 6 certified spare cells.",
+      "Remove the sealed module.",
+      "Pack 3 connector leads."
+    ]
+  }
+}

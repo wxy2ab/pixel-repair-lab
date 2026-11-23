@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "prefix-totals-notes",
+  "order": 1121,
+  "unit": {
+    "id": "algorithm-intro",
+    "order": 50,
+    "title": { "zh": "算法初级", "en": "Introductory Algorithms" }
+  },
+  "stage": "explain",
+  "topic": {
+    "id": "prefix-totals",
+    "order": 4,
+    "title": { "zh": "前缀和", "en": "Prefix sums" }
+  },
+  "title": { "zh": "算一段电池的总电量", "en": "Add Up a Section of Batteries" },
+  "brief": {
+    "zh": "先选一段电池逐块相加。再从第一块开始记下每格的累计电量，用两个累计值相减算出同一段的合计。",
+    "en": "Pick a section and add its batteries one by one. Then record the running total from the first battery onward and subtract two totals to find the same section sum."
+  },
+  "concept": {
+    "zh": "累计电量与区间求和",
+    "en": "Running totals and range sums"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": { "zh": "在第一块之前记 0", "en": "Start with zero before the first battery" },
+      "body": {
+        "zh": "从头每读一块就把它的电量加进累计值，并记在这块电池下面。第 0 格电池下的累计值存进 prefix[1]。",
+        "en": "Starting from the left, add each charge to the running total and record it below that battery. The total through battery index 0 is stored in prefix[1]."
+      }
+    },
+    {
+      "title": { "zh": "把区间前面的电量减掉", "en": "Subtract the charge before the section" },
+      "body": {
+        "zh": "右端的累计值包含这一段和它前面的所有电池。减去左端前一格的累计值，剩下的就是选中那段的电量。若左端是第一块，就减 0。",
+        "en": "The total through the right end includes the selected section and every battery before it. Subtract the total just before the left end to keep only the selected section. Subtract zero if the section starts at the first battery."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "如果从第一块电池开始选，左端前面的累计值是多少？",
+      "en": "What is the total before the left end when the section starts with the first battery?"
+    },
+    "options": [{ "zh": "0 格", "en": "0 units" }, { "zh": "第一块电池的电量", "en": "The first battery’s charge" }],
+    "correct": 0,
+    "feedback": {
+      "zh": "第一块之前没有电池，所以从右端的累计值里减 0。",
+      "en": "There are no batteries before the first one, so subtract zero from the total through the right end."
+    }
+  },
+  "execution": {
+    "source": "def battery_totals(charges, left, right):\n    direct = 0\n    for index in range(left, right + 1):\n        direct += charges[index]\n    prefix = [0]\n    for charge in charges:\n        prefix.append(prefix[-1] + charge)\n    included = prefix[right + 1]\n    before = prefix[left]\n    segment = included - before\n    return [direct, prefix, segment]\n",
+    "cases": [],
+    "prefixTotalsLesson": {
+      "demo": {
+        "batteries": [
+          { "name": "A", "charge": 3 },
+          { "name": "B", "charge": 1 },
+          { "name": "C", "charge": 4 },
+          { "name": "D", "charge": 2 },
+          { "name": "E", "charge": 5 }
+        ]
+      },
+      "practice": {
+        "batteries": [
+          { "name": "H", "charge": 2 },
+          { "name": "J", "charge": 5 },
+          { "name": "K", "charge": 0 },
+          { "name": "L", "charge": 4 },
+          { "name": "M", "charge": 3 }
+        ],
+        "left": 1,
+        "right": 3,
+        "expected": { "prefix": [0, 2, 7, 7, 11, 14], "total": 9 },
+        "predictions": {
+          "prefix": [[0, 2, 5, 0, 4, 3], [0, 2, 7, 7, 11, 14], [0, 0, 5, 5, 9, 9]],
+          "totals": [4, 9, 11]
+        }
+      }
+    }
+  }
+}

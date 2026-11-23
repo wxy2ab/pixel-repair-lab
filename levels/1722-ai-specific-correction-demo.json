@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "ai-specific-correction-demo",
+  "order": 1722,
+  "unit": {
+    "id": "ai-review",
+    "order": 170,
+    "title": {
+      "zh": "核对与修正",
+      "en": "Review and Revision"
+    }
+  },
+  "topic": {
+    "id": "specific-correction",
+    "order": 2,
+    "title": {
+      "zh": "写清修改",
+      "en": "Give Specific Corrections"
+    }
+  },
+  "stage": "demo",
+  "title": {
+    "zh": "试一条具体的改法",
+    "en": "Try a Specific Fix"
+  },
+  "brief": {
+    "zh": "工具包需要一把扳手和两副手套，检修灯已经固定在墙上。发现差异后，试试不同的反馈。",
+    "en": "The tool bag needs one wrench and two gloves. The work lamp is already fixed to the wall. Try different feedback after finding a discrepancy."
+  },
+  "concept": {
+    "zh": "清楚说明哪一项要改成多少，并请 AI 保留其他项目。",
+    "en": "State which item to change, its final count, and what to preserve."
+  },
+  "hints": [
+    {
+      "zh": "用示例生成第一份清单。标记差异后，可以先试“请再试一次”，再用明确数量来修正。",
+      "en": "Use the example to generate a first manifest. After marking the difference, try “Please try again” before giving the exact count."
+    }
+  ],
+  "inventory": [
+    {
+      "id": "wrench",
+      "label": {
+        "zh": "扳手",
+        "en": "Wrench"
+      },
+      "aliases": [
+        "wrenches",
+        "工具扳手"
+      ]
+    },
+    {
+      "id": "glove",
+      "label": {
+        "zh": "手套",
+        "en": "Glove"
+      },
+      "aliases": [
+        "gloves",
+        "防护手套"
+      ]
+    },
+    {
+      "id": "lamp",
+      "label": {
+        "zh": "检修灯",
+        "en": "Work lamp"
+      },
+      "aliases": [
+        "work lamps",
+        "灯"
+      ]
+    }
+  ],
+  "required": {
+    "wrench": 1,
+    "glove": 2
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "glove",
+        "quantity": 3
+      }
+    ],
+    "cards": [
+      {
+        "zh": "请再试一次。",
+        "en": "Please try again."
+      },
+      {
+        "zh": "手套改为 2 件。",
+        "en": "Set gloves to 2."
+      },
+      {
+        "zh": "其他项目保持原样。",
+        "en": "Keep the other entries."
+      }
+    ]
+  },
+  "examplePrompts": {
+    "zh": [
+      "准备 1 把扳手和 2 件手套。不要放检修灯。",
+      "手套改为 2 件。其他项目保持原样。"
+    ],
+    "en": [
+      "Pack 1 wrench and 2 gloves. Leave out the work lamp.",
+      "Set gloves to 2. Keep the other entries."
+    ]
+  }
+}

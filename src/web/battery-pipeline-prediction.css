@@ -1,0 +1,14 @@
+.battery-pipeline-prediction { min-inline-size: 0; }
+
+.battery-pipeline-practice-row li {
+  display: grid;
+  place-items: center;
+  min-inline-size: 36px;
+  min-block-size: 40px;
+}
+
+.battery-pipeline-pick .charge-prediction-options button { min-block-size: 44px; }
+.battery-pipeline-range-note, .battery-pipeline-prediction-problem p { margin: 0; }
+.battery-pipeline-range-note { color: var(--muted); font-size: .875rem; }
+.for-prediction-values .battery-pipeline-prediction-mark { font-family: inherit; font-size: .8rem; line-height: 1.4; }
+.battery-pipeline-prediction-problem p + p { margin-block-start: 6px; }

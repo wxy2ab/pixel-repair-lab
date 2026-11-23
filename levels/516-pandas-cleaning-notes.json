@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "pandas-cleaning-notes",
+  "order": 516,
+  "stage": "explain",
+  "unit": { "id": "pandas", "order": 110, "title": { "zh": "pandas", "en": "pandas" } },
+  "topic": { "id": "cleaning", "order": 2, "title": { "zh": "数据清洗", "en": "Data cleaning" } },
+  "title": { "zh": "让读数可以计算", "en": "Make Readings Ready to Calculate" },
+  "brief": { "zh": "找出数字文本、缺测值和重复记录，决定哪些读数进入分析。", "en": "Find text values, missing readings, and duplicate records. Decide what should reach the analysis." },
+  "concept": { "zh": "转换数据类型，按清晰的规则处理缺测与重复。", "en": "Convert data types and apply clear rules for missing and duplicate values." },
+  "hints": [],
+  "sections": [
+    { "title": { "zh": "数字文本可以转换", "en": "Numeric text can be converted" }, "body": { "zh": "平板输入的 ‘ 21 ’ 带有空格，仍能转成数字 21。pd.to_numeric(..., errors='coerce') 会把转不了的值记成缺失，方便下一步处理。", "en": "A value typed as ' 21 ' has spaces and can still become the number 21. pd.to_numeric(..., errors='coerce') marks values it cannot convert as missing." } },
+    { "title": { "zh": "按记录编号去重", "en": "Deduplicate by record ID" }, "body": { "zh": "本课把同一个记录编号当成一次测量，用 drop_duplicates 找出重复记录。不同编号碰巧测到同一个温度时，两次测量都保留。", "en": "In this course, a record ID identifies one measurement. Use drop_duplicates to remove repeated records. Different IDs can have the same temperature and both measurements count." } },
+    { "title": { "zh": "检查有多少读数留下", "en": "Check how many readings remain" }, "body": { "zh": "做真实分析时，先检查记录怎样缺失，再决定处理办法。这个练习会剔除无法转换的温度，从原表和结果表就能发现哪些行被剔除了。", "en": "In a real analysis, investigate why values are missing before choosing a treatment. Here, we remove readings that cannot be converted and compare the two tables to see what was removed." } }
+  ],
+  "animation": {
+    "layout": "row",
+    "frames": [
+      { "caption": { "zh": "读到四行原始记录。编号 41 出现了两次。", "en": "Four raw rows come in. Record 41 appears twice." }, "items": [
+        { "id": "first", "label": { "zh": "编号 41", "en": "ID 41" }, "value": { "zh": "‘ 21 ’", "en": "' 21 '" } },
+        { "id": "missing", "label": { "zh": "编号 42", "en": "ID 42" }, "value": { "zh": "‘离线’", "en": "'offline'" } },
+        { "id": "repeat", "label": { "zh": "编号 41", "en": "ID 41" }, "value": { "zh": "‘ 21 ’", "en": "' 21 '" } },
+        { "id": "same", "label": { "zh": "编号 43", "en": "ID 43" }, "value": { "zh": "21", "en": "21" } }
+      ] },
+      { "caption": { "zh": "把能读懂的值转成数字，把离线的读数记为缺失。", "en": "Convert the readable values to numbers and mark the offline reading as missing." }, "items": [
+        { "id": "first", "label": { "zh": "编号 41", "en": "ID 41" }, "value": { "zh": "21", "en": "21" }, "state": "active" },
+        { "id": "missing", "label": { "zh": "编号 42", "en": "ID 42" }, "value": { "zh": "缺失", "en": "Missing" }, "state": "muted" },
+        { "id": "repeat", "label": { "zh": "编号 41", "en": "ID 41" }, "value": { "zh": "21", "en": "21" }, "state": "active" },
+        { "id": "same", "label": { "zh": "编号 43", "en": "ID 43" }, "value": { "zh": "21", "en": "21" }, "state": "active" }
+      ] },
+      { "caption": { "zh": "剔除缺测值，合并重复编号。编号 41 和 43 都进入分析。", "en": "Drop the missing reading and merge duplicate IDs. Both 41 and 43 enter the analysis." }, "items": [
+        { "id": "first", "label": { "zh": "编号 41", "en": "ID 41" }, "value": { "zh": "21", "en": "21" }, "state": "done" },
+        { "id": "same", "label": { "zh": "编号 43", "en": "ID 43" }, "value": { "zh": "21", "en": "21" }, "state": "done" }
+      ] }
+    ]
+  },
+  "question": {
+    "prompt": { "zh": "清洗后为什么仍有两个温度为 21 的读数？", "en": "Why are there still two readings of 21 after cleaning?" },
+    "options": [{ "zh": "它们是编号不同的两次测量", "en": "They are two measurements with different IDs" }, { "zh": "还没转换成数字", "en": "They have not been converted to numbers" }, { "zh": "去重规则只处理小于 21 的值", "en": "The deduplication rule only applies to values below 21" }],
+    "correct": 0,
+    "feedback": { "zh": "记录编号说明测量的身份。每次测量都有自己的编号，同温可以出现多次。", "en": "The record ID identifies the measurement. Different measurements can report the same temperature." }
+  }
+}

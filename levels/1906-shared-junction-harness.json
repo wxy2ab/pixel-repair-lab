@@ -1,0 +1,239 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "challenge-shared-junction-harness",
+  "order": 1906,
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "双环交点的接线单",
+    "en": "Wiring Two Loops at One Junction"
+  },
+  "brief": {
+    "zh": "工单列出六段线：A–B、B–C、C–A、C–D、D–E、E–C。每段用一根线缆，两端各配一个锁扣。每个字母代表一个接线点，每点只装一块端板，端板孔数必须等于接到它的线段数。每点贴一张铭牌。只发工单实际需要的件，逐轮核对 AI 的端板和线材数量。",
+    "en": "The wiring ticket lists six segments: A–B, B–C, C–A, C–D, D–E and E–C. Each segment uses one cable with a locking clip at each end. Every letter is one junction. Fit exactly one plate per junction with precisely one socket per incident segment. Add one nameplate per junction. Ship only parts the ticket needs and audit each revised manifest."
+  },
+  "concept": {
+    "zh": "共享节点、端点计数与规格匹配",
+    "en": "Shared junctions, endpoint counts and matching parts"
+  },
+  "prerequisites": [
+    {
+      "unit": "ai",
+      "topic": "constraints"
+    },
+    {
+      "unit": "ai-review",
+      "topic": "review"
+    },
+    {
+      "unit": "ai-review",
+      "topic": "specific-correction"
+    },
+    {
+      "unit": "ai-review",
+      "topic": "multi-turn"
+    }
+  ],
+  "hints": [],
+  "inventory": [
+    {
+      "id": "cable",
+      "label": {
+        "zh": "线缆",
+        "en": "cable"
+      },
+      "aliases": [
+        "cables"
+      ]
+    },
+    {
+      "id": "lock",
+      "label": {
+        "zh": "锁扣",
+        "en": "locking clip"
+      },
+      "aliases": [
+        "locking clips"
+      ]
+    },
+    {
+      "id": "two-socket",
+      "label": {
+        "zh": "双孔端板",
+        "en": "two-socket plate"
+      },
+      "aliases": [
+        "two-socket plates"
+      ]
+    },
+    {
+      "id": "four-socket",
+      "label": {
+        "zh": "四孔端板",
+        "en": "four-socket plate"
+      },
+      "aliases": [
+        "four-socket plates"
+      ]
+    },
+    {
+      "id": "nameplate",
+      "label": {
+        "zh": "铭牌",
+        "en": "nameplate"
+      },
+      "aliases": [
+        "nameplates"
+      ]
+    },
+    {
+      "id": "three-socket",
+      "label": {
+        "zh": "三孔端板",
+        "en": "three-socket plate"
+      },
+      "aliases": [
+        "three-socket plates"
+      ]
+    },
+    {
+      "id": "end-cap",
+      "label": {
+        "zh": "终端帽",
+        "en": "end cap"
+      },
+      "aliases": [
+        "end caps"
+      ]
+    }
+  ],
+  "required": {
+    "cable": 6,
+    "lock": 12,
+    "two-socket": 4,
+    "four-socket": 1,
+    "nameplate": 5
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "four-socket",
+        "quantity": 0
+      },
+      {
+        "itemId": "three-socket",
+        "quantity": 1
+      },
+      {
+        "itemId": "nameplate",
+        "quantity": 6
+      }
+    ],
+    "draft": {
+      "items": [
+        {
+          "id": "cable",
+          "quantity": 6
+        },
+        {
+          "id": "lock",
+          "quantity": 6
+        },
+        {
+          "id": "two-socket",
+          "quantity": 6
+        },
+        {
+          "id": "three-socket",
+          "quantity": 2
+        },
+        {
+          "id": "end-cap",
+          "quantity": 1
+        }
+      ]
+    },
+    "cards": [
+      {
+        "zh": "线缆改为 6。",
+        "en": "Pack 6 cables."
+      },
+      {
+        "zh": "线缆改为 5。",
+        "en": "Pack 5 cables."
+      },
+      {
+        "zh": "锁扣改为 12。",
+        "en": "Pack 12 locking clips."
+      },
+      {
+        "zh": "锁扣改为 6。",
+        "en": "Pack 6 locking clips."
+      },
+      {
+        "zh": "双孔端板改为 6。",
+        "en": "Pack 6 two-socket plates."
+      },
+      {
+        "zh": "双孔端板改为 4。",
+        "en": "Pack 4 two-socket plates."
+      },
+      {
+        "zh": "四孔端板改为 1。",
+        "en": "Pack 1 four-socket plate."
+      },
+      {
+        "zh": "四孔端板改为 2。",
+        "en": "Pack 2 four-socket plates."
+      },
+      {
+        "zh": "铭牌改为 5。",
+        "en": "Pack 5 nameplates."
+      },
+      {
+        "zh": "铭牌改为 6。",
+        "en": "Pack 6 nameplates."
+      },
+      {
+        "zh": "三孔端板改为 2。",
+        "en": "Pack 2 three-socket plates."
+      },
+      {
+        "zh": "移除三孔端板。",
+        "en": "Remove the three-socket plate."
+      },
+      {
+        "zh": "移除终端帽。",
+        "en": "Remove the end cap."
+      },
+      {
+        "zh": "终端帽改为 1。",
+        "en": "Pack 1 end cap."
+      }
+    ]
+  },
+  "examplePrompts": {
+    "zh": [
+      "线缆改为 6。 锁扣改为 12。 双孔端板改为 4。 四孔端板改为 1。 铭牌改为 5。 移除三孔端板。 移除终端帽。",
+      "四孔端板改为 1。",
+      "移除三孔端板。",
+      "铭牌改为 5。"
+    ],
+    "en": [
+      "Pack 6 cables. Pack 12 locking clips. Pack 4 two-socket plates. Pack 1 four-socket plate. Pack 5 nameplates. Remove the three-socket plate. Remove the end cap.",
+      "Pack 1 four-socket plate.",
+      "Remove the three-socket plate.",
+      "Pack 5 nameplates."
+    ]
+  }
+}

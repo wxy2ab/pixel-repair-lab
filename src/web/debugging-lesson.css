@@ -1,0 +1,59 @@
+.debugging-lesson { min-width: 0; container: debugging-lesson / inline-size; }
+.debugging-heading, .debugging-navigation { flex-wrap: wrap; }
+.debugging-heading h2, .debug-description, .debugging-body > .error-message { margin: 0; }
+.debugging-navigation { display: flex; gap: 6px; }
+.debugging-navigation button { min-height: 40px; white-space: normal; }
+.debugging-body { display: grid; gap: 10px; min-width: 0; padding: 12px 14px 14px; }
+.debug-description { color: #d8e6f8; overflow-wrap: anywhere; }
+
+.debug-batteries { grid-template-columns: repeat(var(--debug-columns), minmax(0, 105px)); }
+.debug-batteries li { min-height: 80px; }
+.debug-batteries li[data-charged] { border-color: #6caa92; background: #21413e; }
+.debug-batteries li[data-active] { border-color: #b3f4cc; }
+.debug-battery-status { color: #b5f0cb; font-size: 11px; line-height: 1.15; }
+
+.debug-comparison {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+}
+.debug-comparison > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid #48647e;
+  border-radius: 6px;
+  background: #20354a;
+  color: #d7e6f6;
+  overflow-wrap: anywhere;
+}
+.debug-comparison > div[data-match='true'] { border-color: #88cfaa; background: #21413e; }
+.debug-comparison > div[data-match='false'] { border-color: #e1a67e; background: #453831; }
+.debug-comparison dt { font-size: 12px; }
+.debug-comparison dd { margin: 0; color: #e5f1ff; font-size: 14px; }
+.debug-comparison output, .debug-comparison code { font-family: var(--mono); font-weight: 700; }
+
+.debug-source [data-loop-body] { background: #192a3b; }
+.debug-source li[data-location='inside'] { border-inline-start-color: #e1a67e; background: #453831; }
+.debug-source li[data-location='after'] { border-inline-start-color: #91dfc3; background: #203d3e; }
+.debug-code-choice {
+  padding: 3px 4px;
+  border: 1px solid #53718d;
+  border-radius: 4px;
+  color: inherit;
+  background: #1d3148;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.debug-code-choice:hover, .debug-code-choice:focus-visible { border-color: #aed6f3; background: #24475d; }
+.debug-code-choice[aria-pressed='true'] { border-color: #e1a67e; background: #453831; }
+
+@container debugging-lesson (max-width: 380px) {
+  .debugging-body { padding-inline: 8px; }
+  .debugging-body .for-board { padding-inline: 6px; }
+  .debug-batteries, .debug-comparison { gap: 4px; }
+  .debug-comparison > div { padding-inline: 5px; }
+}

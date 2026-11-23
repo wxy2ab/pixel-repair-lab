@@ -1,0 +1,354 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "routing",
+    "order": 60,
+    "title": {
+      "zh": "算法进阶",
+      "en": "Intermediate Algorithms"
+    }
+  },
+  "kind": "arena",
+  "stage": "challenge",
+  "id": "escape-patrol",
+  "order": 1290,
+  "title": {
+    "zh": "巡逻网突围",
+    "en": "Escape the patrol"
+  },
+  "concept": {
+    "zh": "复用最短路算法",
+    "en": "Reusing the shortest-route algorithm"
+  },
+  "brief": {
+    "zh": "先拿到能量核心，再到达出口。两个机器人会追踪你，另一个守在固定巡逻路线上。同一段程序要适应不同棋盘。",
+    "en": "Pick up the power core and reach the exit. Two bots track you while another follows a fixed patrol route. Use one program on different boards."
+  },
+  "hints": [
+    {
+      "zh": "每回合通过 scan() 读取当前坐标。有核心时把它设为目标，拾取后把出口设为目标。",
+      "en": "Use scan() to get your current position each turn. Target the core first and the exit after picking it up."
+    },
+    {
+      "zh": "调用 shortest_step(棋盘, 当前坐标, 目标坐标)。也可以从 my_algorithms 导入自己通过测试的版本。",
+      "en": "Call shortest_step(board, position, goal). You can also import your own tested version from my_algorithms."
+    },
+    {
+      "zh": "到了核心格才用 pick()。只读取地图或计算路线不会花费回合。",
+      "en": "Use pick() once you reach the core. Reading the board and calculating a route take no turns."
+    },
+    {
+      "zh": "把对手当前占住的格子暂时当成墙。每走一步就再读取场地，让最短路随着对手的位置变化。",
+      "en": "Treat squares currently occupied by rivals as temporary walls. Scan again after each step and recalculate as rivals move."
+    }
+  ],
+  "tiles": [
+    "#########",
+    "#.......#",
+    "#.###.#.#",
+    "#.....#.#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 1,
+    "y": 1
+  },
+  "maxTurns": 16,
+  "items": [
+    {
+      "id": "power-core",
+      "x": 3,
+      "y": 1
+    }
+  ],
+  "objective": {
+    "kind": "escape",
+    "exit": {
+      "x": 7,
+      "y": 1
+    },
+    "itemIds": [
+      "power-core"
+    ]
+  },
+  "opponents": [
+    {
+      "id": "tracker",
+      "title": {
+        "zh": "追踪机器人",
+        "en": "Tracker bot"
+      },
+      "start": {
+        "x": 1,
+        "y": 4
+      },
+      "policy": {
+        "kind": "pursue"
+      }
+    },
+    {
+      "id": "partner",
+      "title": {
+        "zh": "追踪搭档",
+        "en": "Tracker partner"
+      },
+      "start": {
+        "x": 2,
+        "y": 3
+      },
+      "policy": {
+        "kind": "pursue"
+      }
+    },
+    {
+      "id": "guard",
+      "title": {
+        "zh": "守卫机器人",
+        "en": "Guard bot"
+      },
+      "start": {
+        "x": 7,
+        "y": 4
+      },
+      "policy": {
+        "kind": "patrol",
+        "path": [
+          {
+            "x": 7,
+            "y": 4
+          },
+          {
+            "x": 7,
+            "y": 3
+          }
+        ]
+      }
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "#########",
+        "#.......#",
+        "#.......#",
+        "#.......#",
+        "#.......#",
+        "#.......#",
+        "#########"
+      ],
+      "start": {
+        "x": 1,
+        "y": 2
+      },
+      "items": [
+        {
+          "id": "power-core",
+          "x": 3,
+          "y": 2
+        }
+      ],
+      "objective": {
+        "kind": "escape",
+        "exit": {
+          "x": 7,
+          "y": 2
+        },
+        "itemIds": [
+          "power-core"
+        ]
+      },
+      "opponents": [
+        {
+          "id": "tracker",
+          "title": {
+            "zh": "追踪机器人",
+            "en": "Tracker bot"
+          },
+          "start": {
+            "x": 1,
+            "y": 4
+          },
+          "policy": {
+            "kind": "pursue"
+          }
+        },
+        {
+          "id": "partner",
+          "title": {
+            "zh": "追踪搭档",
+            "en": "Tracker partner"
+          },
+          "start": {
+            "x": 2,
+            "y": 5
+          },
+          "policy": {
+            "kind": "pursue"
+          }
+        },
+        {
+          "id": "guard",
+          "title": {
+            "zh": "守卫机器人",
+            "en": "Guard bot"
+          },
+          "start": {
+            "x": 4,
+            "y": 2
+          },
+          "policy": {
+            "kind": "patrol",
+            "path": [
+              {
+                "x": 4,
+                "y": 2
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "tiles": [
+        "#########",
+        "#.......#",
+        "#.#.###.#",
+        "#.#.....#",
+        "#.......#",
+        "#########"
+      ],
+      "start": {
+        "x": 7,
+        "y": 1
+      },
+      "items": [
+        {
+          "id": "power-core",
+          "x": 5,
+          "y": 1
+        }
+      ],
+      "objective": {
+        "kind": "escape",
+        "exit": {
+          "x": 1,
+          "y": 1
+        },
+        "itemIds": [
+          "power-core"
+        ]
+      },
+      "opponents": [
+        {
+          "id": "tracker",
+          "title": {
+            "zh": "追踪机器人",
+            "en": "Tracker bot"
+          },
+          "start": {
+            "x": 7,
+            "y": 4
+          },
+          "policy": {
+            "kind": "pursue"
+          }
+        },
+        {
+          "id": "partner",
+          "title": {
+            "zh": "追踪搭档",
+            "en": "Tracker partner"
+          },
+          "start": {
+            "x": 6,
+            "y": 3
+          },
+          "policy": {
+            "kind": "pursue"
+          }
+        },
+        {
+          "id": "guard",
+          "title": {
+            "zh": "守卫机器人",
+            "en": "Guard bot"
+          },
+          "start": {
+            "x": 1,
+            "y": 4
+          },
+          "policy": {
+            "kind": "patrol",
+            "path": [
+              {
+                "x": 1,
+                "y": 4
+              },
+              {
+                "x": 1,
+                "y": 3
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "starterCode": "from algorithms import shortest_step\n\nstate = scan()\ngoal = state[\"exit\"]\n",
+  "solutionCode": "from algorithms import shortest_step\n\nwhile True:\n    state = scan()\n    goal = state[\"exit\"]\n    if len(state[\"items\"]) > 0:\n        part = state[\"items\"][0]\n        goal = [part[\"x\"], part[\"y\"]]\n    if state[\"player\"] == goal:\n        pick()\n    else:\n        tiles = []\n        for row in state[\"tiles\"]:\n            cells = []\n            for tile in row:\n                cells.append(tile)\n            tiles.append(cells)\n        for rival in state[\"opponents\"]:\n            tiles[rival[\"y\"]][rival[\"x\"]] = \"#\"\n        direction = shortest_step(tiles, state[\"player\"], goal)\n        if direction is None:\n            wait()\n        else:\n            move(direction)",
+  "snippets": [
+    {
+      "label": {
+        "zh": "导入课程算法",
+        "en": "Import the course algorithm"
+      },
+      "code": "from algorithms import shortest_step"
+    },
+    {
+      "label": {
+        "zh": "读取赛场",
+        "en": "Read the arena"
+      },
+      "code": "state = scan()"
+    },
+    {
+      "label": {
+        "zh": "选择核心坐标",
+        "en": "Find the core coordinates"
+      },
+      "code": "part = state[\"items\"][0]\ngoal = [part[\"x\"], part[\"y\"]]"
+    },
+    {
+      "label": {
+        "zh": "读取出口坐标",
+        "en": "Read the exit coordinates"
+      },
+      "code": "goal = state[\"exit\"]"
+    },
+    {
+      "label": {
+        "zh": "标记对手占用的格子",
+        "en": "Mark rival squares"
+      },
+      "code": "tiles = []\nfor row in state[\"tiles\"]:\n    cells = []\n    for tile in row:\n        cells.append(tile)\n    tiles.append(cells)\nfor rival in state[\"opponents\"]:\n    tiles[rival[\"y\"]][rival[\"x\"]] = \"#\""
+    },
+    {
+      "label": {
+        "zh": "走最短路线的一步",
+        "en": "Take one step on a shortest route"
+      },
+      "code": "direction = shortest_step(tiles, state[\"player\"], goal)\nmove(direction)"
+    },
+    {
+      "label": {
+        "zh": "拾取核心",
+        "en": "Pick up the core"
+      },
+      "code": "pick()"
+    }
+  ],
+  "helpers": [
+    "shortest_step"
+  ]
+}

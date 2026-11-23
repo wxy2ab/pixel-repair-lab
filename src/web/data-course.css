@@ -1,0 +1,52 @@
+.data-workbench { display: grid; gap: 12px; }
+.data-steps { display: flex; flex-wrap: wrap; gap: 7px; }
+.data-steps button { text-align: left; white-space: normal; }
+.data-steps span { display: inline-grid; place-items: center; min-width: 21px; min-height: 21px; margin-inline-end: 3px; border: 1px solid var(--border); border-radius: 5px; }
+.data-steps [aria-current='step'] { color: var(--mint); border-color: #559b89; background: #23423f; }
+.data-workspace { display: grid; grid-template-columns: minmax(220px, .9fr) minmax(0, 1.4fr); align-items: start; gap: 12px; }
+.data-workspace > .data-results { order: 1; }
+.data-panel { padding: 16px; min-width: 0; }
+.data-panel > p { margin: 7px 0 14px; }
+.data-panel h2 { font-size: 16px; }
+.data-fields { min-width: 0; display: grid; gap: 11px; margin: 0; padding: 12px; border: 1px solid var(--border); border-radius: 8px; }
+.data-fields legend { padding-inline: 5px; color: var(--muted); font-size: 13px; }
+.data-field { display: grid; gap: 5px; font-size: 14px; }
+.data-field select { width: 100%; min-height: 40px; background: #122338; border: 1px solid var(--border); color: var(--text); padding: 5px 8px; border-radius: 6px; }
+.data-field output { margin-inline-start: 6px; font: 700 15px var(--mono); color: var(--mint); }
+.data-range { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+.data-range input { margin: 0; width: 100%; accent-color: var(--mint); }
+.data-range button { min-width: 36px; }
+.data-toggle { display: flex; gap: 8px; align-items: center; min-height: 36px; cursor: pointer; font-size: 14px; }
+.data-toggle input { width: 18px; height: 18px; accent-color: var(--mint); }
+.data-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 11px; }
+.data-result-heading { display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; justify-content: space-between; margin-bottom: 9px; }
+.data-result-heading span { color: var(--muted); font: 12px var(--mono); }
+.data-table-wrap { overflow-x: auto; }
+.data-table-wrap p { color: var(--muted); margin-block: 6px; }
+.data-table { border-collapse: collapse; width: 100%; text-align: left; font-size: 13px; }
+.data-table :is(th, td) { padding: 5px 8px; border-bottom: 1px solid var(--border); }
+.data-table th { color: var(--muted); background: #15283c; }
+.data-table th code { display: block; font-size: 11px; font-weight: 400; }
+.data-table td { font-family: var(--mono); white-space: pre; }
+.data-table td em { color: var(--muted); font-size: 12px; }
+.data-raw-value { color: #ffda9d; }
+.data-table tbody tr:nth-child(even) { background: #132438; }
+.data-details { margin-top: 9px; border-top: 1px solid var(--border); padding-top: 8px; font-size: 13px; }
+.data-details summary { color: var(--mint); cursor: pointer; }
+.data-details p, .data-details ul { margin-block: 7px; }
+.data-details pre { margin: 8px 0 0; overflow-x: auto; padding: 10px; border: 1px solid var(--border); background: #102134; border-radius: 6px; }
+.data-source .data-table-wrap { margin-top: 7px; }
+.data-chart { margin: 12px 0 9px; border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
+.data-chart figcaption { color: var(--muted); font-size: 12px; }
+.data-chart ul { display: grid; gap: 4px; margin: 7px 0 0; padding: 0; list-style: none; }
+.data-chart li { display: grid; align-items: center; gap: 6px; grid-template-columns: minmax(44px, auto) minmax(0, 1fr) minmax(32px, auto); font-size: 13px; }
+.data-chart meter { width: 100%; }
+.data-chart meter::-webkit-meter-optimum-value { background: #59b9a2; }
+.data-chart strong { text-align: right; font-family: var(--mono); }
+.data-report-counts { display: grid; gap: 4px; margin: 8px 0 12px; font-size: 13px; }
+.data-report-counts div { display: flex; gap: 8px; justify-content: space-between; align-items: baseline; }
+.data-report-counts dd { margin: 0; white-space: nowrap; color: var(--muted); font-family: var(--mono); }
+@media (max-width: 690px) {
+  .data-workspace { grid-template-columns: minmax(0, 1fr); }
+  .data-panel { padding: 12px; }
+}

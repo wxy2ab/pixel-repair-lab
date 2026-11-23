@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "yolox-confident-boxes-only",
+  "order": 553,
+  "stage": "exercise",
+  "unit": {
+    "id": "yolox",
+    "order": 150,
+    "title": { "zh": "YOLOX", "en": "YOLOX" }
+  },
+  "topic": {
+    "id": "detection-confidence",
+    "order": 3,
+    "title": { "zh": "置信度门槛", "en": "Confidence thresholds" }
+  },
+  "mode": "detect",
+  "title": { "zh": "让低分候选框消失", "en": "Filter Out Lower-Scoring Boxes" },
+  "brief": { "zh": "这次巡查只看达到严格门槛的预测。调整置信度前后，核对照片和候选清单。", "en": "This inspection uses a strict threshold. Compare the photo and the detections before and after raising it." },
+  "concept": { "zh": "门槛足够高时，候选清单可以变为空。", "en": "A high enough threshold can leave the candidate list empty." },
+  "hints": [
+    { "zh": "保留“全部类别”。先读出默认分数，再把门槛调到它上面。", "en": "Keep All classes. Read the default score, then raise the threshold above it." }
+  ],
+  "cases": [
+    {
+      "image": "labrador",
+      "label": { "zh": "严格门槛", "en": "Strict cutoff" },
+      "prompt": { "zh": "保持“全部类别”，只调置信度，让显示的候选框变为 0 个。", "en": "Keep All classes and adjust only confidence until zero boxes remain visible." },
+      "initial": { "confidence": 50, "target": "all" },
+      "goal": { "labels": [], "target": "all" },
+      "solution": { "confidence": 95, "target": "all" }
+    }
+  ]
+}

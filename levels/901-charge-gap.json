@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "charge-gap",
+  "order": 419,
+  "unit": { "id": "python-advanced", "order": 30, "title": { "zh": "Python 高级", "en": "Advanced Python" } },
+  "topic": { "id": "function-design", "order": 1, "title": { "zh": "函数设计", "en": "Function Design" } },
+  "stage": "exercise",
+  "title": { "zh": "还需要充多少电", "en": "How Much More Charge?" },
+  "concept": { "zh": "用两个参数算出一个返回值", "en": "Use two parameters to calculate one return value" },
+  "brief": { "zh": "补全 charge_gap(current, target)，返回到达目标还需要的电量。如果已经达到目标，返回 0。", "en": "Complete charge_gap(current, target). Return how much charge is still needed. If the target is already reached, return 0." },
+  "hints": [
+    { "zh": "先算目标电量减当前电量。", "en": "Start by subtracting the current charge from the target." },
+    { "zh": "如果算出的差值小于零，就返回零。", "en": "Return zero when the difference is negative." }
+  ],
+  "functionName": "charge_gap",
+  "starterCode": "def charge_gap(current, target):\n    gap = target - current\n    return None\n",
+  "solutionCode": "def charge_gap(current, target):\n    gap = target - current\n    if gap < 0:\n        return 0\n    return gap\n",
+  "snippets": [
+    { "label": { "zh": "电量已超过目标", "en": "Already above target" }, "code": "    if gap < 0:\n        return 0" },
+    { "label": { "zh": "返回电量差", "en": "Return the difference" }, "code": "    return gap" }
+  ],
+  "cases": [
+    { "args": [35, 80], "expected": 45 },
+    { "args": [72, 72], "expected": 0 },
+    { "args": [91, 50], "expected": 0 },
+    { "args": [0, 55], "expected": 55 },
+    { "args": [27, 29], "expected": 2 }
+  ]
+}

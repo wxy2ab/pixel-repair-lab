@@ -1,0 +1,73 @@
+import { expect, test, type Page } from '@playwright/test'
+
+test.use({ launchOptions: { args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] } })
+
+async function openRack(page: Page, title: string) {
+  await page.goto('/')
+  await page.locator('[data-unit="algorithm-intro"]').click()
+  await page.locator('.mission-list button').filter({ has: page.getByText(title, { exact: true }) }).click()
+  const rack = page.getByRole('region', { name: '算法观察台' })
+  const model = rack.locator('[data-teaching-model="algorithm-value-rack"]')
+  await model.scrollIntoViewIfNeeded()
+  await expect(model).toHaveAttribute('data-renderer', 'webgl', { timeout: 15000 })
+  return rack
+}
+
+test('the example rack allows direct slot inspection, pausing after the first write and reversing it', async ({ page }) => {
+  const rack = await openRack(page, '查看每次交换')
+  await page.getByRole('button', { name: '单步执行', exact: true }).click()
+  const source = page.locator('.station-source [aria-current="step"]')
+  await expect(source).toContainText('parts = scan()')
+  const next = page.getByRole('button', { name: '下一步', exact: true })
+  for (let i = 0; i < 20 && !(await source.innerText()).includes('parts[start] = parts[smallest]'); i++) await next.click()
+  await expect(source).toContainText('parts[start] = parts[smallest]')
+  await expect(rack.getByTestId('rack-reading')).toHaveText('parts[0] = 2')
+  await page.getByRole('button', { name: '上一步', exact: true }).click()
+  await expect(rack.getByTestId('rack-reading')).toHaveText('parts[0] = 6')
+  const canvas = rack.locator('canvas')
+  await canvas.scrollIntoViewIfNeeded()
+  const value = rack.locator('.teaching-model-labels').getByText('5', { exact: true })
+  const tag = await value.boundingBox()
+  const surface = await canvas.boundingBox()
+  if (!tag || !surface) throw new Error('Missing battery position')
+  await canvas.click({ position: { x: tag.x + tag.width / 2 - surface.x, y: tag.y + tag.height / 2 - surface.y } })
+  await expect(rack.getByTestId('rack-reading')).toHaveText('parts[3] = 5')
+})
+
+test('single stepping a custom algorithm shows its actual values and clears the rack when changing case', async ({ page }) => {
+  const rack = await openRack(page, '第一个匹配的位置')
+  const editor = page.getByRole('textbox', { name: '编写 Python' })
+  const name = (await editor.inputValue()).match(/def (\w+)/)![1]
+  await editor.fill('def ' + name + '(values, target):\n    marks = []\n    marks.append(target)\n    return 42')
+  const step = page.getByRole('toolbar').getByRole('button', { name: '单步执行' })
+  await step.click()
+  await expect(page.getByTestId('algorithm-step-status')).toContainText('第 1 行')
+  await step.click()
+  await rack.getByRole('combobox', { name: '观察', exact: true }).selectOption('marks')
+  await expect(rack.locator('.teaching-model-labels')).toContainText('空槽')
+  await step.click()
+  await expect(rack.getByTestId('rack-reading')).toHaveText('marks[0] = 4')
+  await step.click()
+  await rack.getByRole('combobox', { name: '观察', exact: true }).selectOption('return')
+  await expect(rack.getByTestId('rack-reading')).toHaveText('return = 42')
+  await page.getByRole('button', { name: '用例 2', exact: true }).click()
+  await expect(rack.getByRole('combobox', { name: '观察', exact: true })).toHaveValue('输入 1')
+  await expect(rack.getByTestId('rack-reading')).not.toContainText('42')
+})
+
+test('costs and the chosen coordinate variable share the weighted practice map', async ({ page }) => {
+  await page.goto('/')
+  await page.locator('[data-unit="algorithm-advanced"]').click()
+  await page.locator('.mission-list button').filter({ has: page.getByText('算出一条路线的耗电量', { exact: true }) }).click()
+  const rack = page.getByRole('region', { name: '算法观察台' })
+  const map = rack.locator('[data-teaching-model="algorithm-case-field"]')
+  await map.scrollIntoViewIfNeeded()
+  await expect(map).toHaveAttribute('data-renderer', 'webgl')
+  await rack.getByRole('combobox', { name: '标记坐标' }).selectOption('输入 2')
+  await expect(rack).toContainText('(0,0) · (1,0) · (2,0)')
+  await rack.getByRole('combobox', { name: '地图格' }).selectOption('1,0')
+  await expect(rack.getByTestId('rack-reading')).toHaveText('输入 1[0][1] = 6')
+  await rack.getByRole('combobox', { name: '观察', exact: true }).selectOption('输入 2')
+  await expect(rack.locator('[data-teaching-model="algorithm-value-rack"]')).toHaveAttribute('data-renderer', 'webgl')
+  await expect(rack.getByTestId('rack-reading')).toHaveText('输入 2[0] = [0, 0]')
+})

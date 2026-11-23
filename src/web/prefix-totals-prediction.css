@@ -1,0 +1,30 @@
+.prefix-totals-prediction { min-inline-size: 0; }
+
+.prefix-totals-practice-row .search-battery-tile {
+  min-inline-size: 38px;
+  min-block-size: 58px;
+}
+
+.prefix-totals-practice-row [data-in-range] {
+  border-color: #61a38d;
+  background: #234842;
+}
+
+.prefix-totals-practice-row [data-bound] {
+  border-color: #e5b977;
+}
+
+.prefix-totals-practice-row small {
+  color: #ffdfa9;
+  font-size: .68rem;
+}
+
+.prefix-totals-prediction-note {
+  margin: 0;
+  color: #bdd0e7;
+  font-size: .875rem;
+}
+
+.prefix-totals-prediction .prefix-totals-pick .charge-prediction-options button {
+  min-block-size: 44px;
+}

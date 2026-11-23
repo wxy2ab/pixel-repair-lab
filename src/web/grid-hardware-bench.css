@@ -1,0 +1,10 @@
+.grid-hardware-bench { min-width: 0; padding: 6px 0 12px; }
+.grid-bench-readings { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 16px; margin-block: 5px; }
+.grid-bench-readings :is(code,select) { font: 600 .86rem/1.4 var(--mono); }
+.grid-bench-readings code, .grid-bench-transfer { overflow-wrap: anywhere; }
+.grid-bench-transfer { padding: 5px 9px; border-inline-start: 3px solid #73a9b3; }
+.grid-bench-transfer[data-changed=true] { border-color: #cb965b; }
+.grid-instruction-tape { display: flex; flex-wrap: wrap; gap: 5px; padding: 0; margin: 8px 0; list-style: none; }
+.grid-instruction-tape li { display: flex; align-items: center; gap: 6px; padding: 3px 8px; border: 1px solid #a7b4a9; border-radius: 5px; }
+.grid-instruction-tape [data-current] { background: #d5e7c4; color: #254339; border-color: #68816b; }
+.grid-instruction-tape [data-next] { border-style: dashed; }

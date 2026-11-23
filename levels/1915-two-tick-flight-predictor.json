@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "challenge-two-tick-flight-predictor",
+  "order": 1915,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "prerequisites": [{"unit": "architecture", "topic": "memory"}, {"unit": "architecture", "topic": "registers"}, {"unit": "architecture", "topic": "instructions"}],
+  "title": {"zh": "两拍以后的升降台", "en": "Two Ticks Ahead"},
+  "concept": {"zh": "有时序约束的位置、速度与加速度", "en": "Simultaneous motion updates"},
+  "brief": {"zh": "地址 0、1、2、3 分别是位置、每拍位移、每拍速度变化和恒定的加速度增量。每拍同时更新：新位置=旧位置+旧位移，新位移=旧位移+旧速度变化，新速度变化=旧速度变化+地址 3。连续推进两拍，把全部状态写回原址，ACC 报告最终位置。", "en": "Addresses 0, 1, 2 and 3 hold position, displacement per tick, change in displacement per tick, and a fixed change in that last quantity. On each tick, update simultaneously: position adds the OLD displacement, displacement adds the OLD change, and the change adds address 3. Advance two ticks, store the whole state in place, and report the final position in ACC."},
+  "hints": [],
+  "allowedOps": ["LOAD", "ADD", "SUB", "STORE", "HALT"],
+  "starterCode": "HALT\n",
+  "solutionCode": "LOAD 0\nADD 1\nSTORE 0\nLOAD 1\nADD 2\nSTORE 1\nLOAD 2\nADD 3\nSTORE 2\nLOAD 0\nADD 1\nSTORE 0\nLOAD 1\nADD 2\nSTORE 1\nLOAD 2\nADD 3\nSTORE 2\nLOAD 0\nHALT\n",
+  "cases": [
+    {"label": {"zh": "验收样本 1", "en": "Acceptance sample 1"}, "memory": [4, 2, 3, 1], "accumulator": 0, "goal": {"memory": [{"address": 0, "value": 11}, {"address": 1, "value": 9}, {"address": 2, "value": 5}, {"address": 3, "value": 1}], "accumulator": 11}},
+    {"label": {"zh": "验收样本 2", "en": "Acceptance sample 2"}, "memory": [0, -8, 5, 2], "accumulator": 42, "goal": {"memory": [{"address": 0, "value": -11}, {"address": 1, "value": 4}, {"address": 2, "value": 9}, {"address": 3, "value": 2}], "accumulator": -11}},
+    {"label": {"zh": "验收样本 3", "en": "Acceptance sample 3"}, "memory": [-20, 0, 0, -3], "accumulator": -1, "goal": {"memory": [{"address": 0, "value": -20}, {"address": 1, "value": -3}, {"address": 2, "value": -6}, {"address": 3, "value": -3}], "accumulator": -20}},
+    {"label": {"zh": "验收样本 4", "en": "Acceptance sample 4"}, "memory": [17, 1, -1, 1], "accumulator": 5, "goal": {"memory": [{"address": 0, "value": 18}, {"address": 1, "value": 0}, {"address": 2, "value": 1}, {"address": 3, "value": 1}], "accumulator": 18}},
+    {"label": {"zh": "验收样本 5", "en": "Acceptance sample 5"}, "memory": [7, 0, 4, -7], "accumulator": -7, "goal": {"memory": [{"address": 0, "value": 11}, {"address": 1, "value": 1}, {"address": 2, "value": -10}, {"address": 3, "value": -7}], "accumulator": 11}}
+  ]
+}

@@ -1,0 +1,7 @@
+.execution-listing-line { display: block; min-height: 1.45em; }
+.execution-marked-line[aria-current='step'] {
+  color: #fff4d9; background: #413825;
+  box-shadow: inset 3px 0 #ffd179, inset 0 0 0 1px #ffd179;
+}
+.execution-marked-line[data-next] { outline: 2px dashed #94c7ff; outline-offset: -2px; }
+.execution-marked-line[aria-current='step'][data-next] { outline-offset: -4px; }

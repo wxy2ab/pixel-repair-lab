@@ -1,0 +1,389 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "logic-gates-notes",
+  "order": 1402,
+  "unit": {
+    "id": "computer",
+    "order": 80,
+    "title": {
+      "zh": "计算机原理",
+      "en": "Computer Systems"
+    }
+  },
+  "topic": {
+    "id": "logic-gates",
+    "order": 2,
+    "title": {
+      "zh": "逻辑门",
+      "en": "Logic Gates"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "同样的开关，不同的规则",
+    "en": "Same Switches, Different Rules"
+  },
+  "concept": {
+    "zh": "AND、OR、NOT 与 XOR",
+    "en": "AND, OR, NOT, and XOR"
+  },
+  "brief": {
+    "zh": "把同一组输入接到不同的逻辑门，看看输出为什么会变。",
+    "en": "Connect the same inputs to different logic gates and see why the output changes."
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "AND 看两边，OR 看有没有",
+        "en": "AND needs both, OR needs at least one"
+      },
+      "body": {
+        "zh": "AND 只有两个输入都是 1 时才输出 1。OR 在至少一个输入是 1 时输出 1。只有一盏输入灯亮时，两个门的结果就不同。",
+        "en": "AND outputs 1 when both inputs are 1. OR outputs 1 when at least one input is 1. With one input on, the two gates give different answers."
+      }
+    },
+    {
+      "title": {
+        "zh": "NOT 只处理左输入",
+        "en": "NOT uses the left input"
+      },
+      "body": {
+        "zh": "NOT 把 1 翻成 0，也把 0 翻成 1。这块控制板上，NOT 读左边的 A。拨右边的 B 时，NOT 的输出保持原样。",
+        "en": "NOT turns 1 into 0 and 0 into 1. On this panel, it reads the left input A. Flipping the right input B leaves the NOT output as it was."
+      }
+    },
+    {
+      "title": {
+        "zh": "XOR 检查两边是否不同",
+        "en": "XOR checks whether the inputs differ"
+      },
+      "body": {
+        "zh": "XOR 只有一边是 1 时才亮。两个输入都是 1 时，OR 的灯亮着，XOR 的灯熄灭。",
+        "en": "XOR lights up when exactly one input is 1. With both inputs set to 1, OR lights up and XOR stays off."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "A 和 B 都是 1 时，哪一个说法正确？",
+      "en": "When A and B are both 1, which statement is correct?"
+    },
+    "options": [
+      {
+        "zh": "OR 和 XOR 都输出 0",
+        "en": "OR and XOR both output 0"
+      },
+      {
+        "zh": "OR 输出 1，XOR 输出 0",
+        "en": "OR outputs 1 and XOR outputs 0"
+      },
+      {
+        "zh": "OR 输出 0，XOR 输出 1",
+        "en": "OR outputs 0 and XOR outputs 1"
+      }
+    ],
+    "correct": 1,
+    "feedback": {
+      "zh": "OR 只需要至少一边亮。XOR 需要刚好一边亮，所以两边都亮时它输出 0。",
+      "en": "OR needs at least one input on. XOR needs exactly one. Both inputs are on here, so XOR outputs 0."
+    }
+  },
+  "animation": {
+    "layout": "pipeline",
+    "hardware": {
+      "kind": "circuit",
+      "mode": "logic",
+      "frames": [
+        { "bits": [1, 0], "gate": "AND" },
+        { "bits": [1, 0], "gate": "OR" },
+        { "bits": [1, 0], "gate": "NOT" },
+        { "bits": [1, 1], "gate": "XOR" },
+        { "bits": [1, 1], "gate": "OR" }
+      ]
+    },
+    "frames": [
+      {
+        "caption": {
+          "zh": "A 是 1，B 是 0。AND 需要两边都亮，输出 0。",
+          "en": "A is 1 and B is 0. AND needs both on, so it outputs 0."
+        },
+        "items": [
+          {
+            "id": "a",
+            "label": {
+              "zh": "左输入 A",
+              "en": "Left input A"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "b",
+            "label": {
+              "zh": "右输入 B",
+              "en": "Right input B"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "active"
+          },
+          {
+            "id": "gate",
+            "label": {
+              "zh": "所选的门",
+              "en": "Selected gate"
+            },
+            "value": {
+              "zh": "AND",
+              "en": "AND"
+            },
+            "state": "active"
+          },
+          {
+            "id": "output",
+            "label": {
+              "zh": "输出灯",
+              "en": "Output light"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "保留输入，换成 OR。已有一边亮，输出 1。",
+          "en": "Keep the inputs and change to OR. One input is already on, so the output is 1."
+        },
+        "items": [
+          {
+            "id": "a",
+            "label": {
+              "zh": "左输入 A",
+              "en": "Left input A"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "b",
+            "label": {
+              "zh": "右输入 B",
+              "en": "Right input B"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "active"
+          },
+          {
+            "id": "gate",
+            "label": {
+              "zh": "所选的门",
+              "en": "Selected gate"
+            },
+            "value": {
+              "zh": "OR",
+              "en": "OR"
+            },
+            "state": "active"
+          },
+          {
+            "id": "output",
+            "label": {
+              "zh": "输出灯",
+              "en": "Output light"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "NOT 只读 A，把左输入的 1 翻成 0。",
+          "en": "NOT reads A and flips its 1 to 0."
+        },
+        "items": [
+          {
+            "id": "a",
+            "label": {
+              "zh": "左输入 A",
+              "en": "Left input A"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "b",
+            "label": {
+              "zh": "右输入 B",
+              "en": "Right input B"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "gate",
+            "label": {
+              "zh": "所选的门",
+              "en": "Selected gate"
+            },
+            "value": {
+              "zh": "NOT",
+              "en": "NOT"
+            },
+            "state": "active"
+          },
+          {
+            "id": "output",
+            "label": {
+              "zh": "输出灯",
+              "en": "Output light"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "把 B 也打开。两边一样，XOR 输出 0。",
+          "en": "Turn B on too. The inputs now match, so XOR outputs 0."
+        },
+        "items": [
+          {
+            "id": "a",
+            "label": {
+              "zh": "左输入 A",
+              "en": "Left input A"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "b",
+            "label": {
+              "zh": "右输入 B",
+              "en": "Right input B"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "gate",
+            "label": {
+              "zh": "所选的门",
+              "en": "Selected gate"
+            },
+            "value": {
+              "zh": "XOR",
+              "en": "XOR"
+            },
+            "state": "active"
+          },
+          {
+            "id": "output",
+            "label": {
+              "zh": "输出灯",
+              "en": "Output light"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "两边都亮时换回 OR。它的灯又亮了。",
+          "en": "With both inputs still on, switch back to OR. The output lights up again."
+        },
+        "items": [
+          {
+            "id": "a",
+            "label": {
+              "zh": "左输入 A",
+              "en": "Left input A"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "b",
+            "label": {
+              "zh": "右输入 B",
+              "en": "Right input B"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "gate",
+            "label": {
+              "zh": "所选的门",
+              "en": "Selected gate"
+            },
+            "value": {
+              "zh": "OR",
+              "en": "OR"
+            },
+            "state": "active"
+          },
+          {
+            "id": "output",
+            "label": {
+              "zh": "输出灯",
+              "en": "Output light"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  }
+}

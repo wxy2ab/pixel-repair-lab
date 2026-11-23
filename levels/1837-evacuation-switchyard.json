@@ -1,0 +1,369 @@
+{
+  "version": 1,
+  "kind": "arena",
+  "order": 1837,
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "id": "challenge-evacuation-switchyard",
+  "title": {
+    "zh": "换轨撤离",
+    "en": "Switchyard Evacuation"
+  },
+  "concept": {
+    "zh": "货物转移 · 动态门 · 双机追堵",
+    "en": "Cargo transfers · Changing gates · Two rivals"
+  },
+  "brief": {
+    "zh": "26 回合内取走两块电池并撤离。石墨号追向芽芽，铜线号靠近出口巡逻。第 4、9、13 回合结束后门会切换，未收走的电池会转移。有机器人或电池占住的门当次保持开启。和对手同格或迎面换位会被抓。从容模式下，同一份程序须通过 2 张地图。",
+    "en": "Collect both batteries and escape in 26 turns. Graphite pursues Sprout, and Copperwire patrols near the exit. Gates switch and unclaimed batteries relocate after turns 4, 9, and 13. A gate stays open for that shift if occupied by a robot or battery. Sharing a tile or swapping positions head-on with a rival gets you caught. In Relaxed mode, one program must win on all 2 maps."
+  },
+  "difficulty": "advanced",
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "rival-strategy"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "#############",
+    "#.....#.....#",
+    "#......#....#",
+    "#.....#.....#",
+    "#....##.....#",
+    "#..#..#.....#",
+    "#.....#.....#",
+    "#############"
+  ],
+  "start": {
+    "x": 1,
+    "y": 4
+  },
+  "items": [
+    {
+      "id": "battery-a",
+      "x": 9,
+      "y": 1
+    },
+    {
+      "id": "battery-b",
+      "x": 9,
+      "y": 4
+    }
+  ],
+  "opponents": [
+    {
+      "id": "rival-1",
+      "title": {
+        "zh": "石墨号",
+        "en": "Graphite"
+      },
+      "start": {
+        "x": 1,
+        "y": 1
+      },
+      "policy": {
+        "kind": "pursue"
+      }
+    },
+    {
+      "id": "rival-2",
+      "title": {
+        "zh": "铜线号",
+        "en": "Copperwire"
+      },
+      "start": {
+        "x": 11,
+        "y": 4
+      },
+      "policy": {
+        "kind": "patrol",
+        "path": [
+          {
+            "x": 11,
+            "y": 4
+          },
+          {
+            "x": 11,
+            "y": 3
+          },
+          {
+            "x": 11,
+            "y": 4
+          },
+          {
+            "x": 11,
+            "y": 5
+          }
+        ]
+      }
+    }
+  ],
+  "maxTurns": 26,
+  "objective": {
+    "kind": "escape",
+    "exit": {
+      "x": 11,
+      "y": 6
+    },
+    "itemIds": [
+      "battery-a",
+      "battery-b"
+    ]
+  },
+  "shifts": [
+    {
+      "turn": 4,
+      "open": [
+        {
+          "x": 6,
+          "y": 1
+        }
+      ],
+      "close": [
+        {
+          "x": 6,
+          "y": 2
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "battery-a",
+          "x": 3,
+          "y": 3
+        }
+      ]
+    },
+    {
+      "turn": 9,
+      "open": [
+        {
+          "x": 6,
+          "y": 3
+        }
+      ],
+      "close": [
+        {
+          "x": 6,
+          "y": 1
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "battery-b",
+          "x": 8,
+          "y": 1
+        }
+      ]
+    },
+    {
+      "turn": 13,
+      "open": [
+        {
+          "x": 6,
+          "y": 6
+        }
+      ],
+      "close": [
+        {
+          "x": 6,
+          "y": 3
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "battery-b",
+          "x": 8,
+          "y": 6
+        }
+      ]
+    }
+  ],
+  "starterCode": "while True:\n    state = scan()\n    wait()\n",
+  "solutionCode": "state = scan()\nif state[\"player\"][0] < 7:\n    plan = [\"right\",\"right\",\"right\",\"down\",\"down\",\"left\",\"left\",\"up\",\"up\",\"up\",\"right\",\"pick\",\"right\",\"down\",\"down\",\"right\",\"down\",\"right\",\"right\",\"right\",\"pick\",\"right\",\"right\",\"right\"]\nelse:\n    plan = [\"left\",\"left\",\"up\",\"up\",\"up\",\"down\",\"down\",\"pick\",\"down\",\"left\",\"down\",\"down\",\"left\",\"left\",\"left\",\"left\",\"pick\",\"left\",\"left\",\"left\"]\nfor action in plan:\n    if action == \"pick\":\n        pick()\n    elif action == \"wait\":\n        wait()\n    else:\n        move(action)\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "查看对手位置",
+        "en": "Read opponent positions"
+      },
+      "code": "state = scan()\nfor robot in state[\"opponents\"]:\n    x = robot[\"x\"]\n    y = robot[\"y\"]"
+    },
+    {
+      "label": {
+        "zh": "迈向当前目标",
+        "en": "Step toward a target"
+      },
+      "code": "from algorithms import shortest_step\nstate = scan()\ntarget = state[\"exit\"]\ndirection = shortest_step(state[\"tiles\"], state[\"player\"], target)\nif direction is not None:\n    move(direction)"
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "#############",
+        "#.....#.....#",
+        "#....#......#",
+        "#.....#.....#",
+        "#.....##....#",
+        "#.....#..#..#",
+        "#.....#.....#",
+        "#############"
+      ],
+      "start": {
+        "x": 11,
+        "y": 4
+      },
+      "items": [
+        {
+          "id": "battery-a",
+          "x": 3,
+          "y": 1
+        },
+        {
+          "id": "battery-b",
+          "x": 3,
+          "y": 4
+        }
+      ],
+      "opponents": [
+        {
+          "id": "rival-1",
+          "title": {
+            "zh": "石墨号",
+            "en": "Graphite"
+          },
+          "start": {
+            "x": 11,
+            "y": 1
+          },
+          "policy": {
+            "kind": "pursue"
+          }
+        },
+        {
+          "id": "rival-2",
+          "title": {
+            "zh": "铜线号",
+            "en": "Copperwire"
+          },
+          "start": {
+            "x": 1,
+            "y": 4
+          },
+          "policy": {
+            "kind": "patrol",
+            "path": [
+              {
+                "x": 1,
+                "y": 4
+              },
+              {
+                "x": 1,
+                "y": 3
+              },
+              {
+                "x": 1,
+                "y": 4
+              },
+              {
+                "x": 1,
+                "y": 5
+              }
+            ]
+          }
+        }
+      ],
+      "maxTurns": 26,
+      "objective": {
+        "kind": "escape",
+        "exit": {
+          "x": 1,
+          "y": 6
+        },
+        "itemIds": [
+          "battery-a",
+          "battery-b"
+        ]
+      },
+      "shifts": [
+        {
+          "turn": 4,
+          "open": [
+            {
+              "x": 6,
+              "y": 1
+            }
+          ],
+          "close": [
+            {
+              "x": 6,
+              "y": 2
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "battery-a",
+              "x": 9,
+              "y": 3
+            }
+          ]
+        },
+        {
+          "turn": 9,
+          "open": [
+            {
+              "x": 6,
+              "y": 3
+            }
+          ],
+          "close": [
+            {
+              "x": 6,
+              "y": 1
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "battery-b",
+              "x": 4,
+              "y": 1
+            }
+          ]
+        },
+        {
+          "turn": 13,
+          "open": [
+            {
+              "x": 6,
+              "y": 6
+            }
+          ],
+          "close": [
+            {
+              "x": 6,
+              "y": 3
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "battery-b",
+              "x": 4,
+              "y": 6
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

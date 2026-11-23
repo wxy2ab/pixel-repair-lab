@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "compose-shelf-alerts",
+  "order": 933,
+  "unit": { "id": "python-advanced", "order": 30, "title": { "zh": "Python 高级", "en": "Advanced Python" } },
+  "topic": { "id": "modules", "order": 3, "title": { "zh": "模块", "en": "Modules" } },
+  "stage": "exercise",
+  "title": { "zh": "把两个小函数接起来", "en": "Connect Two Small Helpers" },
+  "brief": { "zh": "完成 shelf_alert_count(shelves, limit)。用 row_total 计算每排的合计，再用 count_alerts 数出合计达到预警线的排数。", "en": "Complete shelf_alert_count(shelves, limit). Use row_total to total each row and count_alerts to count how many row totals reach the alert threshold." },
+  "concept": { "zh": "把一个函数的结果整理成另一个函数的输入", "en": "Collect one function’s results to use as another function’s input" },
+  "hints": [
+    { "zh": "从空列表 totals 开始，遍历货架并把各排合计追加进去。", "en": "Start totals as an empty list. Visit each shelf row and append its total." },
+    { "zh": "最后调用 count_alerts(totals, limit)。每个等于预警线的合计也算一次。", "en": "Call count_alerts(totals, limit) at the end. A total equal to the threshold also counts." },
+    { "zh": "你也可以从 my_algorithms 导入已保存的同名 row_total。", "en": "You can import your saved row_total of the same name from my_algorithms." }
+  ],
+  "functionName": "shelf_alert_count",
+  "helpers": ["row_total", "count_alerts"],
+  "starterCode": "from algorithms import row_total\nfrom algorithms import count_alerts\n\ndef shelf_alert_count(shelves, limit):\n    totals = []\n    return None\n",
+  "solutionCode": "from algorithms import row_total\nfrom algorithms import count_alerts\n\ndef shelf_alert_count(shelves, limit):\n    totals = []\n    for row in shelves:\n        totals.append(row_total(row))\n    return count_alerts(totals, limit)\n",
+  "snippets": [
+    { "label": { "zh": "逐排收集合计", "en": "Collect each row total" }, "code": "    for row in shelves:\n        totals.append(row_total(row))" },
+    { "label": { "zh": "返回达到预警线的排数", "en": "Return the count at the threshold" }, "code": "    return count_alerts(totals, limit)" },
+    { "label": { "zh": "导入自己保存的版本", "en": "Import your saved version" }, "code": "from my_algorithms import row_total" }
+  ],
+  "cases": [
+    { "args": [[[1, 6], [], [4]], 4], "expected": 2 },
+    { "args": [[[2, 9], [1]], 12], "expected": 0 },
+    { "args": [[], 0], "expected": 0 },
+    { "args": [[[], [0], [1, 2]], 0], "expected": 3 },
+    { "args": [[[8, 1], [9], [1, 2, 3, 4]], 9], "expected": 3 }
+  ]
+}

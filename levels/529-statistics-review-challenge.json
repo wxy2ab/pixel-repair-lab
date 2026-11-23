@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "statistics-temperature-review-challenge",
+  "order": 529,
+  "stage": "challenge",
+  "unit": { "id": "statistics", "order": 120, "title": { "zh": "统计分析", "en": "Statistics" } },
+  "title": { "zh": "给温度巡查写两张表", "en": "Prepare Two Tables for a Heat Inspection" },
+  "brief": { "zh": "巡查员想比较三个区域的平均温度，也想知道每个平均值用了几次测量。", "en": "The inspector wants to compare average temperatures and see how many measurements went into each average." },
+  "concept": { "zh": "对同一份干净数据，用相同分组回答两个统计问题。", "en": "Use the same groups and clean data to answer two different statistical questions." },
+  "hints": [{ "zh": "两张表的分组依据相同。先核对样本数，再比较平均值。", "en": "Both tables use the same group key. Check sample counts before comparing the means." }],
+  "steps": [
+    {
+      "operation": "group",
+      "input": "clean",
+      "label": { "zh": "核对样本数", "en": "Check sample sizes" },
+      "prompt": { "zh": "统计每个区域有多少条有效的温度记录。", "en": "Count valid temperature readings for each area." },
+      "initial": { "by": "day", "statistic": "sum" },
+      "goal": { "columns": ["zone", "count"], "rows": [["hangar", 4], ["storage", 3], ["workshop", 4]] },
+      "solution": { "by": "zone", "statistic": "count" }
+    },
+    {
+      "operation": "group",
+      "input": "clean",
+      "label": { "zh": "比较平均温度", "en": "Compare mean temperatures" },
+      "prompt": { "zh": "用同一份清洗后的记录，汇总每个区域各自的平均温度。", "en": "Use the same clean readings to find each area's mean temperature." },
+      "initial": { "by": "day", "statistic": "max" },
+      "goal": { "columns": ["zone", "mean"], "rows": [["hangar", 24], ["storage", 20], ["workshop", 30]] },
+      "solution": { "by": "zone", "statistic": "mean" }
+    }
+  ]
+}

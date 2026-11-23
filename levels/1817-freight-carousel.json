@@ -1,0 +1,376 @@
+{
+  "version": 1,
+  "kind": "arena",
+  "id": "challenge-freight-carousel",
+  "order": 1817,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": { "zh": "挑战场", "en": "Challenge Arena" }
+  },
+  "title": { "zh": "转运环：四机抢位", "en": "Freight Carousel" },
+  "concept": { "zh": "一对四 · 三批转运电池", "en": "One versus four · Three battery shipments" },
+  "brief": {
+    "zh": "和四台机器人争抢 14 块电池。8 块分布在场内，6 块锁在转运仓。第 4、8、12 回合结束后，转运仓各送出两块电池，几条通道同时切换。有机器人或电池占着的门当次保持打开。对手会看比分和路线换目标。多人同回合拾取同一块电池时，优先权按芽芽、灯塔号、铆钉号、接力号、罗盘号的顺序逐回合轮换，第 1 回合从芽芽开始。电池全部被拾取或打满 20 回合时，电池最多且独占第一才算赢。从容模式用同一程序赢下三张地图。",
+    "en": "Compete against four robots for 14 batteries. Eight start on the floor and six are locked in the freight bay. Two batteries are released after turns 4, 8, and 12, and passages switch at the same time. An occupied gate stays open for that shift. Rivals change targets as scores and routes change. When robots try to pick up the same battery in one turn, priority rotates from Sprout to Lantern, Rivet, Relay, and Compass, starting with Sprout on turn 1. Finish first outright when all batteries are collected or after 20 turns. In Relaxed mode, one program must win on all three maps."
+  },
+  "prerequisites": [
+    { "unit": "routing", "topic": "breadth-first" },
+    { "unit": "algorithm-advanced", "topic": "rival-strategy" }
+  ],
+  "hints": [],
+  "tiles": [
+    "#############",
+    "#....#..#...#",
+    "#.#..#..#.#.#",
+    "#....#..#...#",
+    "##.#######.##",
+    "#...........#",
+    "#..##...##..#",
+    "#...........#",
+    "#############"
+  ],
+  "start": { "x": 6, "y": 7 },
+  "opponents": [
+    {
+      "id": "lantern",
+      "title": { "zh": "灯塔号", "en": "Lantern" },
+      "start": { "x": 2, "y": 3 },
+      "policy": {
+        "kind": "adaptive",
+        "style": "secure"
+      }
+    },
+    {
+      "id": "rivet",
+      "title": { "zh": "铆钉号", "en": "Rivet" },
+      "start": { "x": 9, "y": 2 },
+      "policy": {
+        "kind": "adaptive",
+        "style": "intercept"
+      }
+    },
+    {
+      "id": "relay",
+      "title": { "zh": "接力号", "en": "Relay" },
+      "start": { "x": 8, "y": 7 },
+      "policy": {
+        "kind": "adaptive",
+        "style": "flex"
+      }
+    },
+    {
+      "id": "compass",
+      "title": { "zh": "罗盘号", "en": "Compass" },
+      "start": { "x": 2, "y": 5 },
+      "policy": {
+        "kind": "adaptive",
+        "style": "intercept"
+      }
+    }
+  ],
+  "items": [
+    { "id": "battery-1", "x": 5, "y": 5 },
+    { "id": "battery-2", "x": 4, "y": 1 },
+    { "id": "battery-3", "x": 7, "y": 7 },
+    { "id": "battery-4", "x": 11, "y": 1 },
+    { "id": "battery-5", "x": 5, "y": 7 },
+    { "id": "battery-6", "x": 6, "y": 6 },
+    { "id": "battery-7", "x": 11, "y": 2 },
+    { "id": "battery-8", "x": 4, "y": 5 },
+    { "id": "shipment-1", "x": 6, "y": 1 },
+    { "id": "shipment-2", "x": 7, "y": 1 },
+    { "id": "shipment-3", "x": 6, "y": 2 },
+    { "id": "shipment-4", "x": 7, "y": 2 },
+    { "id": "shipment-5", "x": 6, "y": 3 },
+    { "id": "shipment-6", "x": 7, "y": 3 }
+  ],
+  "shifts": [
+    {
+      "turn": 4,
+      "open": [
+        { "x": 4, "y": 4 },
+        { "x": 9, "y": 4 }
+      ],
+      "close": [
+        { "x": 2, "y": 4 },
+        { "x": 10, "y": 4 }
+      ],
+      "moveItems": [
+        { "id": "shipment-1", "x": 4, "y": 3 },
+        { "id": "shipment-2", "x": 10, "y": 5 }
+      ]
+    },
+    {
+      "turn": 8,
+      "open": [
+        { "x": 2, "y": 4 },
+        { "x": 10, "y": 4 }
+      ],
+      "close": [
+        { "x": 4, "y": 4 },
+        { "x": 9, "y": 4 }
+      ],
+      "moveItems": [
+        { "id": "shipment-3", "x": 2, "y": 5 },
+        { "id": "shipment-4", "x": 9, "y": 3 }
+      ]
+    },
+    {
+      "turn": 12,
+      "open": [
+        { "x": 4, "y": 4 },
+        { "x": 9, "y": 4 }
+      ],
+      "close": [
+        { "x": 2, "y": 4 },
+        { "x": 10, "y": 4 }
+      ],
+      "moveItems": [
+        { "id": "shipment-5", "x": 3, "y": 3 },
+        { "id": "shipment-6", "x": 11, "y": 6 }
+      ]
+    }
+  ],
+  "maxTurns": 20,
+  "objective": {
+    "kind": "score"
+  },
+  "starterCode": "while True:\n    state = scan()\n    wait()\n",
+  "solutionCode": "DIRECTIONS = [\"up\", \"right\", \"down\", \"left\"]\n\ndef make_graph(board, width):\n    graph = {}\n    offsets = [-width, 1, width, -1]\n    for y in range(1, len(board) - 1):\n        for x in range(1, width - 1):\n            if board[y][x] != \".\":\n                continue\n            cell = y * width + x\n            edges = []\n            for direction in range(4):\n                neighbor = cell + offsets[direction]\n                if board[neighbor // width][neighbor % width] == \".\":\n                    edges.append([neighbor, DIRECTIONS[direction]])\n            graph[cell] = edges\n    return graph\n\ndef routes(graph, cache, start):\n    if start in cache:\n        return cache[start]\n    table = {start: [0, None]}\n    queue = [start]\n    for cell in queue:\n        previous = table[cell]\n        for edge in graph[cell]:\n            neighbor = edge[0]\n            if neighbor in table:\n                continue\n            first = previous[1]\n            if first is None:\n                first = edge[1]\n            table[neighbor] = [previous[0] + 1, first]\n            queue.append(neighbor)\n    cache[start] = table\n    return table\n\ndef city_distance(x, y, other_x, other_y):\n    dx = x - other_x\n    dy = y - other_y\n    if dx < 0:\n        dx = -dx\n    if dy < 0:\n        dy = -dy\n    return dx + dy\n\ndef choose_action(state, width, graph, cache):\n    player = state[\"player\"]\n    start = player[1] * width + player[0]\n    cells = []\n    for item in state[\"items\"]:\n        cell = item[\"y\"] * width + item[\"x\"]\n        if start == cell:\n            return \"pick\"\n        cells.append(cell)\n    own = routes(graph, cache, start)\n    rivals = state[\"opponents\"]\r\n    chosen = None\n    best = -10000\n    for cell in cells:\n        if cell not in own:\n            continue\n        distance = own[cell][0]\n        priority = (state[\"turn\"] + distance) % (len(rivals) + 1)\n        lead = 999\n        safety = 3\n        for i in range(len(rivals)):\n            rival = rivals[i]\n            gap = city_distance(cell % width, cell // width, rival[\"x\"], rival[\"y\"]) - distance\r\n            if gap < lead:\n                lead = gap\n            if gap < 0:\n                safety = 0\n            elif gap == 0 and safety >= 2:\n                if priority > 0 and i + 1 >= priority:\n                    safety = 1\n                else:\n                    safety = 2\n        if lead > 3:\r\n            lead = 3\r\n        merit = safety * 100 - distance * 8 + lead\n        if merit > best:\n            best = merit\n            chosen = cell\n    if chosen is None:\n        return \"wait\"\n    return own[chosen][1]\n\nboard = []\ncache = {}\nwhile True:\n    state = scan()\n    if state[\"tiles\"] != board:\n        board = state[\"tiles\"]\n        width = len(board[0])\n        graph = make_graph(board, width)\n        cache = {}\n    action = choose_action(state, width, graph, cache)\n    if action == \"pick\":\n        pick()\n    elif action == \"wait\":\n        wait()\n    else:\n        move(action)\n",
+  "snippets": [],
+  "variants": [
+    {
+      "tiles": [
+        "#############",
+        "#...#..#....#",
+        "#.#.#..#..#.#",
+        "#...#..#....#",
+        "##.#######.##",
+        "#...........#",
+        "#..##...##..#",
+        "#...........#",
+        "#############"
+      ],
+      "start": { "x": 5, "y": 5 },
+      "opponents": [
+        {
+          "id": "lantern",
+          "title": { "zh": "灯塔号", "en": "Lantern" },
+          "start": { "x": 2, "y": 5 },
+          "policy": {
+            "kind": "adaptive",
+            "style": "secure"
+          }
+        },
+        {
+          "id": "rivet",
+          "title": { "zh": "铆钉号", "en": "Rivet" },
+          "start": { "x": 10, "y": 5 },
+          "policy": {
+            "kind": "adaptive",
+            "style": "intercept"
+          }
+        },
+        {
+          "id": "relay",
+          "title": { "zh": "接力号", "en": "Relay" },
+          "start": { "x": 10, "y": 7 },
+          "policy": {
+            "kind": "adaptive",
+            "style": "flex"
+          }
+        },
+        {
+          "id": "compass",
+          "title": { "zh": "罗盘号", "en": "Compass" },
+          "start": { "x": 1, "y": 6 },
+          "policy": {
+            "kind": "adaptive",
+            "style": "intercept"
+          }
+        }
+      ],
+      "items": [
+        { "id": "battery-1", "x": 4, "y": 5 },
+        { "id": "battery-2", "x": 3, "y": 1 },
+        { "id": "battery-3", "x": 2, "y": 7 },
+        { "id": "battery-4", "x": 5, "y": 6 },
+        { "id": "battery-5", "x": 3, "y": 2 },
+        { "id": "battery-6", "x": 6, "y": 7 },
+        { "id": "battery-7", "x": 1, "y": 7 },
+        { "id": "battery-8", "x": 8, "y": 3 },
+        { "id": "shipment-1", "x": 6, "y": 1 },
+        { "id": "shipment-2", "x": 5, "y": 1 },
+        { "id": "shipment-3", "x": 6, "y": 2 },
+        { "id": "shipment-4", "x": 5, "y": 2 },
+        { "id": "shipment-5", "x": 6, "y": 3 },
+        { "id": "shipment-6", "x": 5, "y": 3 }
+      ],
+      "shifts": [
+        {
+          "turn": 4,
+          "open": [
+            { "x": 3, "y": 4 },
+            { "x": 8, "y": 4 }
+          ],
+          "close": [
+            { "x": 2, "y": 4 },
+            { "x": 10, "y": 4 }
+          ],
+          "moveItems": [
+            { "id": "shipment-1", "x": 3, "y": 3 },
+            { "id": "shipment-2", "x": 8, "y": 5 }
+          ]
+        },
+        {
+          "turn": 8,
+          "open": [
+            { "x": 2, "y": 4 },
+            { "x": 10, "y": 4 }
+          ],
+          "close": [
+            { "x": 3, "y": 4 },
+            { "x": 8, "y": 4 }
+          ],
+          "moveItems": [
+            { "id": "shipment-3", "x": 10, "y": 5 },
+            { "id": "shipment-4", "x": 2, "y": 3 }
+          ]
+        },
+        {
+          "turn": 12,
+          "open": [
+            { "x": 3, "y": 4 },
+            { "x": 8, "y": 4 }
+          ],
+          "close": [
+            { "x": 2, "y": 4 },
+            { "x": 10, "y": 4 }
+          ],
+          "moveItems": [
+            { "id": "shipment-5", "x": 1, "y": 3 },
+            { "id": "shipment-6", "x": 1, "y": 6 }
+          ]
+        }
+      ]
+    },
+    {
+      "tiles": [
+        "#############",
+        "#....#..#...#",
+        "#..#.#..##..#",
+        "#....#..#...#",
+        "#.#########.#",
+        "#.....#.....#",
+        "#.###....#..#",
+        "#...........#",
+        "#############"
+      ],
+      "start": { "x": 5, "y": 5 },
+      "opponents": [
+        {
+          "id": "lantern",
+          "title": { "zh": "灯塔号", "en": "Lantern" },
+          "start": { "x": 1, "y": 4 },
+          "policy": {
+            "kind": "adaptive",
+            "style": "secure"
+          }
+        },
+        {
+          "id": "rivet",
+          "title": { "zh": "铆钉号", "en": "Rivet" },
+          "start": { "x": 10, "y": 3 },
+          "policy": {
+            "kind": "adaptive",
+            "style": "intercept"
+          }
+        },
+        {
+          "id": "relay",
+          "title": { "zh": "接力号", "en": "Relay" },
+          "start": { "x": 11, "y": 6 },
+          "policy": {
+            "kind": "adaptive",
+            "style": "flex"
+          }
+        },
+        {
+          "id": "compass",
+          "title": { "zh": "罗盘号", "en": "Compass" },
+          "start": { "x": 2, "y": 5 },
+          "policy": {
+            "kind": "adaptive",
+            "style": "intercept"
+          }
+        }
+      ],
+      "items": [
+        { "id": "battery-1", "x": 8, "y": 6 },
+        { "id": "battery-2", "x": 4, "y": 1 },
+        { "id": "battery-3", "x": 1, "y": 3 },
+        { "id": "battery-4", "x": 6, "y": 6 },
+        { "id": "battery-5", "x": 8, "y": 7 },
+        { "id": "battery-6", "x": 10, "y": 7 },
+        { "id": "battery-7", "x": 11, "y": 2 },
+        { "id": "battery-8", "x": 9, "y": 7 },
+        { "id": "shipment-1", "x": 6, "y": 1 },
+        { "id": "shipment-2", "x": 7, "y": 1 },
+        { "id": "shipment-3", "x": 6, "y": 2 },
+        { "id": "shipment-4", "x": 7, "y": 2 },
+        { "id": "shipment-5", "x": 6, "y": 3 },
+        { "id": "shipment-6", "x": 7, "y": 3 }
+      ],
+      "shifts": [
+        {
+          "turn": 4,
+          "open": [
+            { "x": 3, "y": 4 },
+            { "x": 9, "y": 4 }
+          ],
+          "close": [
+            { "x": 1, "y": 4 },
+            { "x": 11, "y": 4 }
+          ],
+          "moveItems": [
+            { "id": "shipment-1", "x": 3, "y": 3 },
+            { "id": "shipment-2", "x": 10, "y": 5 }
+          ]
+        },
+        {
+          "turn": 8,
+          "open": [
+            { "x": 1, "y": 4 },
+            { "x": 11, "y": 4 }
+          ],
+          "close": [
+            { "x": 3, "y": 4 },
+            { "x": 9, "y": 4 }
+          ],
+          "moveItems": [
+            { "id": "shipment-3", "x": 2, "y": 5 },
+            { "id": "shipment-4", "x": 11, "y": 3 }
+          ]
+        },
+        {
+          "turn": 12,
+          "open": [
+            { "x": 3, "y": 4 },
+            { "x": 9, "y": 4 }
+          ],
+          "close": [
+            { "x": 1, "y": 4 },
+            { "x": 11, "y": 4 }
+          ],
+          "moveItems": [
+            { "id": "shipment-5", "x": 4, "y": 3 },
+            { "id": "shipment-6", "x": 11, "y": 6 }
+          ]
+        }
+      ]
+    }
+  ]
+}

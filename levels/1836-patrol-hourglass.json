@@ -1,0 +1,349 @@
+{
+  "version": 1,
+  "kind": "arena",
+  "order": 1836,
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "id": "challenge-patrol-hourglass",
+  "title": {
+    "zh": "三道巡线",
+    "en": "Patrol Hourglass"
+  },
+  "concept": {
+    "zh": "三条固定巡线 · 双电池撤离",
+    "en": "Three fixed patrols · Two-battery escape"
+  },
+  "brief": {
+    "zh": "28 回合内取走两块电池并撤离。三台对手沿自己的路线循环，石墨号每 4 回合往返一次，铜线号的巡线共 6 回合，梭巡号每 4 回合回到原位。和对手同格或迎面换位会被抓。从容模式下，同一份程序须通过 2 张地图。",
+    "en": "Collect both batteries and escape in 28 turns. The three rivals follow repeating patrols. Graphite and Shuttle loop every four turns. Copperwire repeats every six turns. Sharing a tile or swapping positions head-on with a rival gets you caught. In Relaxed mode, one program must win on all 2 maps."
+  },
+  "difficulty": "advanced",
+  "prerequisites": [
+    {
+      "unit": "python-intermediate",
+      "topic": "branches"
+    },
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "#############",
+    "#......#....#",
+    "#......#....#",
+    "#...........#",
+    "#.#.#..#.#..#",
+    "#......#....#",
+    "#......#....#",
+    "#############"
+  ],
+  "start": {
+    "x": 2,
+    "y": 3
+  },
+  "items": [
+    {
+      "id": "battery-b",
+      "x": 10,
+      "y": 1
+    },
+    {
+      "id": "battery-a",
+      "x": 2,
+      "y": 5
+    }
+  ],
+  "opponents": [
+    {
+      "id": "rival-1",
+      "title": {
+        "zh": "石墨号",
+        "en": "Graphite"
+      },
+      "start": {
+        "x": 2,
+        "y": 1
+      },
+      "policy": {
+        "kind": "patrol",
+        "path": [
+          {
+            "x": 2,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "rival-2",
+      "title": {
+        "zh": "铜线号",
+        "en": "Copperwire"
+      },
+      "start": {
+        "x": 6,
+        "y": 2
+      },
+      "policy": {
+        "kind": "patrol",
+        "path": [
+          {
+            "x": 6,
+            "y": 2
+          },
+          {
+            "x": 6,
+            "y": 3
+          },
+          {
+            "x": 6,
+            "y": 4
+          },
+          {
+            "x": 6,
+            "y": 3
+          },
+          {
+            "x": 6,
+            "y": 2
+          },
+          {
+            "x": 6,
+            "y": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "rival-3",
+      "title": {
+        "zh": "梭巡号",
+        "en": "Shuttle"
+      },
+      "start": {
+        "x": 10,
+        "y": 5
+      },
+      "policy": {
+        "kind": "patrol",
+        "path": [
+          {
+            "x": 10,
+            "y": 5
+          },
+          {
+            "x": 10,
+            "y": 6
+          },
+          {
+            "x": 10,
+            "y": 5
+          },
+          {
+            "x": 9,
+            "y": 5
+          }
+        ]
+      }
+    }
+  ],
+  "maxTurns": 28,
+  "objective": {
+    "kind": "escape",
+    "exit": {
+      "x": 9,
+      "y": 6
+    },
+    "itemIds": [
+      "battery-b",
+      "battery-a"
+    ]
+  },
+  "starterCode": "while True:\n    state = scan()\n    wait()\n",
+  "solutionCode": "state = scan()\nif state[\"player\"][0] < 7:\n    plan = [\"right\",\"down\",\"down\",\"left\",\"pick\",\"right\",\"up\",\"up\",\"right\",\"right\",\"right\",\"right\",\"right\",\"up\",\"up\",\"right\",\"right\",\"pick\",\"down\",\"down\",\"down\",\"wait\",\"down\",\"down\",\"left\"]\nelse:\n    plan = [\"right\",\"down\",\"down\",\"left\",\"pick\",\"left\",\"up\",\"up\",\"left\",\"left\",\"left\",\"left\",\"left\",\"up\",\"up\",\"left\",\"left\",\"pick\",\"down\",\"down\",\"down\",\"wait\",\"down\",\"down\",\"right\"]\nfor action in plan:\n    if action == \"pick\":\n        pick()\n    elif action == \"wait\":\n        wait()\n    else:\n        move(action)\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "查看对手位置",
+        "en": "Read opponent positions"
+      },
+      "code": "state = scan()\nfor robot in state[\"opponents\"]:\n    x = robot[\"x\"]\n    y = robot[\"y\"]"
+    },
+    {
+      "label": {
+        "zh": "迈向当前目标",
+        "en": "Step toward a target"
+      },
+      "code": "from algorithms import shortest_step\nstate = scan()\ntarget = state[\"exit\"]\ndirection = shortest_step(state[\"tiles\"], state[\"player\"], target)\nif direction is not None:\n    move(direction)"
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "#############",
+        "#....#......#",
+        "#....#......#",
+        "#...........#",
+        "#..#.#..#.#.#",
+        "#....#......#",
+        "#....#......#",
+        "#############"
+      ],
+      "start": {
+        "x": 10,
+        "y": 3
+      },
+      "items": [
+        {
+          "id": "battery-b",
+          "x": 2,
+          "y": 1
+        },
+        {
+          "id": "battery-a",
+          "x": 10,
+          "y": 5
+        }
+      ],
+      "opponents": [
+        {
+          "id": "rival-1",
+          "title": {
+            "zh": "石墨号",
+            "en": "Graphite"
+          },
+          "start": {
+            "x": 10,
+            "y": 1
+          },
+          "policy": {
+            "kind": "patrol",
+            "path": [
+              {
+                "x": 10,
+                "y": 1
+              },
+              {
+                "x": 10,
+                "y": 2
+              },
+              {
+                "x": 10,
+                "y": 3
+              },
+              {
+                "x": 10,
+                "y": 2
+              }
+            ]
+          }
+        },
+        {
+          "id": "rival-2",
+          "title": {
+            "zh": "铜线号",
+            "en": "Copperwire"
+          },
+          "start": {
+            "x": 6,
+            "y": 2
+          },
+          "policy": {
+            "kind": "patrol",
+            "path": [
+              {
+                "x": 6,
+                "y": 2
+              },
+              {
+                "x": 6,
+                "y": 3
+              },
+              {
+                "x": 6,
+                "y": 4
+              },
+              {
+                "x": 6,
+                "y": 3
+              },
+              {
+                "x": 6,
+                "y": 2
+              },
+              {
+                "x": 6,
+                "y": 2
+              }
+            ]
+          }
+        },
+        {
+          "id": "rival-3",
+          "title": {
+            "zh": "梭巡号",
+            "en": "Shuttle"
+          },
+          "start": {
+            "x": 2,
+            "y": 5
+          },
+          "policy": {
+            "kind": "patrol",
+            "path": [
+              {
+                "x": 2,
+                "y": 5
+              },
+              {
+                "x": 2,
+                "y": 6
+              },
+              {
+                "x": 2,
+                "y": 5
+              },
+              {
+                "x": 3,
+                "y": 5
+              }
+            ]
+          }
+        }
+      ],
+      "maxTurns": 28,
+      "objective": {
+        "kind": "escape",
+        "exit": {
+          "x": 3,
+          "y": 6
+        },
+        "itemIds": [
+          "battery-b",
+          "battery-a"
+        ]
+      }
+    }
+  ]
+}

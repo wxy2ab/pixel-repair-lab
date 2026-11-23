@@ -1,0 +1,46 @@
+.collection-prediction .charge-prediction-choices button {
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+}
+
+.collection-prediction-batteries li {
+  display: grid;
+  gap: 2px;
+  min-inline-size: 60px;
+  padding: 6px 8px;
+}
+
+.collection-prediction-batteries li span:first-child {
+  color: #bdd0e7;
+  font-family: system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.collection-prediction-batteries li span:nth-child(2) {
+  justify-self: center;
+  padding-inline: 5px;
+  border-radius: 3px;
+  background: #284667;
+  color: #e0eeff;
+}
+
+.collection-prediction-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.collection-prediction-fields [data-collection-field='records'] { grid-column: 1 / -1; }
+
+.collection-prediction-entries {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 10px;
+  row-gap: 3px;
+  max-inline-size: 100%;
+}
+
+.collection-prediction-entries span { min-inline-size: 0; overflow-wrap: anywhere; }
+.for-prediction-values .collection-prediction-entries { justify-content: start; }
+
+@media (max-width: 540px) {
+  .collection-prediction-fields { grid-template-columns: minmax(0, 1fr); }
+}

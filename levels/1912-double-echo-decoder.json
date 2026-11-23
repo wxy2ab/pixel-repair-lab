@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "challenge-double-echo-decoder",
+  "order": 1912,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "prerequisites": [{"unit": "architecture", "topic": "memory"}, {"unit": "architecture", "topic": "registers"}, {"unit": "architecture", "topic": "instructions"}],
+  "title": {"zh": "从双回声里找回原声", "en": "Double Echo Decoder"},
+  "concept": {"zh": "原地还原带两次回声的信号", "en": "Decode a signal with two echo taps"},
+  "brief": {"zh": "地址 0 至 4 存着五个有回声的采样。每个采样等于当时的原声，加上前一个原声的两倍，再减去前两个时刻的原声。开始前的原声都是 0。把五个原声按原顺序写回同样的地址，停机时 ACC 留下最后一个原声减去第一个原声。", "en": "Addresses 0 through 4 hold five echo samples. Each equals the original at that instant plus twice the previous original minus the original from two instants earlier. Originals before the start are zero. Recover all five originals in place, then halt with the last original minus the first in ACC."},
+  "hints": [],
+  "allowedOps": ["LOAD", "ADD", "SUB", "STORE", "HALT"],
+  "starterCode": "HALT\n",
+  "solutionCode": "LOAD 1\nSUB 0\nSUB 0\nSTORE 1\nLOAD 2\nSUB 1\nSUB 1\nADD 0\nSTORE 2\nLOAD 3\nSUB 2\nSUB 2\nADD 1\nSTORE 3\nLOAD 4\nSUB 3\nSUB 3\nADD 2\nSTORE 4\nSUB 0\nHALT\n",
+  "cases": [
+    {"label": {"zh": "验收样本 1", "en": "Acceptance sample 1"}, "memory": [2, 7, 9, 8, 6], "accumulator": 18, "goal": {"memory": [{"address": 0, "value": 2}, {"address": 1, "value": 3}, {"address": 2, "value": 5}, {"address": 3, "value": 1}, {"address": 4, "value": 9}], "accumulator": 7}},
+    {"label": {"zh": "验收样本 2", "en": "Acceptance sample 2"}, "memory": [-3, -5, 8, 4, -1], "accumulator": -1, "goal": {"memory": [{"address": 0, "value": -3}, {"address": 1, "value": 1}, {"address": 2, "value": 3}, {"address": 3, "value": -1}, {"address": 4, "value": 4}], "accumulator": 7}},
+    {"label": {"zh": "验收样本 3", "en": "Acceptance sample 3"}, "memory": [0, 0, 5, 10, -5], "accumulator": 2, "goal": {"memory": [{"address": 0, "value": 0}, {"address": 1, "value": 0}, {"address": 2, "value": 5}, {"address": 3, "value": 0}, {"address": 4, "value": 0}], "accumulator": 0}},
+    {"label": {"zh": "验收样本 4", "en": "Acceptance sample 4"}, "memory": [6, 12, -6, 0, 0], "accumulator": 0, "goal": {"memory": [{"address": 0, "value": 6}, {"address": 1, "value": 0}, {"address": 2, "value": 0}, {"address": 3, "value": 0}, {"address": 4, "value": 0}], "accumulator": -6}},
+    {"label": {"zh": "验收样本 5", "en": "Acceptance sample 5"}, "memory": [4, 3, -2, 1, 7], "accumulator": -9, "goal": {"memory": [{"address": 0, "value": 4}, {"address": 1, "value": -5}, {"address": 2, "value": 12}, {"address": 3, "value": -28}, {"address": 4, "value": 75}], "accumulator": 71}}
+  ]
+}

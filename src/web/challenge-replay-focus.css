@@ -1,0 +1,22 @@
+.challenge-replay-focus {
+  display: grid;
+  gap: 7px;
+  margin-block-start: 12px;
+  padding: 10px 12px;
+  border: 1px solid #527485;
+  border-radius: 7px;
+  background: #203547;
+}
+.challenge-replay-focus-standalone { margin-block: 0 16px; }
+.challenge-replay-focus[data-replay-focus-status='improved'] {
+  border-color: #4f8b76;
+  background: #193b37;
+}
+.challenge-replay-focus-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 5px 12px; }
+.challenge-replay-focus-heading :is(h2, h3) { margin: 0; font-size: 15px; color: #e3f2fa; }
+.challenge-replay-focus-heading strong { font-size: 13px; color: #e3c893; }
+.challenge-replay-focus[data-replay-focus-status='improved'] .challenge-replay-focus-heading strong { color: #b6f0d6; }
+.challenge-replay-focus p { margin: 0; color: #e7f2f7; font-size: 14px; overflow-wrap: anywhere; }
+.challenge-replay-focus dl { display: flex; flex-wrap: wrap; gap: 7px 18px; margin: 0; }
+.challenge-replay-focus dt { color: #c1d7e7; font-size: 12px; }
+.challenge-replay-focus dd { margin: 2px 0 0; color: #edf7fe; font-weight: 650; font-variant-numeric: tabular-nums; }

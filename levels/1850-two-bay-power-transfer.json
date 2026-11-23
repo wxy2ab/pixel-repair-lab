@@ -1,0 +1,224 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "challenge-two-bay-power-transfer",
+  "order": 1850,
+  "difficulty": "intermediate",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "architecture",
+      "topic": "memory"
+    },
+    {
+      "unit": "architecture",
+      "topic": "registers"
+    },
+    {
+      "unit": "architecture",
+      "topic": "instructions"
+    }
+  ],
+  "title": {
+    "zh": "双舱电量交接",
+    "en": "Power Transfer Between Bays"
+  },
+  "concept": {
+    "zh": "初始 ACC · 正负调拨 · 更新两座电舱",
+    "en": "Starting ACC · Signed transfer · Two bay balances"
+  },
+  "brief": {
+    "zh": "地址 0、1 是北舱和南舱的旧电量，地址 2 是从北舱划给南舱的调拨量，负数表示反向调拨。ACC 已收到北舱的新增电量。把调拨和新增电量都计入，写回两个电舱，把它们的总量写入地址 3 和 ACC。地址 2 的调拨记录要保留。一份程序要处理全部五组交接。",
+    "en": "Addresses 0 and 1 hold the old balances of the north and south bays. Address 2 holds the amount transferred from north to south. A negative transfer goes the other way. ACC already holds the new charge arriving at the north bay. Update both bays, write their combined total to address 3 and ACC, and preserve the transfer at address 2. Use one program for all five handoffs."
+  },
+  "hints": [],
+  "allowedOps": [
+    "LOAD",
+    "ADD",
+    "SUB",
+    "STORE",
+    "HALT"
+  ],
+  "starterCode": "HALT\n",
+  "solutionCode": "ADD 0\nSUB 2\nSTORE 0\nLOAD 1\nADD 2\nSTORE 1\nADD 0\nSTORE 3\nHALT\n",
+  "cases": [
+    {
+      "label": {
+        "zh": "北舱对外供电",
+        "en": "North bay supplies power"
+      },
+      "memory": [
+        14,
+        7,
+        5,
+        2
+      ],
+      "accumulator": 4,
+      "goal": {
+        "accumulator": 25,
+        "memory": [
+          {
+            "address": 0,
+            "value": 13
+          },
+          {
+            "address": 1,
+            "value": 12
+          },
+          {
+            "address": 2,
+            "value": 5
+          },
+          {
+            "address": 3,
+            "value": 25
+          }
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "反向调拨",
+        "en": "Transfer in reverse"
+      },
+      "memory": [
+        5,
+        12,
+        -4,
+        99
+      ],
+      "accumulator": 7,
+      "goal": {
+        "accumulator": 24,
+        "memory": [
+          {
+            "address": 0,
+            "value": 16
+          },
+          {
+            "address": 1,
+            "value": 8
+          },
+          {
+            "address": 2,
+            "value": -4
+          },
+          {
+            "address": 3,
+            "value": 24
+          }
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "全部转出",
+        "en": "Transfer the whole balance"
+      },
+      "memory": [
+        8,
+        2,
+        8,
+        11
+      ],
+      "accumulator": 0,
+      "goal": {
+        "accumulator": 10,
+        "memory": [
+          {
+            "address": 0,
+            "value": 0
+          },
+          {
+            "address": 1,
+            "value": 10
+          },
+          {
+            "address": 2,
+            "value": 8
+          },
+          {
+            "address": 3,
+            "value": 10
+          }
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "只做补电",
+        "en": "Incoming charge only"
+      },
+      "memory": [
+        0,
+        8,
+        0,
+        20
+      ],
+      "accumulator": 6,
+      "goal": {
+        "accumulator": 14,
+        "memory": [
+          {
+            "address": 0,
+            "value": 6
+          },
+          {
+            "address": 1,
+            "value": 8
+          },
+          {
+            "address": 2,
+            "value": 0
+          },
+          {
+            "address": 3,
+            "value": 14
+          }
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "南舱送完库存",
+        "en": "South bay empties its reserve"
+      },
+      "memory": [
+        1,
+        9,
+        -9,
+        0
+      ],
+      "accumulator": 0,
+      "goal": {
+        "accumulator": 10,
+        "memory": [
+          {
+            "address": 0,
+            "value": 10
+          },
+          {
+            "address": 1,
+            "value": 0
+          },
+          {
+            "address": 2,
+            "value": -9
+          },
+          {
+            "address": 3,
+            "value": 10
+          }
+        ]
+      }
+    }
+  ]
+}

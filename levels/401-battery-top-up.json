@@ -1,0 +1,176 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "battery-top-up",
+  "order": 401,
+  "unit": {
+    "id": "foundations",
+    "order": 10,
+    "title": {
+      "zh": "Python 基础",
+      "en": "Python Foundations"
+    }
+  },
+  "topic": {
+    "id": "variables",
+    "order": 2,
+    "title": {
+      "zh": "变量与算术",
+      "en": "Variables and Arithmetic"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "给电池补上两格",
+    "en": "Add Two Units of Energy"
+  },
+  "concept": {
+    "zh": "读取变量与赋值",
+    "en": "Reading and updating a variable"
+  },
+  "brief": {
+    "zh": "芽芽需要比当前多 2 格电量。扫描电量，把它存进变量，加上 2 后提交新读数。",
+    "en": "Sprout needs two more units of energy. Scan the battery, store the reading, then add two and submit the new value."
+  },
+  "hints": [
+    {
+      "zh": "同一个变量可以先读取，再用加完的结果更新。",
+      "en": "You can read a variable, add to its value, and save the answer back under the same name."
+    }
+  ],
+  "tiles": [
+    "#######",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#######"
+  ],
+  "start": {
+    "x": 2,
+    "y": 2
+  },
+  "allowedApi": [
+    "scan",
+    "submit"
+  ],
+  "objectives": [
+    {
+      "type": "submit",
+      "values": [
+        5
+      ]
+    }
+  ],
+  "input": 3,
+  "cards": [
+    {
+      "id": "read-energy",
+      "label": {
+        "zh": "读取电池读数",
+        "en": "Read the battery"
+      },
+      "template": "energy = scan()"
+    },
+    {
+      "id": "recharge",
+      "label": {
+        "zh": "给电池补能",
+        "en": "Recharge the battery"
+      },
+      "template": "energy = energy + {{amount}}",
+      "parameters": [
+        {
+          "name": "amount",
+          "label": {
+            "zh": "补能量",
+            "en": "Charge added"
+          },
+          "choices": [
+            {
+              "id": "1",
+              "label": {
+                "zh": "1",
+                "en": "1"
+              },
+              "code": "1"
+            },
+            {
+              "id": "2",
+              "label": {
+                "zh": "2",
+                "en": "2"
+              },
+              "code": "2"
+            },
+            {
+              "id": "3",
+              "label": {
+                "zh": "3",
+                "en": "3"
+              },
+              "code": "3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "report-energy",
+      "label": {
+        "zh": "提交当前电量",
+        "en": "Submit the battery level"
+      },
+      "template": "submit(energy)"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read-energy"
+    },
+    {
+      "cardId": "recharge",
+      "values": {
+        "amount": "2"
+      }
+    },
+    {
+      "cardId": "report-energy"
+    }
+  ],
+  "variants": [
+    {
+      "input": 7,
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            9
+          ]
+        }
+      ]
+    }
+  ],
+  "tutorial": [
+    {
+      "text": {
+        "zh": "先用「读取电池读数」。变量 energy 现在保存着扫描到的数值。",
+        "en": "Start with Read the Battery. The variable energy now holds the scanned value."
+      },
+      "target": "palette"
+    },
+    {
+      "text": {
+        "zh": "接上「给电池补能」，把菜单选成 2。",
+        "en": "Add Recharge the Battery and choose 2 from its menu."
+      },
+      "target": "program"
+    },
+    {
+      "text": {
+        "zh": "提交当前电量，再运行。留意程序怎样适用于另一块电池。",
+        "en": "Submit the battery level and run. See how the program also works with another battery."
+      },
+      "target": "run"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "yolox-outline-dog",
+  "order": 556,
+  "stage": "exercise",
+  "unit": {
+    "id": "yolox",
+    "order": 150,
+    "title": { "zh": "YOLOX", "en": "YOLOX" }
+  },
+  "topic": {
+    "id": "bounding-boxes",
+    "order": 2,
+    "title": { "zh": "边界框与重叠", "en": "Bounding boxes and overlap" }
+  },
+  "mode": "boxes",
+  "title": { "zh": "把狗的边界框缩小", "en": "Tighten the Dog’s Box" },
+  "brief": { "zh": "先观察参考框，再把覆盖整张照片的框收紧，减少多余背景。", "en": "Look at the reference box, then tighten the full-image box to remove extra background." },
+  "concept": { "zh": "在保留目标的同时，缩去多余背景会提高交并比。", "en": "Trimming extra background while keeping the object raises IoU." },
+  "hints": [
+    { "zh": "狗接近照片下方。先对齐框的上边和左边，再收右边。", "en": "The dog is near the bottom. Align the top and left edges first, then bring in the right edge." }
+  ],
+  "cases": [
+    {
+      "image": "labrador",
+      "label": { "zh": "拉布拉多犬标注", "en": "Labrador annotation" },
+      "prompt": { "zh": "让你的框和狗的参考框交并比达到 82%。", "en": "Make your box reach at least 82% IoU with the dog's reference box." },
+      "initial": { "x": 0, "y": 0, "w": 100, "h": 100 },
+      "goal": { "minIou": 0.82 },
+      "solution": { "x": 7, "y": 6, "w": 84, "h": 90 }
+    }
+  ]
+}

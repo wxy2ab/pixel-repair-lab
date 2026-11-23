@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "numpy-mask-low",
+  "order": 504,
+  "stage": "exercise",
+  "unit": {
+    "id": "numpy",
+    "order": 100,
+    "title": {
+      "zh": "NumPy",
+      "en": "NumPy"
+    }
+  },
+  "topic": {
+    "id": "masks",
+    "order": 2,
+    "title": {
+      "zh": "布尔掩码",
+      "en": "Boolean masks"
+    }
+  },
+  "title": {
+    "zh": "给冷区巡检员选记录",
+    "en": "Select Records for the Cool-Area Inspector"
+  },
+  "brief": {
+    "zh": "检查编号 1、3、9 的温度，找出能同时保留它们的掩码。",
+    "en": "Inspect readings 1, 3, and 9 to find a mask that keeps all three."
+  },
+  "concept": {
+    "zh": "检查原始值的大小，才能决定比较方向和门槛。",
+    "en": "Use the source values to choose a comparison direction and cutoff."
+  },
+  "hints": [
+    {
+      "zh": "这三条记录的温度是表格里最低的三个值。先找到它们中的最大值。",
+      "en": "These are the three coolest readings. Find the largest of those three first."
+    }
+  ],
+  "steps": [
+    {
+      "operation": "mask",
+      "input": "clean",
+      "label": {
+        "zh": "找到低温掩码",
+        "en": "Find the low-temperature mask"
+      },
+      "prompt": {
+        "zh": "只保留记录编号 1、3、9。用一个温度比较一次选出来。",
+        "en": "Use one temperature comparison to keep only records 1, 3, and 9."
+      },
+      "initial": {
+        "column": "day",
+        "comparison": "gte",
+        "threshold": 2
+      },
+      "solution": {
+        "column": "reading",
+        "comparison": "lte",
+        "threshold": 20
+      },
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            "hangar",
+            18
+          ],
+          [
+            3,
+            1,
+            "storage",
+            20
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16
+          ]
+        ]
+      }
+    }
+  ]
+}

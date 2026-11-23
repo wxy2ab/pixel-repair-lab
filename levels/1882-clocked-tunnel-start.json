@@ -1,0 +1,682 @@
+{
+  "version": 1,
+  "id": "challenge-clocked-tunnel-start",
+  "order": 1882,
+  "kind": "grid",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": {
+    "zh": "隧道脉冲启机",
+    "en": "Pulse Tunnel Startup"
+  },
+  "concept": {
+    "zh": "CPU 节拍和巡逻窗口",
+    "en": "CPU ticks and patrol windows"
+  },
+  "brief": {
+    "zh": "取到两块启机板，到出口并让 CPU 停机。在任意安全格可单步执行。地址 3 要留下地址 0、1、2 三个初始读数之和。走路、拾取和 CPU 单步都会推动巡逻机。 限 36 回合；避开巡逻。工单列出巡线及目标坐标。复测时图纸旋转半圈，compass 给出图纸方向在现场对应的方向。",
+    "en": "Recover both starter boards, take the exit and halt the CPU. Single-step on any safe tile. Address 3 must contain the sum of the original readings at 0, 1 and 2. Moves, pickups and CPU steps all advance the patrols. You have 36 turns. Avoid patrols. The work order lists patrol cycles and target coordinates. The second installation is rotated 180 degrees; compass maps plan directions to physical directions."
+  },
+  "prerequisites": [
+    {
+      "unit": "architecture",
+      "topic": "instructions"
+    },
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "###########",
+    "#.........#",
+    "#####.###.#",
+    "#.......#.#",
+    "#..##.#.#.#",
+    "#.........#",
+    "###########"
+  ],
+  "start": {
+    "x": 7,
+    "y": 1
+  },
+  "items": [
+    {
+      "id": "north-board",
+      "x": 8,
+      "y": 5
+    },
+    {
+      "id": "south-board",
+      "x": 3,
+      "y": 1
+    }
+  ],
+  "enemies": [
+    {
+      "path": [
+        {
+          "x": 7,
+          "y": 4
+        },
+        {
+          "x": 7,
+          "y": 5
+        },
+        {
+          "x": 6,
+          "y": 5
+        },
+        {
+          "x": 7,
+          "y": 5
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 2,
+          "y": 5
+        },
+        {
+          "x": 1,
+          "y": 5
+        },
+        {
+          "x": 1,
+          "y": 4
+        },
+        {
+          "x": 1,
+          "y": 3
+        },
+        {
+          "x": 1,
+          "y": 4
+        },
+        {
+          "x": 1,
+          "y": 5
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 6,
+          "y": 3
+        },
+        {
+          "x": 7,
+          "y": 3
+        },
+        {
+          "x": 7,
+          "y": 4
+        },
+        {
+          "x": 7,
+          "y": 3
+        }
+      ]
+    }
+  ],
+  "turnLimit": 36,
+  "input": {
+    "compass": {
+      "N": "up",
+      "E": "right",
+      "S": "down",
+      "W": "left"
+    },
+    "parts": {
+      "north-board": [
+        8,
+        5
+      ],
+      "south-board": [
+        3,
+        1
+      ]
+    },
+    "exit": [
+      1,
+      4
+    ],
+    "patrols": [
+      [
+        [
+          7,
+          4
+        ],
+        [
+          7,
+          5
+        ],
+        [
+          6,
+          5
+        ],
+        [
+          7,
+          5
+        ]
+      ],
+      [
+        [
+          2,
+          5
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          5
+        ]
+      ],
+      [
+        [
+          6,
+          3
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          7,
+          3
+        ]
+      ]
+    ]
+  },
+  "objectives": [
+    {
+      "type": "collect",
+      "itemIds": [
+        "north-board",
+        "south-board"
+      ]
+    },
+    {
+      "type": "memory",
+      "address": 3,
+      "value": 17
+    },
+    {
+      "type": "halt"
+    },
+    {
+      "type": "exit",
+      "x": 1,
+      "y": 4
+    }
+  ],
+  "memory": [
+    8,
+    3,
+    6,
+    0
+  ],
+  "instructions": [
+    {
+      "op": "LOAD",
+      "address": 0
+    },
+    {
+      "op": "ADD",
+      "address": 1
+    },
+    {
+      "op": "ADD",
+      "address": 2
+    },
+    {
+      "op": "STORE",
+      "address": 3
+    },
+    {
+      "op": "HALT"
+    }
+  ],
+  "allowedApi": [
+    "move",
+    "pick",
+    "scan",
+    "step"
+  ],
+  "cards": [
+    {
+      "id": "read",
+      "label": {
+        "zh": "读取图纸和工单",
+        "en": "Read plan and work order"
+      },
+      "template": "board = scan()"
+    },
+    {
+      "id": "N",
+      "label": {
+        "zh": "图纸北",
+        "en": "Plan north"
+      },
+      "template": "move(board[\"compass\"][\"N\"])"
+    },
+    {
+      "id": "E",
+      "label": {
+        "zh": "图纸东",
+        "en": "Plan east"
+      },
+      "template": "move(board[\"compass\"][\"E\"])"
+    },
+    {
+      "id": "S",
+      "label": {
+        "zh": "图纸南",
+        "en": "Plan south"
+      },
+      "template": "move(board[\"compass\"][\"S\"])"
+    },
+    {
+      "id": "W",
+      "label": {
+        "zh": "图纸西",
+        "en": "Plan west"
+      },
+      "template": "move(board[\"compass\"][\"W\"])"
+    },
+    {
+      "id": "grab",
+      "label": {
+        "zh": "拾取并读取件名",
+        "en": "Pick up and read the ID"
+      },
+      "template": "part = pick()"
+    },
+    {
+      "id": "tick",
+      "label": {
+        "zh": "CPU 单步",
+        "en": "Tick the CPU"
+      },
+      "template": "step()"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "tick"
+    },
+    {
+      "cardId": "tick"
+    },
+    {
+      "cardId": "tick"
+    },
+    {
+      "cardId": "tick"
+    },
+    {
+      "cardId": "tick"
+    },
+    {
+      "cardId": "W"
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "###########",
+        "#.........#",
+        "#.#.#.##..#",
+        "#.#.......#",
+        "#.###.#####",
+        "#.........#",
+        "###########"
+      ],
+      "start": {
+        "x": 3,
+        "y": 5
+      },
+      "items": [
+        {
+          "id": "north-board",
+          "x": 2,
+          "y": 1
+        },
+        {
+          "id": "south-board",
+          "x": 7,
+          "y": 5
+        }
+      ],
+      "enemies": [
+        {
+          "path": [
+            {
+              "x": 3,
+              "y": 2
+            },
+            {
+              "x": 3,
+              "y": 1
+            },
+            {
+              "x": 4,
+              "y": 1
+            },
+            {
+              "x": 3,
+              "y": 1
+            }
+          ]
+        },
+        {
+          "path": [
+            {
+              "x": 8,
+              "y": 1
+            },
+            {
+              "x": 9,
+              "y": 1
+            },
+            {
+              "x": 9,
+              "y": 2
+            },
+            {
+              "x": 9,
+              "y": 3
+            },
+            {
+              "x": 9,
+              "y": 2
+            },
+            {
+              "x": 9,
+              "y": 1
+            }
+          ]
+        },
+        {
+          "path": [
+            {
+              "x": 4,
+              "y": 3
+            },
+            {
+              "x": 3,
+              "y": 3
+            },
+            {
+              "x": 3,
+              "y": 2
+            },
+            {
+              "x": 3,
+              "y": 3
+            }
+          ]
+        }
+      ],
+      "turnLimit": 36,
+      "input": {
+        "compass": {
+          "N": "down",
+          "E": "left",
+          "S": "up",
+          "W": "right"
+        },
+        "parts": {
+          "north-board": [
+            2,
+            1
+          ],
+          "south-board": [
+            7,
+            5
+          ]
+        },
+        "exit": [
+          9,
+          2
+        ],
+        "patrols": [
+          [
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              1
+            ],
+            [
+              4,
+              1
+            ],
+            [
+              3,
+              1
+            ]
+          ],
+          [
+            [
+              8,
+              1
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              9,
+              2
+            ],
+            [
+              9,
+              3
+            ],
+            [
+              9,
+              2
+            ],
+            [
+              9,
+              1
+            ]
+          ],
+          [
+            [
+              4,
+              3
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              3
+            ]
+          ]
+        ]
+      },
+      "objectives": [
+        {
+          "type": "collect",
+          "itemIds": [
+            "north-board",
+            "south-board"
+          ]
+        },
+        {
+          "type": "memory",
+          "address": 3,
+          "value": 23
+        },
+        {
+          "type": "halt"
+        },
+        {
+          "type": "exit",
+          "x": 9,
+          "y": 2
+        }
+      ],
+      "memory": [
+        2,
+        11,
+        10,
+        0
+      ],
+      "instructions": [
+        {
+          "op": "LOAD",
+          "address": 0
+        },
+        {
+          "op": "ADD",
+          "address": 1
+        },
+        {
+          "op": "ADD",
+          "address": 2
+        },
+        {
+          "op": "STORE",
+          "address": 3
+        },
+        {
+          "op": "HALT"
+        }
+      ]
+    }
+  ]
+}

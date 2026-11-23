@@ -1,0 +1,90 @@
+.score-history-filters select, .score-goal-form select, .score-goal-form input {
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+  padding: 5px 23px 5px 7px;
+  border: 1px solid #496581;
+  border-radius: 6px;
+  background: #17263a;
+  color: #edf8ff;
+  font: inherit;
+}
+.score-goal {
+  display: grid;
+  gap: 11px;
+  padding: clamp(11px, 2.5vw, 18px);
+  border-color: #46656e;
+}
+.score-goal-heading, .score-goal-saved, .score-goal-progress, .score-goal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.score-goal-heading, .score-goal-saved { justify-content: space-between; }
+.score-goal h2 {
+  color: #e7f5ff;
+  font-size: 17px;
+}
+.score-goal p, .score-goal-progress, .score-goal-preview {
+  color: #ccdeeb;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.score-goal p { margin: 0; }
+.score-goal-progress strong, .score-goal b {
+  color: #e7f5ff;
+  font-variant-numeric: tabular-nums;
+}
+.score-goal-status {
+  padding: 3px 8px;
+  border-radius: 5px;
+  background: #403524;
+  color: #ffdaa0;
+  font-size: 12px;
+}
+.score-goal-status[data-goal-status='achieved'] {
+  background: #24463e;
+  color: #a3f4d8;
+}
+.score-goal-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 10px;
+}
+.score-goal-metric, .score-goal-amount {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  color: #c6d9eb;
+  font-size: 13px;
+}
+.score-goal-metric { flex: 1 1 150px; }
+.score-goal-amount { flex: 0 1 132px; }
+.score-goal-stepper {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 4px;
+}
+.score-goal-stepper button {
+  min-width: 36px;
+  padding: 5px;
+  font-size: 16px;
+}
+.score-goal-stepper input {
+  appearance: textfield;
+  padding-inline: 3px;
+  text-align: center;
+}
+.score-goal-stepper input:focus-visible { outline: 2px solid var(--mint); }
+.score-goal-stepper input::-webkit-inner-spin-button,
+.score-goal-stepper input::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+.score-goal-preview {
+  display: grid;
+  gap: 2px;
+  flex: 1 1 130px;
+}

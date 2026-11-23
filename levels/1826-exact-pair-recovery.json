@@ -1,0 +1,383 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-exact-pair-recovery",
+  "order": 1826,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "structures",
+      "topic": "lists"
+    },
+    {
+      "unit": "python-advanced",
+      "topic": "nested-loops"
+    }
+  ],
+  "title": {
+    "zh": "两块刚好够",
+    "en": "The Exact Pair"
+  },
+  "concept": {
+    "zh": "配对破局 · 同分选序 · 只够取两块",
+    "en": "Target sum · Tie-break order · Budget for two"
+  },
+  "brief": {
+    "zh": "充电柜有六块电池。扫描里的 charges 对应上排从左到右的电量。只取两块，使电量之和正好等于 target。如果有多对，选左边那块位置最靠左的一对，仍打平就选另一块更靠左的。按从左到右的顺序提交两个从 0 开始的位置，位置须来自同一列表，再停在出口。移动与拾取各耗 1 回合，限 13 回合。",
+    "en": "There are six packs in the cabinet. The charges scan list is their readings from left to right along the top row. Retrieve exactly two that add up to target. If several pairs qualify, favor the earliest left pack, then the earliest right pack. Submit the two zero-based indices in left-to-right order from the same list and stop at the exit. Each move or pickup costs one turn, with 13 turns total."
+  },
+  "hints": [],
+  "tiles": [
+    "##########",
+    "##......##",
+    "#........#",
+    "##########"
+  ],
+  "items": [
+    {
+      "id": "pack-1",
+      "x": 2,
+      "y": 1
+    },
+    {
+      "id": "pack-2",
+      "x": 3,
+      "y": 1
+    },
+    {
+      "id": "pack-3",
+      "x": 4,
+      "y": 1
+    },
+    {
+      "id": "pack-4",
+      "x": 5,
+      "y": 1
+    },
+    {
+      "id": "pack-5",
+      "x": 6,
+      "y": 1
+    },
+    {
+      "id": "pack-6",
+      "x": 7,
+      "y": 1
+    }
+  ],
+  "start": {
+    "x": 1,
+    "y": 2
+  },
+  "turnLimit": 13,
+  "input": {
+    "charges": [
+      3,
+      1,
+      6,
+      2,
+      4,
+      5
+    ],
+    "target": 8
+  },
+  "objectives": [
+    {
+      "type": "collect",
+      "itemIds": [
+        "pack-1",
+        "pack-6"
+      ]
+    },
+    {
+      "type": "submit",
+      "values": [
+        0,
+        5
+      ],
+      "origin": "list-index",
+      "sameContainer": true
+    },
+    {
+      "type": "exit",
+      "x": 8,
+      "y": 2
+    }
+  ],
+  "variants": [
+    {
+      "input": {
+        "charges": [
+          4,
+          2,
+          6,
+          7,
+          4,
+          8
+        ],
+        "target": 8
+      },
+      "objectives": [
+        {
+          "type": "collect",
+          "itemIds": [
+            "pack-1",
+            "pack-5"
+          ]
+        },
+        {
+          "type": "submit",
+          "values": [
+            0,
+            4
+          ],
+          "origin": "list-index",
+          "sameContainer": true
+        },
+        {
+          "type": "exit",
+          "x": 8,
+          "y": 2
+        }
+      ]
+    },
+    {
+      "input": {
+        "charges": [
+          2,
+          2,
+          1,
+          4,
+          2,
+          4
+        ],
+        "target": 4
+      },
+      "objectives": [
+        {
+          "type": "collect",
+          "itemIds": [
+            "pack-1",
+            "pack-2"
+          ]
+        },
+        {
+          "type": "submit",
+          "values": [
+            0,
+            1
+          ],
+          "origin": "list-index",
+          "sameContainer": true
+        },
+        {
+          "type": "exit",
+          "x": 8,
+          "y": 2
+        }
+      ]
+    }
+  ],
+  "allowedApi": [
+    "scan",
+    "submit",
+    "move",
+    "pick"
+  ],
+  "cards": [
+    {
+      "id": "read",
+      "label": {
+        "zh": "读电量和目标",
+        "en": "Read charges and target"
+      },
+      "template": "order = scan()"
+    },
+    {
+      "id": "empty",
+      "label": {
+        "zh": "准备配对名单",
+        "en": "Prepare the pair list"
+      },
+      "template": "pair = []"
+    },
+    {
+      "id": "first",
+      "label": {
+        "zh": "按位置试第一块",
+        "en": "Test each first index in order"
+      },
+      "template": "for first in range(len(order[\"charges\"])):",
+      "block": true
+    },
+    {
+      "id": "second",
+      "label": {
+        "zh": "在右边试另一块",
+        "en": "Test each second index to the right"
+      },
+      "template": "for second in range(first + 1, len(order[\"charges\"])):",
+      "block": true
+    },
+    {
+      "id": "match",
+      "label": {
+        "zh": "还没选中且两块刚好够",
+        "en": "If no pair is chosen and the sum matches"
+      },
+      "template": "if len(pair) == 0 and (order[\"charges\"][first] + order[\"charges\"][second] == order[\"target\"]):",
+      "block": true
+    },
+    {
+      "id": "save",
+      "label": {
+        "zh": "记下两个位置",
+        "en": "Save both indices"
+      },
+      "template": "pair = [first, second]"
+    },
+    {
+      "id": "visit",
+      "label": {
+        "zh": "沿柜子依次查看六个位置",
+        "en": "Visit the six cabinet positions in order"
+      },
+      "template": "for index in range(len(order[\"charges\"])):",
+      "block": true
+    },
+    {
+      "id": "selected",
+      "label": {
+        "zh": "当前位置属于配对",
+        "en": "If this position is in the chosen pair"
+      },
+      "template": "if index in pair:",
+      "block": true
+    },
+    {
+      "id": "result",
+      "label": {
+        "zh": "按位置取出配对记录",
+        "en": "Read each index from the pair list"
+      },
+      "template": "for slot in range(len(pair)):",
+      "block": true
+    },
+    {
+      "id": "send",
+      "label": {
+        "zh": "提交配对位置",
+        "en": "Submit the selected index"
+      },
+      "template": "submit(pair[slot])"
+    },
+    {
+      "id": "up",
+      "label": {
+        "zh": "向上",
+        "en": "Up"
+      },
+      "template": "move(\"up\")"
+    },
+    {
+      "id": "right",
+      "label": {
+        "zh": "向右",
+        "en": "Right"
+      },
+      "template": "move(\"right\")"
+    },
+    {
+      "id": "down",
+      "label": {
+        "zh": "向下",
+        "en": "Down"
+      },
+      "template": "move(\"down\")"
+    },
+    {
+      "id": "left",
+      "label": {
+        "zh": "向左",
+        "en": "Left"
+      },
+      "template": "move(\"left\")"
+    },
+    {
+      "id": "pick",
+      "label": {
+        "zh": "拾取零件",
+        "en": "Pick up the part"
+      },
+      "template": "pick()"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "empty"
+    },
+    {
+      "cardId": "first",
+      "children": [
+        {
+          "cardId": "second",
+          "children": [
+            {
+              "cardId": "match",
+              "children": [
+                {
+                  "cardId": "save"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cardId": "visit",
+      "children": [
+        {
+          "cardId": "right"
+        },
+        {
+          "cardId": "selected",
+          "children": [
+            {
+              "cardId": "up"
+            },
+            {
+              "cardId": "pick"
+            },
+            {
+              "cardId": "down"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "result",
+      "children": [
+        {
+          "cardId": "send"
+        }
+      ]
+    }
+  ]
+}

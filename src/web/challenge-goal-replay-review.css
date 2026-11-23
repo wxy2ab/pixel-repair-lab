@@ -1,0 +1,95 @@
+.goal-replay-review {
+  display: grid;
+  gap: 9px;
+  min-width: 0;
+  padding: 9px;
+  border: 1px solid #537589;
+  border-radius: 7px;
+  background: #1a303d;
+  overflow-wrap: anywhere;
+}
+.goal-replay-review:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+.goal-replay-review-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 5px 8px;
+}
+.goal-replay-review h4, .goal-replay-review h5 { margin: 0; color: #ecf8ff; }
+.goal-replay-review h4 { font-size: 15px; }
+.goal-replay-review h5 { margin-bottom: 3px; font-size: 13px; }
+.goal-replay-review .goal-replay-review-runs, .goal-replay-review .goal-replay-review-score {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+  margin: 0;
+}
+.goal-replay-review .goal-replay-review-runs > div, .goal-replay-review .goal-replay-review-score > div {
+  display: grid;
+  justify-content: start;
+  align-content: start;
+  gap: 3px;
+  min-width: 0;
+  padding: 5px;
+  border-radius: 4px;
+  background: #223e4b;
+}
+.goal-replay-review-runs small { display: block; color: #b9f2dc; font-size: 11px; }
+.goal-replay-review-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  color: #edf8ff;
+  font-size: 12px;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+}
+.goal-replay-review-table th, .goal-replay-review-table td {
+  padding: 5px 3px;
+  border-bottom: 1px solid #395662;
+  text-align: start;
+  vertical-align: top;
+}
+.goal-replay-review-table th:first-child { width: 44%; }
+.goal-replay-review-table small { display: block; margin-block-start: 2px; color: #c1ddef; font-weight: 400; }
+.goal-replay-review ul {
+  display: grid;
+  gap: 3px;
+  margin: 2px 0 0;
+  padding-inline-start: 1.1em;
+  color: #d5e7f2;
+  font-size: 13px;
+}
+.goal-replay-review summary { color: #b7e2fa; cursor: pointer; font-size: 13px; }
+.goal-replay-review .goal-replay-review-advice {
+  padding: 6px 8px;
+  border-radius: 4px;
+  border-inline-start: 2px solid #e2aa66;
+  color: #ffe1ad;
+  background: #3c352c;
+}
+.goal-replay-review-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.goal-replay-plans {
+  display: grid;
+  gap: 5px;
+  min-inline-size: 0;
+  margin: 0;
+  padding: 6px;
+  border: 1px solid #537589;
+  border-radius: 6px;
+}
+.goal-replay-plans legend { padding-inline: 4px; color: #ecf8ff; font-size: 13px; font-weight: 700; }
+.goal-replay-plan-option {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px;
+  border-radius: 4px;
+  color: #e5f5fc;
+  font-size: 13px;
+  cursor: pointer;
+}
+.goal-replay-plan-option input { margin: 0; flex: none; accent-color: var(--mint); }
+.goal-replay-plan-option:has(input:checked) { background: #223e4b; }

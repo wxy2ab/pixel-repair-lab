@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "kind": "circuit",
+  "id": "dc-binary-rollover",
+  "order": 6004,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "binary-lamps",
+    "order": 1,
+    "title": {
+      "zh": "二进制与信号灯",
+      "en": "Binary Signals"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "站台加到下一号",
+    "en": "Advance the Bay Counter"
+  },
+  "brief": {
+    "zh": "值班员让站台牌加一号。遇到连续亮着的尾灯时，多盏灯可能要一起换状态。",
+    "en": "Advance the sign by one bay. Several lamps may need to change when the rightmost places are already lit."
+  },
+  "concept": {
+    "zh": "连续的 1 与二进制进位",
+    "en": "Runs of ones and binary carry"
+  },
+  "hints": [],
+  "mode": "binary",
+  "cases": [
+    {
+      "label": {
+        "zh": "从 7 号加到下一号",
+        "en": "Advance from bay 7"
+      },
+      "bits": [
+        0,
+        1,
+        1,
+        1
+      ],
+      "goal": {
+        "value": 8
+      },
+      "solution": {
+        "bits": [
+          1,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "从 11 号加到下一号",
+        "en": "Advance from bay 11"
+      },
+      "bits": [
+        1,
+        0,
+        1,
+        1
+      ],
+      "goal": {
+        "value": 12
+      },
+      "solution": {
+        "bits": [
+          1,
+          1,
+          0,
+          0
+        ]
+      }
+    }
+  ]
+}

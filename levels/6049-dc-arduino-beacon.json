@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "kind": "arduino",
+  "id": "dc-arduino-beacon",
+  "order": 6049,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "arduino-io", "order": 5,
+    "title": { "zh": "Arduino 输入与输出", "en": "Arduino Inputs and Outputs" }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "Arduino 小项目：按键呼叫灯",
+    "en": "Arduino Project · Push to Call"
+  },
+  "brief": {
+    "zh": "芽芽按住呼叫键时，值班员要看见亮灯，松开就要熄灭。为虚拟 UNO 设置灯的规则，运行程序，亲手按下、松开，检查两次读数。",
+    "en": "The attendant should see a lit lamp while Sprout holds the call button and a dark lamp when Sprout lets go. Set the rule on the virtual UNO, run the sketch, then press and release the button to check both readings."
+  },
+  "concept": {
+    "zh": "用 D2 读取呼叫键，用板载灯报告状态",
+    "en": "Read the call button on D2 and report its state with the onboard LED"
+  },
+  "hints": [],
+  "sketch": {
+    "mode": "button",
+    "lightWhen": "released",
+    "goal": {
+      "lightWhen": "pressed"
+    }
+  }
+}

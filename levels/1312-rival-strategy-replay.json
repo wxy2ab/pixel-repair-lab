@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "kind": "replay",
+  "id": "advanced-rival-strategy-replay",
+  "order": 1312,
+  "unit": { "id": "algorithm-advanced", "order": 70, "title": { "zh": "算法高级", "en": "Advanced Algorithms" } },
+  "topic": { "id": "rival-strategy", "order": 3, "title": { "zh": "对手策略", "en": "Rival Strategy" } },
+  "stage": "demo",
+  "title": { "zh": "避开对手就要拿到的补给", "en": "Leave the Rival’s Likely Pickup" },
+  "brief": { "zh": "计算两件补给各自的领先量。看机器人怎样舍近求远，走向更有把握的补给。", "en": "Calculate the margin for two supplies. Watch the robot take the route toward the more promising one." },
+  "concept": { "zh": "用所有对手的位置重新估算目标", "en": "Estimate a target using the positions of every rival" },
+  "hints": [{ "zh": "负数表示至少一个对手比你近。", "en": "A negative margin means at least one rival is closer." }],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": { "zh": "右侧有人更近，先去左侧", "en": "A rival is closer on the right, so go left" },
+      "source": "def distance(a, b):\n    dx = a[0] - b[0]\n    dy = a[1] - b[1]\n    if dx < 0:\n        dx = -dx\n    if dy < 0:\n        dy = -dy\n    return dx + dy\n\nplan = scan()\nmargins = []\nfor target in plan[\"targets\"]:\n    nearest = distance(plan[\"rivals\"][0], target)\n    for rival in plan[\"rivals\"]:\n        rival_distance = distance(rival, target)\n        if rival_distance < nearest:\n            nearest = rival_distance\n    margin = nearest - distance(plan[\"player\"], target)\n    margins.append(margin)\n    submit(margin)\nif margins[1] > margins[0]:\n    move(\"left\")\n    move(\"left\")",
+      "scenario": {
+        "tiles": ["#######", "#.....#", "#.....#", "#.....#", "#.....#", "#######"],
+        "start": { "x": 3, "y": 2 },
+        "items": [{ "x": 4, "y": 2, "id": "right-supply" }, { "x": 1, "y": 2, "id": "left-supply" }],
+        "allowedApi": ["scan", "submit", "move"],
+        "input": { "player": [3, 2], "targets": [[4, 2], [1, 2]], "rivals": [[4, 2], [5, 1], [4, 4]] },
+        "objectives": [{ "type": "submit", "values": [-1, 1] }, { "type": "exit", "x": 1, "y": 2 }]
+      }
+    }
+  ]
+}

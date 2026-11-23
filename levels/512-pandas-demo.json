@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "pandas-delivery-groups",
+  "order": 512,
+  "stage": "demo",
+  "unit": {
+    "id": "pandas",
+    "order": 110,
+    "title": {
+      "zh": "pandas",
+      "en": "pandas"
+    }
+  },
+  "topic": {
+    "id": "tables",
+    "order": 1,
+    "title": {
+      "zh": "数据表与列",
+      "en": "Tables and columns"
+    }
+  },
+  "title": {
+    "zh": "抽出表格里的行和列",
+    "en": "Pick Rows and Columns from the Table"
+  },
+  "brief": {
+    "zh": "在 pandas 里切换区域和列组合，看同一张表能回答哪些问题。",
+    "en": "Switch the area and column selection in pandas and see what questions one table can answer."
+  },
+  "concept": {
+    "zh": "列名帮助挑选信息，查询条件帮助挑选记录。",
+    "en": "Column names select fields, while the filter selects records."
+  },
+  "hints": [
+    {
+      "zh": "先显示所有区域，再只看仓库。比较结果行数和列名。",
+      "en": "Show all areas, then only Storage. Compare the row count and the column names."
+    }
+  ],
+  "steps": [
+    {
+      "operation": "table",
+      "input": "raw",
+      "label": {
+        "zh": "浏览原始表",
+        "en": "Explore the source table"
+      },
+      "prompt": {
+        "zh": "选择区域和列组合，比较每次输出的行数和列。",
+        "en": "Choose an area and column set, then compare the output rows and columns."
+      },
+      "initial": {
+        "columns": "all",
+        "zone": "all"
+      }
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "vision-image-inspection-project",
+  "order": 561,
+  "stage": "challenge",
+  "unit": {
+    "id": "yolox",
+    "order": 150,
+    "title": { "zh": "YOLOX", "en": "YOLOX" }
+  },
+  "courseFinal": true,
+  "mode": "project",
+  "title": { "zh": "综合项目 · 两张照片的巡检报告", "en": "Final Project · Inspect Two Photos" },
+  "brief": { "zh": "用同一组照片从 OpenCV 预处理做到 YOLOX 检测。对照原图、中间结果和最后的检测框，交出一份可核对的巡检报告。", "en": "Take the same pair of photos from OpenCV preprocessing through YOLOX detection. Compare the originals, the intermediate images, and the final boxes to make an inspection report." },
+  "concept": { "zh": "OpenCV 输出的图像会直接送给 YOLOX。预处理和置信度门槛都可能影响检测结果。", "en": "The images produced by OpenCV go directly into YOLOX. Both preprocessing and the confidence threshold can affect the detections." },
+  "hints": [
+    { "zh": "先把两张照片统一变亮，并把较长的一边缩放到 480 像素。运行预处理后再试检测。", "en": "Brighten both photos and scale the longer edge to 480 pixels. Run preprocessing before trying detection." },
+    { "zh": "核对原图里的狗和人。如果某张照片没有框，试着降低门槛，再看分数和框的位置。", "en": "Look for the dog and the person in the originals. If one photo has no box, lower the threshold, then check the scores and positions." }
+  ],
+  "cases": [
+    {
+      "image": "pair",
+      "label": { "zh": "维修站巡检样本", "en": "Station inspection set" },
+      "prompt": { "zh": "对两张照片使用“提亮”和长边 480 像素。调整检测门槛，让拉布拉多犬和宇航员各有一个正确的框。", "en": "Brighten both photos and set their long edges to 480 pixels. Adjust the detection threshold until the Labrador and the astronaut each have one correct box." },
+      "initial": { "maxSide": 640, "tone": "original", "confidence": 90 },
+      "goal": {
+        "maxSide": 480,
+        "tone": "brighten",
+        "labelsByImage": {
+          "labrador": [
+            "dog"
+          ],
+          "astronaut": [
+            "person"
+          ]
+        }
+      },
+      "solution": { "maxSide": 480, "tone": "brighten", "confidence": 35 }
+    }
+  ]
+}

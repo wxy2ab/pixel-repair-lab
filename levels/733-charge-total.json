@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "charge-total",
+  "order": 733,
+  "unit": {
+    "id": "foundations",
+    "order": 10,
+    "title": {
+      "zh": "Python 基础",
+      "en": "Python Foundations"
+    }
+  },
+  "topic": {
+    "id": "functions",
+    "order": 4,
+    "title": {
+      "zh": "函数与参数",
+      "en": "Functions and Parameters"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "写出电量相加函数",
+    "en": "Write the Charge Total Function"
+  },
+  "concept": {
+    "zh": "两个参数与加法返回值",
+    "en": "Two parameters and an addition result"
+  },
+  "brief": {
+    "zh": "写好 charge_total(current, added)。接收当前电量和新增电量，返回相加之后的总电量。通过测试后把这个函数保存起来。",
+    "en": "Complete charge_total(current, added). Take the current charge and the charge added, then return their sum. Save the function after it passes the tests."
+  },
+  "hints": [
+    {
+      "zh": "current 和 added 各存一个电量。把两个数相加，然后用 return 交回总数。",
+      "en": "current and added each hold a charge amount. Add them and use return to give back the total."
+    },
+    {
+      "zh": "把光标点到代码末尾，点击「用加法返回总量」就能添加返回指令。",
+      "en": "Click at the end of the code, then click Return the Sum to insert the return statement."
+    }
+  ],
+  "functionName": "charge_total",
+  "starterCode": "def charge_total(current, added):\n    pass\n",
+  "solutionCode": "def charge_total(current, added):\n    return current + added",
+  "snippets": [
+    {
+      "label": {
+        "zh": "用加法返回总量",
+        "en": "Return the sum"
+      },
+      "code": "    return current + added"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        3,
+        2
+      ],
+      "expected": 5
+    },
+    {
+      "args": [
+        8,
+        0
+      ],
+      "expected": 8
+    },
+    {
+      "args": [
+        0,
+        7
+      ],
+      "expected": 7
+    },
+    {
+      "args": [
+        5,
+        12
+      ],
+      "expected": 17
+    }
+  ]
+}

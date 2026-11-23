@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "kind": "circuit",
+  "id": "dc-transistor-demo",
+  "order": 6022,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "transistor-switch",
+    "order": 3,
+    "title": {
+      "zh": "晶体管开关",
+      "en": "Transistor Switches"
+    }
+  },
+  "stage": "demo",
+  "title": {
+    "zh": "试试两条不同的支路",
+    "en": "Explore the Two Paths"
+  },
+  "brief": {
+    "zh": "在第一组只改变基极输入。第二组把输入留在 HIGH，只开合灯支路。观察哪条路径还有电流。",
+    "en": "In the first case, change only the base input. In the second, leave the input HIGH and operate only the lamp switch. Watch which path still carries current."
+  },
+  "concept": {
+    "zh": "基极电平与灯支路",
+    "en": "Base input and lamp circuit"
+  },
+  "hints": [],
+  "mode": "transistor",
+  "cases": [
+    {
+      "label": {
+        "zh": "开关已合，只变输入",
+        "en": "Vary the input with the lamp switch closed"
+      },
+      "bits": [
+        1,
+        0
+      ]
+    },
+    {
+      "label": {
+        "zh": "输入已高，只变灯支路",
+        "en": "Try the lamp switch with the input HIGH"
+      },
+      "bits": [
+        0,
+        1
+      ]
+    }
+  ]
+}

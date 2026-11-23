@@ -1,0 +1,248 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "yolox-boxes-lesson",
+  "order": 551,
+  "stage": "explain",
+  "unit": {
+    "id": "yolox",
+    "order": 150,
+    "title": {
+      "zh": "YOLOX",
+      "en": "YOLOX"
+    }
+  },
+  "topic": {
+    "id": "bounding-boxes",
+    "order": 2,
+    "title": {
+      "zh": "边界框与重叠",
+      "en": "Bounding boxes and overlap"
+    }
+  },
+  "title": {
+    "zh": "读懂目标检测框",
+    "en": "Read a Detection Box"
+  },
+  "brief": {
+    "zh": "用左上角和宽高描述一个框，再比较它和另一个框有多贴合。",
+    "en": "Describe a box by its top-left corner, width, and height, then compare how well it overlaps another box."
+  },
+  "concept": {
+    "zh": "交并比用重叠面积除以两个框合起来覆盖的面积。",
+    "en": "Intersection over union divides the overlapping area by the area covered by either box."
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "四个数说清一个框",
+        "en": "Four numbers describe a box"
+      },
+      "body": {
+        "zh": "图像的左上角是 (0, 0)，x 向右增大，y 向下增大。框的左上角是 (x, y)，宽为 w，高为 h，右下角是 (x + w, y + h)。",
+        "en": "The image's top-left corner is (0, 0). x grows to the right and y down. A box with top-left corner (x, y), width w, and height h has bottom-right corner (x + w, y + h)."
+      }
+    },
+    {
+      "title": {
+        "zh": "交集和并集",
+        "en": "Intersection and union"
+      },
+      "body": {
+        "zh": "两个框的共同部分叫交集，任意一个框覆盖到的区域叫并集。交集面积除以并集面积得到交并比（IoU）。完全重合是 1，没有相交是 0。",
+        "en": "The part shared by both boxes is their intersection. Everything covered by either box is their union. Divide intersection area by union area to get intersection over union (IoU). Identical boxes score 1, and disjoint boxes score 0."
+      }
+    },
+    {
+      "title": {
+        "zh": "太大的框也会扣分",
+        "en": "An oversized box lowers the score"
+      },
+      "body": {
+        "zh": "把整张图都框起来，也许能盖住目标，但会把很多背景算进并集。把边缘向物体收紧，可以减少多余的面积。",
+        "en": "A box around the whole image might cover the object, but its union includes a lot of background. Bringing the edges closer to the object reduces that extra area."
+      }
+    }
+  ],
+  "animation": {
+    "layout": "row",
+    "frames": [
+      {
+        "caption": {
+          "zh": "示例中，框 A 从 (0, 0) 开始，宽 4，高 3。它的面积是 12。",
+          "en": "A starts at (0, 0), is 4 units wide and 3 high, and has an area of 12."
+        },
+        "items": [
+          {
+            "id": "a",
+            "label": {
+              "zh": "框 A",
+              "en": "Box A"
+            },
+            "value": {
+              "zh": "(0, 0) · 4 × 3 = 12",
+              "en": "(0, 0) · 4 × 3 = 12"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "框 B 同样大，向右移动 2 格。两个框只共同覆盖中间两列。",
+          "en": "B is the same size, shifted 2 units right. The boxes share only the middle two columns."
+        },
+        "items": [
+          {
+            "id": "a",
+            "label": {
+              "zh": "框 A",
+              "en": "Box A"
+            },
+            "value": {
+              "zh": "(0, 0) · 面积 12",
+              "en": "(0, 0) · area 12"
+            }
+          },
+          {
+            "id": "overlap",
+            "label": {
+              "zh": "交集",
+              "en": "Intersection"
+            },
+            "value": {
+              "zh": "2 × 3 = 6",
+              "en": "2 × 3 = 6"
+            },
+            "state": "active"
+          },
+          {
+            "id": "b",
+            "label": {
+              "zh": "框 B",
+              "en": "Box B"
+            },
+            "value": {
+              "zh": "(2, 0) · 面积 12",
+              "en": "(2, 0) · area 12"
+            }
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "共同部分只算一次。并集是 12 + 12 − 6 = 18，交并比是 6 ÷ 18，约 33%。",
+          "en": "Count the shared part only once. The union is 12 + 12 − 6 = 18. IoU is 6 ÷ 18, about 33%."
+        },
+        "items": [
+          {
+            "id": "overlap",
+            "label": {
+              "zh": "交集",
+              "en": "Intersection"
+            },
+            "value": {
+              "zh": "6",
+              "en": "6"
+            },
+            "state": "done"
+          },
+          {
+            "id": "union",
+            "label": {
+              "zh": "并集",
+              "en": "Union"
+            },
+            "value": {
+              "zh": "18",
+              "en": "18"
+            },
+            "state": "done"
+          },
+          {
+            "id": "iou",
+            "label": {
+              "zh": "交并比",
+              "en": "IoU"
+            },
+            "value": {
+              "zh": "约 33%",
+              "en": "About 33%"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "框 B 左移到和 A 完全重合。现在交集和并集都是 12。",
+          "en": "B moves left until it matches A. Now both the intersection and union are 12."
+        },
+        "items": [
+          {
+            "id": "overlap",
+            "label": {
+              "zh": "交集",
+              "en": "Intersection"
+            },
+            "value": {
+              "zh": "12",
+              "en": "12"
+            },
+            "state": "done"
+          },
+          {
+            "id": "union",
+            "label": {
+              "zh": "并集",
+              "en": "Union"
+            },
+            "value": {
+              "zh": "12",
+              "en": "12"
+            },
+            "state": "done"
+          },
+          {
+            "id": "iou",
+            "label": {
+              "zh": "交并比",
+              "en": "IoU"
+            },
+            "value": {
+              "zh": "100%",
+              "en": "100%"
+            },
+            "state": "active"
+          }
+        ]
+      }
+    ]
+  },
+  "question": {
+    "prompt": {
+      "zh": "两个框的交集面积为 4，并集面积为 16。交并比是多少？",
+      "en": "Two boxes have intersection area 4 and union area 16. What is their IoU?"
+    },
+    "options": [
+      {
+        "zh": "25%",
+        "en": "25%"
+      },
+      {
+        "zh": "40%",
+        "en": "40%"
+      },
+      {
+        "zh": "75%",
+        "en": "75%"
+      }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "交集除以并集，4 ÷ 16 = 25%。",
+      "en": "Divide intersection by union. 4 ÷ 16 = 25%."
+    }
+  }
+}

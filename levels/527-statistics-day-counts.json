@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "statistics-daily-reading-counts",
+  "order": 527,
+  "stage": "exercise",
+  "unit": { "id": "statistics", "order": 120, "title": { "zh": "统计分析", "en": "Statistics" } },
+  "topic": { "id": "grouped-summary", "order": 2, "title": { "zh": "按组比较", "en": "Compare groups" } },
+  "title": { "zh": "数一数每天有几条", "en": "Count the Readings for Each Day" },
+  "brief": { "zh": "为记录员准备一张表，显示每一天有多少条有效数据。", "en": "Make a table that tells the record keeper how many valid readings each day has." },
+  "concept": { "zh": "先按日期分组，再分别统计每组的条数。", "en": "Group the readings by day, then count each group separately." },
+  "hints": [{ "zh": "几个日期就有几条汇总行。检查第 2 天为什么只剩两条。", "en": "Expect one summary row per day. Check why day 2 has only two valid readings." }],
+  "steps": [
+    {
+      "operation": "group",
+      "input": "clean",
+      "label": { "zh": "按日计数", "en": "Count by day" },
+      "prompt": { "zh": "输出第 1 至 4 天各自的有效记录数。", "en": "Return a valid reading count for each of days 1 through 4." },
+      "initial": { "by": "zone", "statistic": "count" },
+      "goal": { "columns": ["day", "count"], "rows": [[1, 3], [2, 2], [3, 3], [4, 3]] },
+      "solution": { "by": "day", "statistic": "count" }
+    }
+  ]
+}

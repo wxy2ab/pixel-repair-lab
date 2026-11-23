@@ -1,0 +1,245 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "challenge-retransmission-load-audit",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "order": 1856,
+  "difficulty": "advanced",
+  "title": {
+    "zh": "传感器上报量核查",
+    "en": "Sensor Transmission Audit"
+  },
+  "concept": {
+    "zh": "保留重发 · 按日计数 · 工作量排行",
+    "en": "Retain retransmissions · Daily counts · Workload ranking"
+  },
+  "brief": {
+    "zh": "值班员要估算每天处理了多少条有温度的传感器来报。同一编号的重复上报也消耗处理时间，每条有效副本都要计一次。先交一份区域名统一、原始行位置仍完整的存档，再交处理了至少 3 条有效来报的日期排行榜。",
+    "en": "Estimate how many sensor messages with valid temperatures the station handled per day. A retransmission takes time too, so count every valid copy of a repeated ID. First archive the original row positions with normalized area names, then rank days with at least three valid messages."
+  },
+  "prerequisites": [
+    {
+      "unit": "pandas",
+      "topic": "cleaning"
+    },
+    {
+      "unit": "statistics",
+      "topic": "grouped-summary"
+    },
+    {
+      "unit": "database",
+      "topic": "sql-groups"
+    }
+  ],
+  "hints": [],
+  "steps": [
+    {
+      "operation": "clean",
+      "input": "raw",
+      "label": {
+        "zh": "原始来报存档",
+        "en": "Transmission archive"
+      },
+      "prompt": {
+        "zh": "统一区域名的空格和大小写，无效温度留空。保留每条原始记录，含空值和重复编号。",
+        "en": "Normalize spacing and case in area names. Blank out invalid temperatures. Keep every original row, including missing values and repeated IDs."
+      },
+      "initial": {
+        "trim": false,
+        "dropMissing": true,
+        "deduplicate": true
+      },
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            "hangar",
+            18
+          ],
+          [
+            2,
+            1,
+            "workshop",
+            24
+          ],
+          [
+            3,
+            1,
+            "storage",
+            20
+          ],
+          [
+            4,
+            2,
+            "hangar",
+            22
+          ],
+          [
+            5,
+            2,
+            "workshop",
+            28
+          ],
+          [
+            6,
+            2,
+            "storage",
+            null
+          ],
+          [
+            7,
+            3,
+            "hangar",
+            26
+          ],
+          [
+            8,
+            3,
+            "workshop",
+            32
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16
+          ],
+          [
+            10,
+            4,
+            "hangar",
+            30
+          ],
+          [
+            11,
+            4,
+            "workshop",
+            null
+          ],
+          [
+            12,
+            4,
+            "storage",
+            24
+          ],
+          [
+            13,
+            4,
+            "workshop",
+            36
+          ]
+        ]
+      },
+      "solution": {
+        "trim": true,
+        "dropMissing": false,
+        "deduplicate": false
+      }
+    },
+    {
+      "operation": "group",
+      "input": "previous",
+      "label": {
+        "zh": "日处理量",
+        "en": "Daily processing volume"
+      },
+      "prompt": {
+        "zh": "每行对应一天，只统计有有效温度的上报数。",
+        "en": "Make one row per day, counting messages that contain a valid temperature."
+      },
+      "initial": {
+        "by": "zone",
+        "statistic": "sum"
+      },
+      "goal": {
+        "columns": [
+          "day",
+          "count"
+        ],
+        "rows": [
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            3
+          ]
+        ]
+      },
+      "solution": {
+        "by": "day",
+        "statistic": "count"
+      }
+    },
+    {
+      "operation": "report",
+      "input": "previous",
+      "label": {
+        "zh": "高工作量日期",
+        "en": "High-workload dates"
+      },
+      "prompt": {
+        "zh": "只保留至少 3 条的日期，按数量从高到低。同数量时按日期从早到晚。",
+        "en": "Keep dates with at least three messages. Sort by count, highest first, and put earlier dates first when tied."
+      },
+      "initial": {
+        "minimum": 2,
+        "sort": "key"
+      },
+      "goal": {
+        "columns": [
+          "day",
+          "count"
+        ],
+        "rows": [
+          [
+            3,
+            4
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            4,
+            3
+          ]
+        ]
+      },
+      "solution": {
+        "minimum": 3,
+        "sort": "value-desc"
+      }
+    }
+  ]
+}

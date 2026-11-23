@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "pandas-hangar-table",
+  "order": 514,
+  "stage": "exercise",
+  "unit": {
+    "id": "pandas",
+    "order": 110,
+    "title": {
+      "zh": "pandas",
+      "en": "pandas"
+    }
+  },
+  "topic": {
+    "id": "tables",
+    "order": 1,
+    "title": {
+      "zh": "数据表与列",
+      "en": "Tables and columns"
+    }
+  },
+  "title": {
+    "zh": "找出机库记录的日期",
+    "en": "Find the Days of Hangar Readings"
+  },
+  "brief": {
+    "zh": "先在原表里找区域字段恰好写成 hangar 的记录，再把结果缩成日期和区域两列。",
+    "en": "Find raw rows whose area is written exactly as hangar, then show only the day and area columns."
+  },
+  "concept": {
+    "zh": "行筛选可以和选列一起做。文本比较区分大小写和空格。",
+    "en": "Combine row filtering with column selection. Text matching distinguishes letter case and spaces."
+  },
+  "hints": [
+    {
+      "zh": "原表写成 “ Hangar ” 的值带着空格和不同的大小写，在清洗前不会匹配。",
+      "en": "The raw value “ Hangar ” has extra spaces and a different case, so it will not match before cleaning."
+    }
+  ],
+  "steps": [
+    {
+      "operation": "table",
+      "input": "raw",
+      "label": {
+        "zh": "选择机库行和两列",
+        "en": "Select Hangar rows and two columns"
+      },
+      "prompt": {
+        "zh": "只留 zone 恰好为 hangar 的行，按顺序显示 day 和 zone。",
+        "en": "Keep only rows whose zone is exactly hangar and show day and zone, in that order."
+      },
+      "initial": {
+        "columns": "all",
+        "zone": "storage"
+      },
+      "solution": {
+        "columns": "day-zone",
+        "zone": "hangar"
+      },
+      "goal": {
+        "columns": [
+          "day",
+          "zone"
+        ],
+        "rows": [
+          [
+            1,
+            "hangar"
+          ],
+          [
+            3,
+            "hangar"
+          ],
+          [
+            4,
+            "hangar"
+          ]
+        ]
+      }
+    }
+  ]
+}

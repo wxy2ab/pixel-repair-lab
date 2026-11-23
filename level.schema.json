@@ -1,0 +1,3900 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pixel-repair-lab.local/level.schema.json",
+  "title": "Pixel Repair Lab level",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/grid"
+    },
+    {
+      "$ref": "#/$defs/ai"
+    },
+    {
+      "$ref": "#/$defs/lecture"
+    },
+    {
+      "$ref": "#/$defs/replay"
+    },
+    {
+      "$ref": "#/$defs/lab"
+    },
+    {
+      "$ref": "#/$defs/algorithm"
+    },
+    {
+      "$ref": "#/$defs/arena"
+    },
+    {
+      "$ref": "#/$defs/circuit"
+    },
+    {
+      "$ref": "#/$defs/arduino"
+    },
+    {
+      "$ref": "#/$defs/breadboard"
+    },
+    {
+      "$ref": "#/$defs/machine"
+    },
+    {
+      "$ref": "#/$defs/data"
+    },
+    {
+      "$ref": "#/$defs/vision"
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]*$"
+    },
+    "difficulty": {
+      "enum": ["starter", "intermediate", "advanced"]
+    },
+    "prerequisites": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "unit": { "$ref": "#/$defs/id" },
+          "topic": { "$ref": "#/$defs/id" }
+        },
+        "required": ["unit"]
+      }
+    },
+    "localized": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "zh": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200
+        },
+        "en": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200
+        }
+      },
+      "required": [
+        "zh",
+        "en"
+      ]
+    },
+    "position": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 19
+        },
+        "y": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 19
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ]
+    },
+    "origin": {
+      "enum": [
+        "list-index",
+        "stack-pop",
+        "queue-pop",
+        "dict-index",
+        "memory-load"
+      ]
+    },
+    "objective": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "exit"
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 19
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 19
+            }
+          },
+          "required": [
+            "type",
+            "x",
+            "y"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "collect"
+            },
+            "itemIds": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/id"
+              },
+              "minItems": 1,
+              "maxItems": 32
+            }
+          },
+          "required": [
+            "type",
+            "itemIds"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "moves"
+            },
+            "origin": {
+              "$ref": "#/$defs/origin"
+            }
+          },
+          "required": [
+            "type",
+            "origin"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "submit"
+            },
+            "values": {
+              "type": "array",
+              "items": {},
+              "minItems": 1,
+              "maxItems": 32
+            },
+            "origin": {
+              "$ref": "#/$defs/origin"
+            },
+            "sameContainer": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "type",
+            "values"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "memory"
+            },
+            "address": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 31
+            },
+            "value": {
+              "type": "integer",
+              "minimum": -1000000,
+              "maximum": 1000000
+            }
+          },
+          "required": [
+            "type",
+            "address",
+            "value"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "halt"
+            }
+          },
+          "required": [
+            "type"
+          ]
+        }
+      ]
+    },
+    "card": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "label": {
+          "$ref": "#/$defs/localized"
+        },
+        "template": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "^[^\\r\\n]+$"
+        },
+        "block": {
+          "type": "boolean"
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "$ref": "#/$defs/id"
+              },
+              "label": {
+                "$ref": "#/$defs/localized"
+              },
+              "choices": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "$ref": "#/$defs/id"
+                    },
+                    "label": {
+                      "$ref": "#/$defs/localized"
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[^\\r\\n]+$"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "label",
+                    "code"
+                  ]
+                },
+                "minItems": 1,
+                "maxItems": 24
+              }
+            },
+            "required": [
+              "name",
+              "label",
+              "choices"
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 8
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "template"
+      ]
+    },
+    "cardInstance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cardId": {
+          "$ref": "#/$defs/id"
+        },
+        "values": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/id"
+          },
+          "maxProperties": 8
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cardInstance"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "cardId"
+      ]
+    },
+    "gridDevices": {
+      "type": "array", "maxItems": 48,
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "$ref": "#/$defs/id" },
+          "x": { "type": "integer", "minimum": 0, "maximum": 19 },
+          "y": { "type": "integer", "minimum": 0, "maximum": 19 }
+        },
+        "required": ["id", "x", "y", "kind"],
+        "unevaluatedProperties": false,
+        "oneOf": [
+          { "properties": { "kind": { "enum": ["switch", "key"] } } },
+          { "properties": { "kind": { "const": "door" }, "keyId": { "$ref": "#/$defs/id" } }, "required": ["keyId"] },
+          { "properties": { "kind": { "const": "door" }, "switchId": { "$ref": "#/$defs/id" } }, "required": ["switchId"] },
+          { "properties": { "kind": { "const": "chest" }, "keyId": { "$ref": "#/$defs/id" } } },
+          { "properties": { "kind": { "const": "mirror" }, "orientation": { "enum": ["/", "\\"] } }, "required": ["orientation"] },
+          { "properties": {
+              "kind": { "const": "laser" }, "direction": { "$ref": "#/$defs/gridDirection" }, "switchId": { "$ref": "#/$defs/id" }
+            }, "required": ["direction"] },
+          { "properties": {
+              "kind": { "const": "cannon" }, "direction": { "$ref": "#/$defs/gridDirection" },
+              "period": { "$ref": "#/$defs/gridTurnLimit" }, "phase": { "type": "integer", "minimum": 0, "maximum": 239 }
+            }, "required": ["direction", "period"] },
+          { "properties": { "kind": { "const": "bomb" }, "atTurn": { "$ref": "#/$defs/gridTurnLimit" } }, "required": ["atTurn"] }
+        ]
+      }
+    },
+    "gridDirection": { "enum": ["up", "down", "left", "right"] },
+    "gridApi": {
+      "type": "array",
+      "items": { "enum": ["move", "scan", "pick", "say", "submit", "load", "store", "step", "wait", "read_map"] },
+      "minItems": 1, "maxItems": 10, "uniqueItems": true
+    },
+    "gridTurnLimit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 240
+    },
+    "grid": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9999
+        },
+        "title": {
+          "$ref": "#/$defs/localized"
+        },
+        "brief": {
+          "$ref": "#/$defs/localized"
+        },
+        "concept": {
+          "$ref": "#/$defs/localized"
+        },
+        "hints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/localized"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "kind": {
+          "const": "grid"
+        },
+        "helpers": { "$ref": "#/$defs/algorithm/properties/helpers" },
+        "turnLimit": {
+          "$ref": "#/$defs/gridTurnLimit"
+        },
+        "devices": { "$ref": "#/$defs/gridDevices" },
+        "tiles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20,
+            "pattern": "^[.#]+$"
+          },
+          "minItems": 1,
+          "maxItems": 20
+        },
+        "start": {
+          "$ref": "#/$defs/position"
+        },
+        "enemies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/position"
+                },
+                "minItems": 1,
+                "maxItems": 32
+              }
+            },
+            "required": [
+              "path"
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/id"
+              },
+              "x": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 19
+              },
+              "y": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 19
+              }
+            },
+            "required": [
+              "id",
+              "x",
+              "y"
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 32
+        },
+        "input": {},
+        "memory": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": -1000000,
+            "maximum": 1000000
+          },
+          "minItems": 1,
+          "maxItems": 32
+        },
+        "instructions": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "op": {
+                    "enum": [
+                      "LOAD",
+                      "ADD",
+                      "STORE"
+                    ]
+                  },
+                  "address": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 31
+                  }
+                },
+                "required": [
+                  "op",
+                  "address"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "op": {
+                    "const": "HALT"
+                  }
+                },
+                "required": [
+                  "op"
+                ]
+              }
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 32
+        },
+        "objectives": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/objective"
+          },
+          "minItems": 1,
+          "maxItems": 16
+        },
+        "allowedApi": { "$ref": "#/$defs/gridApi" },
+        "cards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/card"
+          },
+          "minItems": 1,
+          "maxItems": 48
+        },
+        "solutionCards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cardInstance"
+          },
+          "minItems": 1,
+          "maxItems": 100
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "turnLimit": {
+                "$ref": "#/$defs/gridTurnLimit"
+              },
+              "devices": { "$ref": "#/$defs/gridDevices" },
+              "tiles": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 20,
+                  "pattern": "^[.#]+$"
+                },
+                "minItems": 1,
+                "maxItems": 20
+              },
+              "start": {
+                "$ref": "#/$defs/position"
+              },
+              "enemies": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "path": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/$defs/position"
+                      },
+                      "minItems": 1,
+                      "maxItems": 32
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ]
+                },
+                "minItems": 0,
+                "maxItems": 12
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "$ref": "#/$defs/id"
+                    },
+                    "x": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 19
+                    },
+                    "y": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 19
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "x",
+                    "y"
+                  ]
+                },
+                "minItems": 0,
+                "maxItems": 32
+              },
+              "input": {},
+              "memory": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": -1000000,
+                  "maximum": 1000000
+                },
+                "minItems": 1,
+                "maxItems": 32
+              },
+              "instructions": {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "op": {
+                          "enum": [
+                            "LOAD",
+                            "ADD",
+                            "STORE"
+                          ]
+                        },
+                        "address": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 31
+                        }
+                      },
+                      "required": [
+                        "op",
+                        "address"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "op": {
+                          "const": "HALT"
+                        }
+                      },
+                      "required": [
+                        "op"
+                      ]
+                    }
+                  ]
+                },
+                "minItems": 1,
+                "maxItems": 32
+              },
+              "objectives": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/objective"
+                },
+                "minItems": 1,
+                "maxItems": 16
+              }
+            },
+            "required": []
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "tutorial": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "$ref": "#/$defs/localized"
+              },
+              "target": {
+                "enum": [
+                  "palette",
+                  "program",
+                  "run",
+                  "board"
+                ]
+              }
+            },
+            "required": [
+              "text",
+              "target"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 10
+        },
+        "unit": {
+          "$ref": "#/$defs/unit"
+        },
+        "stage": {
+          "enum": [
+            "explain",
+            "demo",
+            "exercise",
+            "challenge"
+          ]
+        },
+        "topic": {
+          "$ref": "#/$defs/courseTopic"
+        },
+        "prerequisites": { "$ref": "#/$defs/prerequisites" },
+        "difficulty": { "$ref": "#/$defs/difficulty" }
+      },
+      "required": [
+        "version",
+        "id",
+        "order",
+        "title",
+        "brief",
+        "concept",
+        "hints",
+        "kind",
+        "tiles",
+        "start",
+        "objectives",
+        "allowedApi",
+        "cards",
+        "solutionCards"
+      ]
+    },
+    "aiFault": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "itemId": { "$ref": "#/$defs/id" },
+        "quantity": { "type": "integer", "minimum": 0, "maximum": 99 }
+      },
+      "required": ["itemId", "quantity"]
+    },
+    "ai": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9999
+        },
+        "title": {
+          "$ref": "#/$defs/localized"
+        },
+        "brief": {
+          "$ref": "#/$defs/localized"
+        },
+        "concept": {
+          "$ref": "#/$defs/localized"
+        },
+        "hints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/localized"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "kind": {
+          "const": "ai"
+        },
+        "inventory": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/id"
+              },
+              "label": {
+                "$ref": "#/$defs/localized"
+              },
+              "aliases": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 60
+                },
+                "minItems": 0,
+                "maxItems": 20
+              }
+            },
+            "required": [
+              "id",
+              "label",
+              "aliases"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 20
+        },
+        "required": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/id"
+          },
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 99
+          },
+          "minProperties": 1,
+          "maxProperties": 20
+        },
+        "trainingFault": {
+          "$ref": "#/$defs/aiFault"
+        },
+        "workflow": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "review": { "enum": ["automatic", "manual"] },
+            "faults": { "type": "array", "maxItems": 3, "items": { "$ref": "#/$defs/aiFault" } },
+            "cards": { "type": "array", "minItems": 1, "maxItems": 14, "items": { "$ref": "#/$defs/localized" } },
+            "draft": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 20,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": { "$ref": "#/$defs/id" },
+                      "quantity": { "type": "integer", "minimum": 1, "maximum": 99 }
+                    },
+                    "required": ["id", "quantity"]
+                  }
+                }
+              },
+              "required": ["items"]
+            }
+          },
+          "required": ["review", "faults"]
+        },
+        "courseFinal": { "const": true },
+        "examplePrompts": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "zh": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              "minItems": 1,
+              "maxItems": 6
+            },
+            "en": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              "minItems": 1,
+              "maxItems": 6
+            }
+          },
+          "required": [
+            "zh",
+            "en"
+          ]
+        },
+        "unit": {
+          "$ref": "#/$defs/unit"
+        },
+        "stage": {
+          "enum": [
+            "explain",
+            "demo",
+            "exercise",
+            "challenge"
+          ]
+        },
+        "topic": {
+          "$ref": "#/$defs/courseTopic"
+        },
+        "prerequisites": { "$ref": "#/$defs/prerequisites" },
+        "difficulty": { "$ref": "#/$defs/difficulty" }
+      },
+      "required": [
+        "version",
+        "id",
+        "order",
+        "title",
+        "brief",
+        "concept",
+        "hints",
+        "kind",
+        "inventory",
+        "required",
+        "examplePrompts"
+      ],
+      "oneOf": [{ "required": ["trainingFault"] }, { "required": ["workflow"] }]
+    },
+    "unit": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9999
+        },
+        "title": {
+          "$ref": "#/$defs/localized"
+        }
+      },
+      "required": [
+        "id",
+        "order",
+        "title"
+      ]
+    },
+    "programGraphic": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "line": { "type": "integer", "minimum": 1, "maximum": 30 },
+        "label": { "$ref": "#/$defs/localized" },
+        "note": { "$ref": "#/$defs/localized" },
+        "icon": { "enum": ["battery", "store", "call", "compute", "return", "display", "function"] },
+        "calls": { "$ref": "#/$defs/id" }
+      },
+      "required": ["id", "line", "label", "note", "icon"]
+    },
+    "programOrder": {
+      "type": "array", "minItems": 2, "maxItems": 6, "uniqueItems": true, "items": { "$ref": "#/$defs/id" }
+    },
+    "programVisual": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": { "$ref": "#/$defs/localized" },
+        "main": { "type": "array", "minItems": 2, "maxItems": 6, "items": { "$ref": "#/$defs/programGraphic" } },
+        "functions": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "title": { "$ref": "#/$defs/localized" },
+              "header": { "$ref": "#/$defs/programGraphic" },
+              "steps": { "type": "array", "minItems": 1, "maxItems": 8, "items": { "$ref": "#/$defs/programGraphic" } }
+            },
+            "required": ["id", "title", "header", "steps"]
+          }
+        },
+        "practice": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "title": { "$ref": "#/$defs/localized" },
+              "prompt": { "$ref": "#/$defs/localized" },
+              "order": { "$ref": "#/$defs/programOrder" }
+            },
+            "required": ["title", "prompt", "order"]
+          }
+        }
+      },
+      "required": ["title", "main", "functions", "practice"]
+    },
+    "programName": { "type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]{0,31}$" },
+    "chargeValues": {
+      "type": "array",
+      "maxItems": 6,
+      "items": { "$ref": "#/$defs/chargeValue" }
+    },
+    "chargeValue": { "type": "integer", "minimum": 0, "maximum": 20000 },
+    "chargingChallenge": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "trialCase": { "type": "integer", "minimum": 0, "maximum": 15 },
+        "predictions": {
+          "type": "array", "minItems": 1, "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "caseIndex": { "type": "integer", "minimum": 0, "maximum": 15 },
+              "options": {
+                "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+                "items": {
+                  "type": "array", "maxItems": 4,
+                  "items": { "$ref": "#/$defs/chargeValues" }
+                }
+              }
+            },
+            "required": ["caseIndex", "options"]
+          }
+        }
+      },
+      "required": ["trialCase", "predictions"]
+    },
+    "batteryDispatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "trialCase": { "type": "integer", "minimum": 0, "maximum": 15 },
+        "predictions": {
+          "type": "array", "minItems": 1, "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "caseIndex": { "type": "integer", "minimum": 0, "maximum": 15 },
+              "orders": {
+                "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+                "items": {
+                  "type": "array", "minItems": 1, "maxItems": 7, "uniqueItems": true,
+                  "items": { "$ref": "#/$defs/batteryName" }
+                }
+              },
+              "records": {
+                "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+                "items": { "$ref": "#/$defs/dictionaryChargeRecord" }
+              }
+            },
+            "required": ["caseIndex", "orders", "records"]
+          }
+        }
+      },
+      "required": ["trialCase", "predictions"]
+    },
+    "batteryPipeline": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "trialCase": { "type": "integer", "minimum": 0, "maximum": 15 },
+        "prediction": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "caseIndex": { "type": "integer", "minimum": 0, "maximum": 15 },
+            "orders": {
+              "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+              "items": {
+                "type": "array", "minItems": 2, "maxItems": 8,
+                "items": { "$ref": "#/$defs/chargeValue" }
+              }
+            },
+            "pairs": {
+              "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+              "items": {
+                "type": "array", "maxItems": 2,
+                "items": { "$ref": "#/$defs/chargeValue" }
+              }
+            },
+            "totals": {
+              "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+              "items": { "type": "integer", "minimum": 0, "maximum": 160000 }
+            }
+          },
+          "required": ["caseIndex", "orders", "pairs", "totals"]
+        }
+      },
+      "required": ["trialCase", "prediction"]
+    },
+    "debuggingLessonCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": { "$ref": "#/$defs/localized" },
+        "batteries": { "$ref": "#/$defs/chargeValues", "type": "array", "minItems": 1 },
+        "expected": { "$ref": "#/$defs/chargeValues", "type": "array", "minItems": 1 },
+        "predictions": {
+          "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+          "items": { "$ref": "#/$defs/chargeValues" }
+        }
+      },
+      "required": ["label", "batteries", "expected"]
+    },
+    "nestedChargeRows": {
+      "type": "array", "minItems": 2, "maxItems": 4,
+      "items": { "$ref": "#/$defs/chargeValues" }
+    },
+    "nestedLoopsCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": { "$ref": "#/$defs/localized" },
+        "rows": { "$ref": "#/$defs/nestedChargeRows" },
+        "expected": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "rounds": { "type": "integer", "minimum": 0, "maximum": 24 },
+            "rows": { "$ref": "#/$defs/nestedChargeRows" }
+          },
+          "required": ["rounds", "rows"]
+        },
+        "predictions": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "rounds": {
+              "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+              "items": { "type": "integer", "minimum": 0, "maximum": 24 }
+            },
+            "rows": {
+              "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+              "items": { "$ref": "#/$defs/nestedChargeRows" }
+            }
+          },
+          "required": ["rounds", "rows"]
+        }
+      },
+      "required": ["label", "rows", "expected"]
+    },
+    "batteryName": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,15}$" },
+    "namedBattery": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/$defs/batteryName" },
+        "charge": { "$ref": "#/$defs/chargeValue" }
+      },
+      "required": ["name", "charge"]
+    },
+    "namedBatteryBatch": {
+      "type": "array", "minItems": 2, "maxItems": 6,
+      "items": { "$ref": "#/$defs/namedBattery" }
+    },
+    "batteryOrder": {
+      "type": "array", "minItems": 2, "maxItems": 6, "uniqueItems": true,
+      "items": { "$ref": "#/$defs/batteryName" }
+    },
+    "batteryNameSequence": {
+      "type": "array", "maxItems": 10,
+      "items": { "$ref": "#/$defs/batteryName" }
+    },
+    "batterySequenceOptions": {
+      "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+      "items": { "$ref": "#/$defs/batteryNameSequence" }
+    },
+    "batterySequenceCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": { "$ref": "#/$defs/localized" },
+        "batteries": { "$ref": "#/$defs/namedBatteryBatch" },
+        "source": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "operations": {
+          "type": "array", "minItems": 3, "maxItems": 10,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object", "additionalProperties": false,
+                "properties": { "kind": { "const": "push" }, "battery": { "$ref": "#/$defs/batteryName" } },
+                "required": ["kind", "battery"]
+              },
+              {
+                "type": "object", "additionalProperties": false,
+                "properties": { "kind": { "const": "pop" } },
+                "required": ["kind"]
+              }
+            ]
+          }
+        },
+        "expected": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "popped": { "$ref": "#/$defs/batteryNameSequence" },
+            "remaining": { "$ref": "#/$defs/batteryNameSequence" }
+          },
+          "required": ["popped", "remaining"]
+        },
+        "predictions": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "popped": { "$ref": "#/$defs/batterySequenceOptions" },
+            "remaining": { "$ref": "#/$defs/batterySequenceOptions" }
+          },
+          "required": ["popped", "remaining"]
+        }
+      },
+      "required": ["label", "batteries", "operations", "expected"]
+    },
+    "batterySequenceLesson": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "cases": {
+          "type": "array", "minItems": 2, "maxItems": 5,
+          "items": { "$ref": "#/$defs/batterySequenceCase" }
+        }
+      },
+      "required": ["cases"]
+    },
+    "listPositionCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": { "$ref": "#/$defs/localized" },
+        "batteries": { "$ref": "#/$defs/namedBatteryBatch" },
+        "spare": { "$ref": "#/$defs/namedBattery" },
+        "readIndex": { "type": "integer", "minimum": 0, "maximum": 5 },
+        "insertIndex": { "type": "integer", "minimum": 0, "maximum": 6 },
+        "removeIndex": { "type": "integer", "minimum": 0, "maximum": 6 },
+        "pickIndex": { "type": "integer", "minimum": 0, "maximum": 5 },
+        "expected": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "order": { "$ref": "#/$defs/batteryOrder" },
+            "picked": { "$ref": "#/$defs/batteryName" }
+          },
+          "required": ["order", "picked"]
+        },
+        "predictions": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "orders": {
+              "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+              "items": { "$ref": "#/$defs/batteryOrder" }
+            },
+            "picked": {
+              "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+              "items": { "$ref": "#/$defs/batteryName" }
+            }
+          },
+          "required": ["orders", "picked"]
+        }
+      },
+      "required": ["label", "batteries", "spare", "readIndex", "insertIndex", "removeIndex", "pickIndex", "expected"]
+    },
+    "structureSources": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "stack": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "queue": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "dictionary": { "type": "string", "minLength": 1, "maxLength": 2000 }
+      },
+      "required": ["stack", "queue", "dictionary"]
+    },
+    "structuresLesson": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sources": { "$ref": "#/$defs/structureSources" },
+        "demo": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "batteries": { "$ref": "#/$defs/namedBatteryBatch" },
+            "index": { "type": "integer", "minimum": 0, "maximum": 5 },
+            "key": { "$ref": "#/$defs/batteryName" }
+          },
+          "required": ["batteries", "index", "key"]
+        },
+        "practice": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "batteries": { "$ref": "#/$defs/namedBatteryBatch" },
+            "index": { "type": "integer", "minimum": 0, "maximum": 5 },
+            "key": { "$ref": "#/$defs/batteryName" },
+            "tasks": {
+              "type": "array", "minItems": 4, "maxItems": 4,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "kind": { "enum": ["list", "stack", "queue", "dictionary"] },
+                  "prompt": { "$ref": "#/$defs/localized" }
+                },
+                "required": ["kind", "prompt"]
+              }
+            }
+          },
+          "required": ["batteries", "index", "key", "tasks"]
+        }
+      },
+      "required": ["sources", "demo", "practice"]
+    },
+    "collectionChargeRecord": {
+      "type": "object", "minProperties": 2, "maxProperties": 6,
+      "propertyNames": { "$ref": "#/$defs/batteryName" },
+      "additionalProperties": { "$ref": "#/$defs/chargeValue" }
+    },
+    "collectionChargeChoices": {
+      "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+      "items": { "$ref": "#/$defs/chargeValue" }
+    },
+    "dictionaryChargeRecord": {
+      "type": "object", "minProperties": 1, "maxProperties": 7,
+      "propertyNames": { "$ref": "#/$defs/batteryName" },
+      "additionalProperties": { "$ref": "#/$defs/chargeValue" }
+    },
+    "dictionaryLessonCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": { "$ref": "#/$defs/localized" },
+        "batteries": { "$ref": "#/$defs/namedBatteryBatch" },
+        "key": { "$ref": "#/$defs/batteryName" },
+        "arrival": { "$ref": "#/$defs/namedBattery" },
+        "increment": { "type": "integer", "minimum": 1, "maximum": 1000 },
+        "source": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "expected": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "reading": { "$ref": "#/$defs/chargeValue" },
+            "records": { "$ref": "#/$defs/dictionaryChargeRecord" }
+          },
+          "required": ["reading", "records"]
+        },
+        "predictions": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "readings": { "$ref": "#/$defs/collectionChargeChoices" },
+            "records": {
+              "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+              "items": { "$ref": "#/$defs/dictionaryChargeRecord" }
+            }
+          },
+          "required": ["readings", "records"]
+        }
+      },
+      "required": ["label", "batteries", "key", "arrival", "increment", "expected"]
+    },
+    "collectionLessonCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": { "$ref": "#/$defs/localized" },
+        "batteries": { "$ref": "#/$defs/namedBatteryBatch" },
+        "expected": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "position": { "$ref": "#/$defs/chargeValue" },
+            "named": { "$ref": "#/$defs/chargeValue" },
+            "records": { "$ref": "#/$defs/collectionChargeRecord" }
+          },
+          "required": ["position", "named", "records"]
+        },
+        "predictions": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "position": { "$ref": "#/$defs/collectionChargeChoices" },
+            "named": { "$ref": "#/$defs/collectionChargeChoices" },
+            "records": {
+              "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+              "items": { "$ref": "#/$defs/collectionChargeRecord" }
+            }
+          },
+          "required": ["position", "named", "records"]
+        }
+      },
+      "required": ["label", "batteries", "expected"]
+    },
+    "batterySearchBatteries": {
+      "type": "array", "minItems": 3, "maxItems": 12,
+      "items": { "$ref": "#/$defs/namedBattery" }
+    },
+    "batterySearchCount": { "type": "integer", "minimum": 1, "maximum": 12 },
+    "batterySearchExpected": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "battery": { "$ref": "#/$defs/batteryName" },
+        "linear": { "$ref": "#/$defs/batterySearchCount" },
+        "binary": { "$ref": "#/$defs/batterySearchCount" }
+      },
+      "required": ["battery", "linear", "binary"]
+    },
+    "batterySearchCountOptions": {
+      "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+      "items": { "$ref": "#/$defs/batterySearchCount" }
+    },
+    "batterySearchLesson": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "binarySource": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "demo": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "batteries": { "$ref": "#/$defs/batterySearchBatteries" },
+            "target": { "$ref": "#/$defs/chargeValue" },
+            "expected": { "$ref": "#/$defs/batterySearchExpected" },
+            "manualOrder": {
+              "type": "array", "minItems": 3, "maxItems": 12, "uniqueItems": true,
+              "items": { "$ref": "#/$defs/batteryName" }
+            }
+          },
+          "required": ["batteries", "target", "expected", "manualOrder"]
+        },
+        "practice": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "batteries": { "$ref": "#/$defs/batterySearchBatteries" },
+            "target": { "$ref": "#/$defs/chargeValue" },
+            "expected": { "$ref": "#/$defs/batterySearchExpected" },
+            "predictions": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "linear": { "$ref": "#/$defs/batterySearchCountOptions" },
+                "binary": { "$ref": "#/$defs/batterySearchCountOptions" }
+              },
+              "required": ["linear", "binary"]
+            }
+          },
+          "required": ["batteries", "target", "expected", "predictions"]
+        }
+      },
+      "required": ["binarySource", "demo", "practice"]
+    },
+    "firstBatterySearchInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "batteries": { "$ref": "#/$defs/batterySearchBatteries" },
+        "target": { "$ref": "#/$defs/chargeValue" }
+      },
+      "required": ["batteries", "target"]
+    },
+    "batterySearchRanges": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "array", "minItems": 2, "maxItems": 2,
+        "items": { "type": "integer", "minimum": -1, "maximum": 12 }
+      }
+    },
+    "firstBatterySearchLesson": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "firstSource": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "demo": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "unique": { "$ref": "#/$defs/firstBatterySearchInput" },
+            "repeated": { "$ref": "#/$defs/firstBatterySearchInput" }
+          },
+          "required": ["unique", "repeated"]
+        },
+        "practice": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "batteries": { "$ref": "#/$defs/batterySearchBatteries" },
+            "target": { "$ref": "#/$defs/chargeValue" },
+            "expected": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ranges": { "$ref": "#/$defs/batterySearchRanges" },
+                "index": { "type": "integer", "minimum": 0, "maximum": 11 }
+              },
+              "required": ["ranges", "index"]
+            },
+            "predictions": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ranges": {
+                  "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+                  "items": { "$ref": "#/$defs/batterySearchRanges" }
+                }
+              },
+              "required": ["ranges"]
+            }
+          },
+          "required": ["batteries", "target", "expected", "predictions"]
+        }
+      },
+      "required": ["firstSource", "demo", "practice"]
+    },
+    "selectionSortCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "batteries": {
+          "type": "array", "minItems": 3, "maxItems": 7,
+          "items": { "$ref": "#/$defs/namedBattery" }
+        },
+        "expected": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "selected": {
+              "type": "array", "minItems": 2, "maxItems": 6, "uniqueItems": true,
+              "items": { "$ref": "#/$defs/batteryName" }
+            },
+            "order": {
+              "type": "array", "minItems": 3, "maxItems": 7, "uniqueItems": true,
+              "items": { "$ref": "#/$defs/batteryName" }
+            }
+          },
+          "required": ["selected", "order"]
+        }
+      },
+      "required": ["batteries", "expected"]
+    },
+    "twoPointerCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "batteries": {
+          "type": "array", "minItems": 2, "maxItems": 12,
+          "items": { "$ref": "#/$defs/namedBattery" }
+        },
+        "target": { "type": "integer", "minimum": 0, "maximum": 40000 },
+        "expected": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "moves": {
+              "type": "array", "maxItems": 10,
+              "items": { "enum": ["left", "right"] }
+            },
+            "pair": {
+              "type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true,
+              "items": { "$ref": "#/$defs/batteryName" }
+            }
+          },
+          "required": ["moves", "pair"]
+        }
+      },
+      "required": ["batteries", "target", "expected"]
+    },
+    "prefixTotalsBatteries": {
+      "type": "array", "minItems": 3, "maxItems": 7,
+      "items": { "$ref": "#/$defs/namedBattery" }
+    },
+    "prefixTotalValue": { "type": "integer", "minimum": 0, "maximum": 140000 },
+    "prefixTotalRow": {
+      "type": "array", "minItems": 4, "maxItems": 8,
+      "items": { "$ref": "#/$defs/prefixTotalValue" }
+    },
+    "prefixTotalsLesson": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "demo": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "batteries": { "$ref": "#/$defs/prefixTotalsBatteries" } },
+          "required": ["batteries"]
+        },
+        "practice": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "batteries": { "$ref": "#/$defs/prefixTotalsBatteries" },
+            "left": { "type": "integer", "minimum": 0, "maximum": 6 },
+            "right": { "type": "integer", "minimum": 0, "maximum": 6 },
+            "expected": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "prefix": { "$ref": "#/$defs/prefixTotalRow" },
+                "total": { "$ref": "#/$defs/prefixTotalValue" }
+              },
+              "required": ["prefix", "total"]
+            },
+            "predictions": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "prefix": {
+                  "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+                  "items": { "$ref": "#/$defs/prefixTotalRow" }
+                },
+                "totals": {
+                  "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+                  "items": { "$ref": "#/$defs/prefixTotalValue" }
+                }
+              },
+              "required": ["prefix", "totals"]
+            }
+          },
+          "required": ["batteries", "left", "right", "expected", "predictions"]
+        }
+      },
+      "required": ["demo", "practice"]
+    },
+    "breadthFirstTiles": {
+      "type": "array", "minItems": 1, "maxItems": 6,
+      "items": { "type": "string", "pattern": "^[.#]{1,6}$" }
+    },
+    "breadthFirstCell": {
+      "type": "array", "minItems": 2, "maxItems": 2,
+      "items": { "type": "integer", "minimum": 0, "maximum": 5 }
+    },
+    "breadthFirstCells": {
+      "type": "array", "minItems": 1, "maxItems": 36,
+      "items": { "$ref": "#/$defs/breadthFirstCell" }
+    },
+    "breadthFirstLesson": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "demo": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "tiles": { "$ref": "#/$defs/breadthFirstTiles" },
+            "start": { "$ref": "#/$defs/breadthFirstCell" },
+            "goal": { "$ref": "#/$defs/breadthFirstCell" }
+          },
+          "required": ["tiles", "start", "goal"]
+        },
+        "practice": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "tiles": { "$ref": "#/$defs/breadthFirstTiles" },
+            "start": { "$ref": "#/$defs/breadthFirstCell" },
+            "goal": { "$ref": "#/$defs/breadthFirstCell" },
+            "expected": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "order": { "$ref": "#/$defs/breadthFirstCells" },
+                "path": { "$ref": "#/$defs/breadthFirstCells" }
+              },
+              "required": ["order", "path"]
+            },
+            "predictions": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "orders": {
+                  "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+                  "items": { "$ref": "#/$defs/breadthFirstCells" }
+                },
+                "paths": {
+                  "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+                  "items": { "$ref": "#/$defs/breadthFirstCells" }
+                }
+              },
+              "required": ["orders", "paths"]
+            }
+          },
+          "required": ["tiles", "start", "goal", "expected", "predictions"]
+        }
+      },
+      "required": ["demo", "practice"]
+    },
+    "programWalkthrough": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "guided": { "const": true },
+        "structures": { "$ref": "#/$defs/structuresLesson" },
+        "stackLesson": { "$ref": "#/$defs/batterySequenceLesson" },
+        "queueLesson": { "$ref": "#/$defs/batterySequenceLesson" },
+        "batterySearch": { "$ref": "#/$defs/batterySearchLesson" },
+        "firstBatterySearch": { "$ref": "#/$defs/firstBatterySearchLesson" },
+        "breadthFirstLesson": { "$ref": "#/$defs/breadthFirstLesson" },
+        "selectionSort": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "demo": { "$ref": "#/$defs/selectionSortCase" },
+            "practice": { "$ref": "#/$defs/selectionSortCase" }
+          },
+          "required": ["demo", "practice"]
+        },
+        "twoPointerLesson": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "demo": { "$ref": "#/$defs/twoPointerCase" },
+            "practice": { "$ref": "#/$defs/twoPointerCase" }
+          },
+          "required": ["demo", "practice"]
+        },
+        "prefixTotalsLesson": { "$ref": "#/$defs/prefixTotalsLesson" },
+        "listPositions": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "cases": {
+              "type": "array", "minItems": 2, "maxItems": 5,
+              "items": { "$ref": "#/$defs/listPositionCase" }
+            }
+          },
+          "required": ["cases"]
+        },
+        "debugging": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "increment": { "type": "integer", "minimum": 1, "maximum": 1000 },
+            "loopLine": { "type": "integer", "minimum": 1, "maximum": 30 },
+            "returnLine": { "type": "integer", "minimum": 1, "maximum": 30 },
+            "cases": {
+              "type": "array", "minItems": 3, "maxItems": 5,
+              "items": { "$ref": "#/$defs/debuggingLessonCase" }
+            }
+          },
+          "required": ["increment", "loopLine", "returnLine", "cases"]
+        },
+        "nestedLoops": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "increment": { "type": "integer", "minimum": 1, "maximum": 1000 },
+            "cases": {
+              "type": "array", "minItems": 2, "maxItems": 5,
+              "items": { "$ref": "#/$defs/nestedLoopsCase" }
+            }
+          },
+          "required": ["increment", "cases"]
+        },
+        "whileLoop": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "threshold": { "type": "integer", "minimum": 1, "maximum": 10000 },
+            "increment": { "type": "integer", "minimum": 1, "maximum": 1000 }
+          },
+          "required": ["threshold", "increment"]
+        },
+        "collectionLesson": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "index": { "type": "integer", "minimum": 0, "maximum": 5 },
+            "key": { "$ref": "#/$defs/batteryName" },
+            "increment": { "type": "integer", "minimum": 1, "maximum": 1000 },
+            "cases": {
+              "type": "array", "minItems": 2, "maxItems": 5,
+              "items": { "$ref": "#/$defs/collectionLessonCase" }
+            }
+          },
+          "required": ["index", "key", "increment", "cases"]
+        },
+        "dictionaryLesson": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "cases": {
+              "type": "array", "minItems": 2, "maxItems": 5,
+              "items": { "$ref": "#/$defs/dictionaryLessonCase" }
+            }
+          },
+          "required": ["cases"]
+        },
+        "forLoop": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "increment": { "type": "integer", "minimum": 1, "maximum": 1000 },
+            "cases": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 5,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "label": { "$ref": "#/$defs/localized" },
+                  "batteries": { "$ref": "#/$defs/chargeValues" },
+                  "expected": { "$ref": "#/$defs/chargeValues" },
+                  "predictions": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "rounds": {
+                        "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+                        "items": { "type": "integer", "minimum": 0, "maximum": 6 }
+                      },
+                      "results": {
+                        "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+                        "items": { "$ref": "#/$defs/chargeValues" }
+                      }
+                    },
+                    "required": ["rounds", "results"]
+                  }
+                },
+                "required": ["label", "batteries", "expected"]
+              }
+            }
+          },
+          "required": ["increment", "cases"]
+        },
+        "functionLesson": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "functionName": { "$ref": "#/$defs/programName" },
+            "parameter": { "$ref": "#/$defs/programName" },
+            "resultVariable": { "$ref": "#/$defs/programName" }
+          },
+          "required": ["functionName", "parameter", "resultVariable"]
+        },
+        "moduleLesson": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "moduleName": { "enum": ["algorithms", "my_algorithms"] },
+            "source": { "type": "string", "minLength": 1, "maxLength": 2000 },
+            "functionName": { "$ref": "#/$defs/programName" },
+            "parameter": { "$ref": "#/$defs/programName" },
+            "resultVariable": { "$ref": "#/$defs/programName" },
+            "increment": { "type": "integer", "minimum": 1, "maximum": 1000 }
+          },
+          "required": ["moduleName", "source", "functionName", "parameter", "resultVariable", "increment"]
+        },
+        "boolean": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "threshold": { "type": "integer", "minimum": -9999, "maximum": 9999 }
+          },
+          "required": ["threshold"]
+        },
+        "branchLesson": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "threshold": { "type": "integer", "minimum": -10000, "maximum": 10000 },
+            "actions": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "if": { "$ref": "#/$defs/localized" },
+                "else": { "$ref": "#/$defs/localized" }
+              },
+              "required": ["if", "else"]
+            }
+          },
+          "required": ["threshold", "actions"]
+        },
+        "variableCups": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "addresses": {
+              "type": "array", "minItems": 2, "maxItems": 6, "uniqueItems": true,
+              "items": { "type": "integer", "minimum": 0, "maximum": 999 }
+            },
+            "variable": { "$ref": "#/$defs/programName" },
+            "snapshot": { "$ref": "#/$defs/programName" }
+          },
+          "required": ["addresses", "variable", "snapshot"]
+        },
+        "assignment": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "overwriteSource": { "type": "string", "minLength": 1, "maxLength": 2000 },
+            "inputVariable": { "$ref": "#/$defs/programName" },
+            "resultVariable": { "$ref": "#/$defs/programName" }
+          },
+          "required": ["overwriteSource", "inputVariable", "resultVariable"]
+        },
+        "sequence": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "arrange": { "$ref": "#/$defs/programOrder" },
+            "broken": { "$ref": "#/$defs/programOrder" },
+            "repair": { "$ref": "#/$defs/programOrder" }
+          },
+          "required": ["arrange", "broken", "repair"]
+        },
+        "intro": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mode": { "enum": ["basics", "interfaces"] },
+            "rule": { "$ref": "#/$defs/localized" },
+            "interface": { "enum": ["cli", "gui", "web"] },
+            "command": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,23}$" }
+          },
+          "required": ["mode", "rule"]
+        },
+        "visual": { "$ref": "#/$defs/programVisual" },
+        "cases": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "label": { "$ref": "#/$defs/localized" },
+              "input": { "type": "integer", "minimum": -10000, "maximum": 10000 },
+              "expected": { "type": "string", "maxLength": 120 },
+              "doorOpen": { "type": "boolean" },
+              "activity": { "enum": ["compare", "combine", "branch", "predict"] },
+              "roundPredictions": {
+                "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true,
+                "items": { "type": "integer", "minimum": 0, "maximum": 96 }
+              },
+              "predictions": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 4,
+                "uniqueItems": true,
+                "items": { "type": "string", "minLength": 1, "maxLength": 120 }
+              }
+            },
+            "required": ["label", "input", "expected"]
+          }
+        }
+      },
+      "required": ["source", "cases"],
+      "if": {
+        "anyOf": [
+          { "required": ["forLoop"] }, { "required": ["collectionLesson"] }, { "required": ["nestedLoops"] },
+          { "required": ["debugging"] }, { "required": ["structures"] }, { "required": ["listPositions"] },
+          { "required": ["stackLesson"] }, { "required": ["queueLesson"] }, { "required": ["dictionaryLesson"] },
+          { "required": ["batterySearch"] }, { "required": ["selectionSort"] }, { "required": ["twoPointerLesson"] },
+          { "required": ["prefixTotalsLesson"] }, { "required": ["firstBatterySearch"] }, { "required": ["breadthFirstLesson"] }
+        ]
+      },
+      "then": { "properties": { "cases": { "type": "array", "maxItems": 0 } } },
+      "else": { "properties": { "cases": { "type": "array", "minItems": 1 } } }
+    },
+    "lecture": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9999
+        },
+        "title": {
+          "$ref": "#/$defs/localized"
+        },
+        "brief": {
+          "$ref": "#/$defs/localized"
+        },
+        "concept": {
+          "$ref": "#/$defs/localized"
+        },
+        "hints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/localized"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "unit": {
+          "$ref": "#/$defs/unit"
+        },
+        "stage": {
+          "const": "explain"
+        },
+        "kind": {
+          "const": "lecture"
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "$ref": "#/$defs/localized"
+              },
+              "body": {
+                "$ref": "#/$defs/localized"
+              }
+            },
+            "required": [
+              "title",
+              "body"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 12
+        },
+        "question": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "prompt": {
+              "$ref": "#/$defs/localized"
+            },
+            "options": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/localized"
+              },
+              "minItems": 2,
+              "maxItems": 6
+            },
+            "correct": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "feedback": {
+              "$ref": "#/$defs/localized"
+            }
+          },
+          "required": [
+            "prompt",
+            "options",
+            "correct",
+            "feedback"
+          ]
+        },
+        "animation": {
+          "$ref": "#/$defs/lectureAnimation"
+        },
+        "overview": { "const": true },
+        "execution": { "$ref": "#/$defs/programWalkthrough" },
+        "topic": {
+          "$ref": "#/$defs/courseTopic"
+        },
+        "prerequisites": { "$ref": "#/$defs/prerequisites" },
+        "difficulty": { "$ref": "#/$defs/difficulty" }
+      },
+      "required": [
+        "version",
+        "id",
+        "order",
+        "title",
+        "brief",
+        "concept",
+        "hints",
+        "kind",
+        "sections",
+        "question"
+      ]
+    },
+    "replayScenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "devices": { "$ref": "#/$defs/gridDevices" },
+        "turnLimit": {
+          "$ref": "#/$defs/gridTurnLimit"
+        },
+        "tiles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20,
+            "pattern": "^[.#]+$"
+          },
+          "minItems": 1,
+          "maxItems": 20
+        },
+        "start": {
+          "$ref": "#/$defs/position"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/id"
+              },
+              "x": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 19
+              },
+              "y": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 19
+              }
+            },
+            "required": [
+              "id",
+              "x",
+              "y"
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 32
+        },
+        "enemies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/position"
+                },
+                "minItems": 1,
+                "maxItems": 32
+              }
+            },
+            "required": [
+              "path"
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "input": {},
+        "memory": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": -1000000,
+            "maximum": 1000000
+          },
+          "minItems": 1,
+          "maxItems": 32
+        },
+        "instructions": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "op": {
+                    "enum": [
+                      "LOAD",
+                      "ADD",
+                      "STORE"
+                    ]
+                  },
+                  "address": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 31
+                  }
+                },
+                "required": [
+                  "op",
+                  "address"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "op": {
+                    "const": "HALT"
+                  }
+                },
+                "required": [
+                  "op"
+                ]
+              }
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 32
+        },
+        "objectives": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/objective"
+          },
+          "minItems": 1,
+          "maxItems": 16
+        },
+        "allowedApi": { "$ref": "#/$defs/gridApi" }
+      },
+      "required": [
+        "tiles",
+        "start",
+        "objectives",
+        "allowedApi"
+      ]
+    },
+    "replay": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "$ref": "#/$defs/id"
+            },
+            "order": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9999
+            },
+            "title": {
+              "$ref": "#/$defs/localized"
+            },
+            "brief": {
+              "$ref": "#/$defs/localized"
+            },
+            "concept": {
+              "$ref": "#/$defs/localized"
+            },
+            "hints": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/localized"
+              },
+              "minItems": 0,
+              "maxItems": 12
+            },
+            "unit": {
+              "$ref": "#/$defs/unit"
+            },
+            "stage": {
+              "const": "demo"
+            },
+            "kind": {
+              "const": "replay"
+            },
+            "mode": {
+              "const": "grid"
+            },
+            "examples": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "title": {
+                    "$ref": "#/$defs/localized"
+                  },
+                  "source": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 12000
+                  },
+                  "scenario": {
+                    "$ref": "#/$defs/replayScenario"
+                  }
+                },
+                "required": [
+                  "title",
+                  "source",
+                  "scenario"
+                ]
+              },
+              "minItems": 1,
+              "maxItems": 8
+            },
+            "topic": {
+              "$ref": "#/$defs/courseTopic"
+            },
+            "prerequisites": { "$ref": "#/$defs/prerequisites" },
+            "difficulty": { "$ref": "#/$defs/difficulty" }
+          },
+          "required": [
+            "version",
+            "id",
+            "order",
+            "title",
+            "brief",
+            "concept",
+            "hints",
+            "kind",
+            "mode",
+            "examples"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "id": {
+              "$ref": "#/$defs/id"
+            },
+            "order": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9999
+            },
+            "title": {
+              "$ref": "#/$defs/localized"
+            },
+            "brief": {
+              "$ref": "#/$defs/localized"
+            },
+            "concept": {
+              "$ref": "#/$defs/localized"
+            },
+            "hints": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/localized"
+              },
+              "minItems": 0,
+              "maxItems": 12
+            },
+            "unit": {
+              "$ref": "#/$defs/unit"
+            },
+            "stage": {
+              "const": "demo"
+            },
+            "kind": {
+              "const": "replay"
+            },
+            "mode": {
+              "const": "ai"
+            },
+            "example": {
+              "$ref": "#/$defs/ai"
+            },
+            "topic": {
+              "$ref": "#/$defs/courseTopic"
+            },
+            "prerequisites": { "$ref": "#/$defs/prerequisites" },
+            "difficulty": { "$ref": "#/$defs/difficulty" }
+          },
+          "required": [
+            "version",
+            "id",
+            "order",
+            "title",
+            "brief",
+            "concept",
+            "hints",
+            "kind",
+            "mode",
+            "example"
+          ]
+        }
+      ]
+    },
+    "lab": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9999
+        },
+        "title": {
+          "$ref": "#/$defs/localized"
+        },
+        "brief": {
+          "$ref": "#/$defs/localized"
+        },
+        "concept": {
+          "$ref": "#/$defs/localized"
+        },
+        "hints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/localized"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "unit": {
+          "$ref": "#/$defs/unit"
+        },
+        "stage": {
+          "enum": [
+            "demo",
+            "exercise"
+          ]
+        },
+        "kind": {
+          "const": "lab"
+        },
+        "recipe": {
+          "enum": [
+            "numpy",
+            "pandas",
+            "analysis",
+            "sql",
+            "opencv",
+            "yolox"
+          ]
+        },
+        "goal": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "prompt": {
+              "$ref": "#/$defs/localized"
+            }
+          },
+          "required": [
+            "count",
+            "prompt"
+          ]
+        },
+        "topic": {
+          "$ref": "#/$defs/courseTopic"
+        },
+        "prerequisites": { "$ref": "#/$defs/prerequisites" },
+        "difficulty": { "$ref": "#/$defs/difficulty" }
+      },
+      "required": [
+        "version",
+        "id",
+        "order",
+        "title",
+        "brief",
+        "concept",
+        "hints",
+        "kind",
+        "recipe"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "stage": {
+                "const": "exercise"
+              }
+            },
+            "required": [
+              "stage"
+            ]
+          },
+          "then": {
+            "required": [
+              "goal"
+            ]
+          }
+        }
+      ]
+    },
+    "algorithm": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9999
+        },
+        "title": {
+          "$ref": "#/$defs/localized"
+        },
+        "brief": {
+          "$ref": "#/$defs/localized"
+        },
+        "concept": {
+          "$ref": "#/$defs/localized"
+        },
+        "hints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/localized"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "unit": {
+          "$ref": "#/$defs/unit"
+        },
+        "stage": {
+          "enum": [
+            "exercise",
+            "challenge"
+          ]
+        },
+        "kind": {
+          "const": "algorithm"
+        },
+        "pathGrading": { "const": "shortest" },
+        "chargingChallenge": { "$ref": "#/$defs/chargingChallenge" },
+        "batteryDispatch": { "$ref": "#/$defs/batteryDispatch" },
+        "batteryPipeline": { "$ref": "#/$defs/batteryPipeline" },
+        "functionName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 48,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+        },
+        "starterCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 12000
+        },
+        "solutionCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 12000
+        },
+        "snippets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "label": {
+                "$ref": "#/$defs/localized"
+              },
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 3000
+              }
+            },
+            "required": [
+              "label",
+              "code"
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "cases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "args": {
+                "type": "array",
+                "items": {},
+                "minItems": 0,
+                "maxItems": 8
+              },
+              "expected": {}
+            },
+            "required": [
+              "args",
+              "expected"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 16
+        },
+        "topic": {
+          "$ref": "#/$defs/courseTopic"
+        },
+        "prerequisites": { "$ref": "#/$defs/prerequisites" },
+        "difficulty": { "$ref": "#/$defs/difficulty" },
+        "helpers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 48,
+            "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+          },
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "version",
+        "id",
+        "order",
+        "title",
+        "brief",
+        "concept",
+        "hints",
+        "kind",
+        "functionName",
+        "starterCode",
+        "solutionCode",
+        "snippets",
+        "cases"
+      ]
+    },
+    "arenaOpponent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "$ref": "#/$defs/localized"
+        },
+        "start": {
+          "$ref": "#/$defs/position"
+        },
+        "policy": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "patrol"
+                },
+                "path": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/position"
+                  },
+                  "minItems": 1,
+                  "maxItems": 40
+                }
+              },
+              "required": [
+                "kind",
+                "path"
+              ]
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "pursue"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "collect"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": { "const": "adaptive" },
+                "style": { "enum": ["secure", "intercept", "flex"] }
+              },
+              "required": ["kind", "style"]
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "start",
+        "policy"
+      ]
+    },
+    "arenaShifts": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "turn": { "type": "integer", "minimum": 1, "maximum": 59 },
+          "open": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 24,
+            "uniqueItems": true,
+            "items": { "$ref": "#/$defs/position" }
+          },
+          "close": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 24,
+            "uniqueItems": true,
+            "items": { "$ref": "#/$defs/position" }
+          },
+          "moveItems": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 32,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": { "$ref": "#/$defs/id" },
+                "x": { "type": "integer", "minimum": 0, "maximum": 19 },
+                "y": { "type": "integer", "minimum": 0, "maximum": 19 }
+              },
+              "required": ["id", "x", "y"]
+            }
+          }
+        },
+        "required": ["turn"],
+        "anyOf": [{ "required": ["open"] }, { "required": ["close"] }, { "required": ["moveItems"] }]
+      }
+    },
+    "arenaVariant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "shifts": { "$ref": "#/$defs/arenaShifts" },
+        "tiles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20,
+            "pattern": "^[.#]+$"
+          },
+          "minItems": 1,
+          "maxItems": 20
+        },
+        "start": {
+          "$ref": "#/$defs/position"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/id"
+              },
+              "x": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 19
+              },
+              "y": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 19
+              }
+            },
+            "required": [
+              "id",
+              "x",
+              "y"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 32
+        },
+        "opponents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/arenaOpponent"
+          },
+          "minItems": 1,
+          "maxItems": 4
+        },
+        "maxTurns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60
+        },
+        "objective": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "score"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "escape"
+                },
+                "exit": {
+                  "$ref": "#/$defs/position"
+                },
+                "itemIds": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/id"
+                  },
+                  "minItems": 1,
+                  "maxItems": 16,
+                  "uniqueItems": true
+                }
+              },
+              "required": [
+                "kind",
+                "exit",
+                "itemIds"
+              ]
+            }
+          ]
+        }
+      },
+      "required": []
+    },
+    "arena": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "shifts": { "$ref": "#/$defs/arenaShifts" },
+        "version": {
+          "const": 1
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9999
+        },
+        "title": {
+          "$ref": "#/$defs/localized"
+        },
+        "brief": {
+          "$ref": "#/$defs/localized"
+        },
+        "concept": {
+          "$ref": "#/$defs/localized"
+        },
+        "hints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/localized"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "unit": {
+          "$ref": "#/$defs/unit"
+        },
+        "stage": {
+          "enum": [
+            "exercise",
+            "challenge"
+          ]
+        },
+        "kind": {
+          "const": "arena"
+        },
+        "tiles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20,
+            "pattern": "^[.#]+$"
+          },
+          "minItems": 1,
+          "maxItems": 20
+        },
+        "start": {
+          "$ref": "#/$defs/position"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/id"
+              },
+              "x": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 19
+              },
+              "y": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 19
+              }
+            },
+            "required": [
+              "id",
+              "x",
+              "y"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 32
+        },
+        "opponents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/arenaOpponent"
+          },
+          "minItems": 1,
+          "maxItems": 4
+        },
+        "maxTurns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60
+        },
+        "objective": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "score"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "escape"
+                },
+                "exit": {
+                  "$ref": "#/$defs/position"
+                },
+                "itemIds": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/id"
+                  },
+                  "minItems": 1,
+                  "maxItems": 16,
+                  "uniqueItems": true
+                }
+              },
+              "required": [
+                "kind",
+                "exit",
+                "itemIds"
+              ]
+            }
+          ]
+        },
+        "starterCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 12000
+        },
+        "solutionCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 12000
+        },
+        "snippets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "label": {
+                "$ref": "#/$defs/localized"
+              },
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 3000
+              }
+            },
+            "required": [
+              "label",
+              "code"
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/arenaVariant"
+          },
+          "minItems": 0,
+          "maxItems": 6
+        },
+        "topic": {
+          "$ref": "#/$defs/courseTopic"
+        },
+        "prerequisites": { "$ref": "#/$defs/prerequisites" },
+        "difficulty": { "$ref": "#/$defs/difficulty" },
+        "helpers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 48,
+            "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+          },
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "version",
+        "id",
+        "order",
+        "title",
+        "brief",
+        "concept",
+        "hints",
+        "kind",
+        "tiles",
+        "start",
+        "items",
+        "opponents",
+        "maxTurns",
+        "objective",
+        "starterCode",
+        "solutionCode",
+        "snippets"
+      ]
+    },
+    "lectureAnimationItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "label": {
+          "$ref": "#/$defs/localized"
+        },
+        "value": {
+          "$ref": "#/$defs/localized"
+        },
+        "swatch": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "state": {
+          "enum": [
+            "active",
+            "done",
+            "muted"
+          ]
+        },
+        "height": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      },
+      "required": [
+        "id",
+        "label"
+      ]
+    },
+    "lectureAnimation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hardware": {
+          "oneOf": [
+            {
+              "type": "object", "additionalProperties": false, "required": ["kind", "mode", "frames"],
+              "properties": {
+                "kind": { "const": "circuit" },
+                "mode": { "enum": ["binary", "logic"] },
+                "frames": {
+                  "type": "array", "minItems": 2, "maxItems": 10,
+                  "items": {
+                    "type": "object", "additionalProperties": false, "required": ["bits"],
+                    "properties": {
+                      "bits": { "type": "array", "minItems": 2, "maxItems": 8, "items": { "enum": [0, 1] } },
+                      "gate": { "enum": ["AND", "OR", "NOT", "XOR"] },
+                      "bitIndex": { "type": "integer", "minimum": 0, "maximum": 7 }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object", "additionalProperties": false, "required": ["kind", "source", "memory", "checkpoints"],
+              "properties": {
+                "kind": { "const": "cpu" },
+                "source": { "type": "string", "minLength": 1, "maxLength": 4000 },
+                "memory": { "$ref": "#/$defs/machine/properties/cases/items/properties/memory" },
+                "accumulator": { "$ref": "#/$defs/machine/properties/cases/items/properties/accumulator" },
+                "checkpoints": {
+                  "type": "array", "minItems": 2, "maxItems": 10,
+                  "items": { "type": "object", "additionalProperties": false, "required": ["pc", "phase"],
+                    "properties": {
+                      "pc": { "type": "integer", "minimum": 0, "maximum": 31 },
+                      "phase": { "enum": ["fetch", "decode", "execute"] }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "workstation": {
+          "type": "object", "additionalProperties": false, "required": ["kind", "checkpoints"],
+          "properties": {
+            "kind": { "enum": ["depth-first", "weighted-path", "dynamic-programming", "rival-detour", "supply-race"] },
+            "checkpoints": {
+              "type": "array", "minItems": 2, "maxItems": 10,
+              "items": {
+                "type": "object", "additionalProperties": false, "required": ["line"],
+                "properties": { "line": { "type": "integer", "minimum": 1, "maximum": 30 }, "visit": { "type": "integer", "minimum": 1, "maximum": 96 } }
+              }
+            }
+          }
+        },
+        "layout": {
+          "enum": [
+            "row",
+            "stack",
+            "grid",
+            "bars",
+            "pipeline"
+          ]
+        },
+        "frames": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "caption": {
+                "$ref": "#/$defs/localized"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/lectureAnimationItem"
+                },
+                "minItems": 1,
+                "maxItems": 16
+              }
+            },
+            "required": [
+              "caption",
+              "items"
+            ]
+          },
+          "minItems": 2,
+          "maxItems": 10
+        }
+      },
+      "required": [
+        "layout",
+        "frames"
+      ]
+    },
+    "courseTopic": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9999
+        },
+        "title": {
+          "$ref": "#/$defs/localized"
+        }
+      },
+      "required": [
+        "id",
+        "order",
+        "title"
+      ]
+    },
+    "circuit": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9999
+        },
+        "title": {
+          "$ref": "#/$defs/localized"
+        },
+        "brief": {
+          "$ref": "#/$defs/localized"
+        },
+        "concept": {
+          "$ref": "#/$defs/localized"
+        },
+        "hints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/localized"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "unit": {
+          "$ref": "#/$defs/unit"
+        },
+        "topic": {
+          "$ref": "#/$defs/courseTopic"
+        },
+        "prerequisites": { "$ref": "#/$defs/prerequisites" },
+        "difficulty": { "$ref": "#/$defs/difficulty" },
+        "kind": {
+          "const": "circuit"
+        },
+        "stage": {
+          "enum": [
+            "demo",
+            "exercise",
+            "challenge"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "binary",
+            "logic",
+            "combined",
+            "diode",
+            "transistor"
+          ]
+        },
+        "gateChoices": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "AND",
+              "OR",
+              "NOT",
+              "XOR"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 4,
+          "uniqueItems": true
+        },
+        "cases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "$ref": "#/$defs/localized"
+              },
+              "bits": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    0,
+                    1
+                  ]
+                },
+                "minItems": 2,
+                "maxItems": 8
+              },
+              "gate": {
+                "enum": [
+                  "AND",
+                  "OR",
+                  "NOT",
+                  "XOR"
+                ]
+              },
+              "goal": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  },
+                  "switchClosed": { "enum": [0, 1] },
+                  "diodeForward": { "enum": [0, 1] },
+                  "baseHigh": { "enum": [0, 1] },
+                  "output": {
+                    "enum": [
+                      0,
+                      1
+                    ]
+                  },
+                  "gate": {
+                    "enum": [
+                      "AND",
+                      "OR",
+                      "NOT",
+                      "XOR"
+                    ]
+                  }
+                },
+                "required": [],
+                "additionalProperties": false,
+                "minProperties": 1
+              },
+              "solution": {
+                "type": "object",
+                "properties": {
+                  "bits": {
+                    "type": "array",
+                    "items": {
+                      "enum": [
+                        0,
+                        1
+                      ]
+                    },
+                    "minItems": 2,
+                    "maxItems": 8
+                  },
+                  "gate": {
+                    "enum": [
+                      "AND",
+                      "OR",
+                      "NOT",
+                      "XOR"
+                    ]
+                  }
+                },
+                "required": [
+                  "bits"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "label",
+              "bits"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "maxItems": 10
+        }
+      },
+      "required": [
+        "version",
+        "id",
+        "order",
+        "title",
+        "brief",
+        "concept",
+        "hints",
+        "kind",
+        "mode",
+        "cases"
+      ],
+      "additionalProperties": false
+    },
+    "dataParameters": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 4,
+      "additionalProperties": { "anyOf": [{ "type": "string" }, { "type": "integer" }, { "type": "boolean" }] }
+    },
+    "dataTable": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "columns": { "type": "array", "items": { "$ref": "#/$defs/id" }, "minItems": 1, "maxItems": 4, "uniqueItems": true },
+        "rows": {
+          "type": "array",
+          "maxItems": 14,
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 4,
+            "items": { "anyOf": [{ "type": "number" }, { "type": "string" }, { "type": "null" }] }
+          }
+        }
+      },
+      "required": ["columns", "rows"]
+    },
+    "breadboardWire": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^(?:[A-E][1-6]|5V|GND|uno-D2|uno-D13)$" },
+      "minItems": 2, "maxItems": 2, "uniqueItems": true
+    },
+    "breadboardParts": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": { "enum": ["button", "resistor", "led"] },
+          "pins": {
+            "type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^[A-E][1-6]$" }
+          }
+        },
+        "required": ["kind", "pins"]
+      }
+    },
+    "breadboard": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": { "const": 1 },
+        "kind": { "const": "breadboard" },
+        "id": { "$ref": "#/$defs/id" },
+        "order": { "type": "integer", "minimum": 0, "maximum": 9999 },
+        "unit": { "$ref": "#/$defs/unit" },
+        "topic": { "$ref": "#/$defs/courseTopic" },
+        "title": { "$ref": "#/$defs/localized" },
+        "brief": { "$ref": "#/$defs/localized" },
+        "concept": { "$ref": "#/$defs/localized" },
+        "hints": { "type": "array", "items": { "$ref": "#/$defs/localized" }, "maxItems": 12 },
+        "stage": { "enum": ["exercise", "challenge"] },
+        "courseFinal": { "const": true },
+        "prerequisites": { "$ref": "#/$defs/prerequisites" },
+        "difficulty": { "$ref": "#/$defs/difficulty" },
+        "board": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mode": { "enum": ["series", "call-lamp"] },
+            "initialParts": { "$ref": "#/$defs/breadboardParts" },
+            "solutionParts": { "$ref": "#/$defs/breadboardParts" },
+            "carryFrom": { "$ref": "#/$defs/id" },
+            "faults": {
+              "type": "array", "minItems": 1, "maxItems": 12, "uniqueItems": true,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object", "additionalProperties": false,
+                    "properties": { "kind": { "const": "reversed-led" } },
+                    "required": ["kind"]
+                  },
+                  {
+                    "type": "object", "additionalProperties": false,
+                    "properties": {
+                      "kind": { "const": "wrong-jumper" },
+                      "wire": { "$ref": "#/$defs/breadboardWire" },
+                      "wrongPin": { "type": "string", "pattern": "^[A-E][1-6]$" }
+                    },
+                    "required": ["kind", "wire", "wrongPin"]
+                  }
+                ]
+              }
+            },
+            "initialWires": { "type": "array", "items": { "$ref": "#/$defs/breadboardWire" }, "maxItems": 24 },
+            "solutionWires": { "type": "array", "items": { "$ref": "#/$defs/breadboardWire" }, "minItems": 1, "maxItems": 24 },
+            "programId": { "$ref": "#/$defs/id" }
+          },
+          "required": ["mode", "initialWires", "solutionWires"]
+        }
+      },
+      "required": ["version", "kind", "id", "order", "title", "brief", "concept", "hints", "stage", "board"]
+    },
+    "arduinoDelay": { "type": "integer", "minimum": 100, "maximum": 2000 },
+    "arduinoButtonState": { "enum": ["pressed", "released"] },
+    "arduino": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": { "const": 1 },
+        "kind": { "const": "arduino" },
+        "id": { "$ref": "#/$defs/id" },
+        "order": { "type": "integer", "minimum": 0, "maximum": 9999 },
+        "unit": { "$ref": "#/$defs/unit" },
+        "topic": { "$ref": "#/$defs/courseTopic" },
+        "prerequisites": { "$ref": "#/$defs/prerequisites" },
+        "difficulty": { "$ref": "#/$defs/difficulty" },
+        "stage": { "enum": ["demo", "exercise", "challenge"] },
+        "title": { "$ref": "#/$defs/localized" },
+        "brief": { "$ref": "#/$defs/localized" },
+        "concept": { "$ref": "#/$defs/localized" },
+        "hints": { "type": "array", "items": { "$ref": "#/$defs/localized" }, "maxItems": 12 },
+        "courseFinal": { "const": true },
+        "sketch": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "mode": { "const": "blink" },
+                "onMs": { "$ref": "#/$defs/arduinoDelay" },
+                "offMs": { "$ref": "#/$defs/arduinoDelay" },
+                "delayChoices": { "type": "array", "items": { "$ref": "#/$defs/arduinoDelay" }, "uniqueItems": true, "minItems": 2, "maxItems": 6 },
+                "goal": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": { "onMs": { "$ref": "#/$defs/arduinoDelay" }, "offMs": { "$ref": "#/$defs/arduinoDelay" } },
+                  "required": ["onMs", "offMs"]
+                }
+              },
+              "required": ["mode", "onMs", "offMs", "delayChoices"]
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "mode": { "const": "button" },
+                "lightWhen": { "$ref": "#/$defs/arduinoButtonState" },
+                "goal": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": { "lightWhen": { "$ref": "#/$defs/arduinoButtonState" } },
+                  "required": ["lightWhen"]
+                }
+              },
+              "required": ["mode", "lightWhen"]
+            }
+          ]
+        }
+      },
+      "required": ["version", "kind", "id", "order", "stage", "title", "brief", "concept", "hints", "sketch"]
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": { "const": 1 },
+        "kind": { "const": "data" },
+        "id": { "$ref": "#/$defs/id" },
+        "order": { "type": "integer", "minimum": 0, "maximum": 9999 },
+        "title": { "$ref": "#/$defs/localized" },
+        "brief": { "$ref": "#/$defs/localized" },
+        "concept": { "$ref": "#/$defs/localized" },
+        "hints": { "type": "array", "items": { "$ref": "#/$defs/localized" }, "maxItems": 12 },
+        "unit": { "$ref": "#/$defs/unit" },
+        "topic": { "$ref": "#/$defs/courseTopic" },
+        "prerequisites": { "$ref": "#/$defs/prerequisites" },
+        "difficulty": { "$ref": "#/$defs/difficulty" },
+        "stage": { "enum": ["demo", "exercise", "challenge"] },
+        "courseFinal": { "const": true },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "operation": { "enum": ["array", "mask", "table", "clean", "summary", "group", "query", "sql-group", "report"] },
+              "input": { "enum": ["raw", "clean", "previous"] },
+              "label": { "$ref": "#/$defs/localized" },
+              "prompt": { "$ref": "#/$defs/localized" },
+              "initial": { "$ref": "#/$defs/dataParameters" },
+              "goal": { "$ref": "#/$defs/dataTable" },
+              "solution": { "$ref": "#/$defs/dataParameters" }
+            },
+            "required": ["operation", "input", "label", "prompt", "initial"]
+          }
+        }
+      },
+      "required": ["version", "kind", "id", "order", "title", "brief", "concept", "hints", "stage", "steps"]
+    },
+    "visionParameters": {
+      "type": "object",
+      "minProperties": 2,
+      "maxProperties": 4,
+      "additionalProperties": { "anyOf": [{ "type": "string" }, { "type": "integer" }] }
+    },
+    "visionLabels": {
+      "type": "array",
+      "maxItems": 24,
+      "items": { "type": "string", "minLength": 1, "maxLength": 40 }
+    },
+    "visionGoal": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "x": { "type": "integer", "minimum": 0, "maximum": 5 },
+        "y": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "rgb": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "integer", "minimum": 0, "maximum": 255 } },
+        "channel": { "enum": ["rgb", "red", "green", "blue", "gray"] },
+        "channelValue": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "regions": { "type": "integer", "minimum": 0, "maximum": 83600 },
+        "whitePixelRange": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "integer", "minimum": 0, "maximum": 83600 } },
+        "labels": { "$ref": "#/$defs/visionLabels" },
+        "target": { "enum": ["all", "dog", "person"] },
+        "minIou": { "type": "number", "minimum": 0, "maximum": 1 },
+        "maxSide": { "enum": [320, 480, 640] },
+        "tone": { "enum": ["original", "brighten", "gray"] },
+        "labelsByImage": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "labrador": { "$ref": "#/$defs/visionLabels" }, "astronaut": { "$ref": "#/$defs/visionLabels" } },
+          "required": ["labrador", "astronaut"]
+        }
+      }
+    },
+    "vision": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": { "const": 1 },
+        "kind": { "const": "vision" },
+        "id": { "$ref": "#/$defs/id" },
+        "order": { "type": "integer", "minimum": 0, "maximum": 9999 },
+        "title": { "$ref": "#/$defs/localized" },
+        "brief": { "$ref": "#/$defs/localized" },
+        "concept": { "$ref": "#/$defs/localized" },
+        "hints": { "type": "array", "items": { "$ref": "#/$defs/localized" }, "maxItems": 12 },
+        "unit": { "$ref": "#/$defs/unit" },
+        "topic": { "$ref": "#/$defs/courseTopic" },
+        "prerequisites": { "$ref": "#/$defs/prerequisites" },
+        "difficulty": { "$ref": "#/$defs/difficulty" },
+        "stage": { "enum": ["demo", "exercise", "challenge"] },
+        "mode": { "enum": ["pixels", "color", "filter", "detect", "boxes", "project"] },
+        "courseFinal": { "const": true },
+        "cases": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "image": { "enum": ["calibration", "labrador", "astronaut", "pair"] },
+              "label": { "$ref": "#/$defs/localized" },
+              "prompt": { "$ref": "#/$defs/localized" },
+              "initial": { "$ref": "#/$defs/visionParameters" },
+              "goal": { "$ref": "#/$defs/visionGoal" },
+              "solution": { "$ref": "#/$defs/visionParameters" }
+            },
+            "required": ["image", "label", "prompt", "initial"]
+          }
+        }
+      },
+      "required": ["version", "kind", "id", "order", "title", "brief", "concept", "hints", "stage", "mode", "cases"]
+    },
+    "machine": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9999
+        },
+        "title": {
+          "$ref": "#/$defs/localized"
+        },
+        "brief": {
+          "$ref": "#/$defs/localized"
+        },
+        "concept": {
+          "$ref": "#/$defs/localized"
+        },
+        "hints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/localized"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "unit": {
+          "$ref": "#/$defs/unit"
+        },
+        "topic": {
+          "$ref": "#/$defs/courseTopic"
+        },
+        "prerequisites": { "$ref": "#/$defs/prerequisites" },
+        "difficulty": { "$ref": "#/$defs/difficulty" },
+        "kind": {
+          "const": "machine"
+        },
+        "stage": {
+          "enum": [
+            "demo",
+            "exercise",
+            "challenge"
+          ]
+        },
+        "allowedOps": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "LOAD",
+              "ADD",
+              "SUB",
+              "STORE",
+              "HALT"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "contains": {
+            "const": "HALT"
+          }
+        },
+        "starterCode": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "solutionCode": {
+          "type": "string",
+          "maxLength": 4000,
+          "minLength": 1
+        },
+        "cases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "$ref": "#/$defs/localized"
+              },
+              "memory": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": -1000000,
+                  "maximum": 1000000
+                },
+                "minItems": 1,
+                "maxItems": 32
+              },
+              "accumulator": {
+                "type": "integer",
+                "minimum": -1000000,
+                "maximum": 1000000
+              },
+              "goal": {
+                "type": "object",
+                "properties": {
+                  "accumulator": {
+                    "type": "integer",
+                    "minimum": -1000000,
+                    "maximum": 1000000
+                  },
+                  "memory": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "address": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 31
+                        },
+                        "value": {
+                          "type": "integer",
+                          "minimum": -1000000,
+                          "maximum": 1000000
+                        }
+                      },
+                      "required": [
+                        "address",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "minItems": 1,
+                    "maxItems": 32
+                  }
+                },
+                "required": [],
+                "additionalProperties": false,
+                "minProperties": 1
+              }
+            },
+            "required": [
+              "label",
+              "memory"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "maxItems": 10
+        }
+      },
+      "required": [
+        "version",
+        "id",
+        "order",
+        "title",
+        "brief",
+        "concept",
+        "hints",
+        "kind",
+        "allowedOps",
+        "starterCode",
+        "cases"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

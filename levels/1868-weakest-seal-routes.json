@@ -1,0 +1,228 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-weakest-seal-routes",
+  "order": 1868,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "weighted-path"
+    }
+  ],
+  "title": {
+    "zh": "耐压管网询价",
+    "en": "Pressure-Rating Dispatch"
+  },
+  "concept": {
+    "zh": "路径上最高压力的最小值",
+    "en": "Minimizing the highest pressure on a route"
+  },
+  "brief": {
+    "zh": "n 个站从 0 编号。pipes 中的 [a,b,p] 是双向管道，非负数 p 表示通过它需要的耐压等级。对 requests 中每一对站，返回能连通两站所需的最低等级。沿途每根管道的 p 都不能超过该等级。出发和到达为同一站时填 0，无法连通时填 -1。可有并行管道。",
+    "en": "Stations are numbered 0 through n−1. Each [a,b,p] in pipes is a two-way pipe requiring nonnegative pressure rating p. For each pair in requests, return the lowest rating that can travel between them, with every pipe on the trip within that rating. Report 0 for the same station and -1 if disconnected. Parallel pipes are possible."
+  },
+  "hints": [],
+  "functionName": "seal_ratings",
+  "starterCode": "def seal_ratings(n, pipes, requests):\n    pass\n",
+  "solutionCode": "def seal_ratings(n, pipes, requests):\n    rating = []\n    for a in range(n):\n        row = []\n        for b in range(n):\n            row.append(-1)\n        row[a] = 0\n        rating.append(row)\n    for pipe in pipes:\n        a = pipe[0]\n        b = pipe[1]\n        p = pipe[2]\n        if rating[a][b] < 0 or p < rating[a][b]:\n            rating[a][b] = p\n            rating[b][a] = p\n    for via in range(n):\n        for a in range(n):\n            for b in range(n):\n                first = rating[a][via]\n                second = rating[via][b]\n                if first >= 0 and second >= 0:\n                    peak = first\n                    if second > peak:\n                        peak = second\n                    if rating[a][b] < 0 or peak < rating[a][b]:\n                        rating[a][b] = peak\n    answers = []\n    for pair in requests:\n        answers.append(rating[pair[0]][pair[1]])\n    return answers\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "把两段额定值相加",
+        "en": "Add ratings along the two legs"
+      },
+      "code": "    for via in range(n):\n        for a in range(n):\n            for b in range(n):\n                first = rating[a][via]\n                second = rating[via][b]\n                if first >= 0 and second >= 0:\n                    peak = first + second\n                    if rating[a][b] < 0 or peak < rating[a][b]:\n                        rating[a][b] = peak"
+    },
+    {
+      "label": {
+        "zh": "核对直达管道",
+        "en": "Price the direct pipes"
+      },
+      "code": "    for pipe in pipes:\n        a = pipe[0]\n        b = pipe[1]\n        p = pipe[2]\n        if rating[a][b] < 0 or p < rating[a][b]:\n            rating[a][b] = p\n            rating[b][a] = p"
+    },
+    {
+      "label": {
+        "zh": "登记初始额定值",
+        "en": "Record starting ratings"
+      },
+      "code": "    rating = []\n    for a in range(n):\n        row = []\n        for b in range(n):\n            row.append(-1)\n        row[a] = 0\n        rating.append(row)"
+    },
+    {
+      "label": {
+        "zh": "按请求顺序报价",
+        "en": "Send ratings in request order"
+      },
+      "code": "    answers = []\n    for pair in requests:\n        answers.append(rating[pair[0]][pair[1]])\n    return answers"
+    },
+    {
+      "label": {
+        "zh": "尝试通过中转站",
+        "en": "Try a transfer station"
+      },
+      "code": "    for via in range(n):\n        for a in range(n):\n            for b in range(n):\n                first = rating[a][via]\n                second = rating[via][b]\n                if first >= 0 and second >= 0:\n                    peak = first\n                    if second > peak:\n                        peak = second\n                    if rating[a][b] < 0 or peak < rating[a][b]:\n                        rating[a][b] = peak"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        4,
+        [
+          [
+            0,
+            1,
+            7
+          ],
+          [
+            0,
+            2,
+            4
+          ],
+          [
+            2,
+            1,
+            4
+          ],
+          [
+            1,
+            3,
+            5
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            3,
+            2
+          ]
+        ]
+      ],
+      "expected": [
+        4,
+        5,
+        5
+      ]
+    },
+    {
+      "args": [
+        3,
+        [
+          [
+            0,
+            1,
+            9
+          ],
+          [
+            0,
+            1,
+            2
+          ]
+        ],
+        [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            2,
+            2
+          ]
+        ]
+      ],
+      "expected": [
+        2,
+        -1,
+        0
+      ]
+    },
+    {
+      "args": [
+        2,
+        [
+          [
+            1,
+            0,
+            0
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            1
+          ]
+        ]
+      ],
+      "expected": [
+        0,
+        0
+      ]
+    },
+    {
+      "args": [
+        1,
+        [],
+        []
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        4,
+        [
+          [
+            0,
+            1,
+            3
+          ],
+          [
+            2,
+            3,
+            1
+          ]
+        ],
+        [
+          [
+            2,
+            1
+          ],
+          [
+            2,
+            3
+          ]
+        ]
+      ],
+      "expected": [
+        -1,
+        1
+      ]
+    }
+  ]
+}

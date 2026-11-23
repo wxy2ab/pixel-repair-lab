@@ -1,0 +1,152 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "challenge-maximum-repair-kits",
+  "order": 1859,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "一箱能装几套",
+    "en": "As Many Kits as Will Fit"
+  },
+  "concept": {
+    "zh": "物资比例 · 货架保留量 · 箱体上限",
+    "en": "Kit ratios · Reserved stock · Box capacity"
+  },
+  "brief": {
+    "zh": "每套应急包需要 2 个电池、3 个固定夹和 1 个密封圈。仓库有 15 个电池、16 个固定夹、7 个密封圈，至少留 3 个电池、2 个固定夹在货架。发货箱只能装 25 件，其中必须有且只有 1 张调度卡。装尽可能多的完整套装，余料和扳手留在货架。让 AI 交出整箱清单，每轮指出所有不合规则的项目。",
+    "en": "Each emergency kit needs 2 batteries, 3 clamps, and 1 seal. The shelf holds 15 batteries, 16 clamps, and 7 seals. Keep at least 3 batteries and 2 clamps on the shelf. The box fits 25 pieces, including exactly 1 dispatch card. Pack as many complete kits as possible. Leave loose spares and the wrench on the shelf. Have AI submit the full manifest and flag every discrepancy each round."
+  },
+  "prerequisites": [
+    {
+      "unit": "ai",
+      "topic": "constraints"
+    },
+    {
+      "unit": "ai-review",
+      "topic": "review"
+    },
+    {
+      "unit": "ai-review",
+      "topic": "multi-turn"
+    }
+  ],
+  "hints": [],
+  "inventory": [
+    {
+      "id": "battery",
+      "label": {
+        "zh": "电池",
+        "en": "battery"
+      },
+      "aliases": [
+        "batteries"
+      ]
+    },
+    {
+      "id": "clamp",
+      "label": {
+        "zh": "固定夹",
+        "en": "clamp"
+      },
+      "aliases": [
+        "clamps"
+      ]
+    },
+    {
+      "id": "seal",
+      "label": {
+        "zh": "密封圈",
+        "en": "seal"
+      },
+      "aliases": [
+        "seals"
+      ]
+    },
+    {
+      "id": "dispatch",
+      "label": {
+        "zh": "调度卡",
+        "en": "dispatch card"
+      },
+      "aliases": [
+        "dispatch cards"
+      ]
+    },
+    {
+      "id": "wrench",
+      "label": {
+        "zh": "扳手",
+        "en": "wrench"
+      },
+      "aliases": [
+        "wrenches"
+      ]
+    }
+  ],
+  "required": {
+    "battery": 8,
+    "clamp": 12,
+    "seal": 4,
+    "dispatch": 1
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "clamp",
+        "quantity": 13
+      },
+      {
+        "itemId": "wrench",
+        "quantity": 1
+      },
+      {
+        "itemId": "dispatch",
+        "quantity": 0
+      }
+    ],
+    "draft": {
+      "items": [
+        {
+          "id": "battery",
+          "quantity": 10
+        },
+        {
+          "id": "clamp",
+          "quantity": 15
+        },
+        {
+          "id": "seal",
+          "quantity": 5
+        },
+        {
+          "id": "wrench",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  "examplePrompts": {
+    "zh": [
+      "放 8 个电池。放 12 个固定夹。放 4 个密封圈。放 1 个调度卡。移除扳手。",
+      "放 12 个固定夹。",
+      "移除扳手。",
+      "放 1 个调度卡。"
+    ],
+    "en": [
+      "Pack 8 batteries. Pack 12 clamps. Pack 4 seals. Pack 1 dispatch card. Remove the wrench.",
+      "Pack 12 clamps.",
+      "Remove the wrench.",
+      "Pack 1 dispatch card."
+    ]
+  }
+}

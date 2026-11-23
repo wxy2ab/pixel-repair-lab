@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "pandas-cleaning-demo",
+  "order": 517,
+  "stage": "demo",
+  "unit": {
+    "id": "pandas",
+    "order": 110,
+    "title": {
+      "zh": "pandas",
+      "en": "pandas"
+    }
+  },
+  "topic": {
+    "id": "cleaning",
+    "order": 2,
+    "title": {
+      "zh": "数据清洗",
+      "en": "Data cleaning"
+    }
+  },
+  "title": {
+    "zh": "对照清洗前后的记录",
+    "en": "Compare the Table Before and After Cleaning"
+  },
+  "brief": {
+    "zh": "切换区域名规范化、缺测处理和按编号去重，观察每一步怎么改变原表。",
+    "en": "Toggle area normalization, missing-value handling, and deduplication by ID to see what each step changes."
+  },
+  "concept": {
+    "zh": "温度转成数字后，每项清洗规则都能单独比较。",
+    "en": "Once readings are converted to numbers, try each cleaning rule on its own."
+  },
+  "hints": [
+    {
+      "zh": "先只规范区域名，找找原表第 4 号记录。再打开去重，找第 9 号记录。",
+      "en": "Normalize area names first and find record 4. Then turn on deduplication and find record 9."
+    }
+  ],
+  "steps": [
+    {
+      "operation": "clean",
+      "input": "raw",
+      "label": {
+        "zh": "试用清洗规则",
+        "en": "Try cleaning rules"
+      },
+      "prompt": {
+        "zh": "试着一次打开一个清洗选项，再对照记录编号看到哪里改变了。",
+        "en": "Turn on one cleaning option at a time, and compare IDs to see what changed."
+      },
+      "initial": {
+        "trim": true,
+        "dropMissing": false,
+        "deduplicate": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+.sequence-lesson { min-width: 0; container-type: inline-size; }
+.sequence-body { display: grid; gap: 12px; padding: 14px 15px; }
+.sequence-body > p { margin: 0; overflow-wrap: anywhere; }
+.sequence-body > p:first-child { color: #d7e5f4; }
+.sequence-lesson[data-blocked] .program-graphic-tile[data-active] > .program-graphic-face {
+  border-color: #e6a36c; background: #442e31; box-shadow: inset 0 0 0 1px #ffbd842d;
+}
+.sequence-lesson[data-blocked] .program-graphic-tile[data-active] ~ .program-graphic-tile > .program-graphic-face {
+  border-style: dashed; opacity: .72;
+}
+
+.sequence-data {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 9px; margin: 0;
+}
+.sequence-data > div {
+  min-width: 0; padding: 9px 11px; display: grid; align-content: start; gap: 5px;
+  border: 1px solid #3b536b; border-radius: 8px; background: #17283d;
+}
+.sequence-data dt { color: #cbdcf0; font-size: 13px; font-weight: 700; overflow-wrap: anywhere; }
+.sequence-data dd { min-width: 0; margin: 0; color: #f0f6ff; overflow-wrap: anywhere; }
+.sequence-data .sequence-reading dd, .sequence-screen output { font: 700 15px/1.4 var(--mono); }
+.sequence-data .sequence-reading dd { color: #b9f1c4; }
+.sequence-screen output { display: inline-block; padding: 2px 5px; border: 1px solid #56829a; border-radius: 4px; background: #111f30; color: #c1ebff; }
+.sequence-memory dd { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 7px; font-size: 13px; }
+.sequence-memory [data-binding] {
+  min-width: 0; display: grid; gap: 2px; padding: 3px 7px; border: 1px solid #60857b; border-radius: 5px;
+  background: #183934; color: #cff3df; font-family: var(--mono);
+}
+.sequence-memory [data-binding] strong { font-size: 15px; text-align: center; }
+
+.sequence-code h3 { margin: 0 0 5px; font-size: 14px; }
+.sequence-code ol {
+  margin: 0; padding: 4px 0; list-style: none; overflow: hidden;
+  border: 1px solid #405772; border-radius: 7px; background: #101c2c;
+}
+.sequence-code li {
+  display: grid; grid-template-columns: 1.8em minmax(0, 1fr); gap: 0 6px; align-items: baseline;
+  padding: 4px 7px; color: #d0deef; border-inline-start: 3px solid transparent;
+}
+.sequence-code li > span { color: #9db0c5; text-align: end; font: 700 12px var(--mono); }
+.sequence-code li code { white-space: pre-wrap; overflow-wrap: anywhere; }
+.sequence-code li[aria-current='step'] { border-inline-start-color: #9fe5c8; color: #edfff7; background: #22403e; }
+.sequence-code li[data-blocked] { border-inline-start-color: #ffbc80; color: #ffe1bf; background: #473033; }
+.sequence-code li small { grid-column: 2; color: #ffd39f; }
+.sequence-feedback:empty { display: none; }
+.sequence-feedback { color: #dff6e8; }
+.sequence-feedback[data-error] {
+  padding: 8px 10px; border-inline-start: 3px solid #e6ad77; border-radius: 5px;
+  color: #ffdcaf; background: #3f2f32;
+}
+.sequence-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+.sequence-actions button { min-height: 40px; white-space: normal; }
+@container (max-width: 495px) {
+  .sequence-body { padding-inline: 9px; }
+  .sequence-data { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sequence-memory { grid-column: 1 / -1; grid-row: 2; }
+}

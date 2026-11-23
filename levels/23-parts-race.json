@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "routing",
+    "order": 60,
+    "title": {
+      "zh": "算法进阶",
+      "en": "Intermediate Algorithms"
+    }
+  },
+  "kind": "arena",
+  "stage": "exercise",
+  "id": "parts-race",
+  "order": 1233,
+  "title": {
+    "zh": "零件争夺赛",
+    "en": "Parts race"
+  },
+  "concept": {
+    "zh": "同步回合与得分",
+    "en": "Simultaneous turns and scoring"
+  },
+  "brief": {
+    "zh": "在 12 回合内尽可能多拾取零件。两个对手也会争抢，分数必须单独排第一。",
+    "en": "Pick up as many parts as you can in 12 turns. Two rivals are collecting too. Finish alone in first place."
+  },
+  "hints": [
+    {
+      "zh": "移动和拾取各花一回合。先取起点右侧同一排的三个零件，再往下走。",
+      "en": "Moving and picking each take a turn. Start with the three parts to your right, then go down."
+    },
+    {
+      "zh": "两个对手都沿固定路线走，遇到零件就花一回合拾取。抢同一个零件时，优先顺序每回合轮换。",
+      "en": "Both rivals follow fixed routes and spend a turn picking up each part they reach. Pickup priority rotates each turn."
+    }
+  ],
+  "tiles": [
+    "#########",
+    "#.......#",
+    "#.......#",
+    "#.......#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 1,
+    "y": 2
+  },
+  "maxTurns": 12,
+  "items": [
+    {
+      "id": "bolt",
+      "x": 2,
+      "y": 2
+    },
+    {
+      "id": "gear",
+      "x": 3,
+      "y": 2
+    },
+    {
+      "id": "spring",
+      "x": 4,
+      "y": 2
+    },
+    {
+      "id": "nut",
+      "x": 4,
+      "y": 3
+    },
+    {
+      "id": "ring",
+      "x": 7,
+      "y": 2
+    },
+    {
+      "id": "wire",
+      "x": 6,
+      "y": 4
+    },
+    {
+      "id": "cap",
+      "x": 7,
+      "y": 3
+    }
+  ],
+  "opponents": [
+    {
+      "id": "scout",
+      "title": {
+        "zh": "巡逻机器人",
+        "en": "Patrol bot"
+      },
+      "start": {
+        "x": 7,
+        "y": 1
+      },
+      "policy": {
+        "kind": "patrol",
+        "path": [
+          {
+            "x": 7,
+            "y": 1
+          },
+          {
+            "x": 7,
+            "y": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "shuttle",
+      "title": {
+        "zh": "折返机器人",
+        "en": "Shuttle bot"
+      },
+      "start": {
+        "x": 7,
+        "y": 4
+      },
+      "policy": {
+        "kind": "patrol",
+        "path": [
+          {
+            "x": 7,
+            "y": 4
+          },
+          {
+            "x": 6,
+            "y": 4
+          },
+          {
+            "x": 7,
+            "y": 4
+          },
+          {
+            "x": 7,
+            "y": 3
+          }
+        ]
+      }
+    }
+  ],
+  "objective": {
+    "kind": "score"
+  },
+  "starterCode": "move(\"right\")\npick()\n",
+  "solutionCode": "for turn in range(3):\n    move(\"right\")\n    pick()\nmove(\"down\")\npick()",
+  "snippets": [
+    {
+      "label": {
+        "zh": "向右",
+        "en": "Move right"
+      },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": {
+        "zh": "向下",
+        "en": "Move down"
+      },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": {
+        "zh": "拾取零件",
+        "en": "Pick a part"
+      },
+      "code": "pick()"
+    },
+    {
+      "label": {
+        "zh": "等待一回合",
+        "en": "Wait a turn"
+      },
+      "code": "wait()"
+    },
+    {
+      "label": {
+        "zh": "获取赛场状态",
+        "en": "Read the arena"
+      },
+      "code": "state = scan()"
+    }
+  ],
+  "topic": {
+    "id": "rival-strategy",
+    "order": 4,
+    "title": {
+      "zh": "对抗策略",
+      "en": "Rival strategy"
+    }
+  }
+}

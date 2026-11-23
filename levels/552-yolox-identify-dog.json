@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "yolox-review-a-dog",
+  "order": 552,
+  "stage": "exercise",
+  "unit": {
+    "id": "yolox",
+    "order": 150,
+    "title": { "zh": "YOLOX", "en": "YOLOX" }
+  },
+  "topic": {
+    "id": "object-detection",
+    "order": 1,
+    "title": { "zh": "目标检测", "en": "Object detection" }
+  },
+  "mode": "detect",
+  "title": { "zh": "让搜寻清单只找狗", "en": "Search Only for Dogs" },
+  "brief": { "zh": "宠物巡查员只要认识出来的狗，请给清单设置合适的类别。", "en": "The pet inspector needs a list of dogs. Choose the matching object class." },
+  "concept": { "zh": "用类别筛选已识别的候选。", "en": "Filter detected candidates by class." },
+  "hints": [
+    { "zh": "用和照片里的宠物对应的目标类别。", "en": "Choose the class that matches the pet in the photo." }
+  ],
+  "cases": [
+    {
+      "image": "labrador",
+      "label": { "zh": "宠物巡查", "en": "Pet inspection" },
+      "prompt": { "zh": "把目标类别设为“狗”，并保留照片里这只狗的检测框。", "en": "Set the target class to Dog and keep the dog's detection box." },
+      "initial": { "confidence": 50, "target": "person" },
+      "goal": { "labels": ["dog"], "target": "dog" },
+      "solution": { "confidence": 50, "target": "dog" }
+    }
+  ]
+}

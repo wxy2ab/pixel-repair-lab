@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "routing",
+    "order": 60,
+    "title": {
+      "zh": "算法进阶",
+      "en": "Intermediate Algorithms"
+    }
+  },
+  "kind": "replay",
+  "id": "binary-search-replay",
+  "order": 1201,
+  "stage": "demo",
+  "topic": {
+    "id": "binary-search",
+    "order": 1,
+    "title": {
+      "zh": "二分查找",
+      "en": "Binary search"
+    }
+  },
+  "title": {
+    "zh": "查看每次选择的中点",
+    "en": "Watch the chosen midpoints"
+  },
+  "concept": {
+    "zh": "命中和找不到的两种结局",
+    "en": "Find a match or exhaust the range"
+  },
+  "brief": {
+    "zh": "每次回答之前，芽芽会报告正在查看的中点。比较找到和找不到时的输出。",
+    "en": "Sprout says each midpoint before giving the answer. Compare what happens when the target is present or missing."
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "最终找到编号 12",
+        "en": "Find the number 12"
+      },
+      "source": "data = scan()\nvalues = data[\"values\"]\ntarget = data[\"target\"]\nlow = 0\nhigh = len(values) - 1\nanswer = -1\nwhile low <= high:\n    mid = (low + high) // 2\n    say(str(mid))\n    if values[mid] == target:\n        answer = mid\n        break\n    if values[mid] < target:\n        low = mid + 1\n    else:\n        high = mid - 1\nsubmit(answer)",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "input": {
+          "values": [
+            -5,
+            0,
+            3,
+            8,
+            12,
+            16,
+            20
+          ],
+          "target": 12
+        },
+        "allowedApi": [
+          "scan",
+          "say",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              4
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "title": {
+        "zh": "范围缩到没有候选",
+        "en": "Run out of candidates"
+      },
+      "source": "data = scan()\nvalues = data[\"values\"]\ntarget = data[\"target\"]\nlow = 0\nhigh = len(values) - 1\nanswer = -1\nwhile low <= high:\n    mid = (low + high) // 2\n    say(str(mid))\n    if values[mid] == target:\n        answer = mid\n        break\n    if values[mid] < target:\n        low = mid + 1\n    else:\n        high = mid - 1\nsubmit(answer)",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "input": {
+          "values": [
+            3,
+            6,
+            9,
+            18
+          ],
+          "target": 7
+        },
+        "allowedApi": [
+          "scan",
+          "say",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              -1
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

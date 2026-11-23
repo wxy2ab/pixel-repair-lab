@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "ai-workbench-request",
+  "order": 5701,
+  "unit": { "id": "ai", "order": 160, "title": { "zh": "AI 协作", "en": "AI Collaboration" } },
+  "topic": { "id": "task", "order": 1, "title": { "zh": "写清任务", "en": "Describe the task" } },
+  "stage": "exercise",
+  "title": { "zh": "给工作台列一份用品清单", "en": "Prepare a Workbench Checklist" },
+  "brief": { "zh": "校准工作台需要 2 卷线缆、3 颗螺丝和 1 把刷子。请 AI 逐项列出物品和数量，然后核对清单。", "en": "The calibration bench needs 2 cable rolls, 3 screws, and 1 brush. Ask the AI for a checklist that lists the items and their counts, then check it." },
+  "concept": { "zh": "同时写明三种物品、各自数量和交付格式。", "en": "Name all three items, their counts, and the requested output." },
+  "hints": [
+    { "zh": "“几卷”和“一些”容易让 AI 猜数量。写出具体数字。", "en": "Phrases like “a few rolls” leave the count open. Give the exact numbers." }
+  ],
+  "inventory": [
+    { "id": "cable", "label": { "zh": "线缆", "en": "Cable" }, "aliases": ["cable roll", "cable rolls", "线圈"] },
+    { "id": "screw", "label": { "zh": "螺丝", "en": "Screw" }, "aliases": ["screws", "螺钉"] },
+    { "id": "brush", "label": { "zh": "刷子", "en": "Brush" }, "aliases": ["brushes", "毛刷"] },
+    { "id": "cap", "label": { "zh": "盖子", "en": "Cap" }, "aliases": ["caps", "防尘盖"] }
+  ],
+  "required": { "cable": 2, "screw": 3, "brush": 1 },
+  "workflow": {
+    "review": "automatic",
+    "faults": [{ "itemId": "screw", "quantity": 2 }],
+    "cards": [
+      { "zh": "请交回一份逐项清单。", "en": "Return a checklist with one item per line." },
+      { "zh": "线缆：2卷。", "en": "Cable rolls: 2." },
+      { "zh": "螺丝：3颗。", "en": "Screws: 3." },
+      { "zh": "刷子：1把。", "en": "Brush: 1." },
+      { "zh": "准备一些盖子。", "en": "Pack some caps." },
+      { "zh": "去掉盖子。", "en": "Remove all caps." }
+    ]
+  },
+  "examplePrompts": {
+    "zh": ["线缆：2卷。螺丝：3颗。刷子：1把。请交回一份逐项清单。", "螺丝改为3颗。其他项目保持原样。"],
+    "en": ["Cable rolls: 2. Screws: 3. Brush: 1. Return a checklist with one item per line.", "Set screws to 3. Keep the other entries."]
+  }
+}

@@ -1,0 +1,292 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "python-debugging-notes",
+  "order": 940,
+  "unit": {
+    "id": "python-advanced",
+    "order": 30,
+    "title": {
+      "zh": "Python 高级",
+      "en": "Advanced Python"
+    }
+  },
+  "topic": {
+    "id": "debugging",
+    "order": 4,
+    "title": {
+      "zh": "调试",
+      "en": "Debugging"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "调试",
+    "en": "Debugging"
+  },
+  "brief": {
+    "zh": "给每块电池补 3 格。先用一块试跑，再用一排电池找到程序在哪儿提前结束。",
+    "en": "Add 3 units to each battery. Try one battery, then use a whole row to see where the program ends early."
+  },
+  "concept": {
+    "zh": "比较预期和实际结果，修正提前返回",
+    "en": "Compare expected and actual results, then fix an early return"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "先用一块电池试跑",
+        "en": "Start with one battery"
+      },
+      "body": {
+        "zh": "起始电量是 2 格，补 3 格后应该得到 [5]。输入只有一块电池时，实际结果也正好是 [5]。",
+        "en": "The starting charge is 2. Adding 3 should produce [5]. With one battery, the program does give [5]."
+      }
+    },
+    {
+      "title": {
+        "zh": "换一排，跟着程序找差异",
+        "en": "Try a row and trace the difference"
+      },
+      "body": {
+        "zh": "电量 [2, 4, 1] 应该补成 [5, 7, 4]。实际只得到 [5]，因为第一轮的 return 直接结束了整个函数，剩下两块来不及补。",
+        "en": "Charging [2, 4, 1] should give [5, 7, 4]. The program gives [5] because return exits the whole function on the first turn, leaving the other batteries uncharged."
+      }
+    },
+    {
+      "title": {
+        "zh": "等循环结束再返回",
+        "en": "Return after the loop finishes"
+      },
+      "body": {
+        "zh": "把 return 向左移一层，对齐 for。这样每块电池的结果都会先写进列表。用同一排重新试跑，再换一排验证。",
+        "en": "Move return left one indentation level to line it up with for. The program records each battery before returning. Rerun the original row and then check a new one."
+      }
+    }
+  ],
+  "animation": {
+    "layout": "row",
+    "frames": [
+      {
+        "caption": {
+          "zh": "只有一块电池，预期和实际结果都是 [5]。",
+          "en": "With only one battery, the expected and actual results are both [5]."
+        },
+        "items": [
+          {
+            "id": "expected",
+            "label": {
+              "zh": "预期电量",
+              "en": "Expected charges"
+            },
+            "value": {
+              "zh": "[5]",
+              "en": "[5]"
+            },
+            "state": "done"
+          },
+          {
+            "id": "actual",
+            "label": {
+              "zh": "实际电量",
+              "en": "Actual charges"
+            },
+            "value": {
+              "zh": "[5]",
+              "en": "[5]"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "换成一排后，第一轮的 return 让函数提前结束，实际只返回 [5]。",
+          "en": "With a whole row, return exits on the first turn and gives just [5]."
+        },
+        "items": [
+          {
+            "id": "expected",
+            "label": {
+              "zh": "预期电量",
+              "en": "Expected charges"
+            },
+            "value": {
+              "zh": "[5, 7, 4]",
+              "en": "[5, 7, 4]"
+            },
+            "state": "done"
+          },
+          {
+            "id": "actual",
+            "label": {
+              "zh": "实际电量",
+              "en": "Actual charges"
+            },
+            "value": {
+              "zh": "[5]",
+              "en": "[5]"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "把 return 移到循环外，整排补完才交回结果。",
+          "en": "Move return outside the loop to get the result after the whole row has been charged."
+        },
+        "items": [
+          {
+            "id": "expected",
+            "label": {
+              "zh": "预期电量",
+              "en": "Expected charges"
+            },
+            "value": {
+              "zh": "[5, 7, 4]",
+              "en": "[5, 7, 4]"
+            },
+            "state": "done"
+          },
+          {
+            "id": "actual",
+            "label": {
+              "zh": "实际电量",
+              "en": "Actual charges"
+            },
+            "value": {
+              "zh": "[5, 7, 4]",
+              "en": "[5, 7, 4]"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  },
+  "question": {
+    "prompt": {
+      "zh": "应该把 return 放在哪里，才能让每块电池都补好再交回结果？",
+      "en": "Where should return go so that all the batteries are charged before the function gives back the results?"
+    },
+    "options": [
+      {
+        "zh": "循环结束后，与 for 对齐",
+        "en": "After the loop, aligned with for"
+      },
+      {
+        "zh": "每次补电后，留在循环里",
+        "en": "After charging each battery, inside the loop"
+      },
+      {
+        "zh": "循环开始前",
+        "en": "Before the loop"
+      }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "return 会结束整个函数。与 for 对齐后，程序会先走完循环再执行 return。",
+      "en": "return ends the whole function. When it lines up with for, it runs after the loop is done."
+    }
+  },
+  "execution": {
+    "source": "def top_up_all(batteries):\n    results = []\n    for charge in batteries:\n        results.append(charge + 3)\n        return results\nbatteries = read_batteries()\nresult = top_up_all(batteries)\nsay(str(result))",
+    "cases": [],
+    "debugging": {
+      "increment": 3,
+      "loopLine": 3,
+      "returnLine": 5,
+      "cases": [
+        {
+          "label": {
+            "zh": "一块电池",
+            "en": "One battery"
+          },
+          "batteries": [
+            2
+          ],
+          "expected": [
+            5
+          ]
+        },
+        {
+          "label": {
+            "zh": "一排电池",
+            "en": "A row of batteries"
+          },
+          "batteries": [
+            2,
+            4,
+            1
+          ],
+          "expected": [
+            5,
+            7,
+            4
+          ]
+        },
+        {
+          "label": {
+            "zh": "电量 0、5、2 格",
+            "en": "Charges 0, 5, 2"
+          },
+          "batteries": [
+            0,
+            5,
+            2
+          ],
+          "expected": [
+            3,
+            8,
+            5
+          ],
+          "predictions": [
+            [
+              3
+            ],
+            [
+              3,
+              8,
+              5
+            ],
+            [
+              3,
+              5,
+              2
+            ]
+          ]
+        },
+        {
+          "label": {
+            "zh": "电量 4、1 格",
+            "en": "Charges 4, 1"
+          },
+          "batteries": [
+            4,
+            1
+          ],
+          "expected": [
+            7,
+            4
+          ],
+          "predictions": [
+            [
+              7,
+              1
+            ],
+            [
+              7,
+              4
+            ],
+            [
+              4,
+              7
+            ]
+          ]
+        }
+      ]
+    }
+  }
+}

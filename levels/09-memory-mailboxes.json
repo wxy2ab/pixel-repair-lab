@@ -1,0 +1,385 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "memory-mailboxes",
+  "order": 1509,
+  "unit": {
+    "id": "architecture",
+    "order": 90,
+    "title": {
+      "zh": "计算机结构",
+      "en": "Computer Architecture"
+    }
+  },
+  "stage": "exercise",
+  "topic": { "id": "memory", "order": 1, "title": { "zh": "内存", "en": "Memory" } },
+  "title": {
+    "zh": "记忆储物柜",
+    "en": "Memory Lockers"
+  },
+  "concept": {
+    "zh": "内存地址与读写",
+    "en": "Memory addresses, reads, and writes"
+  },
+  "brief": {
+    "zh": "读取地址 1 和 2 里的数字，把它们相加。把结果写入地址 3，再从地址 3 读出并提交。",
+    "en": "Read the numbers at addresses 1 and 2 and add them. Write the result to address 3, then read it back and submit it."
+  },
+  "hints": [
+    {
+      "zh": "地址像柜子的编号。load(1) 取出 1 号柜里的值。",
+      "en": "An address is like a locker number. load(1) reads the value stored in locker 1."
+    },
+    {
+      "zh": "store() 的第一个参数是地址，第二个参数是要存进去的值。",
+      "en": "The first argument to store() is the address. The second is the value to put there."
+    }
+  ],
+  "tiles": [
+    "#########",
+    "#.......#",
+    "#.###.#.#",
+    "#.......#",
+    "#.#.###.#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 4,
+    "y": 3
+  },
+  "memory": [
+    2,
+    4,
+    6,
+    0,
+    8,
+    0
+  ],
+  "allowedApi": [
+    "load",
+    "store",
+    "submit"
+  ],
+  "objectives": [
+    {
+      "type": "memory",
+      "address": 3,
+      "value": 10
+    },
+    {
+      "type": "submit",
+      "values": [
+        10
+      ],
+      "origin": "memory-load"
+    }
+  ],
+  "variants": [
+    {
+      "memory": [
+        4,
+        7,
+        2,
+        1,
+        4,
+        6
+      ],
+      "objectives": [
+        {
+          "type": "memory",
+          "address": 3,
+          "value": 9
+        },
+        {
+          "type": "submit",
+          "values": [
+            9
+          ],
+          "origin": "memory-load"
+        }
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "add-addresses",
+      "label": {
+        "zh": "读取两个地址并相加",
+        "en": "Read and add two addresses"
+      },
+      "template": "total = load({{first}}) + load({{second}})",
+      "parameters": [
+        {
+          "name": "first",
+          "label": {
+            "zh": "第一个地址",
+            "en": "First address"
+          },
+          "choices": [
+            {
+              "id": "0",
+              "label": {
+                "zh": "0",
+                "en": "0"
+              },
+              "code": "0"
+            },
+            {
+              "id": "1",
+              "label": {
+                "zh": "1",
+                "en": "1"
+              },
+              "code": "1"
+            },
+            {
+              "id": "2",
+              "label": {
+                "zh": "2",
+                "en": "2"
+              },
+              "code": "2"
+            },
+            {
+              "id": "3",
+              "label": {
+                "zh": "3",
+                "en": "3"
+              },
+              "code": "3"
+            },
+            {
+              "id": "4",
+              "label": {
+                "zh": "4",
+                "en": "4"
+              },
+              "code": "4"
+            },
+            {
+              "id": "5",
+              "label": {
+                "zh": "5",
+                "en": "5"
+              },
+              "code": "5"
+            }
+          ]
+        },
+        {
+          "name": "second",
+          "label": {
+            "zh": "第二个地址",
+            "en": "Second address"
+          },
+          "choices": [
+            {
+              "id": "0",
+              "label": {
+                "zh": "0",
+                "en": "0"
+              },
+              "code": "0"
+            },
+            {
+              "id": "1",
+              "label": {
+                "zh": "1",
+                "en": "1"
+              },
+              "code": "1"
+            },
+            {
+              "id": "2",
+              "label": {
+                "zh": "2",
+                "en": "2"
+              },
+              "code": "2"
+            },
+            {
+              "id": "3",
+              "label": {
+                "zh": "3",
+                "en": "3"
+              },
+              "code": "3"
+            },
+            {
+              "id": "4",
+              "label": {
+                "zh": "4",
+                "en": "4"
+              },
+              "code": "4"
+            },
+            {
+              "id": "5",
+              "label": {
+                "zh": "5",
+                "en": "5"
+              },
+              "code": "5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "save-total",
+      "label": {
+        "zh": "写入计算结果",
+        "en": "Store the total"
+      },
+      "template": "store({{address}}, total)",
+      "parameters": [
+        {
+          "name": "address",
+          "label": {
+            "zh": "写入地址",
+            "en": "Write address"
+          },
+          "choices": [
+            {
+              "id": "0",
+              "label": {
+                "zh": "0",
+                "en": "0"
+              },
+              "code": "0"
+            },
+            {
+              "id": "1",
+              "label": {
+                "zh": "1",
+                "en": "1"
+              },
+              "code": "1"
+            },
+            {
+              "id": "2",
+              "label": {
+                "zh": "2",
+                "en": "2"
+              },
+              "code": "2"
+            },
+            {
+              "id": "3",
+              "label": {
+                "zh": "3",
+                "en": "3"
+              },
+              "code": "3"
+            },
+            {
+              "id": "4",
+              "label": {
+                "zh": "4",
+                "en": "4"
+              },
+              "code": "4"
+            },
+            {
+              "id": "5",
+              "label": {
+                "zh": "5",
+                "en": "5"
+              },
+              "code": "5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "check-memory",
+      "label": {
+        "zh": "读回数值并提交",
+        "en": "Read a value back and submit"
+      },
+      "template": "submit(load({{address}}))",
+      "parameters": [
+        {
+          "name": "address",
+          "label": {
+            "zh": "读取地址",
+            "en": "Read address"
+          },
+          "choices": [
+            {
+              "id": "0",
+              "label": {
+                "zh": "0",
+                "en": "0"
+              },
+              "code": "0"
+            },
+            {
+              "id": "1",
+              "label": {
+                "zh": "1",
+                "en": "1"
+              },
+              "code": "1"
+            },
+            {
+              "id": "2",
+              "label": {
+                "zh": "2",
+                "en": "2"
+              },
+              "code": "2"
+            },
+            {
+              "id": "3",
+              "label": {
+                "zh": "3",
+                "en": "3"
+              },
+              "code": "3"
+            },
+            {
+              "id": "4",
+              "label": {
+                "zh": "4",
+                "en": "4"
+              },
+              "code": "4"
+            },
+            {
+              "id": "5",
+              "label": {
+                "zh": "5",
+                "en": "5"
+              },
+              "code": "5"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "add-addresses",
+      "values": {
+        "first": "1",
+        "second": "2"
+      }
+    },
+    {
+      "cardId": "save-total",
+      "values": {
+        "address": "3"
+      }
+    },
+    {
+      "cardId": "check-memory",
+      "values": {
+        "address": "3"
+      }
+    }
+  ]
+}

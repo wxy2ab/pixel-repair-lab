@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "two-pointer-notes",
+  "order": 1111,
+  "unit": {
+    "id": "algorithm-intro",
+    "order": 50,
+    "title": { "zh": "算法初级", "en": "Introductory Algorithms" }
+  },
+  "stage": "explain",
+  "topic": {
+    "id": "two-pointers",
+    "order": 3,
+    "title": { "zh": "双指针", "en": "Two pointers" }
+  },
+  "title": { "zh": "从两头给电池配对", "en": "Pair Batteries from Both Ends" },
+  "brief": {
+    "zh": "维修台需要两块电池，电量加起来刚好达到目标。电池已从低电量排到高电量，先看看两头，再决定哪一端往中间走。",
+    "en": "The repair bench needs two batteries whose charges add up to the target. The batteries are sorted by charge. Start at the two ends and decide which end should move inward."
+  },
+  "concept": {
+    "zh": "根据两端电量之和，缩小配对范围",
+    "en": "Use the sum at the two ends to narrow the search"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": { "zh": "总电量偏低", "en": "The total is too low" },
+      "body": {
+        "zh": "左边这块配上右端最大的电池都达不到目标，配里面更小的也不行。排除左边这块，左端向右移。",
+        "en": "The left battery falls short even with the largest available partner. A smaller partner cannot reach the target, so rule out the left battery and move that end right."
+      }
+    },
+    {
+      "title": { "zh": "总电量偏高", "en": "The total is too high" },
+      "body": {
+        "zh": "右边这块配上左端最小的电池都超过目标，配里面更大的也不行。排除右边这块，右端向左移。",
+        "en": "The right battery exceeds the target even with the smallest available partner. A larger partner cannot work, so rule out the right battery and move that end left."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "两端的电量相加比目标小，哪一端应该往中间移？",
+      "en": "The charge at the two ends adds up to less than the target. Which end should move inward?"
+    },
+    "options": [
+      { "zh": "左端向右移", "en": "Move the left end right" },
+      { "zh": "右端向左移", "en": "Move the right end left" }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "左端向右移会换成电量一样或更高的电池，继续找能凑够目标的一对。",
+      "en": "Moving the left end right keeps or increases its charge, so the search can look for a larger total."
+    }
+  },
+  "execution": {
+    "source": "def find_pair(charges, target):\n    left = 0\n    right = len(charges) - 1\n    while left < right:\n        total = charges[left] + charges[right]\n        if total == target:\n            return [left, right]\n        if total < target:\n            left += 1\n        else:\n            right -= 1\n    return []\n",
+    "cases": [],
+    "twoPointerLesson": {
+      "demo": {
+        "batteries": [
+          { "name": "A", "charge": 1 },
+          { "name": "B", "charge": 4 },
+          { "name": "C", "charge": 6 },
+          { "name": "D", "charge": 9 },
+          { "name": "E", "charge": 11 },
+          { "name": "F", "charge": 14 }
+        ],
+        "target": 17,
+        "expected": { "moves": ["left", "right", "left"], "pair": ["C", "E"] }
+      },
+      "practice": {
+        "batteries": [
+          { "name": "G", "charge": 2 },
+          { "name": "H", "charge": 5 },
+          { "name": "J", "charge": 7 },
+          { "name": "K", "charge": 9 },
+          { "name": "L", "charge": 12 },
+          { "name": "M", "charge": 14 },
+          { "name": "N", "charge": 18 }
+        ],
+        "target": 17,
+        "expected": { "moves": ["right", "left", "right"], "pair": ["H", "L"] }
+      }
+    }
+  }
+}

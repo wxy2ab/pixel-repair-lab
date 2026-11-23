@@ -1,0 +1,228 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-folded-signal-tape",
+  "order": 1875,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "structures",
+      "topic": "stacks"
+    },
+    {
+      "unit": "python-advanced",
+      "topic": "function-design"
+    }
+  ],
+  "title": {
+    "zh": "折叠信号带",
+    "en": "Folded Signal Tape"
+  },
+  "concept": {
+    "zh": "嵌套重复片段的长度与随机读取",
+    "en": "Length and indexed reads from nested repeats"
+  },
+  "brief": {
+    "zh": "tokens 是压缩电报。[\"emit\",字符] 放入一个字符，[\"open\",次数] 开启重复段，[\"close\"] 把整段按次数重复。段可嵌套或留空，括号已配对，次数为正整数。返回 [展开后的长度, 各次读到的字符列表]。positions 从 0 编号，负数或越界填空字符串。展开长度最高可达一百万。",
+    "en": "tokens describes a compressed message. [\"emit\",character] emits one character. [\"open\",count] starts a repeat and [\"close\"] repeats that entire group count times. Groups may nest or be empty, pairs are balanced, and counts are positive integers. Return [expanded length, list of characters at positions]. Positions are zero-based. Use an empty string for a negative or out-of-range index. The expanded length may reach one million."
+  },
+  "hints": [],
+  "functionName": "tape_probe",
+  "starterCode": "def tape_probe(tokens, positions):\n    pass\n",
+  "solutionCode": "def tape_probe(tokens, positions):\n    children = [[]]\n    sizes = [0]\n    repeats = [1]\n    chars = [\"\"]\n    stack = [0]\n    for token in tokens:\n        parent = stack[-1]\n        if token[0] == \"close\":\n            stack.pop()\n            sizes[stack[-1]] += sizes[parent] * repeats[parent]\n        else:\n            node = len(sizes)\n            children[parent].append(node)\n            children.append([])\n            if token[0] == \"open\":\n                sizes.append(0)\n                repeats.append(token[1])\n                chars.append(\"\")\n                stack.append(node)\n            else:\n                sizes.append(1)\n                repeats.append(1)\n                chars.append(token[1])\n                sizes[parent] += 1\n    found = []\n    for position in positions:\n        letter = \"\"\n        node = 0\n        if position >= 0 and position < sizes[0]:\n            while chars[node] == \"\":\n                for child in children[node]:\n                    span = sizes[child] * repeats[child]\n                    if position < span:\n                        position = position % sizes[child]\n                        node = child\n                        break\n                    position -= span\n            letter = chars[node]\n        found.append(letter)\n    return [sizes[0], found]\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "按指令登记压缩片段",
+        "en": "Record the compressed segments"
+      },
+      "code": "    for token in tokens:\n        parent = stack[-1]\n        if token[0] == \"close\":\n            stack.pop()\n            sizes[stack[-1]] += sizes[parent] * repeats[parent]\n        else:\n            node = len(sizes)\n            children[parent].append(node)\n            children.append([])\n            if token[0] == \"open\":\n                sizes.append(0)\n                repeats.append(token[1])\n                chars.append(\"\")\n                stack.append(node)\n            else:\n                sizes.append(1)\n                repeats.append(1)\n                chars.append(token[1])\n                sizes[parent] += 1"
+    },
+    {
+      "label": {
+        "zh": "准备片段树",
+        "en": "Set up the group tree"
+      },
+      "code": "    children = [[]]\n    sizes = [0]\n    repeats = [1]\n    chars = [\"\"]\n    stack = [0]"
+    },
+    {
+      "label": {
+        "zh": "报告总长和读数",
+        "en": "Report length and readings"
+      },
+      "code": "    return [sizes[0], found]"
+    },
+    {
+      "label": {
+        "zh": "把每段的单份长度记入父段",
+        "en": "Credit one copy of a group's length"
+      },
+      "code": "    for token in tokens:\n        parent = stack[-1]\n        if token[0] == \"close\":\n            stack.pop()\n            sizes[stack[-1]] += sizes[parent]\n        else:\n            node = len(sizes)\n            children[parent].append(node)\n            children.append([])\n            if token[0] == \"open\":\n                sizes.append(0)\n                repeats.append(token[1])\n                chars.append(\"\")\n                stack.append(node)\n            else:\n                sizes.append(1)\n                repeats.append(1)\n                chars.append(token[1])\n                sizes[parent] += 1"
+    },
+    {
+      "label": {
+        "zh": "定位每个待读字符",
+        "en": "Locate each requested character"
+      },
+      "code": "    found = []\n    for position in positions:\n        letter = \"\"\n        node = 0\n        if position >= 0 and position < sizes[0]:\n            while chars[node] == \"\":\n                for child in children[node]:\n                    span = sizes[child] * repeats[child]\n                    if position < span:\n                        position = position % sizes[child]\n                        node = child\n                        break\n                    position -= span\n            letter = chars[node]\n        found.append(letter)"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          [
+            "open",
+            2
+          ],
+          [
+            "emit",
+            "A"
+          ],
+          [
+            "open",
+            3
+          ],
+          [
+            "emit",
+            "B"
+          ],
+          [
+            "close"
+          ],
+          [
+            "close"
+          ],
+          [
+            "emit",
+            "X"
+          ]
+        ],
+        [
+          0,
+          3,
+          4,
+          8,
+          9
+        ]
+      ],
+      "expected": [
+        9,
+        [
+          "A",
+          "B",
+          "A",
+          "X",
+          ""
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            "open",
+            1000
+          ],
+          [
+            "open",
+            1000
+          ],
+          [
+            "emit",
+            "Z"
+          ],
+          [
+            "close"
+          ],
+          [
+            "close"
+          ]
+        ],
+        [
+          0,
+          500001,
+          999999,
+          1000000
+        ]
+      ],
+      "expected": [
+        1000000,
+        [
+          "Z",
+          "Z",
+          "Z",
+          ""
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            "open",
+            4
+          ],
+          [
+            "close"
+          ],
+          [
+            "emit",
+            "X"
+          ]
+        ],
+        [
+          -1,
+          0,
+          1
+        ]
+      ],
+      "expected": [
+        1,
+        [
+          "",
+          "X",
+          ""
+        ]
+      ]
+    },
+    {
+      "args": [
+        [],
+        [
+          0
+        ]
+      ],
+      "expected": [
+        0,
+        [
+          ""
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            "emit",
+            "R"
+          ]
+        ],
+        []
+      ],
+      "expected": [
+        1,
+        []
+      ]
+    }
+  ]
+}

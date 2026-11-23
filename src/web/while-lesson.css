@@ -1,0 +1,193 @@
+.while-lesson { min-width: 0; container: while-lesson / inline-size; }
+.while-heading, .while-navigation { flex-wrap: wrap; }
+.while-heading h2, .while-description, .while-body > .error-message { margin: 0; }
+.while-navigation { display: flex; gap: 6px; }
+.while-navigation button { min-height: 40px; white-space: normal; }
+.while-body { display: grid; gap: 10px; min-width: 0; padding: 12px 14px 14px; }
+.while-description { color: #d8e6f8; overflow-wrap: anywhere; }
+
+.while-meter-panel, .while-route {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+  padding: 10px;
+  border: 1px solid #455d78;
+  border-radius: 9px;
+  background: #17283d;
+}
+.while-meter-labels, .while-meter-scale {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 3px 10px;
+  color: #d2e2f5;
+  font-size: 13px;
+}
+.while-meter-labels strong { color: #ecf5ff; font: 700 20px/1.15 var(--mono); }
+.while-target-label { display: inline-flex; align-items: center; gap: 5px; color: #ffe0a6; }
+.while-target-label::before { content: ''; width: 2px; height: 13px; border-radius: 2px; background: #ffd384; }
+.while-meter {
+  position: relative;
+  height: 25px;
+  margin-inline-end: 7px;
+  border: 2px solid #6786a8;
+  border-radius: 6px;
+  background: #112137;
+}
+.while-meter::after {
+  content: '';
+  position: absolute;
+  inset: 5px auto 5px 100%;
+  width: 7px;
+  border-radius: 0 3px 3px 0;
+  background: #6786a8;
+}
+.while-meter-fill {
+  position: absolute;
+  inset: 2px auto 2px 2px;
+  width: min(var(--while-fill), calc(100% - 4px));
+  border-radius: 3px;
+  background: #6aaed3;
+  transition: width 220ms ease, background 180ms ease;
+}
+.while-meter-panel[data-ready='true'] .while-meter-fill { background: #80d8ad; }
+.while-meter-target {
+  position: absolute;
+  inset: -4px auto -4px var(--while-target);
+  width: 2px;
+  border-radius: 2px;
+  background: #ffd384;
+}
+.while-meter-scale { color: #a9c1db; font: 12px/1.1 var(--mono); }
+
+.while-route { --while-route-line: #738da9; --while-route-selected: #a6eaca; gap: 3px; }
+.while-check-node, .while-route-node {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  justify-items: center;
+  gap: 4px;
+  padding: 6px 7px;
+  border: 1px solid #486481;
+  border-radius: 7px;
+  background: #20354c;
+  color: #e3efff;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.while-check-node {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  font-size: 14px;
+}
+.while-predicate {
+  padding: 1px 5px;
+  border: 1px solid #82caa9;
+  border-radius: 5px;
+  color: #d7ffec;
+  background: #254b40;
+  font-size: 12px;
+  font-weight: 700;
+}
+.while-predicate[data-truth='false'] { border-color: #caa873; color: #ffe5b5; background: #4b3d30; }
+.while-check-node[data-active], .while-route-node[data-active] {
+  border-color: #81c7aa;
+  background: #223e42;
+}
+.while-route-node[data-current] { box-shadow: inset 0 0 0 1px #9fe1c3; }
+.while-branches, .while-nodes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.while-branches { position: relative; padding-top: 12px; }
+.while-branches::before {
+  content: '';
+  position: absolute;
+  inset: -3px auto 0 calc(50% - 1px);
+  width: 2px;
+  height: 15px;
+  background: var(--while-route-line);
+}
+.while-branches:has([data-active])::before { background: var(--while-route-selected); }
+.while-branches > span {
+  position: relative;
+  justify-self: center;
+  width: 100%;
+  min-width: 0;
+  padding-top: 6px;
+  color: #c4d7e9;
+  font-size: 12px;
+  text-align: center;
+}
+.while-branches > span::before {
+  content: '';
+  position: absolute;
+  inset: 0 -3px auto 50%;
+  height: 7px;
+  border-top: 2px solid var(--while-route-line);
+  border-left: 2px solid var(--while-route-line);
+  border-top-left-radius: 6px;
+}
+.while-branches > span:last-child::before {
+  inset-inline: -3px 50%;
+  border-left: 0;
+  border-right: 2px solid var(--while-route-line);
+  border-top-left-radius: 0;
+  border-top-right-radius: 6px;
+}
+.while-branches > span[data-active] { --while-route-line: var(--while-route-selected); color: #dcffec; font-weight: 700; }
+.while-route-node strong { font-size: 14px; }
+.while-route-node > span { color: #c6d9ec; font-size: 12px; }
+.while-route-node .while-return {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.while-return > span { font-size: 17px; line-height: 1; }
+.while-route-node .while-return[data-active] { color: #b9ffe0; font-weight: 700; }
+
+.while-values { display: flex; flex-wrap: wrap; gap: 7px; margin: 0; }
+.while-values div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 5px 9px;
+  border: 1px solid #48647e;
+  border-radius: 6px;
+  background: #20354a;
+  color: #d7e6f6;
+  overflow-wrap: anywhere;
+}
+.while-values div[data-active] { border-color: #9de3b9; background: #203d3e; }
+.while-values dt { font-size: 12px; }
+.while-values dd { margin: 0; color: #e6fff1; font: 700 15px/1.35 var(--mono); }
+
+.while-source {
+  margin: 0;
+  padding: 4px 0;
+  border: 1px solid #3d536d;
+  border-radius: 7px;
+  background: #101c2c;
+  color: #bed2e5;
+  font: 13px/1.5 var(--mono);
+  font-variant-ligatures: none;
+  list-style: none;
+  overflow: hidden;
+}
+.while-source li {
+  display: grid;
+  grid-template-columns: 1.8rem minmax(0, 1fr);
+  padding: 2px 6px 2px 0;
+  border-inline-start: 3px solid transparent;
+}
+.while-source li > span { padding-inline-end: 7px; text-align: end; color: #a2b8d0; user-select: none; }
+.while-source li[aria-current='step'] { border-inline-start-color: #91dfc3; background: #203d3e; color: #e9fff6; }
+.while-source code { color: inherit; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+@container while-lesson (max-width: 380px) {
+  .while-body { padding-inline: 8px; }
+  .while-meter-panel, .while-route { padding-inline: 7px; }
+}
+@media (prefers-reduced-motion: reduce) { .while-meter-fill { transition: none; } }

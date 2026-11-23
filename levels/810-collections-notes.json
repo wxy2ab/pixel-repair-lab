@@ -1,0 +1,358 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "python-intermediate",
+    "order": 20,
+    "title": {
+      "zh": "Python 进阶",
+      "en": "Intermediate Python"
+    }
+  },
+  "kind": "lecture",
+  "id": "collections-notes",
+  "order": 840,
+  "stage": "explain",
+  "topic": {
+    "id": "collections",
+    "order": 4,
+    "title": {
+      "zh": "列表与字典",
+      "en": "Lists and dictionaries"
+    }
+  },
+  "title": {
+    "zh": "列表与字典",
+    "en": "Lists and dictionaries"
+  },
+  "concept": {
+    "zh": "列表索引与字典键",
+    "en": "List indexes and dictionary keys"
+  },
+  "brief": {
+    "zh": "从一排电池里取电量，再按电池名字找到并更新它的补电记录。",
+    "en": "Read a charge from a row of batteries, then find a battery by name and update its record."
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "按位置取电量",
+        "en": "Read by position"
+      },
+      "body": {
+        "zh": "列表把电量按顺序存放。索引从 0 开始，所以 batteries[1] 取第 2 块电池的电量。",
+        "en": "A list stores charges in order. Indexes start at 0, so batteries[1] reads the second battery’s charge."
+      }
+    },
+    {
+      "title": {
+        "zh": "按名字查电量",
+        "en": "Look up a charge by name"
+      },
+      "body": {
+        "zh": "给每块电池贴上名字后，就能把名字用作字典的键。records[\"B\"] 找到 B 号电池的电量。",
+        "en": "Give each battery a name and use each name as a dictionary key. records[\"B\"] finds battery B’s charge."
+      }
+    },
+    {
+      "title": {
+        "zh": "更新一条记录",
+        "en": "Update one record"
+      },
+      "body": {
+        "zh": "把查到的电量加 3，再写回键 \"B\"。其余电池的记录仍保留原来的电量。",
+        "en": "Add 3 to the charge you looked up and save it back under \"B\". The other records keep their original charges."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "B 号电池现在有 6 格。补 3 格后，哪句代码会把 9 格记到 B 名下？",
+      "en": "Battery B has 6 units. After adding 3, which line stores 9 under B?"
+    },
+    "options": [
+      {
+        "zh": "records[\"B\"] = 9",
+        "en": "records[\"B\"] = 9"
+      },
+      {
+        "zh": "batteries[1] = 9",
+        "en": "batteries[1] = 9"
+      },
+      {
+        "zh": "records[\"C\"] = 9",
+        "en": "records[\"C\"] = 9"
+      }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "字典用键决定更新哪一条。键 \"B\" 对应 B 号电池。",
+      "en": "The key selects which dictionary record to update. The key \"B\" belongs to battery B."
+    }
+  },
+  "animation": {
+    "layout": "row",
+    "frames": [
+      {
+        "caption": {
+          "zh": "列表按电池的排列顺序记下电量。",
+          "en": "The list stores charges in battery order."
+        },
+        "items": [
+          {
+            "id": "list",
+            "label": {
+              "zh": "按位置排列的电量",
+              "en": "Charges by position"
+            },
+            "value": {
+              "zh": "[2, 4, 6]",
+              "en": "[2, 4, 6]"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "从 0 数起，索引 1 是第 2 格，电量是 4。",
+          "en": "Counting from 0 makes index 1 the second slot. It holds 4."
+        },
+        "items": [
+          {
+            "id": "list",
+            "label": {
+              "zh": "按位置排列的电量",
+              "en": "Charges by position"
+            },
+            "value": {
+              "zh": "[2, 4, 6]",
+              "en": "[2, 4, 6]"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "给电池贴上名字，字典用名字找到对应电量。查 B 得到 6。",
+          "en": "Name the batteries and use a dictionary to match names to charges. Looking up B gives 6."
+        },
+        "items": [
+          {
+            "id": "list",
+            "label": {
+              "zh": "按位置排列的电量",
+              "en": "Charges by position"
+            },
+            "value": {
+              "zh": "[2, 4, 6]",
+              "en": "[2, 4, 6]"
+            },
+            "state": "done"
+          },
+          {
+            "id": "records",
+            "label": {
+              "zh": "按名字查的电量",
+              "en": "Charges by name"
+            },
+            "value": {
+              "zh": "{\"A\": 2, \"C\": 4, \"B\": 6}",
+              "en": "{\"A\": 2, \"C\": 4, \"B\": 6}"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "把 6 加 3 写回 B 的记录，A 和 C 保留原值。",
+          "en": "Add 3 to 6 and store it under B. A and C keep their original values."
+        },
+        "items": [
+          {
+            "id": "list",
+            "label": {
+              "zh": "按位置排列的电量",
+              "en": "Charges by position"
+            },
+            "value": {
+              "zh": "[2, 4, 6]",
+              "en": "[2, 4, 6]"
+            },
+            "state": "done"
+          },
+          {
+            "id": "records",
+            "label": {
+              "zh": "按名字查的电量",
+              "en": "Charges by name"
+            },
+            "value": {
+              "zh": "{\"A\": 2, \"C\": 4, \"B\": 9}",
+              "en": "{\"A\": 2, \"C\": 4, \"B\": 9}"
+            },
+            "state": "active"
+          }
+        ]
+      }
+    ]
+  },
+  "execution": {
+    "source": "batteries = read_batteries()\nposition_charge = batteries[1]\nrecords = read_named_batteries()\nnamed_charge = records[\"B\"]\nrecords[\"B\"] = named_charge + 3\nsay(str(records))",
+    "cases": [],
+    "collectionLesson": {
+      "index": 1,
+      "key": "B",
+      "increment": 3,
+      "cases": [
+        {
+          "label": {
+            "zh": "维修台上的电池",
+            "en": "Batteries on the workbench"
+          },
+          "batteries": [
+            {
+              "name": "A",
+              "charge": 2
+            },
+            {
+              "name": "C",
+              "charge": 4
+            },
+            {
+              "name": "B",
+              "charge": 6
+            }
+          ],
+          "expected": {
+            "position": 4,
+            "named": 6,
+            "records": {
+              "A": 2,
+              "C": 4,
+              "B": 9
+            }
+          }
+        },
+        {
+          "label": {
+            "zh": "B 在第 1 块",
+            "en": "B is first"
+          },
+          "batteries": [
+            {
+              "name": "B",
+              "charge": 1
+            },
+            {
+              "name": "C",
+              "charge": 7
+            },
+            {
+              "name": "A",
+              "charge": 4
+            }
+          ],
+          "expected": {
+            "position": 7,
+            "named": 1,
+            "records": {
+              "B": 4,
+              "C": 7,
+              "A": 4
+            }
+          },
+          "predictions": {
+            "position": [
+              1,
+              7,
+              4
+            ],
+            "named": [
+              7,
+              4,
+              1
+            ],
+            "records": [
+              {
+                "B": 1,
+                "C": 10,
+                "A": 4
+              },
+              {
+                "B": 4,
+                "C": 7,
+                "A": 4
+              },
+              {
+                "B": 1,
+                "C": 7,
+                "A": 4
+              }
+            ]
+          }
+        },
+        {
+          "label": {
+            "zh": "B 在第 3 块",
+            "en": "B is third"
+          },
+          "batteries": [
+            {
+              "name": "C",
+              "charge": 2
+            },
+            {
+              "name": "A",
+              "charge": 5
+            },
+            {
+              "name": "B",
+              "charge": 0
+            }
+          ],
+          "expected": {
+            "position": 5,
+            "named": 0,
+            "records": {
+              "C": 2,
+              "A": 5,
+              "B": 3
+            }
+          },
+          "predictions": {
+            "position": [
+              0,
+              2,
+              5
+            ],
+            "named": [
+              0,
+              5,
+              2
+            ],
+            "records": [
+              {
+                "C": 2,
+                "A": 8,
+                "B": 0
+              },
+              {
+                "C": 2,
+                "A": 5,
+                "B": 3
+              },
+              {
+                "C": 2,
+                "A": 5,
+                "B": 0
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

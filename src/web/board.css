@@ -1,0 +1,147 @@
+.board-size { color: var(--dim); font: 650 13px var(--mono); }
+.grid-map-outcome { margin: 0; padding: 6px 15px 12px; color: var(--muted); font-size: 13px; }
+.map-well {
+  display: grid;
+  grid-template-columns: 17px minmax(0, 1fr);
+  grid-template-rows: 16px auto;
+  padding: 13px 15px 14px 9px;
+  margin: 13px auto 0;
+  width: calc(100% - 26px);
+  max-width: calc(var(--cols) * min(55px, 430px / var(--rows)) + 42px);
+  border: 1px solid #2b3d55;
+  border-radius: 9px;
+  background:
+    radial-gradient(ellipse at 66% 54%, #1b3445 0, transparent 66%),
+    repeating-linear-gradient(0deg, #0f1929, #0f1929 2px, #101c2d 3px, #101c2d 4px);
+}
+.map-coordinate {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  color: #748aa6;
+  font: 550 10px var(--mono);
+  user-select: none;
+}
+.map-coordinate span { flex: 1; display: grid; place-items: center; }
+.map-coordinate--x { grid-area: 1 / 2; }
+.map-coordinate--y { grid-area: 2 / 1; flex-direction: column; }
+.tilemap {
+  grid-area: 2 / 2;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  --tile-gap: clamp(1px, .23vw, 3px);
+  gap: var(--tile-gap);
+}
+.tile {
+  width: 100%;
+  aspect-ratio: 1;
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-radius: 3px;
+  isolation: isolate;
+}
+.tile--wall {
+  background: linear-gradient(150deg, #2b425d, #253b55 66%, #20364f);
+  border: 1px solid #405570;
+  box-shadow: inset 0 -3px #1b2b42, inset 0 1px #465e79;
+}
+.tile--wall::before {
+  content: '';
+  width: 57%;
+  height: 52%;
+  border: 1px solid #3c536e;
+  border-radius: 2px;
+}
+.tile--floor {
+  background: radial-gradient(circle at 50% 50%, #30465e 0 1px, transparent 1.5px), linear-gradient(145deg, #1b2b42, #18283d);
+  border: 1px solid #2b405b;
+  box-shadow: inset 0 1px #283c53;
+}
+.tile--exit { background: #3e3427; border-color: #b88a4d; box-shadow: inset 0 0 12px #65502f, 0 0 12px #e9b96728; }
+.board-trail-arm {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  left: 50%;
+  top: 50%;
+  width: calc(50% + 1px + var(--tile-gap) / 2);
+  height: 0;
+  border-top: 2px dashed #a6b0b9;
+  transform-origin: 0 0;
+  transform: rotate(var(--trail-angle, 0deg)) translateY(-50%);
+}
+.board-trail-arm[data-direction="down"] { --trail-angle: 90deg; }
+.board-trail-arm[data-direction="left"] { --trail-angle: 180deg; }
+.board-trail-arm[data-direction="up"] { --trail-angle: -90deg; }
+.board-trail-arm[data-trail="recent"] { border-top: 4px solid #67f196; }
+.exit-icon {
+  display: grid;
+  place-items: center;
+  width: 69%;
+  height: 67%;
+  border: 1px solid #f3c477;
+  border-radius: 4px;
+  color: #ffe1a0;
+  font-size: clamp(10px, 1.55vw, 23px);
+  line-height: 1;
+  background: #71522f;
+  box-shadow: 0 0 12px #ffc67461, inset 0 -3px #4b3929;
+}
+.tile > .pixel-bot, .tile > .gem { position: absolute; }
+.pixel-bot {
+  width: 72%;
+  max-width: 46px;
+  aspect-ratio: 1;
+  display: block;
+  position: relative;
+  z-index: 2;
+  background: center / contain no-repeat url('./station3d/sprout-portrait.webp');
+  filter: drop-shadow(0 2px 1px #0008);
+}
+.pixel-bot--enemy { background-image: url('./station3d/rival-portrait.webp'); }
+.gem { width: 37%; aspect-ratio: 1; background: #83d1ff; clip-path: polygon(50% 0, 100% 40%, 50% 100%, 0 40%); box-shadow: inset 0 -5px #437bb9, inset 3px 0 #c4f0ff; }
+.board-legend { display: flex; align-items: center; gap: 12px; padding: 11px 15px 12px; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
+.board-legend > span { display: inline-flex; align-items: center; gap: 6px; }
+.board-legend i { width: 9px; height: 9px; border-radius: 3px; }
+.legend-player { background: var(--mint); }
+.legend-exit { background: var(--warm); }
+.legend-item { background: #83d1ff; }
+.legend-enemy { background: #fa967e; }
+.turn-display { margin-left: auto; font-family: var(--mono); }
+.turn-display strong { color: #e8f0fc; }
+
+.hardware-panel { padding: 12px 15px 15px; border-top: 1px solid var(--border); background: #141e30; border-radius: 0 0 12px 12px; }
+.hardware-panel h3 { color: var(--muted); font-size: 14px; margin-bottom: 5px; }
+.hardware-panel code { color: #b8eaff; font-size: 13px; overflow-wrap: anywhere; }
+.memory-input { margin-bottom: 10px; }
+.memory-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+.memory-grid > div { min-width: 38px; text-align: center; border: 1px solid #354a65; background: #1c2b41; border-radius: 5px; }
+.memory-grid small { display: block; color: var(--muted); background: #26384f; padding: 1px 5px; font: 12px var(--mono); }
+.memory-grid code { display: block; padding: 4px 5px; }
+.cpu-registers { display: flex; flex-wrap: wrap; gap: 8px 16px; color: var(--muted); font-size: 13px; margin: 10px 0 5px; }
+.cpu-registers strong { color: var(--warm); }
+.cpu-instructions { display: flex; flex-wrap: wrap; gap: 4px; list-style: none; margin: 0; padding: 0; }
+.cpu-instructions li { border: 1px solid var(--border); border-radius: 4px; padding: 2px 5px; }
+.cpu-instructions li.active { border-color: var(--mint); background: #233d36; }
+.cpu-instructions small { color: var(--dim); }
+
+.guide-panel {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 11px;
+  padding: 13px 14px;
+  border: 1px solid #604a35;
+  border-radius: 11px;
+  background: linear-gradient(130deg, #30261f, #242323 65%);
+}
+.guide-lamp { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 8px; color: #ffdb9a; background: #503e2c; font-size: 16px; }
+.guide-content h2 { color: #ffdaa0; font-size: 15px; }
+.guide-content .section-label { color: #f8c989; font: 13px var(--mono); }
+.guide-content p { margin: 4px 0 9px; color: #efdbbf; font-size: 14px; }
+.guide-actions { display: flex; gap: 9px; align-items: center; }
+.guide-actions .subtle-button { background: #48392b; border-color: #6e5539; color: #ffe1b0; min-height: 30px; padding: 4px 9px; }
+.guide-actions .subtle-button:hover { background: #62492f; }
+.hints { padding: 11px 14px; color: var(--muted); }
+.hints summary { cursor: pointer; color: #dce7f9; font-size: 14px; }
+.hints p { font-size: 14px; margin: 8px 0 0; }

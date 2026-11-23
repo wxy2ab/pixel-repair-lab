@@ -1,0 +1,249 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "challenge-cumulative-meter-recovery",
+  "order": 1851,
+  "difficulty": "intermediate",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "architecture",
+      "topic": "memory"
+    },
+    {
+      "unit": "architecture",
+      "topic": "registers"
+    },
+    {
+      "unit": "architecture",
+      "topic": "instructions"
+    }
+  ],
+  "title": {
+    "zh": "复原四段耗电",
+    "en": "Recover Four Power Readings"
+  },
+  "concept": {
+    "zh": "累计抄表 · 原地拆分 · 保留校验号",
+    "en": "Cumulative meter readings · In-place recovery"
+  },
+  "brief": {
+    "zh": "电表在四个区段结束时各记一次累计耗电。地址 0 到 3 按时间存着四次累计值，开始前电表为 0。把每格改成对应区段单独用了多少电，例如地址 1 应只含第二段耗电。地址 4 的校验号留原样，ACC 留下四段合计。一份指令通过五组记录。",
+    "en": "A meter logged its running total after each of four segments, starting from zero. Addresses 0 through 3 hold those four readings in order. Replace each cell with power used during that segment alone. For example, address 1 should represent only the second segment. Keep the audit ID at address 4 and leave the total of all four segments in ACC. Pass all five logs with one program."
+  },
+  "hints": [],
+  "allowedOps": [
+    "LOAD",
+    "ADD",
+    "SUB",
+    "STORE",
+    "HALT"
+  ],
+  "starterCode": "HALT\n",
+  "solutionCode": "LOAD 3\nSUB 2\nSTORE 3\nLOAD 2\nSUB 1\nSTORE 2\nLOAD 1\nSUB 0\nSTORE 1\nADD 0\nADD 2\nADD 3\nHALT\n",
+  "cases": [
+    {
+      "label": {
+        "zh": "常规抄表",
+        "en": "Regular log"
+      },
+      "memory": [
+        2,
+        7,
+        7,
+        12,
+        81
+      ],
+      "accumulator": -3,
+      "goal": {
+        "accumulator": 12,
+        "memory": [
+          {
+            "address": 0,
+            "value": 2
+          },
+          {
+            "address": 1,
+            "value": 5
+          },
+          {
+            "address": 2,
+            "value": 0
+          },
+          {
+            "address": 3,
+            "value": 5
+          },
+          {
+            "address": 4,
+            "value": 81
+          }
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "末段断电",
+        "en": "No drain in final segment"
+      },
+      "memory": [
+        5,
+        6,
+        19,
+        19,
+        32
+      ],
+      "accumulator": 4,
+      "goal": {
+        "accumulator": 19,
+        "memory": [
+          {
+            "address": 0,
+            "value": 5
+          },
+          {
+            "address": 1,
+            "value": 1
+          },
+          {
+            "address": 2,
+            "value": 13
+          },
+          {
+            "address": 3,
+            "value": 0
+          },
+          {
+            "address": 4,
+            "value": 32
+          }
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "延时启用",
+        "en": "Late startup"
+      },
+      "memory": [
+        0,
+        1,
+        9,
+        11,
+        7
+      ],
+      "accumulator": 12,
+      "goal": {
+        "accumulator": 11,
+        "memory": [
+          {
+            "address": 0,
+            "value": 0
+          },
+          {
+            "address": 1,
+            "value": 1
+          },
+          {
+            "address": 2,
+            "value": 8
+          },
+          {
+            "address": 3,
+            "value": 2
+          },
+          {
+            "address": 4,
+            "value": 7
+          }
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "全站停机",
+        "en": "Everything off"
+      },
+      "memory": [
+        0,
+        0,
+        0,
+        0,
+        77
+      ],
+      "accumulator": 20,
+      "goal": {
+        "accumulator": 0,
+        "memory": [
+          {
+            "address": 0,
+            "value": 0
+          },
+          {
+            "address": 1,
+            "value": 0
+          },
+          {
+            "address": 2,
+            "value": 0
+          },
+          {
+            "address": 3,
+            "value": 0
+          },
+          {
+            "address": 4,
+            "value": 77
+          }
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "整段负载相同",
+        "en": "Identical segment totals"
+      },
+      "memory": [
+        3,
+        6,
+        9,
+        12,
+        18
+      ],
+      "accumulator": -4,
+      "goal": {
+        "accumulator": 12,
+        "memory": [
+          {
+            "address": 0,
+            "value": 3
+          },
+          {
+            "address": 1,
+            "value": 3
+          },
+          {
+            "address": 2,
+            "value": 3
+          },
+          {
+            "address": 3,
+            "value": 3
+          },
+          {
+            "address": 4,
+            "value": 18
+          }
+        ]
+      }
+    }
+  ]
+}

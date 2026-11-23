@@ -1,0 +1,161 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-ring-beacon-budget",
+  "order": 1873,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "python-advanced",
+      "topic": "function-design"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "dynamic-programming"
+    }
+  ],
+  "title": {
+    "zh": "环形信标供电",
+    "en": "Ring Beacon Budget"
+  },
+  "concept": {
+    "zh": "环形互斥与并列最佳方案",
+    "en": "Circular exclusions and tied best plans"
+  },
+  "brief": {
+    "zh": "沿环形轨道给若干信标供电，相邻两盏不能同时点亮，最后一盏也与第一盏相邻。收益列表 rewards 可含负数。返回 [最高总收益, 达成它的点亮方案数]，按选中的位置区分方案，允许一盏不点。环上仅一盏时可以点亮它，空环有一种空方案。",
+    "en": "Power any subset of beacons around a ring. Neighbors cannot both be lit, including the last and first. rewards can include negative values. Return [highest total reward, number of lighting plans that achieve it]. Different positions make different plans. You may light none. A lone beacon may be lit, and an empty ring has one empty plan."
+  },
+  "hints": [],
+  "functionName": "ring_reward",
+  "starterCode": "def ring_reward(rewards):\n    pass\n",
+  "solutionCode": "def ring_reward(rewards):\n    n = len(rewards)\n    if n == 0:\n        return [0, 1]\n    if n == 1:\n        if rewards[0] == 0:\n            return [0, 2]\n        if rewards[0] > 0:\n            return [rewards[0], 1]\n        return [0, 1]\n    off = straight_row(rewards, 1, n)\n    on = straight_row(rewards, 2, n - 1)\n    on[0] += rewards[0]\n    if on[0] == off[0]:\n        return [on[0], on[1] + off[1]]\n    if on[0] > off[0]:\n        return on\n    return off\ndef straight_row(rewards, left, stop):\n    prev = [0, 1]\n    older = [0, 1]\n    for i in range(left, stop):\n        take = older[0] + rewards[i]\n        best = prev\n        if take > prev[0]:\n            best = [take, older[1]]\n        elif take == prev[0]:\n            best = [take, older[1] + prev[1]]\n        older = prev\n        prev = best\n    return prev\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "首灯两种开关状态",
+        "en": "Consider both first-beacon states"
+      },
+      "code": "    off = straight_row(rewards, 1, n)\n    on = straight_row(rewards, 2, n - 1)\n    on[0] += rewards[0]\n    if on[0] == off[0]:\n        return [on[0], on[1] + off[1]]\n    if on[0] > off[0]:\n        return on\n    return off"
+    },
+    {
+      "label": {
+        "zh": "首灯点亮后也纳入尾灯",
+        "en": "Include the last beacon when the first is on"
+      },
+      "code": "    off = straight_row(rewards, 1, n)\n    on = straight_row(rewards, 2, n)\n    on[0] += rewards[0]\n    if on[0] == off[0]:\n        return [on[0], on[1] + off[1]]\n    if on[0] > off[0]:\n        return on\n    return off"
+    },
+    {
+      "label": {
+        "zh": "处理极短的灯环",
+        "en": "Handle very short rings"
+      },
+      "code": "    n = len(rewards)\n    if n == 0:\n        return [0, 1]\n    if n == 1:\n        if rewards[0] == 0:\n            return [0, 2]\n        if rewards[0] > 0:\n            return [rewards[0], 1]\n        return [0, 1]"
+    },
+    {
+      "label": {
+        "zh": "计算一段直排信标",
+        "en": "Evaluate one straight beacon row"
+      },
+      "code": "def straight_row(rewards, left, stop):\n    prev = [0, 1]\n    older = [0, 1]\n    for i in range(left, stop):\n        take = older[0] + rewards[i]\n        best = prev\n        if take > prev[0]:\n            best = [take, older[1]]\n        elif take == prev[0]:\n            best = [take, older[1] + prev[1]]\n        older = prev\n        prev = best\n    return prev"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          2,
+          3,
+          2
+        ]
+      ],
+      "expected": [
+        3,
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          1,
+          1,
+          1
+        ]
+      ],
+      "expected": [
+        2,
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "expected": [
+        0,
+        4
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": [
+        0,
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          0
+        ]
+      ],
+      "expected": [
+        0,
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          -3,
+          -1
+        ]
+      ],
+      "expected": [
+        0,
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          4,
+          5,
+          1,
+          8,
+          3
+        ]
+      ],
+      "expected": [
+        13,
+        1
+      ]
+    }
+  ]
+}

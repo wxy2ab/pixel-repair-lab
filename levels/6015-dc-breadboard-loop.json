@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "kind": "breadboard",
+  "id": "dc-breadboard-loop",
+  "order": 6015,
+  "unit": { "id": "digital-circuits", "order": 85, "title": { "zh": "数字电路", "en": "Digital Circuits" } },
+  "topic": { "id": "diode-loop", "order": 2, "title": { "zh": "二极管与通路", "en": "Diodes and Current Paths" } },
+  "stage": "exercise",
+  "title": { "zh": "面包板：接亮第一盏灯", "en": "Breadboard · Wire Your First Light" },
+  "brief": {
+    "zh": "从元件盒拖出按钮、电阻和 LED，自己选孔插好，用跳线接出一盏按钮灯。先猜按下和松开时灯会怎样，再通电试一试。",
+    "en": "Drag the button, resistor and LED out of the parts box and plug them into holes you choose. Add jumpers to build a button light. Predict what happens when you press and release it, then power up to test."
+  },
+  "concept": { "zh": "用跳线连接同编号的导电孔组", "en": "Build a circuit using jumpers and numbered contact strips" },
+  "hints": [
+    { "zh": "断电后选万用表的通断档，把两支表笔放到同一编号的两个孔，再换到别的编号。接好跳线后，再量一次原来的两个孔。", "en": "With the power off, select continuity and touch the probes to two holes on the same numbered strip. Try different strips, then add a jumper and check those holes again." },
+    { "zh": "同一编号的五个孔下面是一片金属。想接到元件的一只脚，可以把跳线插进同一编号的另一个空孔。", "en": "One metal strip joins all five holes with the same number. To connect a jumper to a leg, plug it into another free hole on the same strip." },
+    { "zh": "保持跳线原样，把 LED 的一只脚移到不同编号，或者翻转 LED。再预测一次，看看哪一种摆法能让电流通过。", "en": "Leave the jumpers in place. Move an LED leg to another numbered strip or flip the LED. Predict again and see which arrangement lets current through." },
+    { "zh": "从 5V 用手指顺着你的线路走一圈。闭合开关时，电流要经过电阻，从 LED 的 A 端进入、K 端出来，再回到 GND。", "en": "Trace your wiring from 5V with your finger. With the switch closed, current must pass through the resistor, enter LED pin A, leave pin K and return to GND." }
+  ],
+  "board": {
+    "mode": "series",
+    "initialParts": [],
+    "solutionParts": [
+      { "kind": "button", "pins": ["A1","A2"] },
+      { "kind": "resistor", "pins": ["A3","A4"] },
+      { "kind": "led", "pins": ["A5","A6"] }
+    ],
+    "initialWires": [],
+    "solutionWires": [["5V","B1"],["B2","B3"],["B4","B5"],["B6","GND"]]
+  }
+}

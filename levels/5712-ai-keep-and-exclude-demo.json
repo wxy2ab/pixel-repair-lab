@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "ai-keep-and-exclude-demo",
+  "order": 5712,
+  "unit": { "id": "ai", "order": 160, "title": { "zh": "AI 协作", "en": "AI Collaboration" } },
+  "topic": { "id": "constraints", "order": 2, "title": { "zh": "写清约束", "en": "State the constraints" } },
+  "stage": "demo",
+  "title": { "zh": "试一试，没提到的物品还在吗？", "en": "Try It: Does an Unmentioned Item Stay?" },
+  "brief": { "zh": "草稿已有 2 只夹子和 1 把剪刀。任务是保留夹子、加 1 张标签、去掉剪刀。先只要求加标签，观察剪刀是否还在。", "en": "The draft has 2 clips and 1 pair of scissors. Keep the clips, add 1 label, and remove the scissors. First ask only for the label and watch what happens to the scissors." },
+  "concept": { "zh": "在已有清单上添加用品时，明确排除不允许的内容。", "en": "Explicitly exclude forbidden items when adding supplies to an existing list." },
+  "hints": [
+    { "zh": "用提示词卡分别试一次“标签：1张”和“去掉剪刀”。", "en": "Try the cards “Label: 1” and “Remove scissors” in separate turns." }
+  ],
+  "inventory": [
+    { "id": "clip", "label": { "zh": "夹子", "en": "Clip" }, "aliases": ["clips", "弹簧夹"] },
+    { "id": "label", "label": { "zh": "标签", "en": "Label" }, "aliases": ["labels", "贴签"] },
+    { "id": "scissors", "label": { "zh": "剪刀", "en": "Scissors" }, "aliases": ["剪子"] }
+  ],
+  "required": { "clip": 2, "label": 1 },
+  "workflow": {
+    "review": "automatic",
+    "faults": [],
+    "draft": { "items": [{ "id": "clip", "quantity": 2 }, { "id": "scissors", "quantity": 1 }] },
+    "cards": [
+      { "zh": "标签：1张。", "en": "Label: 1." },
+      { "zh": "去掉剪刀。", "en": "Remove scissors." },
+      { "zh": "保留2只夹子。", "en": "Keep clips at 2." }
+    ]
+  },
+  "examplePrompts": {
+    "zh": ["标签：1张。", "去掉剪刀。"],
+    "en": ["Label: 1.", "Remove scissors."]
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "architecture-replay",
+  "order": 491,
+  "unit": {
+    "id": "architecture",
+    "order": 90,
+    "title": {
+      "zh": "计算机结构",
+      "en": "Computer Architecture"
+    }
+  },
+  "stage": "demo",
+  "title": {
+    "zh": "跟踪内存和下一条指令",
+    "en": "Trace Memory and the Next Instruction"
+  },
+  "concept": {
+    "zh": "从一个地址读取，再写入另一个地址。",
+    "en": "Read from one address and write to another."
+  },
+  "brief": {
+    "zh": "逐条执行 LOAD、STORE 和 HALT，看哪些内存格读过、哪些值真的变了。",
+    "en": "Step through LOAD, STORE, and HALT. Check which cells were accessed and which values changed."
+  },
+  "hints": [
+    {
+      "zh": "LOAD 之后，ACC 变了，源地址中的数还在。注意 STORE 执行时亮起的是哪个地址。",
+      "en": "After LOAD, ACC changes while the source address keeps its value. Notice which address lights up during STORE."
+    }
+  ],
+  "topic": {
+    "id": "memory",
+    "order": 1,
+    "title": {
+      "zh": "内存",
+      "en": "Memory"
+    }
+  },
+  "allowedOps": [
+    "LOAD",
+    "STORE",
+    "HALT"
+  ],
+  "starterCode": "LOAD 1\nSTORE 3\nHALT\n",
+  "cases": [
+    {
+      "label": {
+        "zh": "一份内存快照",
+        "en": "One memory snapshot"
+      },
+      "memory": [
+        12,
+        5,
+        7,
+        99
+      ],
+      "accumulator": 19
+    }
+  ]
+}

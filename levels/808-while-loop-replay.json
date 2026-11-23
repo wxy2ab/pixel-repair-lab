@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "python-intermediate",
+    "order": 20,
+    "title": {
+      "zh": "Python 进阶",
+      "en": "Intermediate Python"
+    }
+  },
+  "kind": "replay",
+  "id": "while-loop-replay",
+  "order": 831,
+  "stage": "demo",
+  "topic": {
+    "id": "while-loops",
+    "order": 3,
+    "title": {
+      "zh": "while 循环",
+      "en": "While loops"
+    }
+  },
+  "title": {
+    "zh": "轨道上的剩余步数",
+    "en": "Steps remaining on the track"
+  },
+  "concept": {
+    "zh": "先检查，再更新",
+    "en": "Check and then update"
+  },
+  "brief": {
+    "zh": "播放两个起始值，找出循环在什么时候跳过或结束。",
+    "en": "Play two starting values and see when the loop is skipped or stops."
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "有 3 步要走",
+        "en": "Three moves to go"
+      },
+      "source": "steps = scan()\nwhile steps > 0:\n    move(\"down\")\n    steps -= 1\nsubmit(steps)",
+      "scenario": {
+        "tiles": [
+          "#####",
+          "#...#",
+          "#...#",
+          "#...#",
+          "#...#",
+          "#####"
+        ],
+        "start": {
+          "x": 2,
+          "y": 1
+        },
+        "input": 3,
+        "allowedApi": [
+          "scan",
+          "move",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "exit",
+            "x": 2,
+            "y": 4
+          },
+          {
+            "type": "submit",
+            "values": [
+              0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "title": {
+        "zh": "起点就是出口",
+        "en": "The start is already the exit"
+      },
+      "source": "steps = scan()\nwhile steps > 0:\n    move(\"down\")\n    steps -= 1\nsubmit(steps)",
+      "scenario": {
+        "tiles": [
+          "#####",
+          "#...#",
+          "#...#",
+          "#####"
+        ],
+        "start": {
+          "x": 2,
+          "y": 1
+        },
+        "input": 0,
+        "allowedApi": [
+          "scan",
+          "move",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "exit",
+            "x": 2,
+            "y": 1
+          },
+          {
+            "type": "submit",
+            "values": [
+              0
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

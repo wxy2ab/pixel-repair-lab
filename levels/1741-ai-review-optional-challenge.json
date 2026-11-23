@@ -1,0 +1,182 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "ai-review-optional-challenge",
+  "order": 1741,
+  "unit": {
+    "id": "ai-review",
+    "order": 170,
+    "title": {
+      "zh": "核对与修正",
+      "en": "Review and Revision"
+    }
+  },
+  "stage": "challenge",
+  "title": {
+    "zh": "选做挑战 · 可用的备件包",
+    "en": "Optional Challenge · A Ready-to-Use Spare Kit"
+  },
+  "brief": {
+    "zh": "根据旧草稿更新应急备件包。应有三块滤网、一盏检修灯、两个夹子和两根保险丝，磁铁和备用线圈都要留在架上。",
+    "en": "Update an emergency spare kit from its old draft. It needs three filters, one work lamp, two clips, and two fuses. Keep the magnet and spare coil on the shelf."
+  },
+  "concept": {
+    "zh": "把旧草稿与新要求逐项核对，再分轮修正。",
+    "en": "Compare the old draft with the new requirements, then revise across multiple rounds."
+  },
+  "hints": [
+    {
+      "zh": "初稿里的数量和新任务有差别。审核第二轮时也留意禁放的两件物品。",
+      "en": "Some counts in the draft differ from the new task. Remember to check both excluded items in round two."
+    }
+  ],
+  "inventory": [
+    {
+      "id": "filter",
+      "label": {
+        "zh": "滤网",
+        "en": "Filter"
+      },
+      "aliases": [
+        "filters",
+        "滤片"
+      ]
+    },
+    {
+      "id": "lamp",
+      "label": {
+        "zh": "检修灯",
+        "en": "Work lamp"
+      },
+      "aliases": [
+        "work lamps",
+        "灯"
+      ]
+    },
+    {
+      "id": "clip",
+      "label": {
+        "zh": "夹子",
+        "en": "Clip"
+      },
+      "aliases": [
+        "clips",
+        "固定夹"
+      ]
+    },
+    {
+      "id": "fuse",
+      "label": {
+        "zh": "保险丝",
+        "en": "Fuse"
+      },
+      "aliases": [
+        "fuses",
+        "熔丝"
+      ]
+    },
+    {
+      "id": "magnet",
+      "label": {
+        "zh": "磁铁",
+        "en": "Magnet"
+      },
+      "aliases": [
+        "magnets",
+        "磁石"
+      ]
+    },
+    {
+      "id": "coil",
+      "label": {
+        "zh": "备用线圈",
+        "en": "Spare coil"
+      },
+      "aliases": [
+        "spare coils",
+        "备用绕组"
+      ]
+    }
+  ],
+  "required": {
+    "filter": 3,
+    "lamp": 1,
+    "clip": 2,
+    "fuse": 2
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "lamp",
+        "quantity": 0
+      },
+      {
+        "itemId": "magnet",
+        "quantity": 1
+      }
+    ],
+    "cards": [
+      {
+        "zh": "滤网改为 3 块。",
+        "en": "Set filters to 3."
+      },
+      {
+        "zh": "夹子改为 2 个。",
+        "en": "Set clips to 2."
+      },
+      {
+        "zh": "保险丝改为 2 根。",
+        "en": "Set fuses to 2."
+      },
+      {
+        "zh": "检修灯改为 1 盏。",
+        "en": "Set the work lamp to 1."
+      },
+      {
+        "zh": "去掉备用线圈。",
+        "en": "Remove the spare coil."
+      },
+      {
+        "zh": "去掉磁铁。",
+        "en": "Remove the magnet."
+      }
+    ],
+    "draft": {
+      "items": [
+        {
+          "id": "filter",
+          "quantity": 1
+        },
+        {
+          "id": "lamp",
+          "quantity": 1
+        },
+        {
+          "id": "clip",
+          "quantity": 3
+        },
+        {
+          "id": "fuse",
+          "quantity": 1
+        },
+        {
+          "id": "coil",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  "examplePrompts": {
+    "zh": [
+      "滤网改为 3 块。夹子改为 2 个。保险丝改为 2 根。去掉备用线圈。",
+      "检修灯改为 1 盏。保留其他项目。",
+      "去掉磁铁。保留其他项目。"
+    ],
+    "en": [
+      "Set filters to 3. Set clips to 2. Set fuses to 2. Remove the spare coil.",
+      "Set the work lamp to 1. Keep the other entries.",
+      "Remove the magnet. Keep the other entries."
+    ]
+  }
+}

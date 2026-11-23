@@ -1,0 +1,333 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "challenge-overnight-ticket-rebuild",
+  "order": 1899,
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "重建夜班复检清单",
+    "en": "Rebuild the Night-Shift Tickets"
+  },
+  "brief": {
+    "zh": "第 1 天属于旧账。其后的所有区域都要复查 22 至 28°C 的独立读数。提交清洗底稿和有效窗口，最后只交编号、温度两列，温度较高的先处理，同温取较小编号在前。",
+    "en": "Day 1 belongs to the old ledger. For all later days, recheck distinct readings from 22 through 28°C across all areas. Deliver the cleaned evidence and time window, then just the IDs and temperatures, hottest first with lower IDs first on ties."
+  },
+  "concept": {
+    "zh": "时间窗口、去重与双边查询",
+    "en": "Time window, deduplication and bounded queries"
+  },
+  "prerequisites": [
+    {
+      "unit": "pandas",
+      "topic": "cleaning"
+    },
+    {
+      "unit": "numpy",
+      "topic": "masks"
+    },
+    {
+      "unit": "database",
+      "topic": "sql-rows"
+    }
+  ],
+  "hints": [],
+  "steps": [
+    {
+      "operation": "clean",
+      "label": {
+        "zh": "可用底稿",
+        "en": "Usable evidence"
+      },
+      "prompt": {
+        "zh": "统一区域名，删除无效记录和重复编号，保留第一次出现的行。",
+        "en": "Normalize area names, remove invalid readings and keep the first row for each ID."
+      },
+      "initial": {
+        "trim": false,
+        "dropMissing": false,
+        "deduplicate": false
+      },
+      "solution": {
+        "trim": true,
+        "dropMissing": true,
+        "deduplicate": true
+      },
+      "input": "raw",
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            "hangar",
+            18.0
+          ],
+          [
+            2,
+            1,
+            "workshop",
+            24.0
+          ],
+          [
+            3,
+            1,
+            "storage",
+            20.0
+          ],
+          [
+            4,
+            2,
+            "hangar",
+            22.0
+          ],
+          [
+            5,
+            2,
+            "workshop",
+            28.0
+          ],
+          [
+            7,
+            3,
+            "hangar",
+            26.0
+          ],
+          [
+            8,
+            3,
+            "workshop",
+            32.0
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16.0
+          ],
+          [
+            10,
+            4,
+            "hangar",
+            30.0
+          ],
+          [
+            12,
+            4,
+            "storage",
+            24.0
+          ],
+          [
+            13,
+            4,
+            "workshop",
+            36.0
+          ]
+        ]
+      }
+    },
+    {
+      "operation": "mask",
+      "label": {
+        "zh": "夜班窗口",
+        "en": "Night-shift window"
+      },
+      "prompt": {
+        "zh": "从清洗底稿中保留第 2 天及以后的所有有效读数。",
+        "en": "Take all valid readings on and after day 2 from the cleaned ledger."
+      },
+      "initial": {
+        "column": "day",
+        "comparison": "lte",
+        "threshold": 2
+      },
+      "solution": {
+        "column": "day",
+        "comparison": "gte",
+        "threshold": 2
+      },
+      "input": "previous",
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            4,
+            2,
+            "hangar",
+            22.0
+          ],
+          [
+            5,
+            2,
+            "workshop",
+            28.0
+          ],
+          [
+            7,
+            3,
+            "hangar",
+            26.0
+          ],
+          [
+            8,
+            3,
+            "workshop",
+            32.0
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16.0
+          ],
+          [
+            10,
+            4,
+            "hangar",
+            30.0
+          ],
+          [
+            12,
+            4,
+            "storage",
+            24.0
+          ],
+          [
+            13,
+            4,
+            "workshop",
+            36.0
+          ]
+        ]
+      }
+    },
+    {
+      "operation": "mask",
+      "label": {
+        "zh": "复检上限",
+        "en": "Recheck ceiling"
+      },
+      "prompt": {
+        "zh": "踢出高于 28°C 的读数，后续清单只从留下的行里挑选。",
+        "en": "Exclude readings above 28°C. Only the remaining rows may enter the ticket list."
+      },
+      "initial": {
+        "column": "reading",
+        "comparison": "gte",
+        "threshold": 28
+      },
+      "solution": {
+        "column": "reading",
+        "comparison": "lte",
+        "threshold": 28
+      },
+      "input": "previous",
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            4,
+            2,
+            "hangar",
+            22.0
+          ],
+          [
+            5,
+            2,
+            "workshop",
+            28.0
+          ],
+          [
+            7,
+            3,
+            "hangar",
+            26.0
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16.0
+          ],
+          [
+            12,
+            4,
+            "storage",
+            24.0
+          ]
+        ]
+      }
+    },
+    {
+      "operation": "query",
+      "label": {
+        "zh": "复检优先单",
+        "en": "Recheck priority list"
+      },
+      "prompt": {
+        "zh": "执行下限筛选并生成两列清单，遵守工单指定的温度和编号顺序。",
+        "en": "Apply the lower cutoff and return the two-column ticket list in the required temperature and ID order."
+      },
+      "initial": {
+        "columns": "all",
+        "zone": "storage",
+        "minimum": 16,
+        "sort": "reading-asc"
+      },
+      "solution": {
+        "columns": "id-reading",
+        "zone": "all",
+        "minimum": 22,
+        "sort": "reading-desc"
+      },
+      "input": "previous",
+      "goal": {
+        "columns": [
+          "id",
+          "reading"
+        ],
+        "rows": [
+          [
+            5,
+            28.0
+          ],
+          [
+            7,
+            26.0
+          ],
+          [
+            12,
+            24.0
+          ],
+          [
+            4,
+            22.0
+          ]
+        ]
+      }
+    }
+  ]
+}

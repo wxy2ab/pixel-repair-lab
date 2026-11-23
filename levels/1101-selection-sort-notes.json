@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "selection-sort-notes",
+  "order": 1101,
+  "unit": {
+    "id": "algorithm-intro",
+    "order": 50,
+    "title": { "zh": "算法初级", "en": "Introductory Algorithms" }
+  },
+  "stage": "explain",
+  "topic": {
+    "id": "selection-sort",
+    "order": 2,
+    "title": { "zh": "选择排序", "en": "Selection sort" }
+  },
+  "title": { "zh": "按电量排好电池", "en": "Sort the Batteries by Charge" },
+  "brief": {
+    "zh": "把维修台的电池从低电量排到高电量。每轮在待排序区逐块比较，找出最小的一块，把它换到待排序区的第一格。",
+    "en": "Arrange the repair bench batteries from lowest to highest charge. In each round, scan the unsorted section, then swap its lowest-charge battery into the first unsorted slot."
+  },
+  "concept": {
+    "zh": "寻找最小值、交换位置、扩大已排好范围",
+    "en": "Find the minimum, swap positions, and grow the sorted section"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": { "zh": "只在待排序区找", "en": "Search the unsorted section" },
+      "body": {
+        "zh": "先把待排序区的第一块当作最小候选。每比一块，只有它的电量更低时才换候选。",
+        "en": "Start with the first unsorted battery as your candidate. Change the candidate only when you find a lower charge."
+      }
+    },
+    {
+      "title": { "zh": "每轮固定一格", "en": "Settle one slot per round" },
+      "body": {
+        "zh": "把这一轮选中的电池换到待排序区的第一格。如果它已经在这一格，直接固定。只剩一块时，它已经在最后一格。",
+        "en": "Swap the selected battery into the first unsorted slot. If it is already there, settle the slot as it is. The one remaining battery is already in the last slot."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "一轮比较结束后，发现最小的电池就在待排序区的第一格。接下来怎么做？",
+      "en": "A round ends with the lowest-charge battery already in the first unsorted slot. What happens next?"
+    },
+    "options": [
+      { "zh": "固定这一格", "en": "Settle this slot" },
+      { "zh": "跟待排序区的最后一格交换", "en": "Swap with the last unsorted slot" }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "它已经在正确的位置，这一轮可以直接固定它。",
+      "en": "It is already in the right place, so this round can settle it as it is."
+    }
+  },
+  "execution": {
+    "source": "def sort_batteries(batteries):\n    row = []\n    for battery in batteries:\n        row.append(battery)\n    settled = 0\n    selected = []\n    for start in range(len(row) - 1):\n        min_index = start\n        for index in range(start + 1, len(row)):\n            smaller = row[index][1] < row[min_index][1]\n            if smaller:\n                min_index = index\n        selected.append(row[min_index][0])\n        if min_index != start:\n            held = row[start]\n            row[start] = row[min_index]\n            row[min_index] = held\n        settled = start + 1\n    settled = len(row)\n    return [selected, row]\n",
+    "cases": [],
+    "selectionSort": {
+      "demo": {
+        "batteries": [
+          { "name": "A", "charge": 6 },
+          { "name": "B", "charge": 3 },
+          { "name": "C", "charge": 8 },
+          { "name": "D", "charge": 1 }
+        ],
+        "expected": { "selected": ["D", "B", "A"], "order": ["D", "B", "A", "C"] }
+      },
+      "practice": {
+        "batteries": [
+          { "name": "K", "charge": 8 },
+          { "name": "L", "charge": 2 },
+          { "name": "M", "charge": 7 },
+          { "name": "N", "charge": 3 },
+          { "name": "P", "charge": 5 }
+        ],
+        "expected": { "selected": ["L", "N", "P", "M"], "order": ["L", "N", "P", "M", "K"] }
+      }
+    }
+  }
+}

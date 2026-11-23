@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "ai-leave-out-magnet",
+  "order": 5713,
+  "unit": { "id": "ai", "order": 160, "title": { "zh": "AI 协作", "en": "AI Collaboration" } },
+  "topic": { "id": "constraints", "order": 2, "title": { "zh": "写清约束", "en": "State the constraints" } },
+  "stage": "exercise",
+  "title": { "zh": "保留水，去掉磁铁", "en": "Keep the Water, Remove the Magnet" },
+  "brief": { "zh": "给观测员的包内只能有 1 瓶水。草稿已经有 1 瓶水，但还列了 1 块磁铁。请 AI 修好草稿。", "en": "An observer's bag must contain exactly 1 bottle of water. The draft already lists the water, but it also includes 1 magnet. Ask AI to fix the draft." },
+  "concept": { "zh": "明确排除草稿中不允许的项目，同时保留正确数量。", "en": "Explicitly exclude a forbidden entry from the draft while preserving the correct count." },
+  "hints": [{ "zh": "只说“保留水”会使磁铁继续留在清单里。", "en": "Saying only “Keep the water” leaves the magnet in the list." }],
+  "inventory": [
+    { "id": "water", "label": { "zh": "水", "en": "Water bottle" }, "aliases": ["water bottles", "瓶水"] },
+    { "id": "magnet", "label": { "zh": "磁铁", "en": "Magnet" }, "aliases": ["magnets", "磁石"] },
+    { "id": "cloth", "label": { "zh": "布", "en": "Cloth" }, "aliases": ["cloths", "抹布"] }
+  ],
+  "required": { "water": 1 },
+  "workflow": {
+    "review": "automatic",
+    "faults": [],
+    "draft": { "items": [{ "id": "water", "quantity": 1 }, { "id": "magnet", "quantity": 1 }] },
+    "cards": [
+      { "zh": "保留1瓶水。", "en": "Keep 1 water bottle." },
+      { "zh": "去掉磁铁。", "en": "Remove the magnet." },
+      { "zh": "带2块布。", "en": "Pack 2 cloths." },
+      { "zh": "去掉布。", "en": "Remove all cloths." }
+    ]
+  },
+  "examplePrompts": {
+    "zh": ["保留1瓶水。", "去掉磁铁，保留1瓶水。"],
+    "en": ["Keep 1 water bottle.", "Remove the magnet. Keep 1 water bottle."]
+  }
+}

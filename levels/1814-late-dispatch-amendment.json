@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "challenge-late-dispatch-amendment",
+  "order": 1814,
+  "difficulty": "intermediate",
+  "stage": "challenge",
+  "unit": { "id": "challenge-zone", "order": 90, "title": { "zh": "挑战场", "en": "Challenge Arena" } },
+  "prerequisites": [
+    { "unit": "ai", "topic": "constraints" },
+    { "unit": "ai-review", "topic": "review" },
+    { "unit": "ai-review", "topic": "multi-turn" }
+  ],
+  "title": { "zh": "发货前的改派单", "en": "Last-Minute Dispatch Change" },
+  "concept": { "zh": "工单变更 · 合箱 · 多轮核对", "en": "Order amendment · One shipment · Multi-round audit" },
+  "brief": {
+    "zh": "冷库工单要 3 节电池、2 个保险丝和 1 个密封圈。屋顶工单要 2 节电池、2 个保险丝和 2 条扎带。新改派单要求从屋顶工单退回 1 节电池，再加 1 个两队共用的保险丝。两队物资装同一箱，检测仪和警示卡留在货架。让 AI 改好旧清单，每轮标记所有错误，清单完全符合新工单后确认发货。",
+    "en": "The cold-room ticket calls for 3 batteries, 2 fuses, and 1 seal. The rooftop ticket calls for 2 batteries, 2 fuses, and 2 straps. An amendment returns 1 rooftop battery and adds 1 shared fuse. Pack both teams’ supplies in one box. Leave the tester and warning tag on the shelf. Have AI revise the old manifest. Mark every discrepancy in each round, then approve the shipment once it matches the amended order."
+  },
+  "hints": [],
+  "inventory": [
+    { "id": "battery", "label": { "zh": "电池", "en": "Battery" }, "aliases": ["电芯", "batteries"] },
+    { "id": "fuse", "label": { "zh": "保险丝", "en": "Fuse" }, "aliases": ["熔丝", "fuses"] },
+    { "id": "seal", "label": { "zh": "密封圈", "en": "Seal" }, "aliases": ["垫圈", "seals"] },
+    { "id": "strap", "label": { "zh": "扎带", "en": "Strap" }, "aliases": ["绑带", "straps"] },
+    { "id": "tester", "label": { "zh": "检测仪", "en": "Tester" }, "aliases": ["测量仪", "testers"] },
+    { "id": "tag", "label": { "zh": "警示卡", "en": "Warning tag" }, "aliases": ["警示标签", "warning tags"] }
+  ],
+  "required": { "battery": 4, "fuse": 5, "seal": 1, "strap": 2 },
+  "workflow": {
+    "review": "manual",
+    "draft": {
+      "items": [{ "id": "battery", "quantity": 5 }, { "id": "fuse", "quantity": 4 }, { "id": "seal", "quantity": 1 }, { "id": "strap", "quantity": 1 }, { "id": "tester", "quantity": 1 }, { "id": "tag", "quantity": 1 }]
+    },
+    "faults": [{ "itemId": "seal", "quantity": 0 }, { "itemId": "tester", "quantity": 1 }, { "itemId": "battery", "quantity": 5 }]
+  },
+  "examplePrompts": {
+    "zh": [
+      "按改派单给两队装一箱。放 4 节电池。放 5 个保险丝。放 1 个密封圈。放 2 个扎带。去掉检测仪。去掉警示卡。",
+      "补上 1 个密封圈。保留其他条目。",
+      "移除检测仪。保留其他条目。",
+      "电池改为 4 节。保留其他条目。"
+    ],
+    "en": [
+      "Pack a single box for both teams. Pack 4 batteries, 5 fuses, 1 seal, and 2 straps. Remove the tester. Remove the warning tag.",
+      "Add 1 seal. Keep the other entries.",
+      "Remove the tester. Keep the other entries.",
+      "Set batteries to 4. Keep the other entries."
+    ]
+  }
+}

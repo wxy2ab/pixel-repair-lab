@@ -1,0 +1,28 @@
+.lesson-workbench {
+  position: relative;
+  display: block;
+  width: 181px;
+  height: 102px;
+  flex: 0 0 auto;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #35525b;
+  border-radius: 13px;
+  background: radial-gradient(ellipse at 57% 34%, #294b51, #152b37 73%, #122531);
+}
+.lesson-workbench:disabled { opacity: 1; cursor: default; }
+.lesson-workbench:not(:disabled):hover { border-color: #85baa9; }
+.lesson-workbench:focus-visible { outline: 2px solid #8de7bc; outline-offset: 2px; }
+.lesson-workbench img, .lesson-workbench canvas {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.lesson-workbench[data-ready='false'] canvas, .lesson-workbench[data-ready='true'] img { opacity: 0; }
+@media (max-width: 700px) {
+  .lesson-workbench { width: 115px; height: 73px; border-radius: 9px; }
+}

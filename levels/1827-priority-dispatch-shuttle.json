@@ -1,0 +1,496 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-priority-dispatch-shuttle",
+  "order": 1827,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "structures",
+      "topic": "queues"
+    },
+    {
+      "unit": "python-advanced",
+      "topic": "nested-loops"
+    },
+    {
+      "unit": "python-intermediate",
+      "topic": "branches"
+    }
+  ],
+  "title": {
+    "zh": "紧急工单插队",
+    "en": "Priority Dispatch Shuttle"
+  },
+  "concept": {
+    "zh": "批次边界 · 双队列 · 保留到达顺序",
+    "en": "Batch boundaries · Two queues · Stable arrival order"
+  },
+  "brief": {
+    "zh": "机器人一次收到多批移动工单。每张工单写着优先级和一个方向。按批次处理，每批先执行所有 urgent，再执行 standard；同一优先级仍按到达顺序。每次移动的方向须从队头取出，最后在出口取走调度档案。三张地图的工单各不相同。",
+    "en": "The shuttle receives multiple batches of movement orders. Each order has a priority and a direction. Process batches in order. In each batch, execute all urgent orders before standard ones, keeping arrival order within each priority. Each move must use a direction taken from the front of a queue. Pick up the dispatch archive at the exit. The three maps have different orders."
+  },
+  "hints": [],
+  "tiles": [
+    "##########",
+    "#..#.....#",
+    "##.#.###.#",
+    "#....#...#",
+    "#.####.#.#",
+    "#........#",
+    "##########"
+  ],
+  "start": {
+    "x": 1,
+    "y": 1
+  },
+  "input": [
+    [
+      [
+        "standard",
+        "down"
+      ],
+      [
+        "urgent",
+        "right"
+      ],
+      [
+        "standard",
+        "left"
+      ],
+      [
+        "urgent",
+        "down"
+      ],
+      [
+        "standard",
+        "down"
+      ]
+    ],
+    [
+      [
+        "standard",
+        "right"
+      ],
+      [
+        "urgent",
+        "down"
+      ],
+      [
+        "standard",
+        "right"
+      ],
+      [
+        "urgent",
+        "right"
+      ],
+      [
+        "standard",
+        "right"
+      ]
+    ],
+    [
+      [
+        "standard",
+        "up"
+      ],
+      [
+        "urgent",
+        "right"
+      ],
+      [
+        "urgent",
+        "up"
+      ]
+    ]
+  ],
+  "items": [
+    {
+      "id": "dispatch-archive",
+      "x": 6,
+      "y": 3
+    }
+  ],
+  "turnLimit": 14,
+  "objectives": [
+    {
+      "type": "moves",
+      "origin": "queue-pop"
+    },
+    {
+      "type": "collect",
+      "itemIds": [
+        "dispatch-archive"
+      ]
+    },
+    {
+      "type": "exit",
+      "x": 6,
+      "y": 3
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "##########",
+        "#........#",
+        "#.######.#",
+        "#.#......#",
+        "#.#.######",
+        "#........#",
+        "##########"
+      ],
+      "start": {
+        "x": 8,
+        "y": 1
+      },
+      "input": [
+        [
+          [
+            "standard",
+            "left"
+          ],
+          [
+            "urgent",
+            "left"
+          ],
+          [
+            "standard",
+            "left"
+          ],
+          [
+            "urgent",
+            "left"
+          ],
+          [
+            "standard",
+            "left"
+          ]
+        ],
+        [
+          [
+            "standard",
+            "down"
+          ],
+          [
+            "urgent",
+            "left"
+          ],
+          [
+            "standard",
+            "down"
+          ],
+          [
+            "urgent",
+            "left"
+          ],
+          [
+            "standard",
+            "down"
+          ]
+        ]
+      ],
+      "items": [
+        {
+          "id": "dispatch-archive",
+          "x": 1,
+          "y": 4
+        }
+      ],
+      "turnLimit": 11,
+      "objectives": [
+        {
+          "type": "moves",
+          "origin": "queue-pop"
+        },
+        {
+          "type": "collect",
+          "itemIds": [
+            "dispatch-archive"
+          ]
+        },
+        {
+          "type": "exit",
+          "x": 1,
+          "y": 4
+        }
+      ]
+    },
+    {
+      "tiles": [
+        "#########",
+        "#.......#",
+        "#.#.#.#.#",
+        "#.#...#.#",
+        "#.#####.#",
+        "#.......#",
+        "#########"
+      ],
+      "start": {
+        "x": 1,
+        "y": 5
+      },
+      "input": [
+        [
+          [
+            "standard",
+            "up"
+          ],
+          [
+            "urgent",
+            "up"
+          ],
+          [
+            "standard",
+            "up"
+          ],
+          [
+            "urgent",
+            "up"
+          ],
+          [
+            "standard",
+            "right"
+          ]
+        ],
+        [
+          [
+            "standard",
+            "right"
+          ],
+          [
+            "urgent",
+            "right"
+          ],
+          [
+            "standard",
+            "down"
+          ],
+          [
+            "urgent",
+            "right"
+          ],
+          [
+            "standard",
+            "down"
+          ]
+        ]
+      ],
+      "items": [
+        {
+          "id": "dispatch-archive",
+          "x": 5,
+          "y": 3
+        }
+      ],
+      "turnLimit": 11,
+      "objectives": [
+        {
+          "type": "moves",
+          "origin": "queue-pop"
+        },
+        {
+          "type": "collect",
+          "itemIds": [
+            "dispatch-archive"
+          ]
+        },
+        {
+          "type": "exit",
+          "x": 5,
+          "y": 3
+        }
+      ]
+    }
+  ],
+  "allowedApi": [
+    "scan",
+    "move",
+    "pick"
+  ],
+  "cards": [
+    {
+      "id": "read",
+      "label": {
+        "zh": "读入所有工单",
+        "en": "Read the orders"
+      },
+      "template": "batches = scan()"
+    },
+    {
+      "id": "batch",
+      "label": {
+        "zh": "逐批处理",
+        "en": "Process one batch at a time"
+      },
+      "template": "for batch in batches:",
+      "block": true
+    },
+    {
+      "id": "urgent-queue",
+      "label": {
+        "zh": "建空的紧急队列",
+        "en": "Create an empty urgent queue"
+      },
+      "template": "urgent = []"
+    },
+    {
+      "id": "standard-queue",
+      "label": {
+        "zh": "建空的普通队列",
+        "en": "Create an empty standard queue"
+      },
+      "template": "standard = []"
+    },
+    {
+      "id": "order",
+      "label": {
+        "zh": "按到达顺序看每张工单",
+        "en": "Read the batch in arrival order"
+      },
+      "template": "for order in batch:",
+      "block": true
+    },
+    {
+      "id": "if-urgent",
+      "label": {
+        "zh": "紧急工单",
+        "en": "If this order is urgent"
+      },
+      "template": "if order[0] == \"urgent\":",
+      "block": true
+    },
+    {
+      "id": "else",
+      "label": {
+        "zh": "其他工单",
+        "en": "For any other order"
+      },
+      "template": "else:",
+      "block": true
+    },
+    {
+      "id": "enqueue-urgent",
+      "label": {
+        "zh": "方向加入紧急队尾",
+        "en": "Add direction to the urgent queue"
+      },
+      "template": "urgent.append(order[1])"
+    },
+    {
+      "id": "enqueue-standard",
+      "label": {
+        "zh": "方向加入普通队尾",
+        "en": "Add direction to the standard queue"
+      },
+      "template": "standard.append(order[1])"
+    },
+    {
+      "id": "next-urgent",
+      "label": {
+        "zh": "紧急队列还有工单",
+        "en": "While the urgent queue has orders"
+      },
+      "template": "while urgent:",
+      "block": true
+    },
+    {
+      "id": "next-standard",
+      "label": {
+        "zh": "普通队列还有工单",
+        "en": "While the standard queue has orders"
+      },
+      "template": "while standard:",
+      "block": true
+    },
+    {
+      "id": "depart-urgent",
+      "label": {
+        "zh": "从紧急队头取方向并移动",
+        "en": "Move using the front urgent order"
+      },
+      "template": "move(urgent.pop(0))"
+    },
+    {
+      "id": "depart-standard",
+      "label": {
+        "zh": "从普通队头取方向并移动",
+        "en": "Move using the front standard order"
+      },
+      "template": "move(standard.pop(0))"
+    },
+    {
+      "id": "pick",
+      "label": {
+        "zh": "拾取零件",
+        "en": "Pick up the part"
+      },
+      "template": "pick()"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "batch",
+      "children": [
+        {
+          "cardId": "urgent-queue"
+        },
+        {
+          "cardId": "standard-queue"
+        },
+        {
+          "cardId": "order",
+          "children": [
+            {
+              "cardId": "if-urgent",
+              "children": [
+                {
+                  "cardId": "enqueue-urgent"
+                }
+              ]
+            },
+            {
+              "cardId": "else",
+              "children": [
+                {
+                  "cardId": "enqueue-standard"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cardId": "next-urgent",
+          "children": [
+            {
+              "cardId": "depart-urgent"
+            }
+          ]
+        },
+        {
+          "cardId": "next-standard",
+          "children": [
+            {
+              "cardId": "depart-standard"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cardId": "pick"
+    }
+  ]
+}

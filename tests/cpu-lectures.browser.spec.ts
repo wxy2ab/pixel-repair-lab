@@ -1,0 +1,85 @@
+import { expect, test, type Locator, type Page } from '@playwright/test'
+
+test.use({ launchOptions: { args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] } })
+
+async function openCpuLecture(page: Page, title: string) {
+  await page.goto('/')
+  await page.locator('[data-unit="architecture"]').click()
+  await page.locator('.mission-list button').filter({ has: page.getByText(title, { exact: true }) }).click()
+  const bench = page.getByRole('region', { name: 'CPU 指令观察台' })
+  const model = bench.locator('[data-teaching-model="cpu-transfer"]')
+  await model.scrollIntoViewIfNeeded()
+  await expect(model).toHaveAttribute('data-renderer', 'webgl', { timeout: 15_000 })
+  return { bench, model, step: page.getByRole('button', { name: '下一步', exact: true }),
+    back: page.getByRole('button', { name: '上一步', exact: true }) }
+}
+
+async function tapClock(model: Locator) {
+  const canvas = model.locator('canvas')
+  await canvas.scrollIntoViewIfNeeded()
+  const clock = model.locator('.teaching-model-labels').getByText('时钟', { exact: true })
+  await expect(clock).toBeVisible()
+  const [surface, label] = await Promise.all([canvas.boundingBox(), clock.boundingBox()])
+  if (!surface || !label) throw new Error('Clock is outside the instrument.')
+  await canvas.click({ position: { x: label.x + label.width / 2 - surface.x, y: label.y + label.height / 2 - surface.y } })
+}
+
+test('clocking the memory lesson copies without changing the source and rewinding restores the overwritten cell', async ({ page }) => {
+  const { bench, model, back } = await openCpuLecture(page, '打开 CPU 的维修盖')
+  await model.getByRole('button', { name: '俯视' }).click()
+  const source = bench.locator('.station-source [aria-current="step"]')
+  await expect(source).toHaveText('LOAD 1')
+  await tapClock(model)
+  await expect(model.getByText('ACC 3', { exact: true })).toBeVisible()
+  await expect(bench.locator('[data-action="read"]')).toContainText('RAM[1] = 3')
+  await tapClock(model)
+  await expect(source).toHaveText('STORE 2')
+  await expect(bench.locator('[data-action="write"]')).toContainText('RAM[2] 9 → 3')
+  const probe = bench.getByRole('combobox', { name: '查看内存' })
+  await probe.selectOption('2')
+  await back.click()
+  await expect(source).toHaveText('LOAD 1')
+  await expect(bench.locator('.cpu-probe output')).toContainText('9')
+})
+
+test('stepping register arithmetic shows the actual ALU input and both register values', async ({ page }) => {
+  const { bench, model, step, back } = await openCpuLecture(page, '两种寄存器各记一件事')
+  await expect(model.getByText('ACC 5', { exact: true })).toBeVisible()
+  await step.click()
+  await expect(bench.locator('[data-action="alu"]')).toContainText('5 + 6 = 11')
+  await expect(model.getByText('PC 1', { exact: true })).toBeVisible()
+  await step.click()
+  await expect(bench.locator('[data-action="alu"]')).toContainText('11 − 3 = 8')
+  await expect(model.getByText('PC 2', { exact: true })).toBeVisible()
+  await back.click()
+  await expect(bench.locator('.station-source [aria-current]')).toHaveText('ADD 0')
+  await expect(model.getByText('ACC 11', { exact: true })).toBeVisible()
+})
+
+test('fetch and decode leave RAM alone until STORE executes; HALT prevents the following write', async ({ page }) => {
+  const { bench, model, step, back } = await openCpuLecture(page, '取指、辨认、执行')
+  for (let i = 0; i < 3; i++) await step.click()
+  const source = bench.locator('.station-source [aria-current]')
+  await expect(source).toHaveText('STORE 3')
+  await expect(bench).toHaveAttribute('data-phase', 'fetch')
+  await bench.getByRole('combobox', { name: '查看内存' }).selectOption('3')
+  const probe = bench.locator('.cpu-probe output')
+  await expect(probe).toHaveText(/= 2$/)
+  await step.click()
+  await expect(bench).toHaveAttribute('data-phase', 'decode')
+  await expect(bench.locator('[data-action="write"]')).toHaveCount(0)
+  await expect(probe).toHaveText(/= 2$/)
+  await step.click()
+  await expect(bench).toHaveAttribute('data-phase', 'execute')
+  await expect(probe).toHaveText(/= 15$/)
+  await expect(bench.locator('.station-source [data-next]')).toHaveText('HALT')
+  await back.click()
+  await expect(model.getByText('PC 2', { exact: true })).toBeVisible()
+  await expect(probe).toHaveText(/= 2$/)
+  await page.getByRole('button', { name: '跳到结尾' }).click()
+  await expect(source).toHaveText('HALT')
+  await expect(bench.locator('.station-source [data-next]')).toHaveCount(0)
+  await bench.getByRole('combobox', { name: '查看内存' }).selectOption('2')
+  await expect(probe).toHaveText(/= 0$/)
+  await expect(step).toBeDisabled()
+})

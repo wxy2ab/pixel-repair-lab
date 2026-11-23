@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "statistics-area-maximums",
+  "order": 528,
+  "stage": "exercise",
+  "unit": { "id": "statistics", "order": 120, "title": { "zh": "统计分析", "en": "Statistics" } },
+  "topic": { "id": "grouped-summary", "order": 2, "title": { "zh": "按组比较", "en": "Compare groups" } },
+  "title": { "zh": "每个区域最热的一次", "en": "Find Each Area's Hottest Reading" },
+  "brief": { "zh": "高温巡查时，每个区域都要交出自己测到的最高温度。", "en": "For a heat inspection, each area needs to report the hottest reading it recorded." },
+  "concept": { "zh": "组内最大值返回该组实际出现过的最高读数。", "en": "A group maximum returns the highest reading that actually occurred in that group." },
+  "hints": [{ "zh": "需要每个区域各一条结果。车间最高的读数是 36°C。", "en": "Return one row per area. The workshop's highest reading is 36°C." }],
+  "steps": [
+    {
+      "operation": "group",
+      "input": "clean",
+      "label": { "zh": "按区域求最高值", "en": "Find each area's maximum" },
+      "prompt": { "zh": "表格要列出三个区域各自的最高温度。", "en": "Show the maximum temperature for each of the three areas." },
+      "initial": { "by": "day", "statistic": "mean" },
+      "goal": { "columns": ["zone", "max"], "rows": [["hangar", 30], ["storage", 24], ["workshop", 36]] },
+      "solution": { "by": "zone", "statistic": "max" }
+    }
+  ]
+}

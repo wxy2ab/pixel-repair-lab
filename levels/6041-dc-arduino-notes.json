@@ -1,0 +1,362 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "dc-arduino-notes",
+  "order": 6041,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "arduino-io",
+    "order": 5,
+    "title": {
+      "zh": "Arduino 输入与输出",
+      "en": "Arduino Inputs and Outputs"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "让板载灯有节奏地闪",
+    "en": "Give the Onboard Lamp a Beat"
+  },
+  "brief": {
+    "zh": "维修站收到一块 Arduino UNO R3。看看程序先怎样准备引脚，又怎样让同一盏灯反复亮灭。",
+    "en": "The workshop has an Arduino UNO R3. See how a sketch sets up a pin and makes one lamp blink again and again."
+  },
+  "concept": {
+    "zh": "setup、loop、数字输出和按键输入",
+    "en": "setup, loop, digital output and button input"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "先准备一次",
+        "en": "Prepare once"
+      },
+      "body": {
+        "zh": "UNO 板上的小灯标着 L。程序用 LED_BUILTIN 找到控制它的引脚 D13。上电或复位后，setup() 执行一次，把这个引脚设为输出 OUTPUT。",
+        "en": "The little lamp on the UNO is labelled L. LED_BUILTIN names its control pin, D13. After power-up or reset, setup() runs once and sets that pin to OUTPUT."
+      }
+    },
+    {
+      "title": {
+        "zh": "重复发送高低电平",
+        "en": "Send high and low signals repeatedly"
+      },
+      "body": {
+        "zh": "接下来 loop() 一遍遍执行。digitalWrite 发出 HIGH 就点亮 L，发出 LOW 就熄灭它。delay(500) 让程序等 500 毫秒，也就是半秒。等待期间灯保持刚才的状态。",
+        "en": "Next, loop() runs over and over. digitalWrite sends HIGH to light L and LOW to turn it off. delay(500) waits 500 milliseconds, or half a second. The lamp stays in its last state during that wait."
+      }
+    },
+    {
+      "title": {
+        "zh": "让按键来作决定",
+        "en": "Let a button make the decision"
+      },
+      "body": {
+        "zh": "还能把 D2 设成 INPUT_PULLUP 输入。板子里的上拉电阻让松开的按键读作 HIGH。按下时，按键把 D2 接到地线 GND，读数变为 LOW。程序用 digitalRead(2) 读取输入，再决定何时给灯送 HIGH。",
+        "en": "D2 can be set to INPUT_PULLUP. The board’s internal pull-up resistor gives a HIGH reading with the button released. Pressing connects D2 to ground (GND) and the reading becomes LOW. The sketch reads it with digitalRead(2) and decides when to send HIGH to the lamp."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "loop() 刚让灯亮起来，随后执行 delay(500)。等的这半秒，灯怎样？",
+      "en": "loop() has just turned the lamp on and now runs delay(500). What happens to the lamp for that half second?"
+    },
+    "options": [
+      {
+        "zh": "马上熄灭",
+        "en": "It switches off immediately"
+      },
+      {
+        "zh": "保持亮着",
+        "en": "It stays on"
+      },
+      {
+        "zh": "重新执行 setup()",
+        "en": "setup() runs again"
+      }
+    ],
+    "correct": 1,
+    "feedback": {
+      "zh": "引脚会保持最近一次写入的电平。等到下一次写入 LOW，灯才熄灭。",
+      "en": "The pin holds the last level written to it. The lamp turns off when the sketch writes LOW."
+    }
+  },
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": {
+          "zh": "复位后进入 setup()，把板载灯的引脚设为输出。",
+          "en": "After reset, setup() makes the onboard lamp pin an output."
+        },
+        "items": [
+          {
+            "id": "section",
+            "label": {
+              "zh": "程序位置",
+              "en": "Sketch section"
+            },
+            "value": {
+              "zh": "setup()",
+              "en": "setup()"
+            },
+            "state": "active"
+          },
+          {
+            "id": "code",
+            "label": {
+              "zh": "执行语句",
+              "en": "Instruction"
+            },
+            "value": {
+              "zh": "pinMode(LED_BUILTIN, OUTPUT);",
+              "en": "pinMode(LED_BUILTIN, OUTPUT);"
+            },
+            "state": "active"
+          },
+          {
+            "id": "led",
+            "label": {
+              "zh": "板载灯 L",
+              "en": "Onboard L"
+            },
+            "value": {
+              "zh": "灭 · LOW",
+              "en": "Off · LOW"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "进入 loop()，给 L 发 HIGH。灯亮了。",
+          "en": "Enter loop() and send HIGH to L. The lamp lights up."
+        },
+        "items": [
+          {
+            "id": "section",
+            "label": {
+              "zh": "程序位置",
+              "en": "Sketch section"
+            },
+            "value": {
+              "zh": "loop()",
+              "en": "loop()"
+            },
+            "state": "active"
+          },
+          {
+            "id": "code",
+            "label": {
+              "zh": "执行语句",
+              "en": "Instruction"
+            },
+            "value": {
+              "zh": "digitalWrite(LED_BUILTIN, HIGH);",
+              "en": "digitalWrite(LED_BUILTIN, HIGH);"
+            },
+            "state": "active"
+          },
+          {
+            "id": "led",
+            "label": {
+              "zh": "板载灯 L",
+              "en": "Onboard L"
+            },
+            "value": {
+              "zh": "亮 · HIGH",
+              "en": "On · HIGH"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "等 500 毫秒，D13 仍保持 HIGH。",
+          "en": "Wait for 500 ms. D13 holds HIGH."
+        },
+        "items": [
+          {
+            "id": "section",
+            "label": {
+              "zh": "程序位置",
+              "en": "Sketch section"
+            },
+            "value": {
+              "zh": "loop()",
+              "en": "loop()"
+            },
+            "state": "active"
+          },
+          {
+            "id": "code",
+            "label": {
+              "zh": "执行语句",
+              "en": "Instruction"
+            },
+            "value": {
+              "zh": "delay(500);",
+              "en": "delay(500);"
+            },
+            "state": "active"
+          },
+          {
+            "id": "led",
+            "label": {
+              "zh": "板载灯 L",
+              "en": "Onboard L"
+            },
+            "value": {
+              "zh": "亮 · HIGH",
+              "en": "On · HIGH"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "写入 LOW，灯熄灭。",
+          "en": "Write LOW. The lamp goes off."
+        },
+        "items": [
+          {
+            "id": "section",
+            "label": {
+              "zh": "程序位置",
+              "en": "Sketch section"
+            },
+            "value": {
+              "zh": "loop()",
+              "en": "loop()"
+            },
+            "state": "active"
+          },
+          {
+            "id": "code",
+            "label": {
+              "zh": "执行语句",
+              "en": "Instruction"
+            },
+            "value": {
+              "zh": "digitalWrite(LED_BUILTIN, LOW);",
+              "en": "digitalWrite(LED_BUILTIN, LOW);"
+            },
+            "state": "active"
+          },
+          {
+            "id": "led",
+            "label": {
+              "zh": "板载灯 L",
+              "en": "Onboard L"
+            },
+            "value": {
+              "zh": "灭 · LOW",
+              "en": "Off · LOW"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "再等 500 毫秒，灯保持熄灭。",
+          "en": "Wait a further 500 ms. The lamp stays off."
+        },
+        "items": [
+          {
+            "id": "section",
+            "label": {
+              "zh": "程序位置",
+              "en": "Sketch section"
+            },
+            "value": {
+              "zh": "loop()",
+              "en": "loop()"
+            },
+            "state": "active"
+          },
+          {
+            "id": "code",
+            "label": {
+              "zh": "执行语句",
+              "en": "Instruction"
+            },
+            "value": {
+              "zh": "delay(500);",
+              "en": "delay(500);"
+            },
+            "state": "active"
+          },
+          {
+            "id": "led",
+            "label": {
+              "zh": "板载灯 L",
+              "en": "Onboard L"
+            },
+            "value": {
+              "zh": "灭 · LOW",
+              "en": "Off · LOW"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "回到 loop() 开头，开始下一次亮灯。",
+          "en": "Return to the start of loop() and begin the next flash."
+        },
+        "items": [
+          {
+            "id": "section",
+            "label": {
+              "zh": "程序位置",
+              "en": "Sketch section"
+            },
+            "value": {
+              "zh": "loop()",
+              "en": "loop()"
+            },
+            "state": "active"
+          },
+          {
+            "id": "code",
+            "label": {
+              "zh": "执行语句",
+              "en": "Instruction"
+            },
+            "value": {
+              "zh": "digitalWrite(LED_BUILTIN, HIGH);",
+              "en": "digitalWrite(LED_BUILTIN, HIGH);"
+            },
+            "state": "active"
+          },
+          {
+            "id": "led",
+            "label": {
+              "zh": "板载灯 L",
+              "en": "Onboard L"
+            },
+            "value": {
+              "zh": "亮 · HIGH",
+              "en": "On · HIGH"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  }
+}

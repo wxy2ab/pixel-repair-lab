@@ -1,0 +1,321 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "challenge-sensor-coverage-oath",
+  "order": 1898,
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "三日传感器出勤证明",
+    "en": "Three-Day Sensor Attendance"
+  },
+  "brief": {
+    "zh": "一个区域在头 3 天至少交出 3 条不同编号的有效温度，才有资格复核。先保留空值作为缺报证据，再统计有效读数。交出全部区域计数和过线名单。",
+    "en": "An area qualifies for review with at least three distinct valid readings in the first three days. Preserve missing readings as evidence, count only valid readings, and deliver both the full tally and the qualifying areas."
+  },
+  "concept": {
+    "zh": "记录去重、缺报保留与分组计数",
+    "en": "Deduplication, missing-row evidence and valid counts"
+  },
+  "prerequisites": [
+    {
+      "unit": "pandas",
+      "topic": "cleaning"
+    },
+    {
+      "unit": "numpy",
+      "topic": "masks"
+    },
+    {
+      "unit": "statistics",
+      "topic": "grouped-summary"
+    },
+    {
+      "unit": "database",
+      "topic": "sql-groups"
+    }
+  ],
+  "hints": [],
+  "steps": [
+    {
+      "operation": "clean",
+      "label": {
+        "zh": "缺报档案",
+        "en": "Missing-reading archive"
+      },
+      "prompt": {
+        "zh": "统一区域名，按编号只保留首次传输。无法读出温度的行保留为空。",
+        "en": "Normalize area names and keep the first transmission per ID. Retain unreadable temperatures as missing entries."
+      },
+      "initial": {
+        "trim": false,
+        "dropMissing": true,
+        "deduplicate": false
+      },
+      "solution": {
+        "trim": true,
+        "dropMissing": false,
+        "deduplicate": true
+      },
+      "input": "raw",
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            "hangar",
+            18.0
+          ],
+          [
+            2,
+            1,
+            "workshop",
+            24.0
+          ],
+          [
+            3,
+            1,
+            "storage",
+            20.0
+          ],
+          [
+            4,
+            2,
+            "hangar",
+            22.0
+          ],
+          [
+            5,
+            2,
+            "workshop",
+            28.0
+          ],
+          [
+            6,
+            2,
+            "storage",
+            null
+          ],
+          [
+            7,
+            3,
+            "hangar",
+            26.0
+          ],
+          [
+            8,
+            3,
+            "workshop",
+            32.0
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16.0
+          ],
+          [
+            10,
+            4,
+            "hangar",
+            30.0
+          ],
+          [
+            11,
+            4,
+            "workshop",
+            null
+          ],
+          [
+            12,
+            4,
+            "storage",
+            24.0
+          ],
+          [
+            13,
+            4,
+            "workshop",
+            36.0
+          ]
+        ]
+      }
+    },
+    {
+      "operation": "mask",
+      "label": {
+        "zh": "前三天档案",
+        "en": "First three days"
+      },
+      "prompt": {
+        "zh": "提交不晚于第 3 天的完整档案，包括缺报行。",
+        "en": "Keep all archived rows through day 3, including missing readings."
+      },
+      "initial": {
+        "column": "reading",
+        "comparison": "gte",
+        "threshold": 0
+      },
+      "solution": {
+        "column": "day",
+        "comparison": "lte",
+        "threshold": 3
+      },
+      "input": "previous",
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            "hangar",
+            18.0
+          ],
+          [
+            2,
+            1,
+            "workshop",
+            24.0
+          ],
+          [
+            3,
+            1,
+            "storage",
+            20.0
+          ],
+          [
+            4,
+            2,
+            "hangar",
+            22.0
+          ],
+          [
+            5,
+            2,
+            "workshop",
+            28.0
+          ],
+          [
+            6,
+            2,
+            "storage",
+            null
+          ],
+          [
+            7,
+            3,
+            "hangar",
+            26.0
+          ],
+          [
+            8,
+            3,
+            "workshop",
+            32.0
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16.0
+          ]
+        ]
+      }
+    },
+    {
+      "operation": "group",
+      "label": {
+        "zh": "实到清点",
+        "en": "Attendance tally"
+      },
+      "prompt": {
+        "zh": "按区域计算实际有温度的条数，暂时保留没有达标的区域。",
+        "en": "Count nonmissing temperatures by area, keeping areas below the cutoff in this tally."
+      },
+      "initial": {
+        "by": "day",
+        "statistic": "count"
+      },
+      "solution": {
+        "by": "zone",
+        "statistic": "count"
+      },
+      "input": "previous",
+      "goal": {
+        "columns": [
+          "zone",
+          "count"
+        ],
+        "rows": [
+          [
+            "hangar",
+            3
+          ],
+          [
+            "storage",
+            2
+          ],
+          [
+            "workshop",
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "operation": "report",
+      "label": {
+        "zh": "复核资格",
+        "en": "Review eligibility"
+      },
+      "prompt": {
+        "zh": "只收录实到 3 条或更多的区域，按区域名升序交卷。",
+        "en": "Return areas with three or more valid entries, ordered by area name ascending."
+      },
+      "initial": {
+        "minimum": 1,
+        "sort": "value-asc"
+      },
+      "solution": {
+        "minimum": 3,
+        "sort": "key"
+      },
+      "input": "previous",
+      "goal": {
+        "columns": [
+          "zone",
+          "count"
+        ],
+        "rows": [
+          [
+            "hangar",
+            3
+          ],
+          [
+            "workshop",
+            3
+          ]
+        ]
+      }
+    }
+  ]
+}

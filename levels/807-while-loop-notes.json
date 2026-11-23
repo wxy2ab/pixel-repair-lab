@@ -1,0 +1,335 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "python-intermediate",
+    "order": 20,
+    "title": {
+      "zh": "Python 进阶",
+      "en": "Intermediate Python"
+    }
+  },
+  "kind": "lecture",
+  "id": "while-loop-notes",
+  "order": 830,
+  "stage": "explain",
+  "topic": {
+    "id": "while-loops",
+    "order": 3,
+    "title": {
+      "zh": "while 循环",
+      "en": "While loops"
+    }
+  },
+  "title": {
+    "zh": "while 循环",
+    "en": "While Loops"
+  },
+  "concept": {
+    "zh": "每轮先检查条件",
+    "en": "Check the condition before each turn"
+  },
+  "brief": {
+    "zh": "给芽芽的电池补到至少 4 格。每次先看当前电量，没达标就补 3 格，再检查一次。",
+    "en": "Get Sprout’s battery to at least 4 units. Check the current charge first. If it is too low, add 3 and check again."
+  },
+  "hints": [],
+  "execution": {
+    "source": "charge = scan()\nwhile charge < 4:\n    charge = charge + 3\nsay(str(charge))",
+    "whileLoop": {
+      "threshold": 4,
+      "increment": 3
+    },
+    "cases": [
+      {
+        "label": {
+          "zh": "起始电量 0 格",
+          "en": "Start with 0 units"
+        },
+        "input": 0,
+        "expected": "6"
+      },
+      {
+        "label": {
+          "zh": "起始电量 4 格",
+          "en": "Start with 4 units"
+        },
+        "input": 4,
+        "expected": "4"
+      },
+      {
+        "label": {
+          "zh": "起始电量 2 格",
+          "en": "Start with 2 units"
+        },
+        "input": 2,
+        "expected": "5",
+        "roundPredictions": [
+          0,
+          1,
+          2
+        ],
+        "predictions": [
+          "2",
+          "4",
+          "5"
+        ]
+      },
+      {
+        "label": {
+          "zh": "起始电量 6 格",
+          "en": "Start with 6 units"
+        },
+        "input": 6,
+        "expected": "6",
+        "roundPredictions": [
+          0,
+          1,
+          2
+        ],
+        "predictions": [
+          "4",
+          "6",
+          "9"
+        ]
+      }
+    ]
+  },
+  "sections": [
+    {
+      "title": {
+        "zh": "先问电量还够不够",
+        "en": "Check the charge before acting"
+      },
+      "body": {
+        "zh": "while charge < 4 先判断当前电量是不是低于 4 格。条件为 True 时，才进入缩进里的补电指令。",
+        "en": "while charge < 4 checks whether the current charge is below 4 units. The indented charging command runs when the condition is True."
+      }
+    },
+    {
+      "title": {
+        "zh": "补电后回到判断",
+        "en": "Return to the condition after charging"
+      },
+      "body": {
+        "zh": "每轮加 3 后，程序回到 while，用刚更新的电量检查一次。条件变成 False 时，退出循环，显示最终电量。",
+        "en": "After adding 3, the program returns to while and tests the new charge. A False result ends the loop. The line after the loop displays the final charge."
+      }
+    },
+    {
+      "title": {
+        "zh": "第一次检查就可以结束",
+        "en": "The first check can end the loop"
+      },
+      "body": {
+        "zh": "如果一开始就有 4 格，charge < 4 为 False。程序直接去显示 4 格，补电指令执行了零轮。",
+        "en": "If the battery starts at 4, charge < 4 is False on the first check. The program displays 4 units. The charging command runs zero times."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "起始电量已经是 4 格，循环会补电几次？",
+      "en": "The battery starts with 4 units. How many charging rounds run?"
+    },
+    "options": [
+      {
+        "zh": "0 次",
+        "en": "0 rounds"
+      },
+      {
+        "zh": "1 次",
+        "en": "1 round"
+      },
+      {
+        "zh": "2 次",
+        "en": "2 rounds"
+      }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "第一次检查就达标，while 的条件为 False，直接显示起始电量。",
+      "en": "The first check finds enough charge, so the while condition is False. The program goes straight to displaying the starting charge."
+    }
+  },
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": {
+          "zh": "起始电量是 0，低于 4 格，进入第一轮。",
+          "en": "The starting charge is 0, below 4, so the first round begins."
+        },
+        "items": [
+          {
+            "id": "charge",
+            "label": {
+              "zh": "当前电量",
+              "en": "Current charge"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "active"
+          },
+          {
+            "id": "check",
+            "label": {
+              "zh": "还需要补电吗？",
+              "en": "Does it need more charge?"
+            },
+            "value": {
+              "zh": "True",
+              "en": "True"
+            },
+            "state": "active"
+          },
+          {
+            "id": "rounds",
+            "label": {
+              "zh": "已经补电的轮数",
+              "en": "Completed charging rounds"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "补 3 格，当前电量变成 3。用新的电量再检查。",
+          "en": "Add 3. The charge is now 3, so check again with the updated value."
+        },
+        "items": [
+          {
+            "id": "charge",
+            "label": {
+              "zh": "当前电量",
+              "en": "Current charge"
+            },
+            "value": {
+              "zh": "3",
+              "en": "3"
+            },
+            "state": "active"
+          },
+          {
+            "id": "check",
+            "label": {
+              "zh": "还需要补电吗？",
+              "en": "Does it need more charge?"
+            },
+            "value": {
+              "zh": "True",
+              "en": "True"
+            },
+            "state": "done"
+          },
+          {
+            "id": "rounds",
+            "label": {
+              "zh": "已经补电的轮数",
+              "en": "Completed charging rounds"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "第二轮补完有 6 格。回到判断时，6 已达到至少 4 格的要求。",
+          "en": "The second round brings the charge to 6. The next check finds that 6 meets the target of at least 4."
+        },
+        "items": [
+          {
+            "id": "charge",
+            "label": {
+              "zh": "当前电量",
+              "en": "Current charge"
+            },
+            "value": {
+              "zh": "6",
+              "en": "6"
+            },
+            "state": "done"
+          },
+          {
+            "id": "check",
+            "label": {
+              "zh": "还需要补电吗？",
+              "en": "Does it need more charge?"
+            },
+            "value": {
+              "zh": "False",
+              "en": "False"
+            },
+            "state": "active"
+          },
+          {
+            "id": "rounds",
+            "label": {
+              "zh": "已经补电的轮数",
+              "en": "Completed charging rounds"
+            },
+            "value": {
+              "zh": "2",
+              "en": "2"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "换成起始电量 4 格。第一次检查就得到 False，所以直接显示 4 格。",
+          "en": "Start with 4 units now. The first check gives False, so the program displays 4 immediately."
+        },
+        "items": [
+          {
+            "id": "charge",
+            "label": {
+              "zh": "当前电量",
+              "en": "Current charge"
+            },
+            "value": {
+              "zh": "4",
+              "en": "4"
+            },
+            "state": "done"
+          },
+          {
+            "id": "check",
+            "label": {
+              "zh": "还需要补电吗？",
+              "en": "Does it need more charge?"
+            },
+            "value": {
+              "zh": "False",
+              "en": "False"
+            },
+            "state": "active"
+          },
+          {
+            "id": "rounds",
+            "label": {
+              "zh": "已经补电的轮数",
+              "en": "Completed charging rounds"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  }
+}

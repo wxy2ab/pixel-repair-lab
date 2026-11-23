@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "database-grouped-query-demo",
+  "order": 536,
+  "stage": "demo",
+  "unit": { "id": "database", "order": 130, "title": { "zh": "数据库", "en": "Databases" } },
+  "topic": { "id": "sql-groups", "order": 2, "title": { "zh": "SQL 分组汇总", "en": "Grouped SQL queries" } },
+  "title": { "zh": "给 SQL 汇总加一道门槛", "en": "Add a Cutoff to a SQL Summary" },
+  "brief": { "zh": "先用 SQL 把读数压成几组，再试试仅显示达到门槛的组。", "en": "Group the readings in SQL, then try keeping only groups that meet a cutoff." },
+  "concept": { "zh": "GROUP BY 决定分组。HAVING 在组的统计量算好后筛掉不合条件的组。", "en": "GROUP BY creates the groups. HAVING filters groups after their statistics have been calculated." },
+  "hints": [{ "zh": "选择按区域计数，把汇总下限从 0 调到 4，看看哪个区域消失了。", "en": "Count by area and raise the aggregate minimum from 0 to 4. Which area disappears?" }],
+  "steps": [
+    {
+      "operation": "sql-group",
+      "input": "clean",
+      "label": { "zh": "改变分组、统计量和门槛", "en": "Adjust grouping, statistic, and cutoff" },
+      "prompt": { "zh": "对照运行两次，只改变汇总下限，看看 HAVING 改变了哪些输出行。", "en": "Run twice and change just the aggregate minimum. See which result rows HAVING removes." },
+      "initial": { "by": "zone", "statistic": "count", "minimum": 0, "sort": "key" }
+    }
+  ]
+}

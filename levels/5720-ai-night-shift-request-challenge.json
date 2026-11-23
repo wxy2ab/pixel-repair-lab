@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "ai-night-shift-request-challenge",
+  "order": 5720,
+  "unit": { "id": "ai", "order": 160, "title": { "zh": "AI 协作", "en": "AI Collaboration" } },
+  "stage": "challenge",
+  "title": { "zh": "夜班领用清单", "en": "Night Shift Supply List" },
+  "brief": { "zh": "夜班需要 2 盏提灯、3 节电池、1 只夹子和 2 块布。草稿上的布数量已经正确，磁铁和珠子都应去掉。请 AI 交回一份逐项列出数量的清单。", "en": "The night shift needs 2 lanterns, 3 batteries, 1 clip, and 2 cloths. The draft already has the right count for cloths. Remove both magnets and beads. Ask AI to return a checklist with one count per item." },
+  "concept": { "zh": "综合明确的目标、数量和排除条件，确认随后的清单修正也遵守限制。", "en": "Combine a clear goal, exact counts, and exclusions. Check that the revised list still follows the constraints." },
+  "hints": [
+    { "zh": "先列出四种需要的用品与数量，再分别说明两种不允许的用品。", "en": "First name the four required items and counts, then exclude each forbidden item." },
+    { "zh": "检查 AI 的清单是否还漏了一项。", "en": "Look for a required item the AI may have missed." }
+  ],
+  "inventory": [
+    { "id": "lantern", "label": { "zh": "提灯", "en": "Lantern" }, "aliases": ["lanterns", "灯笼"] },
+    { "id": "battery", "label": { "zh": "电池", "en": "Battery" }, "aliases": ["batteries", "电芯"] },
+    { "id": "clip", "label": { "zh": "夹子", "en": "Clip" }, "aliases": ["clips", "弹簧夹"] },
+    { "id": "cloth", "label": { "zh": "布", "en": "Cloth" }, "aliases": ["cloths", "抹布"] },
+    { "id": "magnet", "label": { "zh": "磁铁", "en": "Magnet" }, "aliases": ["magnets", "磁石"] },
+    { "id": "bead", "label": { "zh": "珠子", "en": "Bead" }, "aliases": ["beads", "串珠"] }
+  ],
+  "required": { "lantern": 2, "battery": 3, "clip": 1, "cloth": 2 },
+  "workflow": {
+    "review": "automatic",
+    "faults": [{ "itemId": "clip", "quantity": 0 }],
+    "draft": { "items": [{ "id": "lantern", "quantity": 1 }, { "id": "battery", "quantity": 1 }, { "id": "cloth", "quantity": 2 }, { "id": "magnet", "quantity": 1 }, { "id": "bead", "quantity": 1 }] },
+    "cards": [
+      { "zh": "生成逐项列出数量的清单。", "en": "Return a checklist with one count per item." },
+      { "zh": "提灯：2盏。电池：3节。", "en": "Lanterns: 2. Batteries: 3." },
+      { "zh": "夹子：1只。保留2块布。", "en": "Clip: 1. Keep 2 cloths." },
+      { "zh": "去掉磁铁。去掉珠子。", "en": "Remove magnets. Remove beads." },
+      { "zh": "补齐1只夹子。", "en": "Set clips to 1." }
+    ]
+  },
+  "examplePrompts": {
+    "zh": ["生成逐项列出数量的清单。提灯：2盏。电池：3节。夹子：1只。保留2块布。去掉磁铁。去掉珠子。", "夹子改为1只。其他项目保持原样。"],
+    "en": ["Return a checklist with one count per item. Lanterns: 2. Batteries: 3. Clip: 1. Keep 2 cloths. Remove magnets. Remove beads.", "Set clips to 1. Keep the other entries."]
+  }
+}

@@ -1,0 +1,194 @@
+.saved-arena-board {
+  display: grid;
+  gap: 5px;
+  width: min(100%, 220px);
+  min-width: 0;
+  margin: 0;
+}
+
+.saved-arena-board-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--board-cols), minmax(0, 1fr));
+  gap: 1px;
+  width: min(100%, calc(var(--board-cols) * 18px + 6px));
+  padding: 3px;
+  border: 1px solid #4b6879;
+  border-radius: 6px;
+  background: #0d1825;
+}
+
+.saved-arena-board-cell {
+  position: relative;
+  min-width: 0;
+  aspect-ratio: 1;
+  border-radius: 2px;
+  background: #223348;
+}
+
+.saved-arena-board-cell[data-tile='wall'] { background: #52647d; }
+.saved-arena-board-cell[data-gate='open'], .saved-arena-board-gate--open {
+  background: #224344;
+  box-shadow: inset 0 0 0 1px #79d0a5;
+}
+
+.saved-arena-board-cell[data-gate='closed'], .saved-arena-board-gate--closed {
+  background: #573b37;
+  box-shadow: inset 0 0 0 1px #efac77;
+}
+
+.saved-arena-board-occupants {
+  position: absolute;
+  inset: 1px;
+  display: grid;
+  place-items: center;
+}
+
+.saved-arena-board-actor {
+  display: grid;
+  place-items: center;
+  width: 85%;
+  height: 85%;
+  min-width: 0;
+  min-height: 0;
+  border-radius: 50%;
+  background: #f39880;
+  color: #231914;
+  font: 700 8px/1 var(--mono);
+}
+
+.saved-arena-board-actor--player { border-radius: 2px; background: #84edc5; color: #092d29; }
+
+.saved-arena-board-occupants[data-stacked='true'] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr);
+  gap: 1px;
+}
+
+.saved-arena-board-occupants[data-stacked='true'] .saved-arena-board-actor {
+  width: 100%;
+  height: 100%;
+  font-size: 6px;
+}
+
+.saved-arena-board-battery {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  background: #ffe098;
+  transform: rotate(45deg);
+}
+
+.saved-arena-board-cell > .saved-arena-board-battery {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+}
+
+.saved-arena-board-cell:has(.saved-arena-board-occupants) > .saved-arena-board-battery {
+  inset: 1px 1px auto auto;
+  width: 4px;
+  height: 4px;
+}
+
+.saved-arena-board-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  color: #c9dbdf;
+  font-size: 11px;
+}
+
+.saved-arena-board-legend span { display: inline-flex; align-items: center; gap: 4px; }
+.saved-arena-board-legend i { width: 8px; height: 8px; }
+.saved-arena-board-gate { display: block; border-radius: 2px; }
+
+.saved-arena-change-marker {
+  border-style: solid;
+  border-color: var(--saved-arena-change-color);
+  pointer-events: none;
+}
+
+.saved-arena-board-cell > .saved-arena-change-marker, .saved-arena-change-button > .saved-arena-change-marker {
+  position: absolute;
+  width: 34%;
+  height: 34%;
+  filter: drop-shadow(0 0 1px #0d1825);
+}
+
+.saved-arena-change-marker--player, .saved-arena-change-button[data-change-kind='player'], .saved-arena-board-cell[data-selected-change='player'] {
+  --saved-arena-change-color: #82fcce;
+}
+
+.saved-arena-change-marker--rivals, .saved-arena-change-button[data-change-kind='rivals'], .saved-arena-board-cell[data-selected-change='rivals'] {
+  --saved-arena-change-color: #ff9daf;
+}
+
+.saved-arena-change-marker--battery, .saved-arena-change-button[data-change-kind='battery'], .saved-arena-board-cell[data-selected-change='battery'] {
+  --saved-arena-change-color: #ffe08a;
+}
+
+.saved-arena-change-marker--gate, .saved-arena-change-button[data-change-kind='gate'], .saved-arena-board-cell[data-selected-change='gate'] {
+  --saved-arena-change-color: #8ac4ff;
+}
+
+.saved-arena-change-marker--player {
+  inset: 1px auto auto 1px;
+  border-width: 2px 0 0 2px;
+  border-top-left-radius: 2px;
+}
+
+.saved-arena-change-marker--rivals {
+  inset: 1px 1px auto auto;
+  border-width: 2px 2px 0 0;
+  border-top-right-radius: 2px;
+}
+
+.saved-arena-change-marker--battery {
+  inset: auto 1px 1px auto;
+  border-width: 0 2px 2px 0;
+  border-bottom-right-radius: 2px;
+}
+
+.saved-arena-change-marker--gate {
+  inset: auto auto 1px 1px;
+  border-width: 0 0 2px 2px;
+  border-bottom-left-radius: 2px;
+}
+
+.saved-arena-change-button {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+}
+
+/* An isolated marker can use the entire cell, while coincident markers keep distinct hit areas. */
+.saved-arena-change-button:not(:only-of-type) { width: 50%; height: 50%; }
+.saved-arena-change-button[data-change-kind='player']:not(:only-of-type) { inset: 0 auto auto 0; }
+.saved-arena-change-button[data-change-kind='rivals']:not(:only-of-type) { inset: 0 0 auto auto; }
+.saved-arena-change-button[data-change-kind='battery']:not(:only-of-type) { inset: auto 0 0 auto; }
+.saved-arena-change-button[data-change-kind='gate']:not(:only-of-type) { inset: auto auto 0 0; }
+.saved-arena-change-button:not(:only-of-type) > .saved-arena-change-marker { width: 68%; height: 68%; }
+
+.saved-arena-change-button:hover { box-shadow: inset 0 0 0 1px var(--saved-arena-change-color); }
+.saved-arena-change-button:focus-visible { z-index: 2; outline: 2px solid #fff; outline-offset: -2px; }
+
+.saved-arena-board-cell[data-selected-change] {
+  outline: 2px solid var(--saved-arena-change-color);
+  outline-offset: -2px;
+}
+
+.saved-arena-board-change-legend {
+  display: flex;
+  flex: 1 0 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+  margin-top: 2px;
+  padding-top: 5px;
+  border-top: 1px solid #496278;
+}

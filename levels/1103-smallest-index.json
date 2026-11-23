@@ -1,0 +1,112 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "smallest-index",
+  "order": 1103,
+  "unit": {
+    "id": "algorithm-intro",
+    "order": 50,
+    "title": {
+      "zh": "算法初级",
+      "en": "Introductory Algorithms"
+    }
+  },
+  "stage": "exercise",
+  "topic": {
+    "id": "selection-sort",
+    "order": 2,
+    "title": {
+      "zh": "选择排序",
+      "en": "Selection sort"
+    }
+  },
+  "title": {
+    "zh": "找出未排序段最小的位置",
+    "en": "Find the minimum in a suffix"
+  },
+  "brief": {
+    "zh": "给出 smallest_index(values, start)。从 start 扫到末尾，返回第一次遇到最小值的位置。没有可检查的格子时返回 -1。",
+    "en": "Implement smallest_index(values, start). Scan from start to the end, returning the first index of the minimum or -1 for an empty suffix."
+  },
+  "concept": {
+    "zh": "缩小扫描范围",
+    "en": "Search a suffix"
+  },
+  "hints": [
+    {
+      "zh": "比较候选时用 <，遇到相同的值就保留较早的位置。",
+      "en": "Use < so ties keep the earlier index."
+    }
+  ],
+  "functionName": "smallest_index",
+  "starterCode": "def smallest_index(values, start):\n    return -1\n",
+  "solutionCode": "def smallest_index(values, start):\n    if start >= len(values):\n        return -1\n    best = start\n    for index in range(start + 1, len(values)):\n        if values[index] < values[best]:\n            best = index\n    return best",
+  "snippets": [
+    {
+      "label": {
+        "zh": "从起点保存候选",
+        "en": "Set the candidate index"
+      },
+      "code": "    best = start"
+    },
+    {
+      "label": {
+        "zh": "遍历后段",
+        "en": "Scan later indexes"
+      },
+      "code": "    for index in range(start + 1, len(values)):\n        if values[index] < values[best]:\n            best = index"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          1,
+          9,
+          4,
+          4
+        ],
+        1
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        [
+          5,
+          1,
+          3
+        ],
+        2
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        [
+          3,
+          -2,
+          4
+        ],
+        0
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        [
+          1
+        ],
+        1
+      ],
+      "expected": -1
+    },
+    {
+      "args": [
+        [],
+        0
+      ],
+      "expected": -1
+    }
+  ]
+}

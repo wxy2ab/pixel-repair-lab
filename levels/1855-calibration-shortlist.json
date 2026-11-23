@@ -1,0 +1,173 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "challenge-calibration-shortlist",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "order": 1855,
+  "difficulty": "intermediate",
+  "title": {
+    "zh": "复检名单的第二第三笔",
+    "en": "Second and Third for Recheck"
+  },
+  "concept": {
+    "zh": "SQL 筛选排序 · 双边温度范围 · 按位置取样",
+    "en": "SQL filtering and sorting · Bounded readings · Positional sample"
+  },
+  "brief": {
+    "zh": "校准员只复检车间 24°C 至 32°C（含两端）的有效读数。清单按温度由低到高，同温度按编号由小到大。最低的一笔已另交校准，最终交出清单中第二、第三笔的温度和它们在清单中的索引。",
+    "en": "The technician rechecks only valid workshop readings from 24°C through 32°C, inclusive. Sort low to high, with lower IDs first if temperatures tie. The lowest reading was sent separately. Submit the second and third temperatures with their indices in the shortlist."
+  },
+  "prerequisites": [
+    {
+      "unit": "database",
+      "topic": "sql-rows"
+    },
+    {
+      "unit": "numpy",
+      "topic": "masks"
+    },
+    {
+      "unit": "numpy",
+      "topic": "arrays"
+    }
+  ],
+  "hints": [],
+  "steps": [
+    {
+      "operation": "query",
+      "input": "clean",
+      "label": {
+        "zh": "车间候选记录",
+        "en": "Workshop candidates"
+      },
+      "prompt": {
+        "zh": "用 SQL 取 24°C 及以上的车间记录，只留编号和温度，温度从低到高。",
+        "en": "Use SQL to select workshop readings at 24°C or above. Return ID and temperature, coldest first."
+      },
+      "initial": {
+        "columns": "all",
+        "zone": "all",
+        "minimum": 23,
+        "sort": "id"
+      },
+      "goal": {
+        "columns": [
+          "id",
+          "reading"
+        ],
+        "rows": [
+          [
+            2,
+            24
+          ],
+          [
+            5,
+            28
+          ],
+          [
+            8,
+            32
+          ],
+          [
+            13,
+            36
+          ]
+        ]
+      },
+      "solution": {
+        "columns": "id-reading",
+        "zone": "workshop",
+        "minimum": 24,
+        "sort": "reading-asc"
+      }
+    },
+    {
+      "operation": "mask",
+      "input": "previous",
+      "label": {
+        "zh": "复检温度上限",
+        "en": "Recheck temperature ceiling"
+      },
+      "prompt": {
+        "zh": "再去掉超过 32°C 的候选。",
+        "en": "Remove candidates above 32°C."
+      },
+      "initial": {
+        "column": "reading",
+        "comparison": "lte",
+        "threshold": 36
+      },
+      "goal": {
+        "columns": [
+          "id",
+          "reading"
+        ],
+        "rows": [
+          [
+            2,
+            24
+          ],
+          [
+            5,
+            28
+          ],
+          [
+            8,
+            32
+          ]
+        ]
+      },
+      "solution": {
+        "column": "reading",
+        "comparison": "lte",
+        "threshold": 32
+      }
+    },
+    {
+      "operation": "array",
+      "input": "previous",
+      "label": {
+        "zh": "第二笔与第三笔",
+        "en": "Second and third readings"
+      },
+      "prompt": {
+        "zh": "索引从 0 开始，提取清单的第二和第三笔温度。",
+        "en": "Indices start at zero. Extract the second and third temperatures."
+      },
+      "initial": {
+        "column": "reading",
+        "start": 0,
+        "stop": 2
+      },
+      "goal": {
+        "columns": [
+          "index",
+          "reading"
+        ],
+        "rows": [
+          [
+            1,
+            28
+          ],
+          [
+            2,
+            32
+          ]
+        ]
+      },
+      "solution": {
+        "column": "reading",
+        "start": 1,
+        "stop": 3
+      }
+    }
+  ]
+}

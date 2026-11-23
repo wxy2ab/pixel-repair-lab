@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "opencv-gray-reading",
+  "order": 547,
+  "stage": "exercise",
+  "unit": { "id": "opencv", "order": 140, "title": { "zh": "OpenCV", "en": "OpenCV" } },
+  "topic": { "id": "color", "order": 2, "title": { "zh": "颜色与通道", "en": "Color and channels" } },
+  "mode": "color",
+  "title": { "zh": "读出橙色像素的灰度", "en": "Find the Brightness of the Orange Pixel" },
+  "brief": { "zh": "先用坐标找到橙色格，再用三个通道的加权结果读亮度。", "en": "Use coordinates to find the orange tile, then read the brightness computed from the weighted channels." },
+  "concept": { "zh": "灰度会综合三个通道。它跟单独取红、绿、蓝任意一个读数不同。", "en": "A grayscale value combines all three channels and can differ from every individual channel." },
+  "hints": [{ "zh": "从 (2, 0) 向右两格是 x = 4，再往下一格是 y = 1。", "en": "Two tiles right from (2, 0) gives x = 4. One tile down gives y = 1." }],
+  "cases": [{
+    "image": "calibration",
+    "label": { "zh": "移动坐标和转换灰度", "en": "Move coordinates and convert to grayscale" },
+    "prompt": { "zh": "从 (2, 0) 向右两格、向下一格，读取最后到达的橙色像素的灰度。", "en": "Move two tiles right and one down from (2, 0). Read the grayscale value of the orange pixel you reach." },
+    "initial": { "x": 2, "y": 0, "channel": "red" },
+    "goal": { "x": 4, "y": 1, "channel": "gray", "channelValue": 151 },
+    "solution": { "x": 4, "y": 1, "channel": "gray" }
+  }]
+}

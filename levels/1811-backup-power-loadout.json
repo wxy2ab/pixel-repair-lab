@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-backup-power-loadout",
+  "order": 1811,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "应急电源选配",
+    "en": "Emergency Power Loadout"
+  },
+  "concept": {
+    "zh": "资源取舍 · 组合优化",
+    "en": "Resource tradeoffs · Optimize a loadout"
+  },
+  "brief": {
+    "zh": "从 modules 里挑电源模块，每个用 [重量, 供电分] 表示，重量和分数都是正整数。每个模块最多选一次，总重量不能超过 capacity。先比总供电分，越高越好。分数相同时选总重量较轻的组合。两项都相同时，比较从小到大排列的模块索引，在第一处不同的位置选索引较小的组合。返回 [总供电分, 总重量, 索引列表]，索引从 0 开始。没有模块可选时返回 [0, 0, []]。",
+    "en": "Choose power modules from modules. Each is [weight, power points] with positive integers. Pick each module at most once, within total weight capacity. Maximize the total power points. When scores tie, prefer the lighter set. If both tie, compare the lists of indices in ascending order and prefer the smaller index at the first difference. Return [total power points, total weight, list of indices] using zero-based indices. Return [0, 0, []] when no module fits."
+  },
+  "prerequisites": [
+    {
+      "unit": "algorithm-advanced",
+      "topic": "dynamic-programming"
+    },
+    {
+      "unit": "python-advanced",
+      "topic": "nested-loops"
+    }
+  ],
+  "hints": [],
+  "functionName": "backup_loadout",
+  "starterCode": "def backup_loadout(modules, capacity):\n    pass\n",
+  "solutionCode": "def backup_loadout(modules, capacity):\n    plans = []\n    for available in range(capacity + 1):\n        plans.append([0, 0, []])\n    index = len(modules) - 1\n    while index >= 0:\n        weight = modules[index][0]\n        points = modules[index][1]\n        available = capacity\n        while available >= weight:\n            smaller_plan = plans[available - weight]\n            candidate_points = smaller_plan[0] + points\n            candidate_weight = smaller_plan[1] + weight\n            current = plans[available]\n            if candidate_points > current[0] or (candidate_points == current[0] and candidate_weight <= current[1]):\n                plans[available] = [candidate_points, candidate_weight, [index] + smaller_plan[2]]\n            available -= 1\n        index -= 1\n    return plans[capacity]\n",
+  "snippets": [],
+  "cases": [
+    {"args":[[[6,10],[5,8],[5,8]],10],"expected":[16,10,[1,2]]},
+    {"args":[[[6,9],[5,9],[2,3],[3,6]],6],"expected":[9,5,[1]]},
+    {"args":[[[3,5],[3,5],[3,5],[3,5]],6],"expected":[10,6,[0,1]]},
+    {"args":[[[3,9],[5,4]],2],"expected":[0,0,[]]},
+    {"args":[[[3,5]],9],"expected":[5,3,[0]]},
+    {"args":[[[1,1]],0],"expected":[0,0,[]]},
+    {"args":[[],8],"expected":[0,0,[]]},
+    {"args":[[[7,12],[3,6],[8,13],[5,10],[10,14],[1,2],[6,9],[12,19],[4,7],[3,5],[2,4]],23],"expected":[42,23,[0,1,3,5,8,9]]}
+  ]
+}

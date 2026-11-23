@@ -1,0 +1,458 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "list-positions",
+  "order": 1031,
+  "unit": {
+    "id": "structures",
+    "order": 40,
+    "title": {
+      "zh": "数据结构",
+      "en": "Data Structures"
+    }
+  },
+  "topic": {
+    "id": "lists",
+    "order": 1,
+    "title": {
+      "zh": "列表",
+      "en": "Lists"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "列表",
+    "en": "Lists"
+  },
+  "brief": {
+    "zh": "从 0 开始数托盘上的电池。插入和移走电池后，再看看每个位置上是哪块。",
+    "en": "Count the batteries on the tray from zero. Add and remove a battery, then see which battery is in each position."
+  },
+  "concept": {
+    "zh": "列表索引会随插入和移走重新排列",
+    "en": "List positions shift after insertion and removal"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "从 0 数起",
+        "en": "Count from zero"
+      },
+      "body": {
+        "zh": "位置 0 是第一块，位置 1 是第二块。用位置查到 B 时，B 仍然留在列表里。",
+        "en": "Index 0 is the first slot and index 1 is the second. Reading B at its position leaves it in the list."
+      }
+    },
+    {
+      "title": {
+        "zh": "插在指定位置",
+        "en": "Insert at a position"
+      },
+      "body": {
+        "zh": "把 D 插到位置 1，D 就占住这个位置。原来在这里的 B 和后面的 C 各向右移一格。",
+        "en": "Insert D at index 1, and it takes that slot. B and C each move one slot to the right."
+      }
+    },
+    {
+      "title": {
+        "zh": "移走后补上空位",
+        "en": "Close the gap after a removal"
+      },
+      "body": {
+        "zh": "用 pop 移走位置 2 的 B，后面的 C 向左移一格。再查列表时，要用现在的编号。",
+        "en": "Use pop to remove B at index 2. C moves left one slot. Use the new indexes when you read the list again."
+      }
+    }
+  ],
+  "animation": {
+    "layout": "row",
+    "frames": [
+      {
+        "caption": {
+          "zh": "从 0 开始数，位置 1 取到 B。",
+          "en": "Start counting at 0. Index 1 gives B."
+        },
+        "items": [
+          {
+            "id": "battery-a",
+            "label": {
+              "zh": "位置 0",
+              "en": "Index 0"
+            },
+            "value": {
+              "zh": "A 号",
+              "en": "A"
+            },
+            "state": "done"
+          },
+          {
+            "id": "battery-b",
+            "label": {
+              "zh": "位置 1",
+              "en": "Index 1"
+            },
+            "value": {
+              "zh": "B 号",
+              "en": "B"
+            },
+            "state": "active"
+          },
+          {
+            "id": "battery-c",
+            "label": {
+              "zh": "位置 2",
+              "en": "Index 2"
+            },
+            "value": {
+              "zh": "C 号",
+              "en": "C"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "把 D 插到位置 1，B 和 C 往右移一格。",
+          "en": "Insert D at index 1. B and C shift one slot to the right."
+        },
+        "items": [
+          {
+            "id": "battery-a",
+            "label": {
+              "zh": "位置 0",
+              "en": "Index 0"
+            },
+            "value": {
+              "zh": "A 号",
+              "en": "A"
+            },
+            "state": "done"
+          },
+          {
+            "id": "battery-d",
+            "label": {
+              "zh": "位置 1",
+              "en": "Index 1"
+            },
+            "value": {
+              "zh": "D 号",
+              "en": "D"
+            },
+            "state": "active"
+          },
+          {
+            "id": "battery-b",
+            "label": {
+              "zh": "位置 2",
+              "en": "Index 2"
+            },
+            "value": {
+              "zh": "B 号",
+              "en": "B"
+            },
+            "state": "active"
+          },
+          {
+            "id": "battery-c",
+            "label": {
+              "zh": "位置 3",
+              "en": "Index 3"
+            },
+            "value": {
+              "zh": "C 号",
+              "en": "C"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "移走位置 2 的 B，C 填到位置 2。",
+          "en": "Remove B at index 2. C now fills index 2."
+        },
+        "items": [
+          {
+            "id": "battery-a",
+            "label": {
+              "zh": "位置 0",
+              "en": "Index 0"
+            },
+            "value": {
+              "zh": "A 号",
+              "en": "A"
+            },
+            "state": "done"
+          },
+          {
+            "id": "battery-d",
+            "label": {
+              "zh": "位置 1",
+              "en": "Index 1"
+            },
+            "value": {
+              "zh": "D 号",
+              "en": "D"
+            },
+            "state": "done"
+          },
+          {
+            "id": "battery-c",
+            "label": {
+              "zh": "位置 2",
+              "en": "Index 2"
+            },
+            "value": {
+              "zh": "C 号",
+              "en": "C"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "按现在的编号取位置 1，得到 D。",
+          "en": "Read index 1 in the updated list to get D."
+        },
+        "items": [
+          {
+            "id": "battery-a",
+            "label": {
+              "zh": "位置 0",
+              "en": "Index 0"
+            },
+            "value": {
+              "zh": "A 号",
+              "en": "A"
+            },
+            "state": "done"
+          },
+          {
+            "id": "battery-d",
+            "label": {
+              "zh": "位置 1",
+              "en": "Index 1"
+            },
+            "value": {
+              "zh": "D 号",
+              "en": "D"
+            },
+            "state": "active"
+          },
+          {
+            "id": "battery-c",
+            "label": {
+              "zh": "位置 2",
+              "en": "Index 2"
+            },
+            "value": {
+              "zh": "C 号",
+              "en": "C"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  },
+  "question": {
+    "prompt": {
+      "zh": "列表是 A、B、C。把 D 插到位置 1，原来的 B 会到哪个位置？",
+      "en": "The list is A, B, C. After inserting D at index 1, what is B’s new index?"
+    },
+    "options": [
+      {
+        "zh": "0",
+        "en": "0"
+      },
+      {
+        "zh": "1",
+        "en": "1"
+      },
+      {
+        "zh": "2",
+        "en": "2"
+      }
+    ],
+    "correct": 2,
+    "feedback": {
+      "zh": "新来的 D 占据位置 1，B 往右移动一格。",
+      "en": "D takes index 1 and B moves one slot to the right."
+    }
+  },
+  "execution": {
+    "source": "batteries = read_battery_names()\nfirst = batteries[read_index()]\nbatteries.insert(insert_index(), spare_battery())\nremoved = batteries.pop(remove_index())\npicked = batteries[pick_index()]\nsay(picked)",
+    "cases": [],
+    "listPositions": {
+      "cases": [
+        {
+          "label": {
+            "zh": "维修站的电池托盘",
+            "en": "The repair station tray"
+          },
+          "batteries": [
+            {
+              "name": "A",
+              "charge": 2
+            },
+            {
+              "name": "B",
+              "charge": 4
+            },
+            {
+              "name": "C",
+              "charge": 6
+            }
+          ],
+          "spare": {
+            "name": "D",
+            "charge": 3
+          },
+          "readIndex": 1,
+          "insertIndex": 1,
+          "removeIndex": 2,
+          "pickIndex": 1,
+          "expected": {
+            "order": [
+              "A",
+              "D",
+              "C"
+            ],
+            "picked": "D"
+          }
+        },
+        {
+          "label": {
+            "zh": "四块电池",
+            "en": "Four batteries"
+          },
+          "batteries": [
+            {
+              "name": "P",
+              "charge": 5
+            },
+            {
+              "name": "R",
+              "charge": 2
+            },
+            {
+              "name": "Q",
+              "charge": 0
+            },
+            {
+              "name": "S",
+              "charge": 4
+            }
+          ],
+          "spare": {
+            "name": "T",
+            "charge": 3
+          },
+          "readIndex": 1,
+          "insertIndex": 2,
+          "removeIndex": 0,
+          "pickIndex": 2,
+          "expected": {
+            "order": [
+              "R",
+              "T",
+              "Q",
+              "S"
+            ],
+            "picked": "Q"
+          },
+          "predictions": {
+            "orders": [
+              [
+                "R",
+                "Q",
+                "T",
+                "S"
+              ],
+              [
+                "R",
+                "T",
+                "Q",
+                "S"
+              ],
+              [
+                "T",
+                "R",
+                "Q",
+                "S"
+              ]
+            ],
+            "picked": [
+              "T",
+              "Q",
+              "R"
+            ]
+          }
+        },
+        {
+          "label": {
+            "zh": "从最前面插入",
+            "en": "Insert at the front"
+          },
+          "batteries": [
+            {
+              "name": "K",
+              "charge": 3
+            },
+            {
+              "name": "M",
+              "charge": 1
+            },
+            {
+              "name": "N",
+              "charge": 0
+            }
+          ],
+          "spare": {
+            "name": "L",
+            "charge": 4
+          },
+          "readIndex": 0,
+          "insertIndex": 0,
+          "removeIndex": 1,
+          "pickIndex": 2,
+          "expected": {
+            "order": [
+              "L",
+              "M",
+              "N"
+            ],
+            "picked": "N"
+          },
+          "predictions": {
+            "orders": [
+              [
+                "K",
+                "M",
+                "N"
+              ],
+              [
+                "L",
+                "M",
+                "N"
+              ],
+              [
+                "M",
+                "L",
+                "N"
+              ]
+            ],
+            "picked": [
+              "M",
+              "L",
+              "N"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,31 @@
+像素维修站 · Pixel Repair Lab     @TARGET@
+
+把从打包者取得的校验文件与原始压缩包放在同一目录，在该目录的终端运行
+
+    @VERIFY@ -c @ARCHIVE@.sha256
+
+显示 OK 后，将压缩包完整解压到个人主目录等可写位置。在解压后的游戏目录中运行
+
+    /bin/sh ./@LAUNCHER@
+
+Mac 提示 Start.command 已损坏时，先按上述方法核对原包。若校验失败，重新复制。校验通过后解压到新目录，在终端输入 /bin/sh 和一个空格，将新解压的 Start.command 拖入终端，按回车。若警报点名 Node 或 Python，请记录文件名和终端报错，交给打包者排查。
+
+内置 Node、Python、实验库、数据、图片和 YOLOX 模型。第一次启动会在本机展开实验环境，可能需要几分钟。保留整个目录；移动到新位置后，仍用同一入口启动。
+浏览器打开后即可进入游戏。手动访问时使用终端打印的地址（默认 http://127.0.0.1:5173）。关闭服务请在终端按 Ctrl+C；没有桌面的机器可用 /bin/sh ./@LAUNCHER@ --no-open。
+
+同一浏览器、同一地址和端口会沿用原学习记录。学习记录、个人代码和对局存档保存在该浏览器。
+如需在线 AI 或更换端口，可将 .env.example 复制为 .env，填写后重启。内置 AI 模拟器和本地实验可离线运行。
+自编关卡可以放进 levels/。前端和服务端许可证分别在 dist/third-party-licenses.md 和 server/third-party-licenses.txt，实验来源见 labs/README.md。
+
+Place the checksum file from the publisher beside the archive. In that directory run
+
+    @VERIFY@ -c @ARCHIVE@.sha256
+
+After an OK result, extract the whole archive into a fresh writable directory such as your home folder. Open Terminal in the extracted game folder and run
+
+    /bin/sh ./@LAUNCHER@
+
+If Finder reports that Start.command is damaged, verify the original archive as above. Transfer it again if verification fails. For a verified fresh copy, you can type /bin/sh followed by a space and drag the extracted Start.command into Terminal. If macOS reports an error for Node or Python, note its name and the Terminal error for the publisher.
+
+Node, Python, lab libraries, fixtures and the YOLOX model are included. The first launch prepares the labs locally and may take a few minutes. Keep the folder together when moving it. Use the local URL printed in the terminal and press Ctrl+C to stop. The --no-open option starts without launching a browser.
+Progress and saved games belong to the browser and local address, including the port. The built-in AI simulator works offline. For a real AI provider or a different port, copy .env.example to .env, fill it in locally, and restart the game.

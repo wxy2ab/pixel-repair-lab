@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "cpu-registers-demo",
+  "order": 1512,
+  "unit": { "id": "architecture", "order": 90, "title": { "zh": "计算机结构", "en": "Computer Architecture" } },
+  "topic": { "id": "registers", "order": 2, "title": { "zh": "寄存器", "en": "Registers" } },
+  "stage": "demo",
+  "title": { "zh": "单步盯住 ACC 和 PC", "en": "Watch ACC and PC Step by Step" },
+  "brief": { "zh": "单步执行一组加减指令。比较 ACC 的变化与 PC 的移动。", "en": "Step through addition and subtraction. Compare the changing ACC value with the movement of PC." },
+  "concept": { "zh": "LOAD 会替换原有的 ACC，ADD 和 SUB 从当前值继续算。", "en": "LOAD replaces ACC. ADD and SUB continue from the current value." },
+  "hints": [{ "zh": "第一步可以预测：LOAD 2 会保留 ACC 原来的 9，还是改成内存地址 2 的 10？", "en": "Predict the first step. Will LOAD 2 keep the starting 9 in ACC or replace it with the 10 at address 2?" }],
+  "allowedOps": ["LOAD", "ADD", "SUB", "HALT"],
+  "starterCode": "LOAD 2\nADD 0\nSUB 1\nHALT\n",
+  "cases": [{ "label": { "zh": "寄存器跟踪", "en": "Register trace" }, "memory": [7, 3, 10], "accumulator": 9 }]
+}

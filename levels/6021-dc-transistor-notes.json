@@ -1,0 +1,312 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "dc-transistor-notes",
+  "order": 6021,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "transistor-switch",
+    "order": 3,
+    "title": {
+      "zh": "晶体管开关",
+      "en": "Transistor Switches"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "一个信号怎样替芽芽开灯？",
+    "en": "How Can a Signal Turn On a Lamp?"
+  },
+  "brief": {
+    "zh": "沿两条路径找一找。一条把信号送到晶体管，另一条把电流送过红灯。",
+    "en": "Trace two paths. One carries a signal to the transistor. The other carries current through the red LED."
+  },
+  "concept": {
+    "zh": "基极电平与灯支路",
+    "en": "Base input and lamp circuit"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "信号也能操作开关",
+        "en": "A signal can work a switch"
+      },
+      "body": {
+        "zh": "这个 NPN 晶体管有三个端。基极 B 接收控制信号，集电极 C 接灯支路，发射极 E 接电源的共同参考点 GND。",
+        "en": "This NPN transistor has three terminals. Its base B receives the control signal, its collector C connects to the lamp circuit, and its emitter E connects to the shared reference GND."
+      }
+    },
+    {
+      "title": {
+        "zh": "先看输入，再看灯",
+        "en": "Check the input, then the lamp"
+      },
+      "body": {
+        "zh": "在这块板上，LOW 是接近 GND 的低电平，记作 0。HIGH 是高电平，记作 1。HIGH 经基极电阻送来小电流，让晶体管导通。灯支路的开关也合上时，电源才会让电流流过 LED。",
+        "en": "On this board LOW is a low voltage near GND and represents 0. HIGH is a high voltage and represents 1. A HIGH signal supplies a small current through the base resistor and turns on the transistor. With the lamp switch closed too, current from the supply can flow through the LED."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "输入保持 HIGH，灯支路的开关却断开了。红灯会怎样？",
+      "en": "The input stays HIGH, but the lamp switch is open. What happens to the LED?"
+    },
+    "options": [
+      {
+        "zh": "亮。基极有信号就够了",
+        "en": "On. A base signal is enough"
+      },
+      {
+        "zh": "灭。灯所在的支路还有缺口",
+        "en": "Off. There is a gap in the lamp circuit"
+      },
+      {
+        "zh": "一半时间亮，一半时间灭",
+        "en": "It flashes half the time"
+      }
+    ],
+    "correct": 1,
+    "feedback": {
+      "zh": "信号已让晶体管导通，断开的开关仍会阻断经过灯的电流。",
+      "en": "The transistor is on, but the open switch still interrupts current through the lamp."
+    }
+  },
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": {
+          "zh": "灯支路接好，基极输入 LOW，红灯熄灭。",
+          "en": "The lamp branch is closed. The base input is LOW and the LED is dark."
+        },
+        "items": [
+          {
+            "id": "base",
+            "label": {
+              "zh": "基极 B 的输入",
+              "en": "Base B input"
+            },
+            "value": {
+              "zh": "LOW · 0",
+              "en": "LOW · 0"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "npn",
+            "label": {
+              "zh": "NPN 开关",
+              "en": "NPN switch"
+            },
+            "value": {
+              "zh": "截止",
+              "en": "Off"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "s",
+            "label": {
+              "zh": "灯支路 S",
+              "en": "Lamp switch S"
+            },
+            "value": {
+              "zh": "闭合",
+              "en": "Closed"
+            },
+            "state": "active"
+          },
+          {
+            "id": "lamp",
+            "label": {
+              "zh": "红灯",
+              "en": "Red LED"
+            },
+            "value": {
+              "zh": "灭",
+              "en": "Off"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "把输入改成 HIGH，晶体管导通，灯亮。",
+          "en": "Set the input HIGH. The transistor conducts and the LED lights."
+        },
+        "items": [
+          {
+            "id": "base",
+            "label": {
+              "zh": "基极 B 的输入",
+              "en": "Base B input"
+            },
+            "value": {
+              "zh": "HIGH · 1",
+              "en": "HIGH · 1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "npn",
+            "label": {
+              "zh": "NPN 开关",
+              "en": "NPN switch"
+            },
+            "value": {
+              "zh": "导通",
+              "en": "Conducting"
+            },
+            "state": "active"
+          },
+          {
+            "id": "s",
+            "label": {
+              "zh": "灯支路 S",
+              "en": "Lamp switch S"
+            },
+            "value": {
+              "zh": "闭合",
+              "en": "Closed"
+            },
+            "state": "active"
+          },
+          {
+            "id": "lamp",
+            "label": {
+              "zh": "红灯",
+              "en": "Red LED"
+            },
+            "value": {
+              "zh": "亮",
+              "en": "On"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "保留 HIGH，把灯支路的开关断开。灯灭了。",
+          "en": "Leave the input HIGH and open the lamp switch. The LED goes dark."
+        },
+        "items": [
+          {
+            "id": "base",
+            "label": {
+              "zh": "基极 B 的输入",
+              "en": "Base B input"
+            },
+            "value": {
+              "zh": "HIGH · 1",
+              "en": "HIGH · 1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "npn",
+            "label": {
+              "zh": "NPN 开关",
+              "en": "NPN switch"
+            },
+            "value": {
+              "zh": "导通",
+              "en": "Conducting"
+            },
+            "state": "active"
+          },
+          {
+            "id": "s",
+            "label": {
+              "zh": "灯支路 S",
+              "en": "Lamp switch S"
+            },
+            "value": {
+              "zh": "断开",
+              "en": "Open"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "lamp",
+            "label": {
+              "zh": "红灯",
+              "en": "Red LED"
+            },
+            "value": {
+              "zh": "灭",
+              "en": "Off"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "重新闭合灯支路，原来的 HIGH 信号又能使灯亮。",
+          "en": "Close the lamp switch again. With the same HIGH signal, the LED lights again."
+        },
+        "items": [
+          {
+            "id": "base",
+            "label": {
+              "zh": "基极 B 的输入",
+              "en": "Base B input"
+            },
+            "value": {
+              "zh": "HIGH · 1",
+              "en": "HIGH · 1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "npn",
+            "label": {
+              "zh": "NPN 开关",
+              "en": "NPN switch"
+            },
+            "value": {
+              "zh": "导通",
+              "en": "Conducting"
+            },
+            "state": "active"
+          },
+          {
+            "id": "s",
+            "label": {
+              "zh": "灯支路 S",
+              "en": "Lamp switch S"
+            },
+            "value": {
+              "zh": "闭合",
+              "en": "Closed"
+            },
+            "state": "active"
+          },
+          {
+            "id": "lamp",
+            "label": {
+              "zh": "红灯",
+              "en": "Red LED"
+            },
+            "value": {
+              "zh": "亮",
+              "en": "On"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  }
+}

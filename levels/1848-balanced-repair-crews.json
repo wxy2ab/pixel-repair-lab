@@ -1,0 +1,183 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-balanced-repair-crews",
+  "order": 1848,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "algorithm-advanced",
+      "topic": "dynamic-programming"
+    },
+    {
+      "unit": "algorithm-intro",
+      "topic": "prefix-totals"
+    }
+  ],
+  "title": {
+    "zh": "分段维修均衡",
+    "en": "Balanced Repair Crews"
+  },
+  "concept": {
+    "zh": "同一条走廊 · 连续分段 · 减轻最重任务",
+    "en": "One corridor · Contiguous work zones · Minimize the heaviest load"
+  },
+  "brief": {
+    "zh": "loads 从左到右给出走廊每段的维修工时，工时为非负整数。把走廊切成刚好 crews 个连续区域，每个区域至少一段，所有段恰好被一组负责。每组工时等于区域内工时之和。求所有分法中，最重一组工时能有多小。crews 为正数，段数不足时返回 -1。",
+    "en": "loads lists nonnegative repair times from left to right. Split the corridor into exactly crews contiguous zones, with each zone containing at least one segment and each segment assigned once. A crew's load is the sum in its zone. Find the smallest possible load of the busiest crew. crews is positive. Return -1 if there are too few segments."
+  },
+  "hints": [],
+  "functionName": "balance_repair_crews",
+  "starterCode": "def balance_repair_crews(loads, crews):\n    pass\n",
+  "solutionCode": "def balance_repair_crews(loads, crews):\n    size = len(loads)\n    if crews > size:\n        return -1\n    totals = [0]\n    running = 0\n    for load in loads:\n        running += load\n        totals.append(running)\n    previous = totals\n    for groups in range(2, crews + 1):\n        current = []\n        for end in range(size + 1):\n            value = None\n            for cut in range(groups - 1, end):\n                last_zone = totals[end] - totals[cut]\n                candidate = previous[cut]\n                if last_zone > candidate:\n                    candidate = last_zone\n                if value is None or candidate < value:\n                    value = candidate\n            current.append(value)\n        previous = current\n    return previous[size]\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "记录累计工时",
+        "en": "Prepare a cumulative load"
+      },
+      "code": "    totals = [0]\n    running = 0"
+    },
+    {
+      "label": {
+        "zh": "遍历分割位置",
+        "en": "Loop over split positions"
+      },
+      "code": "    for cut in range(1, len(loads)):\n        pass"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          7,
+          2,
+          5,
+          10,
+          8
+        ],
+        2
+      ],
+      "expected": 18
+    },
+    {
+      "args": [
+        [
+          7,
+          2,
+          5,
+          10,
+          8
+        ],
+        3
+      ],
+      "expected": 14
+    },
+    {
+      "args": [
+        [
+          0,
+          2,
+          0,
+          2,
+          0
+        ],
+        3
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        [
+          1,
+          4,
+          4
+        ],
+        1
+      ],
+      "expected": 9
+    },
+    {
+      "args": [
+        [
+          1,
+          4,
+          4
+        ],
+        3
+      ],
+      "expected": 4
+    },
+    {
+      "args": [
+        [
+          1,
+          4,
+          4
+        ],
+        4
+      ],
+      "expected": -1
+    },
+    {
+      "args": [
+        [],
+        1
+      ],
+      "expected": -1
+    },
+    {
+      "args": [
+        [
+          9,
+          1,
+          1,
+          9,
+          1,
+          1,
+          9,
+          1
+        ],
+        3
+      ],
+      "expected": 11
+    },
+    {
+      "args": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        4
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          100000,
+          1,
+          250000,
+          1,
+          100000,
+          400000,
+          1
+        ],
+        4
+      ],
+      "expected": 400000
+    }
+  ]
+}

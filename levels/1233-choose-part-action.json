@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "routing",
+    "order": 60,
+    "title": {
+      "zh": "算法进阶",
+      "en": "Intermediate Algorithms"
+    }
+  },
+  "kind": "algorithm",
+  "id": "choose-part-action",
+  "order": 1232,
+  "stage": "exercise",
+  "topic": {
+    "id": "rival-strategy",
+    "order": 4,
+    "title": {
+      "zh": "对抗策略",
+      "en": "Rival strategy"
+    }
+  },
+  "title": {
+    "zh": "先选出一条安全指令",
+    "en": "Choose one safe command"
+  },
+  "concept": {
+    "zh": "给策略规定动作优先级",
+    "en": "Give a strategy an action priority"
+  },
+  "brief": {
+    "zh": "实现 choose_part_action(player, part, blocked)。如果已经在零件格，返回 \"pick\"。否则先试向着目标水平移动，再试竖直方向。跳过 blocked 中的方向，两种都走不了就返回 \"wait\"。",
+    "en": "Implement choose_part_action(player, part, blocked). If you are on the part, return \"pick\". Otherwise try moving toward the target horizontally, then vertically. Skip directions in blocked. If neither works, return \"wait\"."
+  },
+  "hints": [
+    {
+      "zh": "坐标是 [x, y]，x 越大越往右，y 越大越往下。用 \"right\" not in blocked 判断右边可用。",
+      "en": "Coordinates use [x, y]. Larger x is farther right and larger y is farther down. Use \"right\" not in blocked to check whether moving right is allowed."
+    }
+  ],
+  "functionName": "choose_part_action",
+  "starterCode": "def choose_part_action(player, part, blocked):\n    return \"wait\"\n",
+  "solutionCode": "def choose_part_action(player, part, blocked):\n    if player == part:\n        return \"pick\"\n    if part[0] > player[0] and \"right\" not in blocked:\n        return \"right\"\n    if part[0] < player[0] and \"left\" not in blocked:\n        return \"left\"\n    if part[1] > player[1] and \"down\" not in blocked:\n        return \"down\"\n    if part[1] < player[1] and \"up\" not in blocked:\n        return \"up\"\n    return \"wait\"\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "已到位置就拾取",
+        "en": "Pick up when already there"
+      },
+      "code": "    if player == part:\n        return \"pick\""
+    },
+    {
+      "label": {
+        "zh": "先看水平方向",
+        "en": "Check the horizontal directions first"
+      },
+      "code": "    if part[0] > player[0] and \"right\" not in blocked:\n        return \"right\""
+    },
+    {
+      "label": {
+        "zh": "检查竖直方向",
+        "en": "Check a vertical direction"
+      },
+      "code": "    if part[1] > player[1] and \"down\" not in blocked:\n        return \"down\""
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          "left",
+          "right"
+        ]
+      ],
+      "expected": "pick"
+    },
+    {
+      "args": [
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          3
+        ],
+        []
+      ],
+      "expected": "right"
+    },
+    {
+      "args": [
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          "right"
+        ]
+      ],
+      "expected": "down"
+    },
+    {
+      "args": [
+        [
+          4,
+          4
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          "left"
+        ]
+      ],
+      "expected": "up"
+    },
+    {
+      "args": [
+        [
+          4,
+          4
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          "left",
+          "up"
+        ]
+      ],
+      "expected": "wait"
+    },
+    {
+      "args": [
+        [
+          4,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        []
+      ],
+      "expected": "left"
+    }
+  ]
+}

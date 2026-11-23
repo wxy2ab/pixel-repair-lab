@@ -1,0 +1,292 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "advanced-rival-strategy-notes",
+  "order": 1311,
+  "unit": {
+    "id": "algorithm-advanced",
+    "order": 70,
+    "title": {
+      "zh": "算法高级",
+      "en": "Advanced Algorithms"
+    }
+  },
+  "topic": {
+    "id": "rival-strategy",
+    "order": 3,
+    "title": {
+      "zh": "对手策略",
+      "en": "Rival Strategy"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "补给最近，还要看对手",
+    "en": "Check the Rivals Before Choosing a Supply"
+  },
+  "brief": {
+    "zh": "看看机器人原本想追的补给，为什么会随着对手移动而改变。",
+    "en": "See why the robot might change its target as rivals move."
+  },
+  "concept": {
+    "zh": "比较自己和最快对手的到达步数",
+    "en": "Compare your travel time against the fastest rival"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "比较到达步数",
+        "en": "Compare travel times"
+      },
+      "body": {
+        "zh": "在没有内墙的场地，横向距离加纵向距离就是最少步数。把最快对手的步数减去自己的步数，得到领先量。正数表示你有机会先到。",
+        "en": "In an open arena, horizontal plus vertical distance gives the fewest steps. Subtract your steps from the closest rival’s steps. A positive margin means you can arrive first."
+      }
+    },
+    {
+      "title": {
+        "zh": "变化后重新判断",
+        "en": "Reassess when things change"
+      },
+      "body": {
+        "zh": "每走一步就重新扫描。目标可能被取走，对手也可能比你更接近另一件补给。优先选择你暂时领先且离你更近的目标。",
+        "en": "Scan after each move. A supply may disappear or a rival may get closer. Prefer a supply where you have a lead, then favor the nearer ones."
+      }
+    }
+  ],
+  "animation": {
+    "layout": "row",
+    "frames": [
+      {
+        "caption": {
+          "zh": "这里有两件补给和两台对手。先从芽芽的位置看两条路线。",
+          "en": "Two supplies and two rivals are on the floor. Start by checking the routes from Sprout."
+        },
+        "items": [
+          {
+            "id": "supply",
+            "label": {
+              "zh": "补给",
+              "en": "Supplies"
+            },
+            "value": {
+              "zh": "A, B",
+              "en": "A, B"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "芽芽到 A 要两步。接着量出每台对手到 A 的距离。",
+          "en": "Sprout needs two moves to reach A. Next, measure each rival’s distance to A."
+        },
+        "items": [
+          {
+            "id": "mine",
+            "label": {
+              "zh": "自己到 A",
+              "en": "Sprout to A"
+            },
+            "value": {
+              "zh": "2",
+              "en": "2"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "最近的对手到 A 只要一步。芽芽的领先量是 1 − 2 = −1。",
+          "en": "The nearest rival needs only one move to A. Sprout’s lead is 1 − 2 = −1."
+        },
+        "items": [
+          {
+            "id": "lead",
+            "label": {
+              "zh": "A 的领先量",
+              "en": "Lead at A"
+            },
+            "value": {
+              "zh": "−1",
+              "en": "−1"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "再看 B。芽芽要三步，仍要量出最近那台对手的距离。",
+          "en": "Check B next. Sprout needs three moves. Find the closest rival again."
+        },
+        "items": [
+          {
+            "id": "mine",
+            "label": {
+              "zh": "自己到 B",
+              "en": "Sprout to B"
+            },
+            "value": {
+              "zh": "3",
+              "en": "3"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "最近的对手到 B 要五步。芽芽的领先量是 5 − 3 = 2。",
+          "en": "The closest rival needs five moves to B. Sprout’s lead is 5 − 3 = 2."
+        },
+        "items": [
+          {
+            "id": "lead",
+            "label": {
+              "zh": "B 的领先量",
+              "en": "Lead at B"
+            },
+            "value": {
+              "zh": "2",
+              "en": "2"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "B 的领先量更大。选择 B 作为这一回合的目标。",
+          "en": "B offers the greater lead. Choose B as the target for this turn."
+        },
+        "items": [
+          {
+            "id": "target",
+            "label": {
+              "zh": "本回合目标",
+              "en": "Target this turn"
+            },
+            "value": {
+              "zh": "B",
+              "en": "B"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "芽芽先向 B 走一步，位置从 (0,0) 变为 (0,1)。",
+          "en": "Sprout takes one step toward B, moving from (0,0) to (0,1)."
+        },
+        "items": [
+          {
+            "id": "player",
+            "label": {
+              "zh": "芽芽",
+              "en": "Sprout"
+            },
+            "value": {
+              "zh": "(0,1)",
+              "en": "(0,1)"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "再扫描一次，两台对手也移动了。地图上还有 A 和 B，下一轮要重新比较距离。",
+          "en": "Scan again. Both rivals have moved, and A and B are still on the map. Compare distances again next turn."
+        },
+        "items": [
+          {
+            "id": "rivals",
+            "label": {
+              "zh": "新的对手位置",
+              "en": "New rival positions"
+            },
+            "value": {
+              "zh": "(3,1), (3,2)",
+              "en": "(3,1), (3,2)"
+            },
+            "state": "active"
+          }
+        ]
+      }
+    ],
+    "workstation": {
+      "kind": "supply-race",
+      "checkpoints": [
+        {
+          "line": 13
+        },
+        {
+          "line": 15
+        },
+        {
+          "line": 21
+        },
+        {
+          "line": 15,
+          "visit": 2
+        },
+        {
+          "line": 21,
+          "visit": 2
+        },
+        {
+          "line": 23
+        },
+        {
+          "line": 28
+        },
+        {
+          "line": 29
+        }
+      ]
+    }
+  },
+  "question": {
+    "prompt": {
+      "zh": "你走到一件补给要三步，两位对手分别要六步和两步。你的领先量是多少？",
+      "en": "You need three steps to a supply. Two rivals need six steps and two steps. What is your margin?"
+    },
+    "options": [
+      {
+        "zh": "3",
+        "en": "3"
+      },
+      {
+        "zh": "−1",
+        "en": "−1"
+      },
+      {
+        "zh": "5",
+        "en": "5"
+      }
+    ],
+    "correct": 1,
+    "feedback": {
+      "zh": "要和最近的对手比。它需要两步，所以领先量是 2 − 3 = −1。",
+      "en": "Compare with the closest rival. It needs two steps, giving a margin of 2 − 3 = −1."
+    }
+  },
+  "execution": {
+    "source": "def distance(a, b):\n    dx = a[0] - b[0]\n    dy = a[1] - b[1]\n    if dx < 0:\n        dx = -dx\n    if dy < 0:\n        dy = -dy\n    return dx + dy\nfloor = [\"....\", \"....\", \"....\", \"....\"]\nposition = [0, 0]\nsupplies = [[2, 0], [0, 3]]\nopponents = [[3, 0], [3, 1]]\nleads = []\nfor supply in supplies:\n    mine = distance(position, supply)\n    nearest = distance(opponents[0], supply)\n    for rival in opponents:\n        steps = distance(rival, supply)\n        if steps < nearest:\n            nearest = steps\n    leads.append(nearest - mine)\nif leads[1] > leads[0]:\n    target = supplies[1]\n    move = [0, 1]\nelse:\n    target = supplies[0]\n    move = [1, 0]\nposition = [position[0] + move[0], position[1] + move[1]]\nopponents = [[3, 1], [3, 2]]\nsay(str(leads[1]))",
+    "cases": [
+      {
+        "label": {
+          "zh": "补给最近，还要看对手",
+          "en": "Check the Rivals Before Choosing a Supply"
+        },
+        "input": 0,
+        "expected": "2"
+      }
+    ]
+  }
+}

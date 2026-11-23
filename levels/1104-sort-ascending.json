@@ -1,0 +1,124 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "sort-ascending",
+  "order": 1104,
+  "unit": {
+    "id": "algorithm-intro",
+    "order": 50,
+    "title": {
+      "zh": "算法初级",
+      "en": "Introductory Algorithms"
+    }
+  },
+  "stage": "exercise",
+  "topic": {
+    "id": "selection-sort",
+    "order": 2,
+    "title": {
+      "zh": "选择排序",
+      "en": "Selection sort"
+    }
+  },
+  "title": {
+    "zh": "给整批零件排序",
+    "en": "Sort the whole batch"
+  },
+  "brief": {
+    "zh": "编写 sort_ascending(values)。返回由小到大的新列表，把原来的顺序留在输入里。",
+    "en": "Write sort_ascending(values). Return a new list in ascending order and preserve the original input."
+  },
+  "concept": {
+    "zh": "用外层和内层循环排序",
+    "en": "Sort with two loops"
+  },
+  "hints": [
+    {
+      "zh": "先复制输入。每轮先找最小的位置，再用临时变量交换两格。",
+      "en": "Copy the input first. Find the minimum index in each pass, then swap with a temporary value."
+    }
+  ],
+  "functionName": "sort_ascending",
+  "starterCode": "def sort_ascending(values):\n    ordered = []\n    for value in values:\n        ordered.append(value)\n    return ordered",
+  "solutionCode": "def sort_ascending(values):\n    ordered = []\n    for value in values:\n        ordered.append(value)\n    for start in range(len(ordered)):\n        best = start\n        for index in range(start + 1, len(ordered)):\n            if ordered[index] < ordered[best]:\n                best = index\n        carried = ordered[start]\n        ordered[start] = ordered[best]\n        ordered[best] = carried\n    return ordered",
+  "snippets": [
+    {
+      "label": {
+        "zh": "选择未排序段最小值",
+        "en": "Find the minimum in the suffix"
+      },
+      "code": "    for start in range(len(ordered)):\n        best = start\n        for index in range(start + 1, len(ordered)):\n            if ordered[index] < ordered[best]:\n                best = index"
+    },
+    {
+      "label": {
+        "zh": "交换两格",
+        "en": "Swap two cells"
+      },
+      "code": "        carried = ordered[start]\n        ordered[start] = ordered[best]\n        ordered[best] = carried"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          4,
+          6,
+          1,
+          3
+        ]
+      ],
+      "expected": [
+        1,
+        3,
+        4,
+        6
+      ]
+    },
+    {
+      "args": [
+        [
+          8,
+          1,
+          8,
+          2
+        ]
+      ],
+      "expected": [
+        1,
+        2,
+        8,
+        8
+      ]
+    },
+    {
+      "args": [
+        [
+          -2,
+          0,
+          -5
+        ]
+      ],
+      "expected": [
+        -5,
+        -2,
+        0
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          7
+        ]
+      ],
+      "expected": [
+        7
+      ]
+    }
+  ]
+}

@@ -1,0 +1,235 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "challenge-exact-module-cartridges",
+  "order": 1908,
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "刚好装满的模块盒",
+    "en": "Exact-Fill Module Cartridges"
+  },
+  "brief": {
+    "zh": "整机需要 51 块模块，机内已有 8 块。仓库只发整盒，长盒每盒 7 块且最多 6 盒，短盒每盒 4 块且最多 10 盒。必须刚好补足，并让发出的总盒数最少。每个长盒配 2 个支座，每个短盒配 1 个固定带；每盒各贴 1 张物流签。散件和空盒留库。审核 AI 的最少盒数方案。",
+    "en": "The machine needs 51 modules and already holds 8. The depot ships sealed cartridges. A long cartridge holds 7 modules, with at most 6 available. A short one holds 4, with at most 10 available. Fill the exact gap with the fewest cartridges. Each long cartridge needs two cradle blocks and each short one needs one strap. Each cartridge gets one shipping label. Loose modules and empty cartons stay behind. Audit the minimum-cartridge proposal."
+  },
+  "concept": {
+    "zh": "整数配额、最少包装与配件联动",
+    "en": "Exact integer quotas, minimum packing and matching accessories"
+  },
+  "prerequisites": [
+    {
+      "unit": "ai",
+      "topic": "constraints"
+    },
+    {
+      "unit": "ai-review",
+      "topic": "specific-correction"
+    },
+    {
+      "unit": "ai-review",
+      "topic": "multi-turn"
+    }
+  ],
+  "hints": [],
+  "inventory": [
+    {
+      "id": "long-case",
+      "label": {
+        "zh": "长盒",
+        "en": "long cartridge"
+      },
+      "aliases": [
+        "long cartridges"
+      ]
+    },
+    {
+      "id": "short-case",
+      "label": {
+        "zh": "短盒",
+        "en": "short cartridge"
+      },
+      "aliases": [
+        "short cartridges"
+      ]
+    },
+    {
+      "id": "cradle",
+      "label": {
+        "zh": "支座",
+        "en": "cradle block"
+      },
+      "aliases": [
+        "cradle blocks"
+      ]
+    },
+    {
+      "id": "strap",
+      "label": {
+        "zh": "固定带",
+        "en": "strap"
+      },
+      "aliases": [
+        "straps"
+      ]
+    },
+    {
+      "id": "label",
+      "label": {
+        "zh": "物流签",
+        "en": "shipping label"
+      },
+      "aliases": [
+        "shipping labels"
+      ]
+    },
+    {
+      "id": "loose",
+      "label": {
+        "zh": "散件",
+        "en": "loose module"
+      },
+      "aliases": [
+        "loose modules"
+      ]
+    },
+    {
+      "id": "empty",
+      "label": {
+        "zh": "空盒",
+        "en": "empty carton"
+      },
+      "aliases": [
+        "empty cartons"
+      ]
+    }
+  ],
+  "required": {
+    "long-case": 5,
+    "short-case": 2,
+    "cradle": 10,
+    "strap": 2,
+    "label": 7
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "short-case",
+        "quantity": 1
+      },
+      {
+        "itemId": "cradle",
+        "quantity": 12
+      },
+      {
+        "itemId": "loose",
+        "quantity": 1
+      }
+    ],
+    "draft": {
+      "items": [
+        {
+          "id": "long-case",
+          "quantity": 6
+        },
+        {
+          "id": "short-case",
+          "quantity": 1
+        },
+        {
+          "id": "cradle",
+          "quantity": 12
+        },
+        {
+          "id": "label",
+          "quantity": 8
+        },
+        {
+          "id": "loose",
+          "quantity": 1
+        }
+      ]
+    },
+    "cards": [
+      {
+        "zh": "长盒改为 6。",
+        "en": "Pack 6 long cartridges."
+      },
+      {
+        "zh": "长盒改为 5。",
+        "en": "Pack 5 long cartridges."
+      },
+      {
+        "zh": "短盒改为 2。",
+        "en": "Pack 2 short cartridges."
+      },
+      {
+        "zh": "短盒改为 9。",
+        "en": "Pack 9 short cartridges."
+      },
+      {
+        "zh": "支座改为 10。",
+        "en": "Pack 10 cradle blocks."
+      },
+      {
+        "zh": "支座改为 12。",
+        "en": "Pack 12 cradle blocks."
+      },
+      {
+        "zh": "固定带改为 9。",
+        "en": "Pack 9 straps."
+      },
+      {
+        "zh": "固定带改为 2。",
+        "en": "Pack 2 straps."
+      },
+      {
+        "zh": "物流签改为 7。",
+        "en": "Pack 7 shipping labels."
+      },
+      {
+        "zh": "物流签改为 10。",
+        "en": "Pack 10 shipping labels."
+      },
+      {
+        "zh": "移除散件。",
+        "en": "Remove the loose module."
+      },
+      {
+        "zh": "散件改为 1。",
+        "en": "Pack 1 loose module."
+      },
+      {
+        "zh": "空盒改为 1。",
+        "en": "Pack 1 empty carton."
+      },
+      {
+        "zh": "移除空盒。",
+        "en": "Remove the empty carton."
+      }
+    ]
+  },
+  "examplePrompts": {
+    "zh": [
+      "长盒改为 5。 短盒改为 2。 支座改为 10。 固定带改为 2。 物流签改为 7。 移除散件。 移除空盒。",
+      "短盒改为 2。",
+      "支座改为 10。",
+      "移除散件。"
+    ],
+    "en": [
+      "Pack 5 long cartridges. Pack 2 short cartridges. Pack 10 cradle blocks. Pack 2 straps. Pack 7 shipping labels. Remove the loose module. Remove the empty carton.",
+      "Pack 2 short cartridges.",
+      "Pack 10 cradle blocks.",
+      "Remove the loose module."
+    ]
+  }
+}

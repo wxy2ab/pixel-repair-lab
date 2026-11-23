@@ -1,0 +1,7 @@
+.algorithm-value-rack { display: grid; gap: 7px; margin-block: 12px; min-width: 0; }
+.algorithm-rack-controls { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
+.algorithm-rack-controls label { display: inline-flex; gap: 6px; align-items: center; }
+.algorithm-rack-controls select { max-width: 15em; padding: 4px 6px; font: inherit; }
+.algorithm-rack-controls code { overflow-wrap: anywhere; font: 600 .88rem/1.4 var(--mono); }
+.algorithm-value-rack .teaching-model { margin-bottom: 0; }
+.replay-helper-choice { display: flex; align-items: center; gap: 7px; margin-block: 8px; }

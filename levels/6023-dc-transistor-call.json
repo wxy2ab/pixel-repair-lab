@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "kind": "circuit",
+  "id": "dc-transistor-call",
+  "order": 6023,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "transistor-switch",
+    "order": 3,
+    "title": {
+      "zh": "晶体管开关",
+      "en": "Transistor Switches"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "发一次亮灯信号，再收回",
+    "en": "Send and Clear a Light Signal"
+  },
+  "brief": {
+    "zh": "信号灯支路一直保持闭合。让晶体管接通报到灯，然后在另一组里让它熄灭。",
+    "en": "Keep the lamp switch closed. Turn the arrival light on, then clear the light in the second case."
+  },
+  "concept": {
+    "zh": "用 HIGH 和 LOW 切换晶体管",
+    "en": "Switch the transistor with HIGH and LOW"
+  },
+  "hints": [],
+  "mode": "transistor",
+  "cases": [
+    {
+      "label": {
+        "zh": "发出到站信号",
+        "en": "Announce an arrival"
+      },
+      "bits": [
+        1,
+        0
+      ],
+      "goal": {
+        "output": 1,
+        "switchClosed": 1
+      },
+      "solution": {
+        "bits": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "清除到站信号",
+        "en": "Clear the arrival signal"
+      },
+      "bits": [
+        1,
+        1
+      ],
+      "goal": {
+        "output": 0,
+        "switchClosed": 1
+      },
+      "solution": {
+        "bits": [
+          1,
+          0
+        ]
+      }
+    }
+  ]
+}

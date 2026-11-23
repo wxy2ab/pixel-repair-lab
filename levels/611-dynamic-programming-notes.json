@@ -1,0 +1,281 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "unit": {
+    "id": "algorithm-advanced",
+    "order": 70,
+    "title": {
+      "zh": "算法高级",
+      "en": "Advanced Algorithms"
+    }
+  },
+  "stage": "explain",
+  "topic": {
+    "id": "dynamic-programming",
+    "order": 1,
+    "title": {
+      "zh": "动态规划",
+      "en": "Dynamic Programming"
+    }
+  },
+  "id": "dynamic-programming-notes",
+  "order": 611,
+  "title": {
+    "zh": "用旧答案做新决定",
+    "en": "Use earlier answers to make new decisions"
+  },
+  "brief": {
+    "zh": "机器人不能同时拾取相邻的补给。观察每一步如何比较两种选择。",
+    "en": "The robot cannot collect neighboring supplies. Watch it compare two choices at each step."
+  },
+  "concept": {
+    "zh": "动态规划与状态转移",
+    "en": "Dynamic programming and state transitions"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "保存状态",
+        "en": "Keep the state"
+      },
+      "body": {
+        "zh": "best 表示到当前格为止的最佳得分。prev 留着再往前一格的旧得分。每步只保留接下来还会用到的两个值。",
+        "en": "best is the best score through the current cell. prev holds the older score. Keep the two values you will need again."
+      }
+    },
+    {
+      "title": {
+        "zh": "比较两种方案",
+        "en": "Compare two options"
+      },
+      "body": {
+        "zh": "跳过这一格沿用 best。收取这一格就不能拿相邻格，因此本格价值加 prev。比较后再移动两个状态。",
+        "en": "Skipping keeps best. Taking rules out the neighboring cell, so add this value to prev. Compare before shifting the two states."
+      }
+    },
+    {
+      "title": {
+        "zh": "有时要计数",
+        "en": "Sometimes you count"
+      },
+      "body": {
+        "zh": "如果问题是有几种走法，就把互不重复的走法数相加。上楼梯的最后一步可以跨一阶或两阶，这两类路线可以分别计数。",
+        "en": "When the question is how many routes exist, add the counts for distinct options. The last climb can be one or two stairs, so count those two kinds separately."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "已经算出前 3 格最优是 6，而前 2 格最优是 2。最后一格价值 9，该选多少？",
+      "en": "The best through three cells is 6 and through two cells is 2. The final cell is worth 9. What total should you choose?"
+    },
+    "options": [
+      {
+        "zh": "6",
+        "en": "6"
+      },
+      {
+        "zh": "11",
+        "en": "11"
+      },
+      {
+        "zh": "15",
+        "en": "15"
+      }
+    ],
+    "correct": 1,
+    "feedback": {
+      "zh": "取最后一格时跳过第 3 格，把 9 和前 2 格的最佳得分 2 相加。",
+      "en": "Taking the final cell skips the third cell. Add 9 to the best total 2 through the second cell."
+    }
+  },
+  "animation": {
+    "layout": "bars",
+    "frames": [
+      {
+        "caption": {
+          "zh": "这排电池的电量是 2、1、4、9，相邻两块不能同时拿。先把两份空记录都记成 0。",
+          "en": "The rack holds 2, 1, 4, and 9 units. Adjacent batteries cannot both be collected. Start with two empty records of 0."
+        },
+        "items": [
+          {
+            "id": "best",
+            "label": {
+              "zh": "起始记录",
+              "en": "Starting records"
+            },
+            "value": {
+              "zh": "0, 0",
+              "en": "0, 0"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "第 1 块。跳过得 0，收取得 2，记下 2。",
+          "en": "At the first battery, skipping gives 0 and taking gives 2. Record 2."
+        },
+        "items": [
+          {
+            "id": "skip",
+            "label": {
+              "zh": "跳过",
+              "en": "Skip"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "active"
+          },
+          {
+            "id": "take",
+            "label": {
+              "zh": "收取",
+              "en": "Take"
+            },
+            "value": {
+              "zh": "2",
+              "en": "2"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "第 2 块。跳过仍有 2，收取只有 1，保留 2。",
+          "en": "At the second battery, skipping keeps 2 and taking gives 1. Keep 2."
+        },
+        "items": [
+          {
+            "id": "skip",
+            "label": {
+              "zh": "跳过",
+              "en": "Skip"
+            },
+            "value": {
+              "zh": "2",
+              "en": "2"
+            },
+            "state": "active"
+          },
+          {
+            "id": "take",
+            "label": {
+              "zh": "收取",
+              "en": "Take"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "第 3 块。收取可以用隔一格的记录 2，加上 4 得 6。",
+          "en": "At the third battery, taking reuses the result 2 from two positions back, giving 2 + 4 = 6."
+        },
+        "items": [
+          {
+            "id": "skip",
+            "label": {
+              "zh": "跳过",
+              "en": "Skip"
+            },
+            "value": {
+              "zh": "2",
+              "en": "2"
+            },
+            "state": "active"
+          },
+          {
+            "id": "take",
+            "label": {
+              "zh": "收取",
+              "en": "Take"
+            },
+            "value": {
+              "zh": "6",
+              "en": "6"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "最后一块。跳过得 6，收取是 2 + 9，记下更大的 11。",
+          "en": "At the last battery, skipping gives 6 and taking gives 2 + 9. Record the larger value, 11."
+        },
+        "items": [
+          {
+            "id": "skip",
+            "label": {
+              "zh": "跳过",
+              "en": "Skip"
+            },
+            "value": {
+              "zh": "6",
+              "en": "6"
+            },
+            "state": "active"
+          },
+          {
+            "id": "take",
+            "label": {
+              "zh": "收取",
+              "en": "Take"
+            },
+            "value": {
+              "zh": "11",
+              "en": "11"
+            },
+            "state": "active"
+          }
+        ]
+      }
+    ],
+    "workstation": {
+      "kind": "dynamic-programming",
+      "checkpoints": [
+        {
+          "line": 2
+        },
+        {
+          "line": 7
+        },
+        {
+          "line": 9
+        },
+        {
+          "line": 7,
+          "visit": 2
+        },
+        {
+          "line": 7,
+          "visit": 3
+        }
+      ]
+    }
+  },
+  "execution": {
+    "source": "values = [2, 1, 4, 9]\nbest = [0, 0]\nfor i in range(len(values)):\n    skip = best[-1]\n    take = best[-2] + values[i]\n    if take > skip:\n        best.append(take)\n    else:\n        best.append(skip)\nsay(str(best[-1]))",
+    "cases": [
+      {
+        "label": {
+          "zh": "用旧答案做新决定",
+          "en": "Use earlier answers to make new decisions"
+        },
+        "input": 0,
+        "expected": "11"
+      }
+    ]
+  }
+}

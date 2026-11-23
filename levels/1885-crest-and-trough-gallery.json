@@ -1,0 +1,432 @@
+{
+  "version": 1,
+  "id": "challenge-crest-and-trough-gallery",
+  "order": 1885,
+  "kind": "grid",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": {
+    "zh": "峰谷双层取样架",
+    "en": "Peaks and Troughs Gallery"
+  },
+  "concept": {
+    "zh": "严格极值、上下货架、限步采样",
+    "en": "Strict extrema, split shelves and a tight route"
+  },
+  "brief": {
+    "zh": "从左到右，七个检修口对应 scan() 的七个读数，每口间隔两格。某读数严格高于两旁就取上架件，严格低于两旁就取下架件，两端跳过。按工位从左到右提交被选读数，所有值要从同一个列表读取。停在最右出口；回合只够进出所需货架。",
+    "en": "Seven bays, two tiles apart, match the seven scan() readings from left to right. Collect an upper part at each strict peak and a lower part at each strict trough; skip the endpoints. Submit the selected readings in left-to-right bay order, all from the same list. Finish at the far-right exit. The turn budget covers only the required shelf visits."
+  },
+  "prerequisites": [
+    {
+      "unit": "structures",
+      "topic": "lists"
+    },
+    {
+      "unit": "python-intermediate",
+      "topic": "branches"
+    },
+    {
+      "unit": "python-intermediate",
+      "topic": "for-loops"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "#################",
+    "#.#.#.#.#.#.#.#.#",
+    "#...............#",
+    "#.#.#.#.#.#.#.#.#",
+    "#################"
+  ],
+  "start": {
+    "x": 1,
+    "y": 2
+  },
+  "items": [
+    {
+      "id": "upper0",
+      "x": 1,
+      "y": 1
+    },
+    {
+      "id": "lower0",
+      "x": 1,
+      "y": 3
+    },
+    {
+      "id": "upper1",
+      "x": 3,
+      "y": 1
+    },
+    {
+      "id": "lower1",
+      "x": 3,
+      "y": 3
+    },
+    {
+      "id": "upper2",
+      "x": 5,
+      "y": 1
+    },
+    {
+      "id": "lower2",
+      "x": 5,
+      "y": 3
+    },
+    {
+      "id": "upper3",
+      "x": 7,
+      "y": 1
+    },
+    {
+      "id": "lower3",
+      "x": 7,
+      "y": 3
+    },
+    {
+      "id": "upper4",
+      "x": 9,
+      "y": 1
+    },
+    {
+      "id": "lower4",
+      "x": 9,
+      "y": 3
+    },
+    {
+      "id": "upper5",
+      "x": 11,
+      "y": 1
+    },
+    {
+      "id": "lower5",
+      "x": 11,
+      "y": 3
+    },
+    {
+      "id": "upper6",
+      "x": 13,
+      "y": 1
+    },
+    {
+      "id": "lower6",
+      "x": 13,
+      "y": 3
+    }
+  ],
+  "input": [
+    3,
+    9,
+    7,
+    2,
+    4,
+    8,
+    1
+  ],
+  "turnLimit": 23,
+  "objectives": [
+    {
+      "type": "collect",
+      "itemIds": [
+        "upper1",
+        "lower3",
+        "upper5"
+      ]
+    },
+    {
+      "type": "submit",
+      "origin": "list-index",
+      "sameContainer": true,
+      "values": [
+        9,
+        2,
+        8
+      ]
+    },
+    {
+      "type": "exit",
+      "x": 15,
+      "y": 2
+    }
+  ],
+  "allowedApi": [
+    "move",
+    "scan",
+    "pick",
+    "submit"
+  ],
+  "cards": [
+    {
+      "id": "scan",
+      "label": {
+        "zh": "读取七个读数",
+        "en": "Read the seven readings"
+      },
+      "template": "values = scan()"
+    },
+    {
+      "id": "bays",
+      "label": {
+        "zh": "遍历所有检修口",
+        "en": "Visit all service bays"
+      },
+      "template": "for i in range(len(values)):",
+      "block": true
+    },
+    {
+      "id": "inner",
+      "label": {
+        "zh": "只检查内侧工位",
+        "en": "Inspect interior bays"
+      },
+      "template": "if i > 0 and i < len(values) - 1:",
+      "block": true
+    },
+    {
+      "id": "crest",
+      "label": {
+        "zh": "严格高于两旁",
+        "en": "Higher than both neighbors"
+      },
+      "template": "if values[i] > values[i-1] and values[i] > values[i+1]:",
+      "block": true
+    },
+    {
+      "id": "trough",
+      "label": {
+        "zh": "严格低于两旁",
+        "en": "Lower than both neighbors"
+      },
+      "template": "if values[i] < values[i-1] and values[i] < values[i+1]:",
+      "block": true
+    },
+    {
+      "id": "up",
+      "label": {
+        "zh": "上移",
+        "en": "Up"
+      },
+      "template": "move(\"up\")"
+    },
+    {
+      "id": "down",
+      "label": {
+        "zh": "下移",
+        "en": "Down"
+      },
+      "template": "move(\"down\")"
+    },
+    {
+      "id": "right",
+      "label": {
+        "zh": "右移",
+        "en": "Right"
+      },
+      "template": "move(\"right\")"
+    },
+    {
+      "id": "pick",
+      "label": {
+        "zh": "取件",
+        "en": "Collect"
+      },
+      "template": "pick()"
+    },
+    {
+      "id": "sample",
+      "label": {
+        "zh": "提交当前读数",
+        "en": "Submit this reading"
+      },
+      "template": "submit(values[i])"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "scan"
+    },
+    {
+      "cardId": "bays",
+      "children": [
+        {
+          "cardId": "inner",
+          "children": [
+            {
+              "cardId": "crest",
+              "children": [
+                {
+                  "cardId": "up"
+                },
+                {
+                  "cardId": "pick"
+                },
+                {
+                  "cardId": "sample"
+                },
+                {
+                  "cardId": "down"
+                }
+              ]
+            },
+            {
+              "cardId": "trough",
+              "children": [
+                {
+                  "cardId": "down"
+                },
+                {
+                  "cardId": "pick"
+                },
+                {
+                  "cardId": "sample"
+                },
+                {
+                  "cardId": "up"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cardId": "right"
+        },
+        {
+          "cardId": "right"
+        }
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "#################",
+        "#.#.#.#.#.#.#.#.#",
+        "#...............#",
+        "#.#.#.#.#.#.#.#.#",
+        "#################"
+      ],
+      "start": {
+        "x": 1,
+        "y": 2
+      },
+      "items": [
+        {
+          "id": "upper0",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "lower0",
+          "x": 1,
+          "y": 3
+        },
+        {
+          "id": "upper1",
+          "x": 3,
+          "y": 1
+        },
+        {
+          "id": "lower1",
+          "x": 3,
+          "y": 3
+        },
+        {
+          "id": "upper2",
+          "x": 5,
+          "y": 1
+        },
+        {
+          "id": "lower2",
+          "x": 5,
+          "y": 3
+        },
+        {
+          "id": "upper3",
+          "x": 7,
+          "y": 1
+        },
+        {
+          "id": "lower3",
+          "x": 7,
+          "y": 3
+        },
+        {
+          "id": "upper4",
+          "x": 9,
+          "y": 1
+        },
+        {
+          "id": "lower4",
+          "x": 9,
+          "y": 3
+        },
+        {
+          "id": "upper5",
+          "x": 11,
+          "y": 1
+        },
+        {
+          "id": "lower5",
+          "x": 11,
+          "y": 3
+        },
+        {
+          "id": "upper6",
+          "x": 13,
+          "y": 1
+        },
+        {
+          "id": "lower6",
+          "x": 13,
+          "y": 3
+        }
+      ],
+      "input": [
+        9,
+        4,
+        7,
+        8,
+        3,
+        6,
+        2
+      ],
+      "turnLimit": 26,
+      "objectives": [
+        {
+          "type": "collect",
+          "itemIds": [
+            "lower1",
+            "upper3",
+            "lower4",
+            "upper5"
+          ]
+        },
+        {
+          "type": "submit",
+          "origin": "list-index",
+          "sameContainer": true,
+          "values": [
+            4,
+            8,
+            3,
+            6
+          ]
+        },
+        {
+          "type": "exit",
+          "x": 15,
+          "y": 2
+        }
+      ]
+    }
+  ]
+}

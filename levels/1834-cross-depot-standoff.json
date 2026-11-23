@@ -1,0 +1,481 @@
+{
+  "version": 1,
+  "kind": "arena",
+  "order": 1834,
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "id": "challenge-cross-depot-standoff",
+  "title": {
+    "zh": "四机跨仓争夺",
+    "en": "Four-Rival Depot Standoff"
+  },
+  "concept": {
+    "zh": "一对四 · 三次改仓",
+    "en": "One versus four · Three transfers"
+  },
+  "brief": {
+    "zh": "23 回合内和四台对手抢电。它们会随比分和路线改变目标。第 6、12、17 回合结束后，各有一批未收走的电池改仓，门也会切换。有机器人或电池占住的门当次保持开启。电池抢完或回合用尽时，必须独占第一。多人同回合拾取同一块电池时，优先权按记分板顺序轮换，第 1 回合从芽芽开始。从容模式下，同一份程序须通过 2 张地图。",
+    "en": "Race four rivals for batteries over 23 turns. They change targets based on scores and routes. Some unclaimed batteries transfer to another depot after turns 6, 12, and 17 as the gates change. A gate stays open for that shift if occupied by a robot or battery. Finish first outright when the batteries run out or the turn limit is reached. For simultaneous pickups of the same battery, priority rotates in scoreboard order starting with Sprout on turn 1. In Relaxed mode, one program must win on all 2 maps."
+  },
+  "difficulty": "advanced",
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "rival-strategy"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "#############",
+    "#....#......#",
+    "#.##.#...#..#",
+    "#....#......#",
+    "##.##.####.##",
+    "#...........#",
+    "#..##...##..#",
+    "#...........#",
+    "#############"
+  ],
+  "start": {
+    "x": 3,
+    "y": 5
+  },
+  "items": [
+    {
+      "id": "battery-a",
+      "x": 3,
+      "y": 1
+    },
+    {
+      "id": "battery-b",
+      "x": 7,
+      "y": 1
+    },
+    {
+      "id": "battery-c",
+      "x": 3,
+      "y": 3
+    },
+    {
+      "id": "battery-d",
+      "x": 8,
+      "y": 3
+    },
+    {
+      "id": "battery-f",
+      "x": 1,
+      "y": 5
+    },
+    {
+      "id": "battery-g",
+      "x": 7,
+      "y": 5
+    },
+    {
+      "id": "battery-h",
+      "x": 6,
+      "y": 3
+    },
+    {
+      "id": "battery-i",
+      "x": 6,
+      "y": 7
+    },
+    {
+      "id": "battery-j",
+      "x": 10,
+      "y": 7
+    },
+    {
+      "id": "battery-k",
+      "x": 10,
+      "y": 4
+    },
+    {
+      "id": "battery-l",
+      "x": 8,
+      "y": 5
+    }
+  ],
+  "opponents": [
+    {
+      "id": "rival-1",
+      "title": {
+        "zh": "石墨号",
+        "en": "Graphite"
+      },
+      "start": {
+        "x": 1,
+        "y": 1
+      },
+      "policy": {
+        "kind": "adaptive",
+        "style": "secure"
+      }
+    },
+    {
+      "id": "rival-2",
+      "title": {
+        "zh": "铜线号",
+        "en": "Copperwire"
+      },
+      "start": {
+        "x": 11,
+        "y": 1
+      },
+      "policy": {
+        "kind": "adaptive",
+        "style": "flex"
+      }
+    },
+    {
+      "id": "rival-3",
+      "title": {
+        "zh": "梭巡号",
+        "en": "Shuttle"
+      },
+      "start": {
+        "x": 2,
+        "y": 7
+      },
+      "policy": {
+        "kind": "adaptive",
+        "style": "intercept"
+      }
+    },
+    {
+      "id": "rival-4",
+      "title": {
+        "zh": "云雀号",
+        "en": "Lark"
+      },
+      "start": {
+        "x": 11,
+        "y": 7
+      },
+      "policy": {
+        "kind": "adaptive",
+        "style": "secure"
+      }
+    }
+  ],
+  "maxTurns": 23,
+  "objective": {
+    "kind": "score"
+  },
+  "shifts": [
+    {
+      "turn": 6,
+      "open": [
+        {
+          "x": 5,
+          "y": 2
+        },
+        {
+          "x": 7,
+          "y": 4
+        }
+      ],
+      "close": [
+        {
+          "x": 2,
+          "y": 4
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "battery-g",
+          "x": 7,
+          "y": 3
+        }
+      ]
+    },
+    {
+      "turn": 12,
+      "open": [
+        {
+          "x": 5,
+          "y": 3
+        }
+      ],
+      "close": [
+        {
+          "x": 10,
+          "y": 4
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "battery-d",
+          "x": 10,
+          "y": 5
+        }
+      ]
+    },
+    {
+      "turn": 17,
+      "open": [
+        {
+          "x": 9,
+          "y": 4
+        }
+      ],
+      "close": [
+        {
+          "x": 7,
+          "y": 4
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "battery-b",
+          "x": 6,
+          "y": 6
+        }
+      ]
+    }
+  ],
+  "starterCode": "while True:\n    state = scan()\n    wait()\n",
+  "solutionCode": "DIRS = [\"up\", \"right\", \"down\", \"left\"]\n\ndef magnitude(value):\n    if value < 0:\n        return -value\n    return value\n\ndef smaller(left, right):\n    if left < right:\n        return left\n    return right\n\ndef make_graph(board, width):\n    graph = {}\n    offsets = [-width, 1, width, -1]\n    for y in range(1, len(board) - 1):\n        for x in range(1, width - 1):\n            if board[y][x] != \".\":\n                continue\n            cell = y * width + x\n            edges = []\n            for direction in range(4):\n                neighbor = cell + offsets[direction]\n                if board[neighbor // width][neighbor % width] == \".\":\n                    edges.append([neighbor, DIRS[direction]])\n            graph[cell] = edges\n    return graph\n\ndef route_table(graph, cache, start):\n    if start in cache:\n        return cache[start]\n    table = {start: [0, None]}\n    queue = [start]\n    for cell in queue:\n        previous = table[cell]\n        for edge in graph[cell]:\n            neighbor = edge[0]\n            if neighbor in table:\n                continue\n            first = previous[1]\n            if first is None:\n                first = edge[1]\n            table[neighbor] = [previous[0] + 1, first]\n            queue.append(neighbor)\n    cache[start] = table\n    return table\n\ndef choose(state, graph, cache):\n    board = state[\"tiles\"]\n    width = len(board[0])\n    player = state[\"player\"]\n    start = player[1] * width + player[0]\n    rivals = state[\"opponents\"]\n    own_routes = route_table(graph, cache, start)\n    best_merit = -100000\n    action = \"wait\"\n    for item in state[\"items\"]:\n        cell = item[\"y\"] * width + item[\"x\"]\n        if cell == start:\n            return \"pick\"\n        if cell not in own_routes:\n            continue\n        distance = own_routes[cell][0]\n        direction = own_routes[cell][1]\n        safety = 4\n        for index in range(len(rivals)):\n            rival = rivals[index]\n            remaining = magnitude(item[\"x\"] - rival[\"x\"]) + magnitude(item[\"y\"] - rival[\"y\"])\n            if remaining < distance:\n                safety = smaller(safety, 0)\n            elif remaining == distance:\n                priority = (state[\"turn\"] + distance) % (len(rivals) + 1)\n                if priority > 0 and index + 1 >= priority:\n                    safety = smaller(safety, 1)\n                else:\n                    safety = smaller(safety, 3)\n        merit = safety * 20 - distance * 8\n        if merit > best_merit:\n            action = direction\n            best_merit = merit\n    return action\nboard = []\nwhile True:\n    state = scan()\n    if state[\"tiles\"] != board:\n        board = state[\"tiles\"]\n        graph = make_graph(board, len(board[0]))\n        cache = {}\n    action = choose(state, graph, cache)\n    if action == \"pick\":\n        pick()\n    elif action == \"wait\":\n        wait()\n    else:\n        move(action)\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "读当前位置与电池",
+        "en": "Read position and batteries"
+      },
+      "code": "state = scan()\nplayer = state[\"player\"]\nitems = state[\"items\"]"
+    },
+    {
+      "label": {
+        "zh": "查看同回合拾取优先权",
+        "en": "Check pickup priority"
+      },
+      "code": "state = scan()\ncount = len(state[\"opponents\"]) + 1\npriority = state[\"turn\"] % count"
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "#############",
+        "#......#....#",
+        "#..#...#.##.#",
+        "#......#....#",
+        "##.####.##.##",
+        "#...........#",
+        "#..##...##..#",
+        "#...........#",
+        "#############"
+      ],
+      "start": {
+        "x": 9,
+        "y": 5
+      },
+      "items": [
+        {
+          "id": "battery-a",
+          "x": 9,
+          "y": 1
+        },
+        {
+          "id": "battery-b",
+          "x": 5,
+          "y": 1
+        },
+        {
+          "id": "battery-c",
+          "x": 9,
+          "y": 3
+        },
+        {
+          "id": "battery-d",
+          "x": 4,
+          "y": 3
+        },
+        {
+          "id": "battery-f",
+          "x": 11,
+          "y": 5
+        },
+        {
+          "id": "battery-g",
+          "x": 5,
+          "y": 5
+        },
+        {
+          "id": "battery-h",
+          "x": 6,
+          "y": 3
+        },
+        {
+          "id": "battery-i",
+          "x": 6,
+          "y": 7
+        },
+        {
+          "id": "battery-j",
+          "x": 2,
+          "y": 7
+        },
+        {
+          "id": "battery-k",
+          "x": 2,
+          "y": 4
+        },
+        {
+          "id": "battery-l",
+          "x": 4,
+          "y": 5
+        }
+      ],
+      "opponents": [
+        {
+          "id": "rival-1",
+          "title": {
+            "zh": "石墨号",
+            "en": "Graphite"
+          },
+          "start": {
+            "x": 11,
+            "y": 1
+          },
+          "policy": {
+            "kind": "adaptive",
+            "style": "secure"
+          }
+        },
+        {
+          "id": "rival-2",
+          "title": {
+            "zh": "铜线号",
+            "en": "Copperwire"
+          },
+          "start": {
+            "x": 1,
+            "y": 1
+          },
+          "policy": {
+            "kind": "adaptive",
+            "style": "flex"
+          }
+        },
+        {
+          "id": "rival-3",
+          "title": {
+            "zh": "梭巡号",
+            "en": "Shuttle"
+          },
+          "start": {
+            "x": 10,
+            "y": 7
+          },
+          "policy": {
+            "kind": "adaptive",
+            "style": "intercept"
+          }
+        },
+        {
+          "id": "rival-4",
+          "title": {
+            "zh": "云雀号",
+            "en": "Lark"
+          },
+          "start": {
+            "x": 1,
+            "y": 7
+          },
+          "policy": {
+            "kind": "adaptive",
+            "style": "secure"
+          }
+        }
+      ],
+      "maxTurns": 23,
+      "objective": {
+        "kind": "score"
+      },
+      "shifts": [
+        {
+          "turn": 6,
+          "open": [
+            {
+              "x": 7,
+              "y": 2
+            },
+            {
+              "x": 5,
+              "y": 4
+            }
+          ],
+          "close": [
+            {
+              "x": 10,
+              "y": 4
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "battery-g",
+              "x": 5,
+              "y": 3
+            }
+          ]
+        },
+        {
+          "turn": 12,
+          "open": [
+            {
+              "x": 7,
+              "y": 3
+            }
+          ],
+          "close": [
+            {
+              "x": 2,
+              "y": 4
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "battery-d",
+              "x": 2,
+              "y": 5
+            }
+          ]
+        },
+        {
+          "turn": 17,
+          "open": [
+            {
+              "x": 3,
+              "y": 4
+            }
+          ],
+          "close": [
+            {
+              "x": 5,
+              "y": 4
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "battery-b",
+              "x": 6,
+              "y": 6
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

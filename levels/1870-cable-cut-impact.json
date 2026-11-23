@@ -1,0 +1,179 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-cable-cut-impact",
+  "order": 1870,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "depth-first"
+    },
+    {
+      "unit": "structures",
+      "topic": "stacks"
+    }
+  ],
+  "title": {
+    "zh": "逐线断电评估",
+    "en": "Single-Cable Outage Survey"
+  },
+  "concept": {
+    "zh": "并行电缆与断线损失",
+    "en": "Parallel links and lost reachability"
+  },
+  "brief": {
+    "zh": "编号 0 到 n−1 的机柜由 cables 中的双向电缆连接。每根电缆各做一次独立断线试验，试验后恢复原网。返回每次断线后，有多少无序机柜对从原先能互通变成不能互通，同一机柜不和自己配对。按电缆的输入顺序报告，两根并行线可互为备份。",
+    "en": "Cabinets 0 to n−1 are joined by the two-way cables in cables. Test each cable failure independently, restoring the network between tests. For each cable, report how many unordered pairs of distinct cabinets that could communicate lose contact. Report in cable order. Parallel cables can back each other up."
+  },
+  "hints": [],
+  "functionName": "cable_losses",
+  "starterCode": "def cable_losses(n, cables):\n    pass\n",
+  "solutionCode": "def cable_losses(n, cables):\n    losses = []\n    for cut in range(len(cables)):\n        start = cables[cut][0]\n        goal = cables[cut][1]\n        counts = []\n        separated = False\n        for station in [start, goal]:\n            seen = {station: True}\n            stack = [station]\n            while len(stack) > 0:\n                here = stack.pop()\n                for i in range(len(cables)):\n                    if i == cut:\n                        continue\n                    line = cables[i]\n                    other = -1\n                    if line[0] == here:\n                        other = line[1]\n                    elif line[1] == here:\n                        other = line[0]\n                    if other >= 0 and other not in seen:\n                        seen[other] = True\n                        stack.append(other)\n            counts.append(len(seen))\n            if station == start and goal not in seen:\n                separated = True\n        loss = 0\n        if separated:\n            loss = counts[0] * counts[1]\n        losses.append(loss)\n    return losses\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "从断线两端查通路",
+        "en": "Survey both ends of the cut"
+      },
+      "code": "        for station in [start, goal]:\n            seen = {station: True}\n            stack = [station]\n            while len(stack) > 0:\n                here = stack.pop()\n                for i in range(len(cables)):\n                    if i == cut:\n                        continue\n                    line = cables[i]\n                    other = -1\n                    if line[0] == here:\n                        other = line[1]\n                    elif line[1] == here:\n                        other = line[0]\n                    if other >= 0 and other not in seen:\n                        seen[other] = True\n                        stack.append(other)"
+    },
+    {
+      "label": {
+        "zh": "建立断线实验",
+        "en": "Set up failure trials"
+      },
+      "code": "    losses = []\n    for cut in range(len(cables)):\n        start = cables[cut][0]\n        goal = cables[cut][1]\n        counts = []\n        separated = False"
+    },
+    {
+      "label": {
+        "zh": "登记断线两侧的工位总数",
+        "en": "Count the stations on both sides"
+      },
+      "code": "            counts.append(len(seen))\n            if station == start and goal not in seen:\n                separated = True\n        loss = 0\n        if separated:\n            loss = counts[0] + counts[1]\n        losses.append(loss)"
+    },
+    {
+      "label": {
+        "zh": "送交逐线报告",
+        "en": "Send the per-cable report"
+      },
+      "code": "    return losses"
+    },
+    {
+      "label": {
+        "zh": "计算中断通信的配对数",
+        "en": "Count disconnected pairs"
+      },
+      "code": "            counts.append(len(seen))\n            if station == start and goal not in seen:\n                separated = True\n        loss = 0\n        if separated:\n            loss = counts[0] * counts[1]\n        losses.append(loss)"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        4,
+        [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ]
+      ],
+      "expected": [
+        3,
+        4,
+        3
+      ]
+    },
+    {
+      "args": [
+        4,
+        [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            2,
+            3
+          ]
+        ]
+      ],
+      "expected": [
+        0,
+        0,
+        0,
+        3
+      ]
+    },
+    {
+      "args": [
+        4,
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            2,
+            3
+          ]
+        ]
+      ],
+      "expected": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "args": [
+        1,
+        [
+          [
+            0,
+            0
+          ]
+        ]
+      ],
+      "expected": [
+        0
+      ]
+    },
+    {
+      "args": [
+        3,
+        []
+      ],
+      "expected": []
+    }
+  ]
+}

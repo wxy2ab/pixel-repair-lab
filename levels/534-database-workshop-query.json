@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "database-hot-workshop-query",
+  "order": 534,
+  "stage": "exercise",
+  "unit": { "id": "database", "order": 130, "title": { "zh": "数据库", "en": "Databases" } },
+  "topic": { "id": "sql-rows", "order": 1, "title": { "zh": "SQL 筛选和排序", "en": "SQL filters and sorting" } },
+  "title": { "zh": "做一张车间高温清单", "en": "Make a Workshop Heat List" },
+  "brief": { "zh": "巡查员只需要高温记录的编号和温度。把最热的排在最前面。", "en": "The inspector only needs ID and temperature for the warm readings. Put the hottest one first." },
+  "concept": { "zh": "同时组合列选择、两条筛选条件和降序排列。", "en": "Combine a column projection, two row conditions, and descending order." },
+  "hints": [{ "zh": "先定车间和 28°C 下限，再找从大到小的排序选项。", "en": "Select workshop and a 28°C minimum first. Then find the highest-to-lowest sort option." }],
+  "steps": [
+    {
+      "operation": "query",
+      "input": "clean",
+      "label": { "zh": "筛选、选列并排序", "en": "Filter, select columns, and sort" },
+      "prompt": { "zh": "输出车间至少 28°C 的记录，只显示编号和温度，并从最高温度排到最低。", "en": "Return workshop readings of at least 28°C. Show only ID and temperature, hottest first." },
+      "initial": { "columns": "all", "zone": "all", "minimum": 18, "sort": "id" },
+      "goal": { "columns": ["id", "reading"], "rows": [[13, 36], [8, 32], [5, 28]] },
+      "solution": { "columns": "id-reading", "zone": "workshop", "minimum": 28, "sort": "reading-desc" }
+    }
+  ]
+}

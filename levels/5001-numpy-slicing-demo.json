@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "numpy-slicing-demo",
+  "order": 5001,
+  "stage": "demo",
+  "unit": {
+    "id": "numpy",
+    "order": 100,
+    "title": {
+      "zh": "NumPy",
+      "en": "NumPy"
+    }
+  },
+  "topic": {
+    "id": "arrays",
+    "order": 1,
+    "title": {
+      "zh": "数组与位置",
+      "en": "Arrays and positions"
+    }
+  },
+  "title": {
+    "zh": "用切片抓一小段数据",
+    "en": "Take a Slice of the Data"
+  },
+  "brief": {
+    "zh": "换一换起点、终点或数组列，对照完整数据和切片结果。",
+    "en": "Change the start, stop, or array column and compare the slice with the full input."
+  },
+  "concept": {
+    "zh": "NumPy 的 a[start:stop] 包含 start，遇到 stop 就停。",
+    "en": "NumPy’s a[start:stop] starts at start and stops before stop."
+  },
+  "hints": [
+    {
+      "zh": "先运行 0 到 3，再把终点改为 4，观察哪一项加入了结果。",
+      "en": "Run from 0 to 3, then change the stop to 4 and see which value appears."
+    }
+  ],
+  "steps": [
+    {
+      "operation": "array",
+      "input": "clean",
+      "label": {
+        "zh": "切片",
+        "en": "Slice"
+      },
+      "prompt": {
+        "zh": "调整起点和终点，尝试用同样的切片查看两列。",
+        "en": "Adjust the start and stop, then try the same slice on both columns."
+      },
+      "initial": {
+        "column": "reading",
+        "start": 0,
+        "stop": 3
+      }
+    }
+  ]
+}

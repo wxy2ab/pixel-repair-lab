@@ -1,0 +1,229 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "serve-two-queue-batches",
+  "order": 1006,
+  "unit": {
+    "id": "structures",
+    "order": 40,
+    "title": {
+      "zh": "数据结构",
+      "en": "Data Structures"
+    }
+  },
+  "topic": {
+    "id": "queues",
+    "order": 3,
+    "title": {
+      "zh": "队列",
+      "en": "Queues"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "给有限空位的货车排队",
+    "en": "Load a Truck with Limited Space"
+  },
+  "concept": {
+    "zh": "合并到货批次后按容量出队",
+    "en": "Join arrivals and dequeue up to capacity"
+  },
+  "brief": {
+    "zh": "扫描结果包含原来的队列、新到的货和今天的车位数。把新货排在队尾，只发走车位装得下的数量。",
+    "en": "The scan contains the original line, the new arrivals, and the truck capacity. Add the new arrivals to the back and send only as many as the truck can hold."
+  },
+  "hints": [
+    {
+      "zh": "第 0 项是旧队列，第 1 项是新货，第 2 项是能装几件。",
+      "en": "Index 0 is the old queue, index 1 is the new arrivals, and index 2 is capacity."
+    },
+    {
+      "zh": "先循环把新货加到同一个队列，再按容量循环，从队首取出每一件。",
+      "en": "Loop over the new arrivals and add them to the same queue. Then pop from the front once for each space on the truck."
+    }
+  ],
+  "tiles": [
+    "#######",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#######"
+  ],
+  "start": {
+    "x": 2,
+    "y": 2
+  },
+  "allowedApi": [
+    "scan",
+    "submit"
+  ],
+  "objectives": [
+    {
+      "type": "submit",
+      "values": [
+        "capacitor",
+        "wire",
+        "fuse"
+      ],
+      "origin": "queue-pop",
+      "sameContainer": true
+    }
+  ],
+  "input": [
+    [
+      "capacitor",
+      "wire"
+    ],
+    [
+      "fuse",
+      "motor"
+    ],
+    3
+  ],
+  "cards": [
+    {
+      "id": "read",
+      "label": {
+        "zh": "扫描两批货物和容量",
+        "en": "Scan both batches and capacity"
+      },
+      "template": "plan = scan()"
+    },
+    {
+      "id": "old-line",
+      "label": {
+        "zh": "读取旧队列",
+        "en": "Read the original queue"
+      },
+      "template": "queue = plan[0]"
+    },
+    {
+      "id": "join",
+      "label": {
+        "zh": "逐个处理新货物",
+        "en": "For each new arrival"
+      },
+      "template": "for arrival in plan[1]:",
+      "block": true
+    },
+    {
+      "id": "append",
+      "label": {
+        "zh": "把它接到队尾",
+        "en": "Add it to the back"
+      },
+      "template": "queue.append(arrival)"
+    },
+    {
+      "id": "spaces",
+      "label": {
+        "zh": "按车的空位数处理",
+        "en": "For each available space"
+      },
+      "template": "for space in range(plan[2]):",
+      "block": true
+    },
+    {
+      "id": "ship",
+      "label": {
+        "zh": "从队首取走并发货",
+        "en": "Remove and send the front item"
+      },
+      "template": "submit(queue.pop(0))"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "old-line"
+    },
+    {
+      "cardId": "join",
+      "children": [
+        {
+          "cardId": "append"
+        }
+      ]
+    },
+    {
+      "cardId": "spaces",
+      "children": [
+        {
+          "cardId": "ship"
+        }
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "input": [
+        [
+          "wheel"
+        ],
+        [
+          "screw",
+          "cable",
+          "magnet"
+        ],
+        2
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            "wheel",
+            "screw"
+          ],
+          "origin": "queue-pop",
+          "sameContainer": true
+        }
+      ]
+    },
+    {
+      "input": [
+        [],
+        [
+          "washer",
+          "panel",
+          "bearing"
+        ],
+        1
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            "washer"
+          ],
+          "origin": "queue-pop",
+          "sameContainer": true
+        }
+      ]
+    },
+    {
+      "input": [
+        [
+          "motor",
+          "motor",
+          "cable"
+        ],
+        [],
+        3
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            "motor",
+            "motor",
+            "cable"
+          ],
+          "origin": "queue-pop",
+          "sameContainer": true
+        }
+      ]
+    }
+  ]
+}

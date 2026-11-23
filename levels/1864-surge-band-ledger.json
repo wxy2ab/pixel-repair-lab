@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-surge-band-ledger",
+  "order": 1864,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "algorithm-intro",
+      "topic": "prefix-totals"
+    },
+    {
+      "unit": "structures",
+      "topic": "dictionaries"
+    }
+  ],
+  "title": {
+    "zh": "脉冲带双重核账",
+    "en": "Surge Band Audit"
+  },
+  "concept": {
+    "zh": "有符号区间的计数与最短长度",
+    "en": "Counting signed intervals and finding their shortest length"
+  },
+  "brief": {
+    "zh": "changes 记录每一拍的电量增减。找出所有总变化正好为 target 的非空连续区间，返回 [区间数量, 最短区间长度]。位置不同分别计数。区间可以重叠，电量可以为负或为零。没有符合条件的区间时返回 [0, 0]。",
+    "en": "changes lists the signed charge changes over time. Find all nonempty consecutive bands totaling target. Return [number of bands, shortest band length]. Count different positions separately. Bands may overlap, and values can be negative or zero. Return [0, 0] if none match."
+  },
+  "hints": [],
+  "functionName": "surge_bands",
+  "starterCode": "def surge_bands(changes, target):\n    pass\n",
+  "solutionCode": "def surge_bands(changes, target):\n    counts = {0: 1}\n    latest = {0: 0}\n    total = 0\n    bands = 0\n    shortest = 0\n    for end in range(1, len(changes) + 1):\n        total += changes[end - 1]\n        needed = total - target\n        if needed in counts:\n            bands += counts[needed]\n            length = end - latest[needed]\n            if shortest == 0 or length < shortest:\n                shortest = length\n        if total not in counts:\n            counts[total] = 0\n        counts[total] += 1\n        latest[total] = end\n    return [bands, shortest]\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "保留每个累计值的首次位置",
+        "en": "Keep the first position for each total"
+      },
+      "code": "        if total not in counts:\n            counts[total] = 0\n        counts[total] += 1\n        if total not in latest:\n            latest[total] = end"
+    },
+    {
+      "label": {
+        "zh": "寻找另一端",
+        "en": "Find matching starts"
+      },
+      "code": "    for end in range(1, len(changes) + 1):\n        total += changes[end - 1]\n        needed = total - target\n        if needed in counts:\n            bands += counts[needed]\n            length = end - latest[needed]\n            if shortest == 0 or length < shortest:\n                shortest = length"
+    },
+    {
+      "label": {
+        "zh": "登记初始累计值",
+        "en": "Record the opening total"
+      },
+      "code": "    counts = {0: 1}\n    latest = {0: 0}\n    total = 0\n    bands = 0\n    shortest = 0"
+    },
+    {
+      "label": {
+        "zh": "上交两项读数",
+        "en": "Submit both readings"
+      },
+      "code": "    return [bands, shortest]"
+    },
+    {
+      "label": {
+        "zh": "记录本次累计的位置",
+        "en": "Record this total and position"
+      },
+      "code": "        if total not in counts:\n            counts[total] = 0\n        counts[total] += 1\n        latest[total] = end"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          1,
+          -1,
+          1,
+          -1
+        ],
+        0
+      ],
+      "expected": [
+        4,
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          0,
+          0,
+          0
+        ],
+        0
+      ],
+      "expected": [
+        6,
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          3,
+          -2,
+          1,
+          2
+        ],
+        3
+      ],
+      "expected": [
+        2,
+        1
+      ]
+    },
+    {
+      "args": [
+        [],
+        0
+      ],
+      "expected": [
+        0,
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          -3,
+          1,
+          -1
+        ],
+        -3
+      ],
+      "expected": [
+        2,
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          -1,
+          5
+        ],
+        5
+      ],
+      "expected": [
+        2,
+        1
+      ]
+    }
+  ]
+}

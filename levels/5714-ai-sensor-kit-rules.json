@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "ai-sensor-kit-rules",
+  "order": 5714,
+  "unit": { "id": "ai", "order": 160, "title": { "zh": "AI 协作", "en": "AI Collaboration" } },
+  "topic": { "id": "constraints", "order": 2, "title": { "zh": "写清约束", "en": "State the constraints" } },
+  "stage": "exercise",
+  "title": { "zh": "按三条要求修改工具箱", "en": "Revise the Toolkit Under Three Rules" },
+  "brief": { "zh": "修理小队要保留草稿上的 1 把扳手和 1 张标签，把电池总数改为 2 节，并去掉全部胶水。", "en": "Keep the 1 wrench and 1 label from the draft. Set the total to 2 batteries and remove all glue." },
+  "concept": { "zh": "在同一条指令中指明保留数量、修改后的总数和必须删除的项目。", "en": "State what to preserve, the new total, and what to remove in one prompt." },
+  "hints": [{ "zh": "改电池时说出想要的总数。收到清单后，再查扳手和标签是否还在。", "en": "Give the desired total for the batteries. When the list comes back, check both the wrench and label." }],
+  "inventory": [
+    { "id": "wrench", "label": { "zh": "扳手", "en": "Wrench" }, "aliases": ["wrenches"] },
+    { "id": "battery", "label": { "zh": "电池", "en": "Battery" }, "aliases": ["batteries", "电芯"] },
+    { "id": "label", "label": { "zh": "标签", "en": "Label" }, "aliases": ["labels", "贴签"] },
+    { "id": "glue", "label": { "zh": "胶水", "en": "Glue" }, "aliases": ["胶粘剂"] }
+  ],
+  "required": { "wrench": 1, "battery": 2, "label": 1 },
+  "workflow": {
+    "review": "automatic",
+    "faults": [{ "itemId": "label", "quantity": 0 }],
+    "draft": { "items": [{ "id": "wrench", "quantity": 1 }, { "id": "battery", "quantity": 1 }, { "id": "label", "quantity": 1 }, { "id": "glue", "quantity": 2 }] },
+    "cards": [
+      { "zh": "保留1把扳手。保留1张标签。", "en": "Keep 1 wrench. Keep 1 label." },
+      { "zh": "电池改为2节。", "en": "Set batteries to 2 total." },
+      { "zh": "去掉全部胶水。", "en": "Remove all glue." },
+      { "zh": "标签：1张。", "en": "Label: 1." }
+    ]
+  },
+  "examplePrompts": {
+    "zh": ["保留1把扳手。保留1张标签。电池改为2节。去掉胶水。", "标签：1张。其他项目保持原样。"],
+    "en": ["Keep 1 wrench. Keep 1 label. Set batteries to 2. Remove all glue.", "Label: 1. Keep the other entries."]
+  }
+}

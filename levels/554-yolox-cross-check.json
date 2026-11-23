@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "yolox-cross-check-labels",
+  "order": 554,
+  "stage": "exercise",
+  "unit": {
+    "id": "yolox",
+    "order": 150,
+    "title": { "zh": "YOLOX", "en": "YOLOX" }
+  },
+  "topic": {
+    "id": "object-detection",
+    "order": 1,
+    "title": { "zh": "目标检测", "en": "Object detection" }
+  },
+  "mode": "detect",
+  "title": { "zh": "用两张照片核对同一个类别", "en": "Check One Class on Two Photos" },
+  "brief": { "zh": "宇航员档案只收录模型找到的“人”。用同一个类别分别审查两张图。", "en": "The astronaut archive takes detections of people. Check both photos for the same class." },
+  "concept": { "zh": "同一个类别筛选可以在不同图像上产生不同结果。", "en": "The same class filter can produce different results on different images." },
+  "hints": [
+    { "zh": "核对有候选和没有候选的照片，看看哪一张符合档案要求。", "en": "Compare the image that yields a candidate with the image that yields none." }
+  ],
+  "cases": [
+    {
+      "image": "labrador",
+      "label": { "zh": "先核对草地照片", "en": "Review the lawn photo" },
+      "prompt": { "zh": "仅查看“人”类候选，核对这张照片的返回数量。", "en": "Show only Person candidates and check how many this photo returns." },
+      "initial": { "confidence": 50, "target": "dog" },
+      "goal": { "labels": [], "target": "person" },
+      "solution": { "confidence": 50, "target": "person" }
+    },
+    {
+      "image": "astronaut",
+      "label": { "zh": "再核对宇航员照片", "en": "Review the astronaut portrait" },
+      "prompt": { "zh": "继续仅查看“人”类。保留正确的人物检测框。", "en": "Keep the Person filter and retain the correct box around the astronaut." },
+      "initial": { "confidence": 50, "target": "dog" },
+      "goal": { "labels": ["person"], "target": "person" },
+      "solution": { "confidence": 50, "target": "person" }
+    }
+  ]
+}

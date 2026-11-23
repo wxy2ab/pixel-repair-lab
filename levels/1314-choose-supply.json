@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "choose-supply",
+  "order": 1314,
+  "unit": { "id": "algorithm-advanced", "order": 70, "title": { "zh": "算法高级", "en": "Advanced Algorithms" } },
+  "topic": { "id": "rival-strategy", "order": 3, "title": { "zh": "对手策略", "en": "Rival Strategy" } },
+  "stage": "exercise",
+  "title": { "zh": "挑一个更可能先拿到的补给", "en": "Choose a Supply You Can Reach First" },
+  "brief": { "zh": "完成 choose_supply(player, targets, rivals)，返回一个目标坐标。脚下有补给就立即选它。其余目标优先选领先量为正的，再依次比较步数较少、领先量较大、在输入中出现较早。没有补给时返回 None。", "en": "Complete choose_supply(player, targets, rivals) to return one target coordinate. Choose a supply underfoot immediately. Otherwise prefer a positive margin, then fewer steps, then a bigger margin, then the earlier target in input order. Return None when no supplies remain." },
+  "concept": { "zh": "按领先、距离和平局规则给目标排序", "en": "Rank targets by lead, distance, and tie-breaks" },
+  "hints": [
+    { "zh": "race_margin 会返回 [自己的步数, 领先量]。没有对手时，它给每个目标同样的正领先量。", "en": "race_margin returns [your steps, your margin]. With no rivals it gives every target the same positive margin." },
+    { "zh": "用 safe = lead > 0 记录目标是否领先。先判断是否比当前选项更稳，再在同一类里比较步数和领先量。", "en": "Use safe = lead > 0 to mark a target with a lead. Prefer the safer category, then compare steps and margin within that category." },
+    { "zh": "所有条件相同就保留最先遇到的目标。通过后可以保存 choose_supply 到我的算法，在对抗赛里使用。", "en": "Keep the first target when all comparisons tie. After passing, save choose_supply to My algorithms for the arena." }
+  ],
+  "functionName": "choose_supply",
+  "starterCode": "def distance(a, b):\n    dx = a[0] - b[0]\n    dy = a[1] - b[1]\n    if dx < 0:\n        dx = -dx\n    if dy < 0:\n        dy = -dy\n    return dx + dy\n\ndef race_margin(player, target, rivals):\n    steps = distance(player, target)\n    lead = 1\n    if len(rivals) > 0:\n        nearest = distance(rivals[0], target)\n        for rival in rivals:\n            other = distance(rival, target)\n            if other < nearest:\n                nearest = other\n        lead = nearest - steps\n    return [steps, lead]\n\ndef choose_supply(player, targets, rivals):\n    best = None\n    best_steps = 0\n    best_lead = 0\n    return best\n",
+  "solutionCode": "def distance(a, b):\n    dx = a[0] - b[0]\n    dy = a[1] - b[1]\n    if dx < 0:\n        dx = -dx\n    if dy < 0:\n        dy = -dy\n    return dx + dy\n\ndef race_margin(player, target, rivals):\n    steps = distance(player, target)\n    lead = 1\n    if len(rivals) > 0:\n        nearest = distance(rivals[0], target)\n        for rival in rivals:\n            other = distance(rival, target)\n            if other < nearest:\n                nearest = other\n        lead = nearest - steps\n    return [steps, lead]\n\ndef choose_supply(player, targets, rivals):\n    best = None\n    best_steps = 0\n    best_lead = 0\n    for target in targets:\n        race = race_margin(player, target, rivals)\n        steps = race[0]\n        lead = race[1]\n        if steps == 0:\n            return target\n        safe = lead > 0\n        best_safe = best_lead > 0\n        if best is None or (safe and not best_safe) or (safe == best_safe and (steps < best_steps or (steps == best_steps and lead > best_lead))):\n            best = target\n            best_steps = steps\n            best_lead = lead\n    return best\n",
+  "snippets": [
+    { "label": { "zh": "逐个估算到达步数", "en": "Estimate each target" }, "code": "    for target in targets:\n        race = race_margin(player, target, rivals)\n        steps = race[0]\n        lead = race[1]" },
+    { "label": { "zh": "脚下优先，记录领先情况", "en": "Check underfoot and mark the lead" }, "code": "        if steps == 0:\n            return target\n        safe = lead > 0\n        best_safe = best_lead > 0" },
+    { "label": { "zh": "按规则比较并更新最优目标", "en": "Compare and update the best target" }, "code": "        if best is None or (safe and not best_safe) or (safe == best_safe and (steps < best_steps or (steps == best_steps and lead > best_lead))):\n            best = target\n            best_steps = steps\n            best_lead = lead" }
+  ],
+  "cases": [
+    { "args": [[0, 0], [[1, 0], [0, 2]], [[1, 0], [4, 4]]], "expected": [0, 2] },
+    { "args": [[4, 2], [[6, 2], [4, 2]], [[4, 2], [3, 2]]], "expected": [4, 2] },
+    { "args": [[0, 0], [[1, 0], [0, 1]], [[3, 3]]], "expected": [1, 0] },
+    { "args": [[1, 1], [[2, 1], [1, 2]], [[4, 1]]], "expected": [1, 2] },
+    { "args": [[1, 1], [[3, 1], [1, 2]], []], "expected": [1, 2] },
+    { "args": [[1, 1], [[3, 1], [1, 2]], [[3, 1], [1, 2]]], "expected": [1, 2] },
+    { "args": [[1, 1], [], [[2, 1]]], "expected": null }
+  ]
+}

@@ -1,0 +1,255 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "challenge-workshop-temperature-swing",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "order": 1854,
+  "difficulty": "intermediate",
+  "title": {
+    "zh": "车间温差复核",
+    "en": "Workshop Temperature Swing"
+  },
+  "concept": {
+    "zh": "两个日期边界 · 分区 · 极差",
+    "en": "Two day bounds · One area · Temperature range"
+  },
+  "brief": {
+    "zh": "只用第 2 天到第 3 天的有效车间记录，交出期间最高和最低温度的差。复核人员需要看到各次筛选留下了哪些记录，输入已清洗。",
+    "en": "Use valid workshop readings from days 2 through 3 to report the difference between the highest and lowest temperatures. The auditor needs to see which records survive each filter. The input is already clean."
+  },
+  "prerequisites": [
+    {
+      "unit": "numpy",
+      "topic": "masks"
+    },
+    {
+      "unit": "pandas",
+      "topic": "tables"
+    },
+    {
+      "unit": "statistics",
+      "topic": "center-spread"
+    }
+  ],
+  "hints": [],
+  "steps": [
+    {
+      "operation": "mask",
+      "input": "clean",
+      "label": {
+        "zh": "起始日",
+        "en": "Starting day"
+      },
+      "prompt": {
+        "zh": "先保留第 2 天及以后的记录。",
+        "en": "Keep days 2 and later."
+      },
+      "initial": {
+        "column": "day",
+        "comparison": "gte",
+        "threshold": 1
+      },
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            4,
+            2,
+            "hangar",
+            22
+          ],
+          [
+            5,
+            2,
+            "workshop",
+            28
+          ],
+          [
+            7,
+            3,
+            "hangar",
+            26
+          ],
+          [
+            8,
+            3,
+            "workshop",
+            32
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16
+          ],
+          [
+            10,
+            4,
+            "hangar",
+            30
+          ],
+          [
+            12,
+            4,
+            "storage",
+            24
+          ],
+          [
+            13,
+            4,
+            "workshop",
+            36
+          ]
+        ]
+      },
+      "solution": {
+        "column": "day",
+        "comparison": "gte",
+        "threshold": 2
+      }
+    },
+    {
+      "operation": "mask",
+      "input": "previous",
+      "label": {
+        "zh": "结束日",
+        "en": "Ending day"
+      },
+      "prompt": {
+        "zh": "再去掉第 3 天之后的记录。",
+        "en": "Remove records after day 3."
+      },
+      "initial": {
+        "column": "day",
+        "comparison": "lte",
+        "threshold": 4
+      },
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            4,
+            2,
+            "hangar",
+            22
+          ],
+          [
+            5,
+            2,
+            "workshop",
+            28
+          ],
+          [
+            7,
+            3,
+            "hangar",
+            26
+          ],
+          [
+            8,
+            3,
+            "workshop",
+            32
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16
+          ]
+        ]
+      },
+      "solution": {
+        "column": "day",
+        "comparison": "lte",
+        "threshold": 3
+      }
+    },
+    {
+      "operation": "table",
+      "input": "previous",
+      "label": {
+        "zh": "车间记录",
+        "en": "Workshop records"
+      },
+      "prompt": {
+        "zh": "只取车间的行，只留区域和温度两列。",
+        "en": "Take workshop rows only, with area and temperature columns."
+      },
+      "initial": {
+        "columns": "all",
+        "zone": "all"
+      },
+      "goal": {
+        "columns": [
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            "workshop",
+            28
+          ],
+          [
+            "workshop",
+            32
+          ]
+        ]
+      },
+      "solution": {
+        "columns": "zone-reading",
+        "zone": "workshop"
+      }
+    },
+    {
+      "operation": "summary",
+      "input": "previous",
+      "label": {
+        "zh": "温差报告",
+        "en": "Temperature range"
+      },
+      "prompt": {
+        "zh": "给出筛出记录的最高温度减最低温度。",
+        "en": "Report the highest selected reading minus the lowest."
+      },
+      "initial": {
+        "statistic": "mean",
+        "zone": "all"
+      },
+      "goal": {
+        "columns": [
+          "statistic",
+          "value"
+        ],
+        "rows": [
+          [
+            "range",
+            4
+          ]
+        ]
+      },
+      "solution": {
+        "statistic": "range",
+        "zone": "all"
+      }
+    }
+  ]
+}

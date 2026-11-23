@@ -1,0 +1,135 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "numpy-alert-challenge",
+  "order": 509,
+  "stage": "challenge",
+  "unit": {
+    "id": "numpy",
+    "order": 100,
+    "title": {
+      "zh": "NumPy",
+      "en": "NumPy"
+    }
+  },
+  "title": {
+    "zh": "做一张高温交接单",
+    "en": "Prepare a Warm-Reading Handoff"
+  },
+  "brief": {
+    "zh": "筛出至少 26 °C 的读数，然后把结果的最后两条读数交给下一班。",
+    "en": "Filter readings at or above 26 °C, then hand off the last two readings in that result."
+  },
+  "concept": {
+    "zh": "一个步骤的结果可以成为下一个步骤的数据。",
+    "en": "The output of one operation can be the input to the next."
+  },
+  "hints": [
+    {
+      "zh": "切片的下标要用筛选结果里的位置。从 0 重新开始数。",
+      "en": "Use positions in the filtered result for the slice. Start counting again from zero."
+    }
+  ],
+  "steps": [
+    {
+      "operation": "mask",
+      "input": "clean",
+      "label": {
+        "zh": "保留高温行",
+        "en": "Keep warm rows"
+      },
+      "prompt": {
+        "zh": "按原有顺序保留达到 26 °C 的所有完整记录。",
+        "en": "Keep all complete readings at or above 26 °C in their original order."
+      },
+      "initial": {
+        "column": "reading",
+        "comparison": "lte",
+        "threshold": 26
+      },
+      "solution": {
+        "column": "reading",
+        "comparison": "gte",
+        "threshold": 26
+      },
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            5,
+            2,
+            "workshop",
+            28
+          ],
+          [
+            7,
+            3,
+            "hangar",
+            26
+          ],
+          [
+            8,
+            3,
+            "workshop",
+            32
+          ],
+          [
+            10,
+            4,
+            "hangar",
+            30
+          ],
+          [
+            13,
+            4,
+            "workshop",
+            36
+          ]
+        ]
+      }
+    },
+    {
+      "operation": "array",
+      "input": "previous",
+      "label": {
+        "zh": "切出交接读数",
+        "en": "Slice the handoff readings"
+      },
+      "prompt": {
+        "zh": "从上一步的结果中，只取最后两条温度。",
+        "en": "Return only the last two temperatures from the previous result."
+      },
+      "initial": {
+        "column": "day",
+        "start": 0,
+        "stop": 2
+      },
+      "solution": {
+        "column": "reading",
+        "start": 3,
+        "stop": 5
+      },
+      "goal": {
+        "columns": [
+          "index",
+          "reading"
+        ],
+        "rows": [
+          [
+            3,
+            30
+          ],
+          [
+            4,
+            36
+          ]
+        ]
+      }
+    }
+  ]
+}

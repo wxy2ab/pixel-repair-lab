@@ -1,0 +1,556 @@
+{
+  "version": 1,
+  "id": "challenge-four-tower-frequency",
+  "order": 1889,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": {
+    "zh": "四塔换频赛",
+    "en": "Four-Tower Frequency Race"
+  },
+  "concept": {
+    "zh": "争分 · 四台对手轮换塔口",
+    "en": "Score race · Four rivals and rotating towers"
+  },
+  "brief": {
+    "zh": "十三块电池分布在四座塔口。铃铛总追最近的货，另外三台会根据局势改变目标。25 回合内与 4 台对手争夺电池，每块 1 分。电池收完或时间到时，必须独占最高分。同格同时拾取时按计分板顺序轮换优先权，第 1 回合芽芽优先。 第 3, 8, 14, 19 回合结束时切换通道并转移未取的货物；占用的门当次保持开启。从容模式须用同一程序通过两张地图。 控制台的 A、B 调度表列出两局地形、货物、机器人起点和调闸坐标。",
+    "en": "Thirteen batteries span four tower approaches. Bell always seeks the nearest available cargo, while the other three rivals adapt to the race. Race 4 rivals over 25 turns. Each battery is worth one point. Be the sole leader when the batteries run out or time expires. Simultaneous claims rotate in scoreboard order, starting with Sprout on turn one. After turns 3, 8, 14, 19, gates change and unclaimed cargo is transferred. Occupied gates stay open for that shift. In Relaxed mode, win both maps with the same program. The A and B schedule cards include both maps, cargo, rival starts and gate coordinates."
+  },
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "rival-strategy"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "###########",
+    "#.....#...#",
+    "#...#.#.#.#",
+    "#...#.....#",
+    "#.#.###.#.#",
+    "#.........#",
+    "#.##.#.#..#",
+    "#.........#",
+    "###########"
+  ],
+  "start": {
+    "x": 1,
+    "y": 4
+  },
+  "items": [
+    {
+      "id": "cell-1",
+      "x": 7,
+      "y": 3
+    },
+    {
+      "id": "cell-2",
+      "x": 8,
+      "y": 7
+    },
+    {
+      "id": "cell-3",
+      "x": 2,
+      "y": 2
+    },
+    {
+      "id": "cell-4",
+      "x": 8,
+      "y": 1
+    },
+    {
+      "id": "cell-5",
+      "x": 9,
+      "y": 3
+    },
+    {
+      "id": "cell-6",
+      "x": 4,
+      "y": 1
+    },
+    {
+      "id": "cell-7",
+      "x": 8,
+      "y": 3
+    },
+    {
+      "id": "cell-8",
+      "x": 3,
+      "y": 3
+    },
+    {
+      "id": "cell-9",
+      "x": 1,
+      "y": 5
+    },
+    {
+      "id": "cell-10",
+      "x": 7,
+      "y": 2
+    },
+    {
+      "id": "cell-11",
+      "x": 4,
+      "y": 5
+    },
+    {
+      "id": "cell-12",
+      "x": 2,
+      "y": 7
+    },
+    {
+      "id": "cell-13",
+      "x": 9,
+      "y": 2
+    }
+  ],
+  "opponents": [
+    {
+      "id": "rival-1",
+      "title": {
+        "zh": "浜戞瘝",
+        "en": "Mica"
+      },
+      "start": {
+        "x": 9,
+        "y": 7
+      },
+      "policy": {
+        "kind": "adaptive",
+        "style": "secure"
+      }
+    },
+    {
+      "id": "rival-2",
+      "title": {
+        "zh": "鐡疯疆",
+        "en": "Porcelain"
+      },
+      "start": {
+        "x": 7,
+        "y": 1
+      },
+      "policy": {
+        "kind": "adaptive",
+        "style": "intercept"
+      }
+    },
+    {
+      "id": "rival-3",
+      "title": {
+        "zh": "閾冮摏",
+        "en": "Bell"
+      },
+      "start": {
+        "x": 6,
+        "y": 5
+      },
+      "policy": {
+        "kind": "collect"
+      }
+    },
+    {
+      "id": "rival-4",
+      "title": {
+        "zh": "鏇滅煶",
+        "en": "Obsidian"
+      },
+      "start": {
+        "x": 3,
+        "y": 7
+      },
+      "policy": {
+        "kind": "adaptive",
+        "style": "flex"
+      }
+    }
+  ],
+  "objective": {
+    "kind": "score"
+  },
+  "maxTurns": 25,
+  "shifts": [
+    {
+      "turn": 3,
+      "open": [
+        {
+          "x": 6,
+          "y": 1
+        }
+      ],
+      "close": [
+        {
+          "x": 3,
+          "y": 4
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "cell-2",
+          "x": 9,
+          "y": 4
+        }
+      ]
+    },
+    {
+      "turn": 8,
+      "open": [
+        {
+          "x": 8,
+          "y": 2
+        }
+      ],
+      "close": [
+        {
+          "x": 1,
+          "y": 1
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "cell-5",
+          "x": 7,
+          "y": 5
+        }
+      ]
+    },
+    {
+      "turn": 14,
+      "open": [
+        {
+          "x": 2,
+          "y": 6
+        }
+      ],
+      "close": [
+        {
+          "x": 3,
+          "y": 5
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "cell-8",
+          "x": 1,
+          "y": 6
+        }
+      ]
+    },
+    {
+      "turn": 19,
+      "open": [
+        {
+          "x": 4,
+          "y": 2
+        }
+      ],
+      "close": [
+        {
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "cell-11",
+          "x": 6,
+          "y": 6
+        }
+      ]
+    }
+  ],
+  "starterCode": "while True:\n    state = scan()\n    wait()\n",
+  "solutionCode": "DIRS = [\"up\", \"right\", \"down\", \"left\"]\n\ndef magnitude(value):\n    if value < 0:\n        return -value\n    return value\n\ndef smaller(left, right):\n    if left < right:\n        return left\n    return right\n\ndef make_graph(board, width):\n    graph = {}\n    offsets = [-width, 1, width, -1]\n    for y in range(1, len(board) - 1):\n        for x in range(1, width - 1):\n            if board[y][x] != \".\":\n                continue\n            cell = y * width + x\n            edges = []\n            for direction in range(4):\n                neighbor = cell + offsets[direction]\n                if board[neighbor // width][neighbor % width] == \".\":\n                    edges.append([neighbor, DIRS[direction]])\n            graph[cell] = edges\n    return graph\n\ndef route_table(graph, cache, start):\n    if start in cache:\n        return cache[start]\n    table = {start: [0, None]}\n    queue = [start]\n    for cell in queue:\n        previous = table[cell]\n        for edge in graph[cell]:\n            neighbor = edge[0]\n            if neighbor in table:\n                continue\n            first = previous[1]\n            if first is None:\n                first = edge[1]\n            table[neighbor] = [previous[0] + 1, first]\n            queue.append(neighbor)\n    cache[start] = table\n    return table\n\ndef choose(state, graph, cache):\n    board = state[\"tiles\"]\n    width = len(board[0])\n    player = state[\"player\"]\n    start = player[1] * width + player[0]\n    rivals = state[\"opponents\"]\n    own_routes = route_table(graph, cache, start)\n    best_merit = -100000\n    action = \"wait\"\n    for item in state[\"items\"]:\n        cell = item[\"y\"] * width + item[\"x\"]\n        if cell == start:\n            return \"pick\"\n        if cell not in own_routes:\n            continue\n        distance = own_routes[cell][0]\n        direction = own_routes[cell][1]\n        safety = 4\n        for index in range(len(rivals)):\n            rival = rivals[index]\n            remaining = magnitude(item[\"x\"] - rival[\"x\"]) + magnitude(item[\"y\"] - rival[\"y\"])\n            if remaining < distance:\n                safety = smaller(safety, 0)\n            elif remaining == distance:\n                priority = (state[\"turn\"] + distance) % (len(rivals) + 1)\n                if priority > 0 and index + 1 >= priority:\n                    safety = smaller(safety, 1)\n                else:\n                    safety = smaller(safety, 3)\n        merit = safety * 20 - distance * 8\n        if merit > best_merit:\n            action = direction\n            best_merit = merit\n    return action\nboard = []\nwhile True:\n    state = scan()\n    if state[\"tiles\"] != board:\n        board = state[\"tiles\"]\n        graph = make_graph(board, len(board[0]))\n        cache = {}\n    action = choose(state, graph, cache)\n    if action == \"pick\":\n        pick()\n    elif action == \"wait\":\n        wait()\n    else:\n        move(action)\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "读取本回合快照",
+        "en": "Read the current round"
+      },
+      "code": "state = scan()\nposition = state[\"player\"]\nboard = state[\"tiles\"]"
+    },
+    {
+      "label": {
+        "zh": "检查脚下货物",
+        "en": "Check this tile for cargo"
+      },
+      "code": "state = scan()\nfor item in state[\"items\"]:\n    if [item[\"x\"], item[\"y\"]] == state[\"player\"]:\n        pick()\n        break"
+    },
+    {
+      "label": {
+        "zh": "查询下一次切换",
+        "en": "Check the next shift"
+      },
+      "code": "state = scan()\nnext_shift = state[\"nextShift\"]"
+    },
+    {
+      "label": {
+        "zh": "首场 A · 地图与调度表",
+        "en": "Match A · map and schedule"
+      },
+      "code": "plan_a = {\n    \"tiles\": [\n        \"###########\",\n        \"#.....#...#\",\n        \"#...#.#.#.#\",\n        \"#...#.....#\",\n        \"#.#.###.#.#\",\n        \"#.........#\",\n        \"#.##.#.#..#\",\n        \"#.........#\",\n        \"###########\",\n    ],\n    \"start\": [1, 4],\n    \"cargo\": {\"cell-1\": [7, 3], \"cell-2\": [8, 7], \"cell-3\": [2, 2], \"cell-4\": [8, 1], \"cell-5\": [9, 3], \"cell-6\": [4, 1], \"cell-7\": [8, 3], \"cell-8\": [3, 3], \"cell-9\": [1, 5], \"cell-10\": [7, 2], \"cell-11\": [4, 5], \"cell-12\": [2, 7], \"cell-13\": [9, 2]},\n    \"rivals\": {\n        \"rival-1\": {\"start\": [9, 7], \"policy\": \"adaptive\", \"style\": \"secure\"},\n        \"rival-2\": {\"start\": [7, 1], \"policy\": \"adaptive\", \"style\": \"intercept\"},\n        \"rival-3\": {\"start\": [6, 5], \"policy\": \"collect\"},\n        \"rival-4\": {\"start\": [3, 7], \"policy\": \"adaptive\", \"style\": \"flex\"},\n    },\n    \"shifts\": [\n        {\"turn\": 3, \"open\": [[6, 1]], \"close\": [[3, 4]], \"transfer\": {\"cell-2\": [9, 4]}},\n        {\"turn\": 8, \"open\": [[8, 2]], \"close\": [[1, 1]], \"transfer\": {\"cell-5\": [7, 5]}},\n        {\"turn\": 14, \"open\": [[2, 6]], \"close\": [[3, 5]], \"transfer\": {\"cell-8\": [1, 6]}},\n        {\"turn\": 19, \"open\": [[4, 2]], \"close\": [[2, 1]], \"transfer\": {\"cell-11\": [6, 6]}},\n    ]\n}"
+    },
+    {
+      "label": {
+        "zh": "复测 B · 地图与调度表",
+        "en": "Rematch B · map and schedule"
+      },
+      "code": "plan_b = {\n    \"tiles\": [\n        \"###########\",\n        \"#.#.....#.#\",\n        \"#.#..#..#.#\",\n        \"#.........#\",\n        \"#####.#...#\",\n        \"#.........#\",\n        \"#.#.##....#\",\n        \"#.......#.#\",\n        \"###########\",\n    ],\n    \"start\": [6, 6],\n    \"cargo\": {\"cell-1\": [3, 7], \"cell-2\": [8, 5], \"cell-3\": [8, 4], \"cell-4\": [7, 6], \"cell-5\": [6, 3], \"cell-6\": [8, 6], \"cell-7\": [9, 6], \"cell-8\": [4, 3], \"cell-9\": [1, 2], \"cell-10\": [1, 3], \"cell-11\": [6, 1], \"cell-12\": [2, 3], \"cell-13\": [4, 5]},\n    \"rivals\": {\n        \"rival-1\": {\"start\": [3, 1], \"policy\": \"adaptive\", \"style\": \"secure\"},\n        \"rival-2\": {\"start\": [9, 2], \"policy\": \"adaptive\", \"style\": \"intercept\"},\n        \"rival-3\": {\"start\": [2, 7], \"policy\": \"collect\"},\n        \"rival-4\": {\"start\": [9, 7], \"policy\": \"adaptive\", \"style\": \"flex\"},\n    },\n    \"shifts\": [\n        {\"turn\": 3, \"open\": [[8, 2]], \"close\": [[1, 7]], \"transfer\": {\"cell-2\": [6, 5]}},\n        {\"turn\": 8, \"open\": [[8, 1]], \"close\": [[8, 3]], \"transfer\": {\"cell-5\": [9, 3]}},\n        {\"turn\": 14, \"open\": [[5, 2]], \"close\": [[9, 1]], \"transfer\": {\"cell-8\": [3, 5]}},\n        {\"turn\": 19, \"open\": [[6, 4]], \"close\": [[6, 2]], \"transfer\": {\"cell-11\": [5, 4]}},\n    ]\n}"
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "###########",
+        "#.#.....#.#",
+        "#.#..#..#.#",
+        "#.........#",
+        "#####.#...#",
+        "#.........#",
+        "#.#.##....#",
+        "#.......#.#",
+        "###########"
+      ],
+      "start": {
+        "x": 6,
+        "y": 6
+      },
+      "items": [
+        {
+          "id": "cell-1",
+          "x": 3,
+          "y": 7
+        },
+        {
+          "id": "cell-2",
+          "x": 8,
+          "y": 5
+        },
+        {
+          "id": "cell-3",
+          "x": 8,
+          "y": 4
+        },
+        {
+          "id": "cell-4",
+          "x": 7,
+          "y": 6
+        },
+        {
+          "id": "cell-5",
+          "x": 6,
+          "y": 3
+        },
+        {
+          "id": "cell-6",
+          "x": 8,
+          "y": 6
+        },
+        {
+          "id": "cell-7",
+          "x": 9,
+          "y": 6
+        },
+        {
+          "id": "cell-8",
+          "x": 4,
+          "y": 3
+        },
+        {
+          "id": "cell-9",
+          "x": 1,
+          "y": 2
+        },
+        {
+          "id": "cell-10",
+          "x": 1,
+          "y": 3
+        },
+        {
+          "id": "cell-11",
+          "x": 6,
+          "y": 1
+        },
+        {
+          "id": "cell-12",
+          "x": 2,
+          "y": 3
+        },
+        {
+          "id": "cell-13",
+          "x": 4,
+          "y": 5
+        }
+      ],
+      "opponents": [
+        {
+          "id": "rival-1",
+          "title": {
+            "zh": "浜戞瘝",
+            "en": "Mica"
+          },
+          "start": {
+            "x": 3,
+            "y": 1
+          },
+          "policy": {
+            "kind": "adaptive",
+            "style": "secure"
+          }
+        },
+        {
+          "id": "rival-2",
+          "title": {
+            "zh": "鐡疯疆",
+            "en": "Porcelain"
+          },
+          "start": {
+            "x": 9,
+            "y": 2
+          },
+          "policy": {
+            "kind": "adaptive",
+            "style": "intercept"
+          }
+        },
+        {
+          "id": "rival-3",
+          "title": {
+            "zh": "閾冮摏",
+            "en": "Bell"
+          },
+          "start": {
+            "x": 2,
+            "y": 7
+          },
+          "policy": {
+            "kind": "collect"
+          }
+        },
+        {
+          "id": "rival-4",
+          "title": {
+            "zh": "鏇滅煶",
+            "en": "Obsidian"
+          },
+          "start": {
+            "x": 9,
+            "y": 7
+          },
+          "policy": {
+            "kind": "adaptive",
+            "style": "flex"
+          }
+        }
+      ],
+      "objective": {
+        "kind": "score"
+      },
+      "maxTurns": 25,
+      "shifts": [
+        {
+          "turn": 3,
+          "open": [
+            {
+              "x": 8,
+              "y": 2
+            }
+          ],
+          "close": [
+            {
+              "x": 1,
+              "y": 7
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "cell-2",
+              "x": 6,
+              "y": 5
+            }
+          ]
+        },
+        {
+          "turn": 8,
+          "open": [
+            {
+              "x": 8,
+              "y": 1
+            }
+          ],
+          "close": [
+            {
+              "x": 8,
+              "y": 3
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "cell-5",
+              "x": 9,
+              "y": 3
+            }
+          ]
+        },
+        {
+          "turn": 14,
+          "open": [
+            {
+              "x": 5,
+              "y": 2
+            }
+          ],
+          "close": [
+            {
+              "x": 9,
+              "y": 1
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "cell-8",
+              "x": 3,
+              "y": 5
+            }
+          ]
+        },
+        {
+          "turn": 19,
+          "open": [
+            {
+              "x": 6,
+              "y": 4
+            }
+          ],
+          "close": [
+            {
+              "x": 6,
+              "y": 2
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "cell-11",
+              "x": 5,
+              "y": 4
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "kind": "replay",
+  "id": "run-parts-stack",
+  "order": 1002,
+  "unit": {
+    "id": "structures",
+    "order": 40,
+    "title": {
+      "zh": "数据结构",
+      "en": "Data Structures"
+    }
+  },
+  "topic": {
+    "id": "stacks",
+    "order": 2,
+    "title": {
+      "zh": "栈",
+      "en": "Stacks"
+    }
+  },
+  "stage": "demo",
+  "title": {
+    "zh": "观察一摞工具先出哪件",
+    "en": "Watch Which Tool Comes Off the Stack"
+  },
+  "concept": {
+    "zh": "依次入栈和出栈",
+    "en": "Push and pop in order"
+  },
+  "brief": {
+    "zh": "把工具放进同一个栈，回放出栈时的结果。",
+    "en": "Put tools on the same stack and replay what comes off it."
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "先放图纸，再放线缆",
+        "en": "Store the map first and the cable second"
+      },
+      "source": "parts = scan()\nstack = []\nstack.append(parts[0])\nstack.append(parts[1])\nsubmit(stack.pop())\nsubmit(stack.pop())",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "allowedApi": [
+          "scan",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              "cable",
+              "map"
+            ],
+            "origin": "stack-pop",
+            "sameContainer": true
+          }
+        ],
+        "input": [
+          "map",
+          "cable"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,219 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-cooling-slot-hunt",
+  "order": 1843,
+  "difficulty": "intermediate",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "algorithm-intro",
+      "topic": "selection-sort"
+    },
+    {
+      "unit": "python-intermediate",
+      "topic": "for-loops"
+    }
+  ],
+  "title": {
+    "zh": "冷却舱抢空档",
+    "en": "Cooling Bay Slot Hunt"
+  },
+  "concept": {
+    "zh": "重叠预约 · 相接边界 · 最早时段",
+    "en": "Overlapping bookings · Touching edges · Earliest slot"
+  },
+  "brief": {
+    "zh": "冷却舱从第 0 分钟开到 horizon 时刻。bookings 按开始时间升序，每笔 [开始, 结束] 占用从开始到结束前的整分钟，可能重叠或相接，且都在开放时段。给新的维修找 length 个连续空闲分钟，length 大于 0。返回最早开始时间，没有空档返回 -1。",
+    "en": "The cooling bay opens at minute zero and closes at horizon. bookings is sorted by start time. Each [start, end] occupies whole minutes from start up to but excluding end. Bookings can overlap or touch and stay within opening hours. Find the earliest start for a repair of length consecutive free minutes, with length positive. Return -1 if it will not fit."
+  },
+  "hints": [],
+  "functionName": "first_cooling_slot",
+  "starterCode": "def first_cooling_slot(bookings, horizon, length):\n    pass\n",
+  "solutionCode": "def first_cooling_slot(bookings, horizon, length):\n    free_start = 0\n    for booking in bookings:\n        if booking[0] >= free_start + length:\n            return free_start\n        if booking[1] > free_start:\n            free_start = booking[1]\n    if free_start + length <= horizon:\n        return free_start\n    return -1\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "读取预约始末",
+        "en": "Read booking endpoints"
+      },
+      "code": "    for booking in bookings:\n        start = booking[0]\n        end = booking[1]"
+    },
+    {
+      "label": {
+        "zh": "时段是否放得下",
+        "en": "Test whether a slot fits"
+      },
+      "code": "    fits = free_start + length <= horizon"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          [
+            0,
+            3
+          ],
+          [
+            2,
+            7
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            10,
+            15
+          ]
+        ],
+        19,
+        3
+      ],
+      "expected": 7
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            2
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            5,
+            9
+          ]
+        ],
+        13,
+        4
+      ],
+      "expected": 9
+    },
+    {
+      "args": [
+        [
+          [
+            2,
+            4
+          ],
+          [
+            7,
+            8
+          ]
+        ],
+        10,
+        2
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            3
+          ],
+          [
+            4,
+            7
+          ],
+          [
+            8,
+            10
+          ]
+        ],
+        11,
+        2
+      ],
+      "expected": -1
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            7,
+            8
+          ]
+        ],
+        9,
+        2
+      ],
+      "expected": 5
+    },
+    {
+      "args": [
+        [],
+        0,
+        1
+      ],
+      "expected": -1
+    },
+    {
+      "args": [
+        [],
+        12,
+        12
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          [
+            3,
+            6
+          ],
+          [
+            9,
+            12
+          ]
+        ],
+        15,
+        3
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            120000
+          ],
+          [
+            120000,
+            120010
+          ],
+          [
+            120016,
+            150000
+          ]
+        ],
+        150005,
+        6
+      ],
+      "expected": 120010
+    }
+  ]
+}

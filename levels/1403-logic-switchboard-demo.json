@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "kind": "circuit",
+  "id": "logic-switchboard-demo",
+  "order": 1403,
+  "unit": {
+    "id": "computer",
+    "order": 80,
+    "title": {
+      "zh": "计算机原理",
+      "en": "Computer Systems"
+    }
+  },
+  "topic": {
+    "id": "logic-gates",
+    "order": 2,
+    "title": {
+      "zh": "逻辑门",
+      "en": "Logic Gates"
+    }
+  },
+  "stage": "demo",
+  "title": {
+    "zh": "试拨两路逻辑控制板",
+    "en": "Try the Two-Input Switchboard"
+  },
+  "concept": {
+    "zh": "固定输入比较不同的门",
+    "en": "Compare different gates with the same inputs"
+  },
+  "brief": {
+    "zh": "每次先预测灯会不会亮，再拨动 A、B 或换一个门。输入没变时，换门也可能改变结果。",
+    "en": "Predict whether the light will turn on, then flip A or B or select a different gate. A new gate can give a different result with the same inputs."
+  },
+  "hints": [
+    {
+      "zh": "试试让两路输入都为 1，再来回比较 OR 和 XOR。",
+      "en": "Set both inputs to 1, then switch between OR and XOR."
+    },
+    {
+      "zh": "试选 NOT，只拨右边几次，再拨左边一次。",
+      "en": "Select NOT. Flip the right switch a few times, then flip the left switch once."
+    }
+  ],
+  "mode": "logic",
+  "gateChoices": [
+    "AND",
+    "OR",
+    "NOT",
+    "XOR"
+  ],
+  "cases": [
+    {
+      "label": {
+        "zh": "A 开、B 关，先用 AND",
+        "en": "A on and B off, starting with AND"
+      },
+      "bits": [
+        1,
+        0
+      ],
+      "gate": "AND"
+    },
+    {
+      "label": {
+        "zh": "两边都开，先用 OR",
+        "en": "Both inputs on, starting with OR"
+      },
+      "bits": [
+        1,
+        1
+      ],
+      "gate": "OR"
+    },
+    {
+      "label": {
+        "zh": "A 关、B 开，先用 NOT",
+        "en": "A off and B on, starting with NOT"
+      },
+      "bits": [
+        0,
+        1
+      ],
+      "gate": "NOT"
+    }
+  ]
+}

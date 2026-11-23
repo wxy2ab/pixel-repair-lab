@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "challenge-three-mask-inspection",
+  "order": 1900,
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "三张掩膜，一块校准板",
+    "en": "Three Masks from One Board"
+  },
+  "brief": {
+    "zh": "同一块板要为三台仪器制作三张掩膜。每张交付单同时限制亮区个数和所有白色像素的总数，两个边界都算。三单都验收才能放行。",
+    "en": "Three instruments need different masks of the same board. Each ticket sets both the number of bright regions and the total white-pixel budget, inclusive. All three masks must pass."
+  },
+  "concept": {
+    "zh": "平滑、阈值与连通区域面积约束",
+    "en": "Smoothing, thresholds and connected-region area limits"
+  },
+  "prerequisites": [
+    {
+      "unit": "opencv",
+      "topic": "color"
+    },
+    {
+      "unit": "opencv",
+      "topic": "image-processing"
+    }
+  ],
+  "hints": [],
+  "mode": "filter",
+  "cases": [
+    {
+      "image": "calibration",
+      "label": {
+        "zh": "全灯点亮",
+        "en": "Full lamp panel"
+      },
+      "prompt": {
+        "zh": "保留 4 个亮区，总白色像素在 16,040 至 16,140 之间。",
+        "en": "Retain four bright regions with 16,040 through 16,140 white pixels altogether."
+      },
+      "initial": {
+        "blur": 0,
+        "threshold": 200
+      },
+      "goal": {
+        "regions": 4,
+        "whitePixelRange": [
+          16040,
+          16140
+        ]
+      },
+      "solution": {
+        "blur": 7,
+        "threshold": 70
+      }
+    },
+    {
+      "image": "calibration",
+      "label": {
+        "zh": "双灯隔离",
+        "en": "Two-lamp isolation"
+      },
+      "prompt": {
+        "zh": "保留 2 个亮区，总白色像素在 8,750 至 8,820 之间。",
+        "en": "Isolate two bright regions containing 8,750 through 8,820 white pixels in total."
+      },
+      "initial": {
+        "blur": 0,
+        "threshold": 100
+      },
+      "goal": {
+        "regions": 2,
+        "whitePixelRange": [
+          8750,
+          8820
+        ]
+      },
+      "solution": {
+        "blur": 3,
+        "threshold": 175
+      }
+    },
+    {
+      "image": "calibration",
+      "label": {
+        "zh": "中央亮芯",
+        "en": "Bright core"
+      },
+      "prompt": {
+        "zh": "最后一张只留 1 个亮区，总白色像素在 4,900 至 4,970 之间。",
+        "en": "Deliver a single bright region with 4,900 through 4,970 white pixels."
+      },
+      "initial": {
+        "blur": 3,
+        "threshold": 35
+      },
+      "goal": {
+        "regions": 1,
+        "whitePixelRange": [
+          4900,
+          4970
+        ]
+      },
+      "solution": {
+        "blur": 7,
+        "threshold": 220
+      }
+    }
+  ]
+}

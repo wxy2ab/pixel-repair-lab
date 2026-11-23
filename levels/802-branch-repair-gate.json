@@ -1,0 +1,207 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "python-intermediate",
+    "order": 20,
+    "title": {
+      "zh": "Python 进阶",
+      "en": "Intermediate Python"
+    }
+  },
+  "kind": "grid",
+  "id": "branch-repair-gate",
+  "order": 812,
+  "stage": "exercise",
+  "topic": {
+    "id": "branches",
+    "order": 1,
+    "title": {
+      "zh": "条件分支",
+      "en": "Conditional branches"
+    }
+  },
+  "title": {
+    "zh": "走哪扇检修门",
+    "en": "Choose the repair gate"
+  },
+  "concept": {
+    "zh": "安排两条分支的动作",
+    "en": "Assign an action to each branch"
+  },
+  "brief": {
+    "zh": "芽芽站在两扇门之间。读数达到 5 就往上走，低于 5 就往下走。同一段程序要适应变体。",
+    "en": "Sprout is between two gates. Move up for readings of at least 5 and down for smaller readings. The same program must handle the variants."
+  },
+  "hints": [
+    {
+      "zh": "先扫描，再摆好 if 和 else。在两条分支里各放一张不同方向的移动卡。",
+      "en": "Scan first, then place if and else. Give the two branches separate movement cards."
+    }
+  ],
+  "tiles": [
+    "#######",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#######"
+  ],
+  "start": {
+    "x": 3,
+    "y": 2
+  },
+  "input": 5,
+  "allowedApi": [
+    "scan",
+    "move"
+  ],
+  "objectives": [
+    {
+      "type": "exit",
+      "x": 3,
+      "y": 1
+    }
+  ],
+  "variants": [
+    {
+      "input": 2,
+      "objectives": [
+        {
+          "type": "exit",
+          "x": 3,
+          "y": 3
+        }
+      ]
+    },
+    {
+      "input": 9
+    }
+  ],
+  "cards": [
+    {
+      "id": "scan-reading",
+      "label": {
+        "zh": "读入数值",
+        "en": "Read the value"
+      },
+      "template": "reading = scan()"
+    },
+    {
+      "id": "if-gate",
+      "label": {
+        "zh": "如果读数达到警戒线",
+        "en": "If the reading meets the limit"
+      },
+      "template": "if reading {{operator}} 5:",
+      "block": true,
+      "parameters": [
+        {
+          "name": "operator",
+          "label": {
+            "zh": "比较方式",
+            "en": "Comparison"
+          },
+          "choices": [
+            {
+              "id": "above",
+              "label": {
+                "zh": "高于",
+                "en": "Above"
+              },
+              "code": ">"
+            },
+            {
+              "id": "at-least",
+              "label": {
+                "zh": "达到或超过",
+                "en": "At least"
+              },
+              "code": ">="
+            },
+            {
+              "id": "below",
+              "label": {
+                "zh": "低于",
+                "en": "Below"
+              },
+              "code": "<"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "else",
+      "label": {
+        "zh": "否则",
+        "en": "Otherwise"
+      },
+      "template": "else:",
+      "block": true
+    },
+    {
+      "id": "move",
+      "label": {
+        "zh": "移动一格",
+        "en": "Move one tile"
+      },
+      "template": "move({{direction}})",
+      "parameters": [
+        {
+          "name": "direction",
+          "label": {
+            "zh": "方向",
+            "en": "Direction"
+          },
+          "choices": [
+            {
+              "id": "up",
+              "label": {
+                "zh": "向上",
+                "en": "Up"
+              },
+              "code": "\"up\""
+            },
+            {
+              "id": "down",
+              "label": {
+                "zh": "向下",
+                "en": "Down"
+              },
+              "code": "\"down\""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "scan-reading"
+    },
+    {
+      "cardId": "if-gate",
+      "children": [
+        {
+          "cardId": "move",
+          "values": {
+            "direction": "up"
+          }
+        }
+      ],
+      "values": {
+        "operator": "at-least"
+      }
+    },
+    {
+      "cardId": "else",
+      "children": [
+        {
+          "cardId": "move",
+          "values": {
+            "direction": "down"
+          }
+        }
+      ]
+    }
+  ]
+}

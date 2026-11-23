@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "cpu-instructions-demo",
+  "order": 1522,
+  "unit": { "id": "architecture", "order": 90, "title": { "zh": "计算机结构", "en": "Computer Architecture" } },
+  "topic": { "id": "instructions", "order": 3, "title": { "zh": "指令", "en": "Instructions" } },
+  "stage": "demo",
+  "title": { "zh": "读到 HALT 就停下来", "en": "Stop When You Reach HALT" },
+  "brief": { "zh": "单步查看每条指令的效果，观察 HALT 后面的 ADD 会不会执行。", "en": "Step through the program. See what happens to the ADD after HALT." },
+  "concept": { "zh": "PC 数指令，程序在 HALT 停止。", "en": "PC counts instructions. The program stops at HALT." },
+  "hints": [{ "zh": "对照左侧 PC 和右侧行号。注释与空行不会用掉一步。", "en": "Compare PC with the source line numbers. Comments and blank lines take no steps." }],
+  "allowedOps": ["LOAD", "ADD", "STORE", "HALT"],
+  "starterCode": "# ACC = memory[0] + memory[1]\nLOAD 0\nADD 1\nSTORE 2\n\nHALT\nADD 0\n",
+  "cases": [{ "label": { "zh": "停机观察", "en": "Halting trace" }, "memory": [18, -4, 0] }]
+}

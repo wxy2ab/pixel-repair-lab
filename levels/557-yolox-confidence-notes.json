@@ -1,0 +1,226 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "yolox-confidence-notes",
+  "order": 557,
+  "stage": "explain",
+  "unit": {
+    "id": "yolox",
+    "order": 150,
+    "title": {
+      "zh": "YOLOX",
+      "en": "YOLOX"
+    }
+  },
+  "topic": {
+    "id": "detection-confidence",
+    "order": 3,
+    "title": {
+      "zh": "置信度门槛",
+      "en": "Confidence thresholds"
+    }
+  },
+  "title": {
+    "zh": "设一个合适的置信度门槛",
+    "en": "Choose a Confidence Threshold"
+  },
+  "brief": {
+    "zh": "看门槛怎样改变候选清单，想一想什么时候宁可多复核几个框。",
+    "en": "See how the threshold changes the candidate list, and when it is worth checking a few extra boxes."
+  },
+  "concept": {
+    "zh": "提高置信度门槛会减少低分预测，也可能漏掉真实但难认的目标。",
+    "en": "A higher threshold removes lower-scoring predictions and can also hide real objects that are hard to recognize."
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "分数来自模型",
+        "en": "Scores come from the model"
+      },
+      "body": {
+        "zh": "YOLOX 给每个候选一个分数。高分表示模型对这个候选更有把握，现场核对才知道它是否猜对。调节门槛会改变要显示的预测。",
+        "en": "YOLOX gives each prediction a score. A higher score means the model is more confident about the candidate. Looking at the photo tells you whether its guess was right. The threshold selects which predictions to show."
+      }
+    },
+    {
+      "title": {
+        "zh": "根据用途选择门槛",
+        "en": "Match the threshold to the job"
+      },
+      "body": {
+        "zh": "如果每个框都要由人复核，降低门槛能把难认目标也交给人看。提高门槛会缩短清单，同时也可能漏掉确实存在的物体。",
+        "en": "When a person checks every box, a lower threshold can surface harder-to-spot objects for review. A higher threshold gives a shorter list and can also miss objects that are actually present."
+      }
+    }
+  ],
+  "animation": {
+    "layout": "bars",
+    "frames": [
+      {
+        "caption": {
+          "zh": "示例中有三个候选，模型分别打了 88%、55% 和 30% 的分。",
+          "en": "In this example, the model scores three candidates at 88%, 55%, and 30%."
+        },
+        "items": [
+          {
+            "id": "dog",
+            "label": {
+              "zh": "狗",
+              "en": "Dog"
+            },
+            "value": {
+              "zh": "88%",
+              "en": "88%"
+            },
+            "height": 88
+          },
+          {
+            "id": "chair",
+            "label": {
+              "zh": "椅子",
+              "en": "Chair"
+            },
+            "value": {
+              "zh": "55%",
+              "en": "55%"
+            },
+            "height": 55
+          },
+          {
+            "id": "bottle",
+            "label": {
+              "zh": "瓶子",
+              "en": "Bottle"
+            },
+            "value": {
+              "zh": "30%",
+              "en": "30%"
+            },
+            "height": 30
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "门槛调到 50%。狗和椅子留下，瓶子的分数没有过线。",
+          "en": "At a 50% threshold, dog and chair stay. The bottle score is below the cutoff."
+        },
+        "items": [
+          {
+            "id": "dog",
+            "label": {
+              "zh": "狗",
+              "en": "Dog"
+            },
+            "value": {
+              "zh": "88% · 保留",
+              "en": "88% · keep"
+            },
+            "state": "done",
+            "height": 88
+          },
+          {
+            "id": "chair",
+            "label": {
+              "zh": "椅子",
+              "en": "Chair"
+            },
+            "value": {
+              "zh": "55% · 保留",
+              "en": "55% · keep"
+            },
+            "state": "done",
+            "height": 55
+          },
+          {
+            "id": "bottle",
+            "label": {
+              "zh": "瓶子",
+              "en": "Bottle"
+            },
+            "value": {
+              "zh": "30% · 隐藏",
+              "en": "30% · hide"
+            },
+            "state": "muted",
+            "height": 30
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "门槛改成 90%。三个分数都没变，现在没有候选留下。",
+          "en": "Raise the threshold to 90%. All three scores stay the same, and none of the predictions remain visible."
+        },
+        "items": [
+          {
+            "id": "dog",
+            "label": {
+              "zh": "狗",
+              "en": "Dog"
+            },
+            "value": {
+              "zh": "88% · 隐藏",
+              "en": "88% · hide"
+            },
+            "state": "muted",
+            "height": 88
+          },
+          {
+            "id": "chair",
+            "label": {
+              "zh": "椅子",
+              "en": "Chair"
+            },
+            "value": {
+              "zh": "55% · 隐藏",
+              "en": "55% · hide"
+            },
+            "state": "muted",
+            "height": 55
+          },
+          {
+            "id": "bottle",
+            "label": {
+              "zh": "瓶子",
+              "en": "Bottle"
+            },
+            "value": {
+              "zh": "30% · 隐藏",
+              "en": "30% · hide"
+            },
+            "state": "muted",
+            "height": 30
+          }
+        ]
+      }
+    ]
+  },
+  "question": {
+    "prompt": {
+      "zh": "把示例的最低置信度设成 70%。屏幕上会留下什么？",
+      "en": "Set the example's minimum confidence to 70%. What stays on the screen?"
+    },
+    "options": [
+      {
+        "zh": "狗和椅子",
+        "en": "Dog and chair"
+      },
+      {
+        "zh": "狗",
+        "en": "Dog"
+      },
+      {
+        "zh": "三个框都消失",
+        "en": "All three boxes disappear"
+      }
+    ],
+    "correct": 1,
+    "feedback": {
+      "zh": "88% 高于 70%，而 55% 和 30% 都低于 70%。只保留狗的框。",
+      "en": "88% is above 70%, while 55% and 30% are below it. Only the dog box stays."
+    }
+  }
+}

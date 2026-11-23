@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "cpu-registers-notes",
+  "order": 1511,
+  "unit": { "id": "architecture", "order": 90, "title": { "zh": "计算机结构", "en": "Computer Architecture" } },
+  "topic": { "id": "registers", "order": 2, "title": { "zh": "寄存器", "en": "Registers" } },
+  "stage": "explain",
+  "title": { "zh": "两种寄存器各记一件事", "en": "Two Registers, Two Jobs" },
+  "brief": { "zh": "看累加器怎么保留计算结果，程序计数器怎么准备下一步。", "en": "Watch the accumulator hold a working value and the program counter prepare the next step." },
+  "concept": { "zh": "ACC 保存计算中的值，PC 指向下一条指令。", "en": "ACC holds the working value and PC points to the next instruction." },
+  "hints": [],
+  "sections": [
+    { "title": { "zh": "ACC 是工作的地方", "en": "ACC holds the working value" }, "body": { "zh": "LOAD 用读到的值替换 ACC。ADD 和 SUB 修改 ACC 里的数。要把这份工作结果留在内存里，再使用 STORE。", "en": "LOAD replaces ACC with a value from memory. ADD and SUB change the value in ACC. Use STORE when you want to keep that result in memory." } },
+    { "title": { "zh": "PC 记下程序走到哪儿", "en": "PC keeps the place in the program" }, "body": { "zh": "程序计数器 PC 从 0 开始。每执行一条指令，PC 前进一格，准备下一条。ACC 可以变大、变小，也可以保持原值。", "en": "The program counter, PC, starts at 0. Each executed instruction advances it by one. ACC can go up, go down, or stay the same." } }
+  ],
+  "animation": {
+    "layout": "pipeline",
+    "hardware": {
+      "kind": "cpu",
+      "source": "ADD 0\nSUB 1\nHALT",
+      "memory": [6, 3],
+      "accumulator": 5,
+      "checkpoints": [
+        { "pc": 0, "phase": "fetch" },
+        { "pc": 0, "phase": "execute" },
+        { "pc": 1, "phase": "execute" },
+        { "pc": 2, "phase": "execute" }
+      ]
+    },
+    "frames": [
+      { "caption": { "zh": "开始时 ACC 里有 5，PC 指向第 0 条指令 ADD 0。地址 0 里是 6。", "en": "ACC holds 5 and PC points to instruction 0, ADD 0. Address 0 contains 6." }, "items": [
+        { "id": "pc", "label": { "zh": "PC", "en": "PC" }, "value": { "zh": "0", "en": "0" }, "state": "active" },
+        { "id": "instruction", "label": { "zh": "下一条指令", "en": "Next instruction" }, "value": { "zh": "ADD 0", "en": "ADD 0" } },
+        { "id": "acc", "label": { "zh": "ACC", "en": "ACC" }, "value": { "zh": "5", "en": "5" } }
+      ] },
+      { "caption": { "zh": "刚执行 ADD 0，ACC 成为 11。PC 指向 SUB 1。地址 1 里是 3。", "en": "ADD 0 made ACC 11. PC points to SUB 1, and address 1 contains 3." }, "items": [
+        { "id": "pc", "label": { "zh": "PC", "en": "PC" }, "value": { "zh": "1", "en": "1" } },
+        { "id": "instruction", "label": { "zh": "下一条指令", "en": "Next instruction" }, "value": { "zh": "SUB 1", "en": "SUB 1" }, "state": "active" },
+        { "id": "acc", "label": { "zh": "ACC", "en": "ACC" }, "value": { "zh": "5 + 6 = 11", "en": "5 + 6 = 11" }, "state": "done" }
+      ] },
+      { "caption": { "zh": "刚执行 SUB 1，ACC 变小了，PC 仍然向前走了一格。", "en": "SUB 1 lowered ACC, while PC still moved forward by one." }, "items": [
+        { "id": "pc", "label": { "zh": "PC", "en": "PC" }, "value": { "zh": "2", "en": "2" }, "state": "done" },
+        { "id": "instruction", "label": { "zh": "下一条指令", "en": "Next instruction" }, "value": { "zh": "HALT", "en": "HALT" }, "state": "active" },
+        { "id": "acc", "label": { "zh": "ACC", "en": "ACC" }, "value": { "zh": "11 − 3 = 8", "en": "11 − 3 = 8" }, "state": "done" }
+      ] },
+      { "caption": { "zh": "执行 HALT，ACC 保留最后算出的 8。PC 前进一步，CPU 停止取指。", "en": "HALT leaves the final value, 8, in ACC. PC advances once and the CPU stops fetching instructions." }, "items": [
+        { "id": "pc", "label": { "zh": "PC", "en": "PC" }, "value": { "zh": "3", "en": "3" }, "state": "done" },
+        { "id": "instruction", "label": { "zh": "停机指令", "en": "Stop instruction" }, "value": { "zh": "HALT", "en": "HALT" }, "state": "active" },
+        { "id": "acc", "label": { "zh": "ACC", "en": "ACC" }, "value": { "zh": "8", "en": "8" } }
+      ] }
+    ]
+  },
+  "question": {
+    "prompt": { "zh": "执行 SUB 让 ACC 从 11 变成 8。PC 会怎么变？", "en": "SUB changes ACC from 11 to 8. What happens to PC?" },
+    "options": [{ "zh": "前进一格", "en": "Advance by one" }, { "zh": "减去 3", "en": "Subtract 3" }, { "zh": "也变成 8", "en": "Become 8 as well" }],
+    "correct": 0,
+    "feedback": { "zh": "SUB 只减 ACC；PC 负责指向下一条指令。", "en": "SUB subtracts from ACC. PC moves on to the next instruction." }
+  }
+}

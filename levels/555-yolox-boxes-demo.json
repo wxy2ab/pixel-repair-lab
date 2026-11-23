@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "yolox-bounding-box-demo",
+  "order": 555,
+  "stage": "demo",
+  "unit": {
+    "id": "yolox",
+    "order": 150,
+    "title": { "zh": "YOLOX", "en": "YOLOX" }
+  },
+  "topic": {
+    "id": "bounding-boxes",
+    "order": 2,
+    "title": { "zh": "边界框与重叠", "en": "Bounding boxes and overlap" }
+  },
+  "mode": "boxes",
+  "title": { "zh": "拖一个框，看看交并比", "en": "Drag a Box and See Its IoU" },
+  "brief": { "zh": "在照片上调整自己的矩形，与 YOLOX 给出的参考框比较。", "en": "Adjust your rectangle over the photo and compare it with YOLOX's reference box." },
+  "concept": { "zh": "两个框相交的面积越接近它们的总覆盖面积，交并比越大。", "en": "IoU increases as the overlapping area approaches the total area the two boxes cover." },
+  "hints": [
+    { "zh": "试试让你的框覆盖整张图，再把边缘收紧。比较两次数字。", "en": "Try covering the whole photo, then bring the edges in. Compare the two scores." }
+  ],
+  "cases": [
+    {
+      "image": "astronaut",
+      "label": { "zh": "重叠面积实验", "en": "Overlap experiment" },
+      "prompt": { "zh": "在图上拖一个框。比较位置或大小变化前后的交并比。", "en": "Drag a box on the photo. Compare IoU before and after changing the position or size." },
+      "initial": { "x": 15, "y": 20, "w": 55, "h": 65 }
+    }
+  ]
+}

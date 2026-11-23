@@ -1,0 +1,15 @@
+.algorithm-field-stats { display: flex; flex-wrap: wrap; gap: .4em 1.2em; font-variant-numeric: tabular-nums; }
+.algorithm-field-line { margin: .5rem 0; padding: .55rem .75rem; overflow: auto; border-left: 4px solid #8ecfb1;
+  background: #203d40; border-radius: 4px; color: #eff8df; }
+.algorithm-field-line small { margin-right: 1em; color: #bcddbb; }
+.algorithm-field-line code { display: block; color: #b8cec6; }
+.algorithm-field-line code[aria-current] { color: #ffedb7; font-weight: 700; }
+.algorithm-field-pick { font-size: .9em; }
+.bfs-model-action { font-size: .9em; }
+.bfs-body:not(:has([data-renderer="webgl"])) .bfs-model-action { display: none; }
+.algorithm-field:not(:has([data-renderer="webgl"])) .algorithm-field-pick { display: none; }
+.algorithm-field details { margin: .5rem 0; }
+.algorithm-field details > summary { cursor: pointer; }
+.algorithm-field:has([data-renderer="webgl"]) + .diagram { display: none; }
+.teaching-model[data-teaching-model="breadth-first-field"] .teaching-model-tray,
+.algorithm-field .teaching-model-tray { height: clamp(215px, 25vw, 302px); }

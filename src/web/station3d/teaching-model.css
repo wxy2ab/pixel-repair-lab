@@ -1,0 +1,57 @@
+.classroom-workspace .teaching-model {
+  min-width: 0;
+  margin: 0 0 12px;
+  overflow: hidden;
+  border: 1px solid #507173;
+  border-bottom: 3px solid #436065;
+  border-radius: 10px;
+  background: #203638;
+  color: #e6f3eb;
+}
+.teaching-model[hidden] { display: none; }
+.teaching-model > figcaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  min-height: 34px;
+  padding: 3px 10px;
+  border-bottom: 1px solid #4c6769;
+  color: #d5ebe0;
+  background: #233b3d;
+  font: 600 13px/1.35 system-ui, sans-serif;
+}
+.teaching-model .teaching-model-view {
+  flex-shrink: 0;
+  min-height: 28px;
+  padding: 2px 10px;
+  border: 1px solid #698984;
+  border-radius: 5px;
+  background: #314b4c;
+  color: #e3f4e9;
+  font: inherit;
+}
+.teaching-model .teaching-model-view[aria-pressed='true'] { background: #b0debe; border-color: #cce9d3; color: #152d25; }
+.teaching-model-tray {
+  position: relative;
+  height: clamp(155px, 19vw, 228px);
+  background:
+    radial-gradient(ellipse at 50% 43%, #40606444, transparent 78%),
+    radial-gradient(#63817b70 .8px, transparent 1px) 0 0 / 12px 12px, #172d31;
+}
+.teaching-model-tray canvas, .teaching-model-labels { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.teaching-model-tray canvas[data-pickable='true'] { cursor: pointer; }
+.teaching-model-labels { pointer-events: none; }
+.teaching-model-labels > span {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  max-width: 95%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-radius: 3px;
+  padding: .03em .24em;
+  background: #13292ee8;
+  color: #f6f9ea;
+  font: 650 12px/1.15 ui-monospace, monospace;
+}

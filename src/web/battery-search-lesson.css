@@ -1,0 +1,243 @@
+.battery-search-lesson {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.search-workbench { container-type: inline-size; }
+
+.search-panel-body {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: clamp(10px, 2.6cqi, 17px);
+}
+
+.search-panel-body p,
+.search-method p { margin: 0; }
+.search-panel-body > p { color: var(--muted); }
+.search-panel-body .is-found { color: var(--mint); }
+
+.search-battery-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.search-battery-row li { min-width: 0; }
+
+.search-battery-tile {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 4px;
+  min-width: 32px;
+  min-height: 52px;
+  padding: 6px 4px;
+  border: 1px solid #49617d;
+  border-radius: 7px;
+  background: #21354b;
+  color: #e6f2ff;
+  line-height: 1;
+}
+
+.search-battery-tile.subtle-button { min-height: 49px; }
+.search-workbench .search-battery-tile.subtle-button { min-width: 42px; }
+.search-battery-tile[aria-disabled='true'] { cursor: default; }
+.search-battery-name { font: 750 .88rem/1 var(--mono); overflow-wrap: anywhere; }
+.search-battery-index { color: var(--muted); font: .72rem/1 var(--mono); }
+
+.search-battery-charge {
+  position: relative;
+  min-width: 18px;
+  margin-inline-end: 2px;
+  padding: 2px;
+  border: 1px solid #67a98e;
+  border-radius: 3px;
+  background: #1b473e;
+  color: #defff1;
+  font: 700 .72rem/1 var(--mono);
+  text-align: center;
+}
+
+.search-battery-charge::after {
+  position: absolute;
+  top: 25%;
+  left: 100%;
+  width: 3px;
+  height: 50%;
+  border-radius: 0 2px 2px 0;
+  background: currentColor;
+  opacity: .55;
+  content: '';
+}
+
+.search-battery-charge[data-hidden] {
+  border-color: #7d93af;
+  background: #314762;
+  color: #ccdced;
+}
+
+.search-battery-meter { display: none; }
+.classroom-workspace .search-battery-charge {
+  --cell-shell: #82aba1;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 2px;
+  min-width: 0;
+  width: min(100%,32px);
+  min-height: 37px;
+  margin: 5px 0 3px;
+  padding: 3px 1px;
+  border: 1px solid #55786e;
+  border-radius: 43% 43% 37% 37% / 6% 6% 10% 10%;
+  background: linear-gradient(90deg,#39595166,#e3fae873 13%,transparent 35% 62%,#25443c50 96%), var(--cell-shell);
+  color: #102c27;
+  font-weight: 800;
+  box-shadow: inset 0 -3px #2f534d5e, 1px 3px 2px #0e202aaa;
+}
+.classroom-workspace .search-battery-charge::before, .classroom-workspace .search-battery-charge::after {
+  content: ''; position: absolute; border-radius: 50%; opacity: 1;
+}
+.classroom-workspace .search-battery-charge::before {
+  inset: -2px -1px auto; height: 4px; border: 1px solid #617e73; background: #bfd0b8;
+}
+.classroom-workspace .search-battery-charge::after {
+  inset: -4px 32% auto; width: auto; height: 4px; background: #e8e6c7; box-shadow: 0 1px #92a796;
+}
+.classroom-workspace .search-battery-meter {
+  display: grid; grid-template-columns: repeat(5, 1fr); grid-auto-rows: 1px; gap: 1px;
+  width: min(90%,21px); height: 11px; padding: 2px; align-content: end;
+  border-radius: 2px; background: #203e36; box-shadow: inset 0 1px #182d24;
+}
+.classroom-workspace .search-battery-meter i { background: #d7f39d; }
+.classroom-workspace .search-battery-charge[data-hidden] {
+  color: #eff5f5;
+  background: repeating-linear-gradient(128deg,transparent 0 4px,#38546780 5px 7px),linear-gradient(90deg,#596d75,#3c505c);
+}
+.classroom-workspace .search-battery-tile:is([data-state='found'],[data-state='swapped'],[data-state='fixed']) .search-battery-charge {
+  --cell-shell: #9dd3ac;
+}
+.classroom-workspace .search-battery-tile:is([data-state='checking'],[data-state='minimum'],[data-current]) .search-battery-charge {
+  --cell-shell: #e9c38b;
+  transform: translateY(-2px);
+  box-shadow: inset 0 -3px #6f5c3555, 1px 5px 3px #18211caa;
+}
+.classroom-workspace .search-battery-tile:is([data-state='excluded'],[data-state='rejected']) .search-battery-charge {
+  --cell-shell: #87949c;
+  filter: saturate(.25);
+}
+
+.search-battery-tile[data-state='found'],
+.search-battery-tile[data-state='found']:hover {
+  border-color: var(--mint);
+  background: #24483c;
+  box-shadow: inset 0 0 0 1px #4d9c80;
+}
+
+.search-battery-tile:is([data-state='checking'], [data-state='rejected']) {
+  border-color: var(--warm);
+  background: #443a27;
+  box-shadow: inset 0 0 0 1px #997645;
+}
+
+.search-battery-tile[data-state='excluded'] {
+  border-style: dashed;
+  border-color: #516076;
+  background: #1d293b;
+  color: #9aaabc;
+}
+
+.search-battery-tile[data-state='unvisited'] {
+  border-color: #465570;
+  background: #263349;
+}
+
+.search-battery-tile:is([data-state='excluded'], [data-state='rejected']) .search-battery-charge {
+  border-color: #69798e;
+  background: #2c3647;
+  color: #aebacf;
+  text-decoration: line-through;
+}
+
+.search-battery-tile:is([data-state='checking'], [data-state='found']) {
+  animation: search-battery-highlight .18s ease-out;
+}
+
+.search-methods {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.search-method {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+  padding: clamp(7px, 1.8cqi, 13px);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface-raised);
+}
+
+.search-method h3 { font-size: .97rem; }
+.search-method .search-battery-row { flex-wrap: nowrap; gap: 3px; overflow-x: auto; }
+.search-method .search-battery-tile { flex: 1 0 30px; }
+
+.search-method-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  color: var(--muted);
+  font-size: .83rem;
+}
+
+.search-method-metrics strong { margin-inline-start: 3px; color: #e6f2ff; }
+.search-method-metrics .search-compare-count { color: var(--mint); font-family: var(--mono); }
+.search-step-controls { display: flex; flex-wrap: wrap; gap: 6px; }
+.search-step { display: grid; gap: 6px; min-width: 0; color: #e0edfa; font-size: .9rem; }
+
+.search-relation {
+  display: inline-block;
+  margin-inline-end: 6px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  background: #423822;
+  color: var(--warm);
+  font: 700 .84rem var(--mono);
+}
+
+.search-source {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid #428970;
+  border-radius: 5px;
+  background: #17372f;
+  color: #e2fff3;
+  font: .83rem/1.5 var(--mono);
+}
+
+.search-source > span { flex: 0 0 2ch; color: var(--mint); }
+.search-source code { min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+@container (max-width: 640px) {
+  .search-methods { grid-template-columns: minmax(0, 1fr); }
+}
+
+@keyframes search-battery-highlight {
+  from { transform: translateY(2px); }
+  to { transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-battery-tile { animation: none; }
+}

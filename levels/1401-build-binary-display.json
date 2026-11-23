@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "kind": "circuit",
+  "id": "build-binary-display",
+  "order": 1401,
+  "unit": {
+    "id": "computer",
+    "order": 80,
+    "title": {
+      "zh": "计算机原理",
+      "en": "Computer Systems"
+    }
+  },
+  "topic": {
+    "id": "binary",
+    "order": 1,
+    "title": {
+      "zh": "二进制",
+      "en": "Binary"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "在控制台拼出目标数",
+    "en": "Build the Target Number at the Console"
+  },
+  "concept": {
+    "zh": "用 4 到 6 位表示十进制目标",
+    "en": "Represent decimal targets with four to six bits"
+  },
+  "brief": {
+    "zh": "让每块显示板恰好显示目标数。观察最大位权，决定哪些灯该开。",
+    "en": "Make each board show its target value. Look at the largest place value and decide which switches should be on."
+  },
+  "hints": [
+    {
+      "zh": "先看最大的位权能不能加入，再用右边更小的位补足余数。",
+      "en": "Start with the biggest place value that fits, then use smaller places to make up the rest."
+    },
+    {
+      "zh": "开关既能打开也能关掉。数值里每个亮灯贡献自己的位权。",
+      "en": "Each switch can turn on or off. Every lit switch contributes its place value."
+    }
+  ],
+  "mode": "binary",
+  "cases": [
+    {
+      "label": {
+        "zh": "四位显示板要显示 6",
+        "en": "Display 6 with four bits"
+      },
+      "bits": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "goal": {
+        "value": 6
+      },
+      "solution": {
+        "bits": [
+          0,
+          1,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "五位显示板要显示 19",
+        "en": "Display 19 with five bits"
+      },
+      "bits": [
+        0,
+        1,
+        1,
+        0,
+        0
+      ],
+      "goal": {
+        "value": 19
+      },
+      "solution": {
+        "bits": [
+          1,
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "六位显示板要显示 34",
+        "en": "Display 34 with six bits"
+      },
+      "bits": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        1
+      ],
+      "goal": {
+        "value": 34
+      },
+      "solution": {
+        "bits": [
+          1,
+          0,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    }
+  ]
+}

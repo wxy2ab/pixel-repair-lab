@@ -1,0 +1,150 @@
+.program-diagram {
+  container: program-diagram / inline-size;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #344d64;
+  border-radius: 10px;
+  background: radial-gradient(ellipse at 48% 10%, #1b3448, #111c2d 74%);
+}
+
+.program-diagram-title { margin: 0 0 10px; font-size: 16px; color: #ecf5ff; }
+.program-main-path, .program-function-steps { margin: 0; padding: 0; list-style: none; }
+.program-main-path { display: grid; grid-template-columns: repeat(var(--diagram-columns), minmax(0, 1fr)); gap: 25px; }
+.program-graphic-tile { position: relative; min-width: 0; display: flex; flex-direction: column; gap: 4px; --graphic-color: #b5c8ea; }
+.program-graphic-tile[data-graphic-icon='battery'] { --graphic-color: #9ce2ab; }
+.program-graphic-tile[data-graphic-icon='call'], .program-graphic-tile[data-graphic-icon='function'] { --graphic-color: #f4cd91; }
+.program-graphic-tile[data-graphic-icon='store'] { --graphic-color: #bbbcff; }
+.program-graphic-tile[data-graphic-icon='compute'] { --graphic-color: #c5b4ff; }
+.program-graphic-tile[data-graphic-icon='return'] { --graphic-color: #82eed2; }
+.program-graphic-tile[data-graphic-icon='display'] { --graphic-color: #9bdcff; }
+
+.program-main-path > .program-graphic-tile + .program-graphic-tile::before {
+  content: '→';
+  position: absolute;
+  z-index: 1;
+  inset-inline-end: calc(100% + 4px);
+  top: 37px;
+  color: #83a0b9;
+  font: 700 19px/1 var(--mono);
+  pointer-events: none;
+}
+
+.program-main-path > .program-graphic-tile + [data-active]::before { color: var(--graphic-color); animation: program-signal 380ms ease-out; }
+
+.program-graphic-face {
+  width: 100%;
+  min-width: 0;
+  min-height: 104px;
+  padding: 7px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1px solid #40556f;
+  border-radius: 8px;
+  background: #1b2d43;
+  color: #eef5fd;
+  text-align: center;
+}
+
+button.program-graphic-face:hover { border-color: var(--graphic-color); background: #22374c; }
+[data-active] > .program-graphic-face { background: #233e44; border-color: var(--graphic-color); box-shadow: inset 0 0 0 1px #9bffd338; }
+.program-tile-label { font-size: 14px; font-weight: 750; line-height: 1.3; overflow-wrap: anywhere; }
+.program-tile-value {
+  color: var(--graphic-color);
+  min-width: 25px;
+  padding: 2px 6px;
+  border: 1px solid #526c80;
+  border-radius: 4px;
+  background: #0f2031;
+  font: 750 15px/1.1 var(--mono);
+  overflow-wrap: anywhere;
+}
+
+.program-call-link { min-width: 0; color: #ecce9f; text-align: center; font-size: 12px; line-height: 1.4; overflow-wrap: anywhere; }
+.program-moves { display: flex; justify-content: center; gap: 5px; }
+.program-moves button { min-width: 40px; }
+.program-moves [data-move='earlier']::before { content: '←'; }
+.program-moves [data-move='later']::before { content: '→'; }
+
+.program-functions { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 225px), 1fr)); gap: 9px; margin-top: 14px; }
+.program-function { min-width: 0; padding: 8px; border: 1px dashed #89745e; border-radius: 8px; background: #211f30; }
+.program-function[data-linked] { border-style: solid; border-color: #e6be85; background: #30283a; }
+.program-function-title { margin: 0 0 6px; color: #efcb95; font-size: 13px; }
+.program-function-steps { display: grid; gap: 4px; }
+.program-function-steps li + li { margin-inline-start: 9px; padding-inline-start: 6px; border-inline-start: 1px solid #615578; }
+.program-function-steps .program-graphic-face { min-height: 41px; padding: 4px 8px; flex-direction: row; justify-content: flex-start; text-align: start; }
+.program-function-steps .program-tile-label { flex: 1; font-size: 13px; }
+.program-function-steps .program-call-link { text-align: start; padding-inline-start: 33px; }
+
+.program-symbol { position: relative; flex: none; display: flex; align-items: center; justify-content: center; gap: 3px; width: 58px; height: 47px; color: var(--graphic-color); }
+.program-symbol::before, .program-symbol::after { content: ''; position: absolute; pointer-events: none; }
+.program-symbol i { display: block; z-index: 1; }
+.program-symbol b { z-index: 1; font: 800 29px/1 var(--mono); }
+.program-symbol[data-symbol='battery']::before { width: 43px; height: 25px; border: 2px solid currentColor; border-radius: 5px; translate: -2px 0; }
+.program-symbol[data-symbol='battery']::after { width: 4px; height: 11px; right: 4px; border-radius: 0 3px 3px 0; background: currentColor; }
+.program-symbol[data-symbol='battery'] i { width: 7px; height: 15px; border-radius: 2px; background: currentColor; translate: -2px 0; }
+.program-symbol[data-symbol='battery'] i:last-child { opacity: .3; }
+.program-symbol[data-symbol='store']::before { width: 39px; height: 26px; border: 2px solid currentColor; border-top-width: 5px; border-radius: 3px; }
+.program-symbol[data-symbol='store'] i { width: 6px; height: 6px; border-radius: 2px; background: currentColor; }
+.program-symbol[data-symbol='store'] i:nth-child(n+2) { display: none; }
+.program-symbol[data-symbol='call']::before, .program-symbol[data-symbol='function']::before { width: 32px; height: 20px; border: 2px solid currentColor; border-radius: 5px; translate: -5px -5px; }
+.program-symbol[data-symbol='call']::after, .program-symbol[data-symbol='function']::after { width: 32px; height: 20px; border: 2px solid currentColor; border-radius: 5px; translate: 5px 5px; background: #25364c; }
+.program-symbol[data-symbol='call'] i, .program-symbol[data-symbol='function'] i { width: 4px; height: 4px; border-radius: 1px; background: currentColor; translate: 5px 5px; }
+.program-symbol[data-symbol='function']::before { border-style: dashed; }
+.program-symbol[data-symbol='compute']::before { width: 39px; height: 34px; border: 2px solid currentColor; border-radius: 7px; }
+.program-symbol[data-symbol='return']::before { width: 33px; height: 33px; border: 2px solid currentColor; border-radius: 50%; }
+.program-symbol[data-symbol='return'] b { font-size: 26px; }
+.program-symbol[data-symbol='display']::before { width: 40px; height: 24px; border: 2px solid currentColor; border-radius: 5px; translate: 0 -3px; }
+.program-symbol[data-symbol='display']::after { width: 16px; height: 5px; border-bottom: 2px solid currentColor; border-radius: 2px; translate: 0 15px; }
+.program-symbol[data-symbol='display'] i { width: 5px; height: 7px; border-radius: 1px; background: currentColor; translate: 0 -3px; }
+
+.program-function-steps .program-symbol, [data-compact] .program-symbol { width: 52px; height: 35px; zoom: .63; }
+[data-revealed] > .program-graphic-face { flex-flow: row wrap; align-content: center; align-items: baseline; justify-content: flex-start; gap: 4px 6px; text-align: start; }
+.program-code-marker { color: var(--graphic-color); border-inline-start: 3px solid currentColor; padding-inline-start: 4px; font: 700 11px var(--mono); }
+.program-graphic-face code {
+  flex: 1;
+  min-width: 0;
+  color: #f3faff;
+  font-size: 13px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  animation: program-code-in 240ms ease-out;
+}
+
+.program-diagram[data-compact] { padding: 8px; }
+[data-compact] .program-diagram-title { margin-bottom: 5px; font-size: 13px; }
+[data-compact] .program-graphic-face { min-height: 43px; gap: 2px; }
+[data-compact] .program-main-path .program-graphic-tile::before { top: 13px; }
+[data-compact] .program-tile-label { font-size: 12px; }
+
+@keyframes program-signal {
+  from { transform: translateX(-5px); opacity: .4; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes program-code-in {
+  from { transform: translateY(3px); opacity: .4; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@container program-diagram (width <= 490px) {
+  .program-main-path { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .program-main-path > .program-graphic-tile + .program-graphic-tile::before {
+    content: '↓';
+    inset-inline-end: calc(50% - 5px);
+    top: -17px;
+    font-size: 15px;
+    animation: none;
+  }
+  [data-compact] .program-main-path .program-graphic-tile::before { top: -17px; }
+  .program-main-path .program-graphic-face { flex-direction: row; min-height: 57px; justify-content: flex-start; text-align: start; }
+  .program-main-path .program-tile-label { flex: 1; }
+  .program-moves [data-move='earlier']::before { content: '↑'; }
+  .program-moves [data-move='later']::before { content: '↓'; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .program-graphic-face code, .program-main-path > .program-graphic-tile + [data-active]::before { animation: none; }
+}

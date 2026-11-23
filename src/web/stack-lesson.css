@@ -1,0 +1,91 @@
+.stack-lesson { min-width: 0; container: stack-lesson / inline-size; }
+.stack-lesson h2, .stack-lesson h3, .stack-lesson p { margin: 0; }
+.stack-lesson-content { display: grid; gap: 10px; min-width: 0; padding: 12px 14px 14px; }
+.stack-lesson-status { display: grid; gap: 4px; color: #d8e6f8; overflow-wrap: anywhere; }
+.stack-lesson-status span + span { color: #edf6ff; }
+
+.stack-lesson-board {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #455d78;
+  border-radius: 9px;
+  background: #17283d;
+}
+.stack-lesson-group {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 6px;
+  border: 1px solid #3e5670;
+  border-radius: 6px;
+  background: #1b3045;
+}
+.stack-lesson-group h3 { color: #e1edf8; font-size: 14px; }
+.stack-lesson-empty {
+  display: grid;
+  min-height: 42px;
+  align-items: center;
+  padding: 4px 6px;
+  color: #bbd1e7;
+  border: 1px dashed #5d7691;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.stack-lesson-batteries {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 53px), 1fr));
+  gap: 4px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.stack-lesson-batteries:empty { display: none; }
+.stack-lesson-batteries li { min-width: 0; }
+.stack-lesson-battery {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  min-width: 0;
+  min-height: 44px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  gap: 3px;
+  padding: 5px 3px;
+  border: 1px solid #436080;
+  border-radius: 6px;
+  background: #20364c;
+  color: #d8e6f8;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.stack-lesson-battery strong { min-width: 0; color: #f2f8ff; font: 700 14px/1.15 var(--mono); }
+.stack-lesson-battery .for-battery { min-width: 21px; padding: 2px 3px; font-size: 13px; text-align: center; }
+button.stack-lesson-battery:hover { border-color: #9bd8ef; background: #2a4a62; }
+
+.stack-lesson-pile .stack-lesson-batteries { width: min(100%, 210px); margin-inline: auto; grid-template-columns: minmax(0, 1fr); gap: 2px; }
+.stack-lesson-pile .stack-lesson-battery {
+  grid-template-columns: 1fr minmax(20px, 1fr) 1fr;
+  align-items: center;
+  border-block-end-width: 3px;
+  padding: 5px;
+}
+.stack-lesson-pile .stack-lesson-empty { text-align: center; }
+.stack-lesson-pile [data-stack-top] .stack-lesson-battery { border-color: #a2e9bc; background: #244b3d; color: #e9fff0; }
+.stack-lesson-top-label { min-width: 0; color: #d5fbe0; font-size: 11px; }
+.stack-lesson .stack-lesson-bottom { width: min(100%, 210px); margin-inline: auto; color: #b5cce4; text-align: center; font-size: 12px; }
+
+.stack-lesson-navigation { display: flex; flex-wrap: wrap; gap: 6px; }
+.stack-lesson-navigation button { min-height: 40px; white-space: normal; }
+.stack-lesson-output output { overflow-wrap: anywhere; }
+
+@container stack-lesson (max-width: 470px) {
+  .stack-lesson-content { padding-inline: 8px; }
+  .stack-lesson-board { grid-template-columns: minmax(0, 1fr); padding-inline: 6px; }
+}

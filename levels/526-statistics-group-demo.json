@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "statistics-grouped-summary-demo",
+  "order": 526,
+  "stage": "demo",
+  "unit": { "id": "statistics", "order": 120, "title": { "zh": "统计分析", "en": "Statistics" } },
+  "topic": { "id": "grouped-summary", "order": 2, "title": { "zh": "按组比较", "en": "Compare groups" } },
+  "title": { "zh": "换一种分组看温度", "en": "Regroup the Temperature Readings" },
+  "brief": { "zh": "把相同的温度记录按区域或日期重新分组，比较输出。", "en": "Group the same readings by area or day and compare the output." },
+  "concept": { "zh": "分组依据决定每一行代表谁，统计量决定这一行回答什么。", "en": "The group key defines who each row represents. The statistic defines what it tells you." },
+  "hints": [{ "zh": "区域有三种，日期有四种。固定分组后，再把平均值换成最高值。", "en": "There are three areas and four days. Keep one grouping, then change mean to maximum." }],
+  "steps": [
+    {
+      "operation": "group",
+      "input": "clean",
+      "label": { "zh": "选择分组和统计量", "en": "Choose a grouping and statistic" },
+      "prompt": { "zh": "分别按区域和日期运行，找出更换分组前后多了几行。", "en": "Try grouping by area and by day. Compare the number of result rows." },
+      "initial": { "by": "zone", "statistic": "mean" }
+    }
+  ]
+}

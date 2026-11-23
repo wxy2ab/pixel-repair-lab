@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "ai-notes",
+  "order": 109,
+  "unit": { "id": "ai", "order": 160, "title": { "zh": "AI 协作", "en": "AI Collaboration" } },
+  "topic": { "id": "task", "order": 1, "title": { "zh": "写清任务", "en": "Describe the task" } },
+  "stage": "explain",
+  "title": { "zh": "把任务交给 AI 后，要做什么？", "en": "What Do You Do After Asking AI?" },
+  "brief": { "zh": "先说清要做什么、需要多少、交回什么，再拿清单和原任务对照。", "en": "Name the job, the quantities, and the thing you want back. Then compare the list with the assignment." },
+  "concept": { "zh": "用目标、数量和输出要求说明任务。", "en": "Describe a task with a goal, quantities, and an output." },
+  "hints": [],
+  "sections": [
+    {
+      "title": { "zh": "给 AI 一个能照着做的任务", "en": "Give the AI a task it can follow" },
+      "body": { "zh": "“准备画图用品”只说了方向。加上记号笔和纸张的数量，AI 就知道要准备什么。", "en": "“Get drawing supplies” gives a direction. Naming the markers and sheets of paper with their counts tells the AI what to prepare." }
+    },
+    {
+      "title": { "zh": "说明交回什么", "en": "Say what to return" },
+      "body": { "zh": "请 AI 交回一份清单，每样物品列一行。拿到清单后，就能按物品和数量逐项核对。", "en": "Ask for a checklist with one item per line. Then you can check each item and its quantity against the task." }
+    }
+  ],
+  "question": {
+    "prompt": { "zh": "制图队需要 2 支记号笔和 4 张纸。你要一份方便核对的清单，应该怎么问？", "en": "The mapping team needs 2 markers and 4 sheets of paper. How would you ask for a checklist that's easy to verify?" },
+    "options": [
+      { "zh": "帮忙准备一些制图用品。", "en": "Prepare some drawing supplies." },
+      { "zh": "准备 2 支记号笔和 4 张纸，每样物品列一行清单。", "en": "Prepare 2 markers and 4 sheets of paper. Return a checklist with one item per line." },
+      { "zh": "请尽快给制图队一份清单。", "en": "Please get the mapping team a checklist quickly." }
+    ],
+    "correct": 1,
+    "feedback": { "zh": "物品和数量都确定了，每样列一行也方便逐项核对。", "en": "The items and counts are clear, and one item per line makes the list easy to check." }
+  },
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": { "zh": "只有任务方向时，AI 还要猜用品和数量。", "en": "With only the general task, AI still has to guess the items and counts." },
+        "items": [
+          { "id": "goal", "label": { "zh": "任务", "en": "Task" }, "value": { "zh": "准备制图用品", "en": "Prepare drawing supplies" }, "state": "active" },
+          { "id": "counts", "label": { "zh": "物品和数量", "en": "Items and counts" }, "value": { "zh": "？", "en": "?" }, "state": "muted" },
+          { "id": "result", "label": { "zh": "交回的结果", "en": "Output" }, "value": { "zh": "？", "en": "?" }, "state": "muted" }
+        ]
+      },
+      {
+        "caption": { "zh": "把需要的每样物品和具体数量写进提示词。", "en": "Put each required item and its exact count in the prompt." },
+        "items": [
+          { "id": "goal", "label": { "zh": "任务", "en": "Task" }, "value": { "zh": "准备制图用品", "en": "Prepare drawing supplies" }, "state": "done" },
+          { "id": "counts", "label": { "zh": "物品和数量", "en": "Items and counts" }, "value": { "zh": "记号笔 ×2、纸 ×4", "en": "2 markers, 4 sheets of paper" }, "state": "active" },
+          { "id": "result", "label": { "zh": "交回的结果", "en": "Output" }, "value": { "zh": "？", "en": "?" }, "state": "muted" }
+        ]
+      },
+      {
+        "caption": { "zh": "告诉 AI 用清单交回结果。拿到清单后，逐项对照任务。", "en": "Ask for a checklist as the output. Compare its lines with the assignment when it arrives." },
+        "items": [
+          { "id": "goal", "label": { "zh": "任务", "en": "Task" }, "value": { "zh": "准备制图用品", "en": "Prepare drawing supplies" }, "state": "done" },
+          { "id": "counts", "label": { "zh": "物品和数量", "en": "Items and counts" }, "value": { "zh": "记号笔 ×2、纸 ×4", "en": "2 markers, 4 sheets of paper" }, "state": "done" },
+          { "id": "result", "label": { "zh": "交回的结果", "en": "Output" }, "value": { "zh": "逐项列清单", "en": "Checklist by item" }, "state": "active" }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "numpy-day-slicing",
+  "order": 5003,
+  "stage": "exercise",
+  "unit": {
+    "id": "numpy",
+    "order": 100,
+    "title": {
+      "zh": "NumPy",
+      "en": "NumPy"
+    }
+  },
+  "topic": {
+    "id": "arrays",
+    "order": 1,
+    "title": {
+      "zh": "数组与位置",
+      "en": "Arrays and positions"
+    }
+  },
+  "title": {
+    "zh": "从另一列找出最后三条记录的日期",
+    "en": "Find the Days of the Last Three Records"
+  },
+  "brief": {
+    "zh": "处理完读数后，维修员还要知道最后三条记录是哪天取得的。",
+    "en": "The technician also needs the days of the last three measurements."
+  },
+  "concept": {
+    "zh": "不同列共用行位置。切片可以换到同一数据的另一列。",
+    "en": "Columns share row positions, so the same slice can be used on another column."
+  },
+  "hints": [
+    {
+      "zh": "先运行一次，再展开“查看本步输入”。清洗后共有 11 行，数一数最后三行从哪个下标开始。",
+      "en": "Run once and open View step input. The cleaned table has 11 rows. Count to find where the last three begin."
+    }
+  ],
+  "steps": [
+    {
+      "operation": "array",
+      "input": "clean",
+      "label": {
+        "zh": "选择日期切片",
+        "en": "Slice the days"
+      },
+      "prompt": {
+        "zh": "仅输出最后三条记录的 day 列，保留原来顺序。",
+        "en": "Return only the day values from the last three records, in their original order."
+      },
+      "initial": {
+        "column": "reading",
+        "start": 5,
+        "stop": 10
+      },
+      "solution": {
+        "column": "day",
+        "start": 8,
+        "stop": 11
+      },
+      "goal": {
+        "columns": [
+          "index",
+          "day"
+        ],
+        "rows": [
+          [
+            8,
+            4
+          ],
+          [
+            9,
+            4
+          ],
+          [
+            10,
+            4
+          ]
+        ]
+      }
+    }
+  ]
+}

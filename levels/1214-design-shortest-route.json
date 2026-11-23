@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "design-shortest-route",
+  "order": 1214,
+  "unit": { "id": "routing", "order": 60, "title": { "zh": "算法进阶", "en": "Intermediate Algorithms" } },
+  "topic": { "id": "breadth-first", "order": 2, "title": { "zh": "广度优先搜索", "en": "Breadth-first search" } },
+  "stage": "exercise",
+  "title": { "zh": "设计整条最短路线", "en": "Design a shortest route" },
+  "concept": { "zh": "广度优先搜索 · 返回整条路线", "en": "Breadth-first search · Return the whole route" },
+  "brief": {
+    "zh": "维修站要把导航函数装进芽芽。设计 plan_route(tiles, start, goal)，把从起点到终点的最短路线交回方向列表。坐标是 [x, y]，圆点是地板，井号是墙。每步只走上下左右一格。已经到达或没有通路时交回空列表。有几条同样短的路，任选一条都算通过。",
+    "en": "Build plan_route(tiles, start, goal) for Sprout. Return a shortest route as a list of moves. Coordinates are [x, y]. A dot is floor and # is a wall. Move one square up, right, down or left each step. Return an empty list if already at the goal or if no route exists. Any equally short route works."
+  },
+  "hints": [
+    {
+      "zh": "先选一种「起点入队」，再接上其余片段。队列保存格子和走到它的路线。第 3 张地图有两条最短路，先查上方或右方会选中哪条？",
+      "en": "Choose one way to queue the start, then add the remaining snippets. Each entry holds a cell and the route to it. Map 3 has two shortest paths. Which one do you get by checking up or right first?"
+    },
+    {
+      "zh": "把可以走的新邻格加到队尾，再在这条路线末尾记下刚选的方向。通过后点「保存到我的算法」，到挑战场的「三仓导航派送」调用它。",
+      "en": "Queue each new walkable neighbor with its direction added to the route. Once all maps pass, save the function to My algorithms and use it in the Three-Depot Dispatch challenge."
+    }
+  ],
+  "functionName": "plan_route",
+  "pathGrading": "shortest",
+  "starterCode": "def plan_route(tiles, start, goal):\n    width = len(tiles[0])\n    height = len(tiles)",
+  "solutionCode": "def plan_route(tiles, start, goal):\n    width = len(tiles[0])\n    height = len(tiles)\n    queue = [[start, []]]\n    seen = [start]\n    directions = [[\"up\", 0, -1], [\"right\", 1, 0], [\"down\", 0, 1], [\"left\", -1, 0]]\n    while len(queue) > 0:\n        cell_and_path = queue.pop(0)\n        cell = cell_and_path[0]\n        path = cell_and_path[1]\n        if cell == goal:\n            return path\n        for step in directions:\n            x = cell[0] + step[1]\n            y = cell[1] + step[2]\n            if x < 0 or x >= width or y < 0 or y >= height:\n                continue\n            if tiles[y][x] == \"#\" or [x, y] in seen:\n                continue\n            seen.append([x, y])\n            queue.append([[x, y], path + [step[0]]])\n    return []",
+  "snippets": [
+    {
+      "label": { "zh": "起点入队，先查上方", "en": "Queue the start, check up first" },
+      "code": "    queue = [[start, []]]\n    seen = [start]\n    directions = [[\"up\", 0, -1], [\"right\", 1, 0], [\"down\", 0, 1], [\"left\", -1, 0]]"
+    },
+    {
+      "label": { "zh": "起点入队，先查右方", "en": "Queue the start, check right first" },
+      "code": "    queue = [[start, []]]\n    seen = [start]\n    directions = [[\"right\", 1, 0], [\"up\", 0, -1], [\"down\", 0, 1], [\"left\", -1, 0]]"
+    },
+    {
+      "label": { "zh": "取出下一格，检查终点", "en": "Take the next cell and check the goal" },
+      "code": "    while len(queue) > 0:\n        cell_and_path = queue.pop(0)\n        cell = cell_and_path[0]\n        path = cell_and_path[1]\n        if cell == goal:\n            return path"
+    },
+    {
+      "label": { "zh": "计算四个邻格", "en": "Find the four neighbors" },
+      "code": "        for step in directions:\n            x = cell[0] + step[1]\n            y = cell[1] + step[2]"
+    },
+    {
+      "label": { "zh": "排除越界、墙和走过的格子", "en": "Skip edges, walls and visited cells" },
+      "code": "            if x < 0 or x >= width or y < 0 or y >= height:\n                continue\n            if tiles[y][x] == \"#\" or [x, y] in seen:\n                continue"
+    },
+    {
+      "label": { "zh": "记下路线，把邻格排到队尾", "en": "Record the route and queue the neighbor" },
+      "code": "            seen.append([x, y])\n            queue.append([[x, y], path + [step[0]]])"
+    },
+    {
+      "label": { "zh": "找不到路线时返回空列表", "en": "Return an empty list if no route exists" },
+      "code": "    return []"
+    }
+  ],
+  "cases": [
+    { "args": [["...."], [0, 0], [3, 0]], "expected": ["right", "right", "right"] },
+    {
+      "args": [[".#...", "...#."], [0, 0], [4, 1]],
+      "expected": ["down", "right", "right", "up", "right", "right", "down"]
+    },
+    { "args": [["...", "...", "..."], [1, 1], [2, 0]], "expected": ["up", "right"] },
+    { "args": [["..#.", "..#."], [0, 0], [3, 0]], "expected": [] },
+    { "args": [["#.#", "..."], [1, 0], [1, 0]], "expected": [] },
+    {
+      "args": [["#...#", "..#..", ".###."], [4, 2], [0, 2]],
+      "expected": ["up", "left", "up", "left", "left", "down", "left", "down"]
+    }
+  ]
+}

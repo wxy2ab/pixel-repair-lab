@@ -1,0 +1,189 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "challenge-minimum-temperature-certification",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "order": 1857,
+  "difficulty": "advanced",
+  "title": {
+    "zh": "恒温区验收名单",
+    "en": "Temperature Certification"
+  },
+  "concept": {
+    "zh": "验收窗口 · 最差读数 · 分组 SQL",
+    "en": "Inspection window · Worst reading · Grouped SQL"
+  },
+  "brief": {
+    "zh": "新规从第 3 天生效。一个区域的所有有效读数都达到 24°C，才能列入恒温区验收名单。交出每个入选区域在验收期间的最冷读数，最冷读数较高的区域排在前面，同温度按区域名升序。",
+    "en": "The new rule starts on day 3. An area qualifies only if every valid reading from that point is at least 24°C. Report the coldest reading for each qualified area. Put higher minimums first, with ties by area name ascending."
+  },
+  "prerequisites": [
+    {
+      "unit": "numpy",
+      "topic": "masks"
+    },
+    {
+      "unit": "statistics",
+      "topic": "grouped-summary"
+    },
+    {
+      "unit": "database",
+      "topic": "sql-groups"
+    }
+  ],
+  "hints": [],
+  "steps": [
+    {
+      "operation": "mask",
+      "input": "clean",
+      "label": {
+        "zh": "验收期间读数",
+        "en": "Inspection window"
+      },
+      "prompt": {
+        "zh": "取第 3 天起的全部有效读数。",
+        "en": "Take all valid readings from day 3 onward."
+      },
+      "initial": {
+        "column": "reading",
+        "comparison": "gte",
+        "threshold": 24
+      },
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            7,
+            3,
+            "hangar",
+            26
+          ],
+          [
+            8,
+            3,
+            "workshop",
+            32
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16
+          ],
+          [
+            10,
+            4,
+            "hangar",
+            30
+          ],
+          [
+            12,
+            4,
+            "storage",
+            24
+          ],
+          [
+            13,
+            4,
+            "workshop",
+            36
+          ]
+        ]
+      },
+      "solution": {
+        "column": "day",
+        "comparison": "gte",
+        "threshold": 3
+      }
+    },
+    {
+      "operation": "group",
+      "input": "previous",
+      "label": {
+        "zh": "各区温度底线",
+        "en": "Area temperature floors"
+      },
+      "prompt": {
+        "zh": "给每个区域算出验收期间的最低温度，包括暂时未达标的区域。",
+        "en": "Find the lowest reading for each area during inspection, including areas that may fail."
+      },
+      "initial": {
+        "by": "day",
+        "statistic": "max"
+      },
+      "goal": {
+        "columns": [
+          "zone",
+          "min"
+        ],
+        "rows": [
+          [
+            "hangar",
+            26
+          ],
+          [
+            "storage",
+            16
+          ],
+          [
+            "workshop",
+            32
+          ]
+        ]
+      },
+      "solution": {
+        "by": "zone",
+        "statistic": "min"
+      }
+    },
+    {
+      "operation": "report",
+      "input": "previous",
+      "label": {
+        "zh": "验收通过名单",
+        "en": "Qualified areas"
+      },
+      "prompt": {
+        "zh": "提交最低温度至少 24°C 的区域，把最低温度最高的放在第一行。",
+        "en": "Submit areas whose minimum is at least 24°C. Put the area with the highest minimum first."
+      },
+      "initial": {
+        "minimum": 16,
+        "sort": "key"
+      },
+      "goal": {
+        "columns": [
+          "zone",
+          "min"
+        ],
+        "rows": [
+          [
+            "workshop",
+            32
+          ],
+          [
+            "hangar",
+            26
+          ]
+        ]
+      },
+      "solution": {
+        "minimum": 24,
+        "sort": "value-desc"
+      }
+    }
+  ]
+}

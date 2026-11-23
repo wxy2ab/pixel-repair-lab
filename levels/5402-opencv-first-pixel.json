@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "opencv-first-pixel",
+  "order": 5402,
+  "stage": "exercise",
+  "unit": { "id": "opencv", "order": 140, "title": { "zh": "OpenCV", "en": "OpenCV" } },
+  "topic": { "id": "pixels", "order": 1, "title": { "zh": "像素与坐标", "en": "Pixels and coordinates" } },
+  "mode": "pixels",
+  "title": { "zh": "找到坐标起点", "en": "Find the Coordinate Origin" },
+  "brief": { "zh": "从任意一格回到所有坐标开始数的地方。", "en": "Return from another tile to the spot where coordinates start." },
+  "concept": { "zh": "左上角是第 0 列、第 0 行。", "en": "Column 0 and row 0 meet at the top-left corner." },
+  "hints": [{ "zh": "左上角的红色格子是起点。", "en": "The red tile in the top-left corner is the origin." }],
+  "cases": [{
+    "image": "calibration",
+    "label": { "zh": "读取起点像素", "en": "Read the origin pixel" },
+    "prompt": { "zh": "读取左上角的起点像素。", "en": "Read the pixel at the top-left origin." },
+    "initial": { "x": 1, "y": 2 },
+    "goal": { "x": 0, "y": 0, "rgb": [240, 30, 20] },
+    "solution": { "x": 0, "y": 0 }
+  }]
+}

@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "challenge-missing-bay-inventory",
+  "order": 1913,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "prerequisites": [{"unit": "architecture", "topic": "memory"}, {"unit": "architecture", "topic": "registers"}, {"unit": "architecture", "topic": "instructions"}],
+  "title": {"zh": "四格失联的库存表", "en": "Four Missing Inventory Cells"},
+  "concept": {"zh": "行列合计与独立验收", "en": "Reconstruction from row and column totals"},
+  "brief": {"zh": "地址 0 至 5 是两行三列的库存表，按行排列。只有左上角（0）和下排中间（4）可信，其余四格已经损坏。地址 6、7 给出两行合计，8、9 给出前两列合计。复原四格，保留所有凭据。地址 10 是独立上报的第三列合计，可能有误；ACC 返回它减去复原后的第三列合计。", "en": "Addresses 0 through 5 form two rows of three bins in row order. Only the top left (0) and bottom middle (4) are intact. The receipts at 6 and 7 give the row totals; 8 and 9 give the totals of the first two columns. Restore all bins and preserve the receipts. At 10 is a separate, possibly faulty third-column total. Return that report minus the reconstructed third-column total in ACC."},
+  "hints": [],
+  "allowedOps": ["LOAD", "ADD", "SUB", "STORE", "HALT"],
+  "starterCode": "HALT\n",
+  "solutionCode": "LOAD 9\nSUB 4\nSTORE 1\nLOAD 8\nSUB 0\nSTORE 3\nLOAD 6\nSUB 0\nSUB 1\nSTORE 2\nLOAD 7\nSUB 3\nSUB 4\nSTORE 5\nLOAD 10\nSUB 2\nSUB 5\nHALT\n",
+  "cases": [
+    {"label": {"zh": "验收样本 1", "en": "Acceptance sample 1"}, "memory": [4, 99, 99, 99, 3, 99, 14, 18, 12, 10, 10], "accumulator": -4, "goal": {"memory": [{"address": 0, "value": 4}, {"address": 1, "value": 7}, {"address": 2, "value": 3}, {"address": 3, "value": 8}, {"address": 4, "value": 3}, {"address": 5, "value": 7}, {"address": 6, "value": 14}, {"address": 7, "value": 18}, {"address": 8, "value": 12}, {"address": 9, "value": 10}, {"address": 10, "value": 10}], "accumulator": 0}},
+    {"label": {"zh": "验收样本 2", "en": "Acceptance sample 2"}, "memory": [0, 8, -1, 7, 4, 0, 3, 7, 2, 4, 4], "accumulator": 10, "goal": {"memory": [{"address": 0, "value": 0}, {"address": 1, "value": 0}, {"address": 2, "value": 3}, {"address": 3, "value": 2}, {"address": 4, "value": 4}, {"address": 5, "value": 1}, {"address": 6, "value": 3}, {"address": 7, "value": 7}, {"address": 8, "value": 2}, {"address": 9, "value": 4}, {"address": 10, "value": 4}], "accumulator": 0}},
+    {"label": {"zh": "验收样本 3", "en": "Acceptance sample 3"}, "memory": [7, -3, 2, 3, 0, -55, 8, 2, 7, 1, 9], "accumulator": 8, "goal": {"memory": [{"address": 0, "value": 7}, {"address": 1, "value": 1}, {"address": 2, "value": 0}, {"address": 3, "value": 0}, {"address": 4, "value": 0}, {"address": 5, "value": 2}, {"address": 6, "value": 8}, {"address": 7, "value": 2}, {"address": 8, "value": 7}, {"address": 9, "value": 1}, {"address": 10, "value": 9}], "accumulator": 7}},
+    {"label": {"zh": "验收样本 4", "en": "Acceptance sample 4"}, "memory": [1, 0, 0, 0, 1, 0, 3, 3, 2, 2, 2], "accumulator": 7, "goal": {"memory": [{"address": 0, "value": 1}, {"address": 1, "value": 1}, {"address": 2, "value": 1}, {"address": 3, "value": 1}, {"address": 4, "value": 1}, {"address": 5, "value": 1}, {"address": 6, "value": 3}, {"address": 7, "value": 3}, {"address": 8, "value": 2}, {"address": 9, "value": 2}, {"address": 10, "value": 2}], "accumulator": 0}},
+    {"label": {"zh": "验收样本 5", "en": "Acceptance sample 5"}, "memory": [9, 2, 3, 4, 5, 6, 21, 12, 11, 12, 3], "accumulator": 3, "goal": {"memory": [{"address": 0, "value": 9}, {"address": 1, "value": 7}, {"address": 2, "value": 5}, {"address": 3, "value": 2}, {"address": 4, "value": 5}, {"address": 5, "value": 5}, {"address": 6, "value": 21}, {"address": 7, "value": 12}, {"address": 8, "value": 11}, {"address": 9, "value": 12}, {"address": 10, "value": 3}], "accumulator": -7}}
+  ]
+}

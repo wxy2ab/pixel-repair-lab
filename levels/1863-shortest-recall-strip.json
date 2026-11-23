@@ -1,0 +1,158 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-shortest-recall-strip",
+  "order": 1863,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "structures",
+      "topic": "dictionaries"
+    },
+    {
+      "unit": "algorithm-intro",
+      "topic": "two-pointers"
+    }
+  ],
+  "title": {
+    "zh": "召回标签截取令",
+    "en": "Recall Label Strip"
+  },
+  "concept": {
+    "zh": "有重复需求的最短连续区间",
+    "en": "Shortest consecutive window with repeated requirements"
+  },
+  "brief": {
+    "zh": "strip 是按顺序贴好的零件标签，need 是要收回的标签清单，重复的标签要找足份数。选一段连续的 strip 覆盖整张清单。返回最短区间的 [起点, 终点]，从 0 编号并含两端，等长取起点最早的一段。清单为空或凑不齐就返回 []。",
+    "en": "strip is a row of part labels and need is a recall list. Repeated labels require that many copies. Return the inclusive, zero-based [start, end] of the shortest continuous section covering the entire list. Prefer the earliest start on ties. Return [] for an empty request or if it cannot be filled."
+  },
+  "hints": [],
+  "functionName": "recall_strip",
+  "starterCode": "def recall_strip(strip, need):\n    pass\n",
+  "solutionCode": "def recall_strip(strip, need):\n    if len(need) == 0:\n        return []\n    left = 0\n    gap = len(need)\n    counts = {}\n    best = []\n    for label in need:\n        if label not in counts:\n            counts[label] = 0\n        counts[label] += 1\n    for right in range(len(strip)):\n        label = strip[right]\n        if label in counts:\n            if counts[label] > 0:\n                gap -= 1\n            counts[label] -= 1\n        while gap == 0:\n            if len(best) == 0 or right - left < best[1] - best[0]:\n                best = [left, right]\n            first = strip[left]\n            if first in counts:\n                counts[first] += 1\n                if counts[first] > 0:\n                    gap += 1\n            left += 1\n    return best\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "收进右端标签",
+        "en": "Include a label at the right"
+      },
+      "code": "    for right in range(len(strip)):\n        label = strip[right]\n        if label in counts:\n            if counts[label] > 0:\n                gap -= 1\n            counts[label] -= 1"
+    },
+    {
+      "label": {
+        "zh": "登记所需标签",
+        "en": "Register required labels"
+      },
+      "code": "    if len(need) == 0:\n        return []\n    left = 0\n    gap = len(need)\n    counts = {}\n    best = []\n    for label in need:\n        if label not in counts:\n            counts[label] = 0\n        counts[label] += 1"
+    },
+    {
+      "label": {
+        "zh": "提交两端位置",
+        "en": "Submit the endpoints"
+      },
+      "code": "    return best"
+    },
+    {
+      "label": {
+        "zh": "等长时保留最新区间",
+        "en": "Keep the latest window on a tie"
+      },
+      "code": "        while gap == 0:\n            if len(best) == 0 or right - left <= best[1] - best[0]:\n                best = [left, right]\n            first = strip[left]\n            if first in counts:\n                counts[first] += 1\n                if counts[first] > 0:\n                    gap += 1\n            left += 1"
+    },
+    {
+      "label": {
+        "zh": "缩短已满足的工单",
+        "en": "Shorten a filled request"
+      },
+      "code": "        while gap == 0:\n            if len(best) == 0 or right - left < best[1] - best[0]:\n                best = [left, right]\n            first = strip[left]\n            if first in counts:\n                counts[first] += 1\n                if counts[first] > 0:\n                    gap += 1\n            left += 1"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          "A",
+          "C",
+          "A",
+          "B",
+          "A",
+          "D"
+        ],
+        [
+          "B",
+          "A",
+          "A"
+        ]
+      ],
+      "expected": [
+        2,
+        4
+      ]
+    },
+    {
+      "args": [
+        [
+          "A",
+          "B",
+          "A",
+          "B"
+        ],
+        [
+          "A",
+          "B"
+        ]
+      ],
+      "expected": [
+        0,
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          "X",
+          "Y"
+        ],
+        [
+          "X",
+          "X"
+        ]
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          "T"
+        ],
+        []
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          "Z",
+          "B",
+          "Z"
+        ],
+        [
+          "B"
+        ]
+      ],
+      "expected": [
+        1,
+        1
+      ]
+    }
+  ]
+}

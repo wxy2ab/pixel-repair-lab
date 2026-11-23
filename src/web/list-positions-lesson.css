@@ -1,0 +1,90 @@
+.list-positions-lesson { min-width: 0; container: list-positions-lesson / inline-size; }
+.list-positions-lesson h2, .list-position-description, .list-position-content > .error-message { margin: 0; }
+.list-position-content { display: grid; gap: 9px; min-width: 0; padding: 12px 14px 14px; }
+.list-position-description { display: grid; gap: 4px; color: #d8e6f8; overflow-wrap: anywhere; }
+.list-position-description span + span { color: #ebf6ff; }
+
+.list-position-board {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #455d78;
+  border-radius: 9px;
+  background: #17283d;
+}
+.list-position-scroll { min-width: 0; overflow-x: auto; }
+.list-position-batteries {
+  display: flex;
+  align-items: stretch;
+  gap: 5px;
+  min-width: max-content;
+  margin: 0;
+  padding: 2px 3px;
+  list-style: none;
+}
+.list-position-slot { flex: 1 1 44px; min-width: 44px; }
+.list-position-battery {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 4px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 68px;
+  padding: 6px 3px;
+  border: 1px solid #436080;
+  border-radius: 6px;
+  background: #20364c;
+  color: #d8e6f8;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+button.list-position-battery:hover { border-color: #9bd8ef; background: #2a4a62; }
+.list-position-battery .for-battery, .list-position-spare .for-battery { min-width: 24px; padding: 2px 3px; font-size: 14px; text-align: center; }
+.list-position-battery strong { color: #f2f8ff; font: 700 14px/1.15 var(--mono); }
+.list-position-number { color: #c5daed; font-size: 11px; }
+.list-position-slot[data-active] .list-position-battery { border-color: #a2e9bc; color: #e9fff0; background: #244b3d; }
+.list-position-shift {
+  padding: 1px 3px;
+  border-radius: 3px;
+  background: #3b5771;
+  color: #f1f7ff;
+  font: 700 11px/1.2 var(--mono);
+}
+.list-position-slot[data-shift='back'] .list-position-shift { animation: list-position-back 220ms ease-out; }
+.list-position-slot[data-shift='forward'] .list-position-shift { animation: list-position-forward 220ms ease-out; }
+@keyframes list-position-back { from { transform: translateX(-8px); opacity: .55; } }
+@keyframes list-position-forward { from { transform: translateX(8px); opacity: .55; } }
+
+.list-position-spare { display: flex; align-items: center; gap: 6px; margin: 0; color: #d8e6f8; }
+.list-position-spare b { font-family: var(--mono); }
+.list-position-gap { display: grid; flex: 0 0 38px; align-items: center; }
+.list-position-gap button {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 2px;
+  min-height: 44px;
+  padding: 3px 2px;
+  border-color: #82a9cb;
+  border-style: dashed;
+  color: #edf7ff;
+  line-height: 1;
+}
+.list-position-gap button span { font-size: 17px; }
+.list-position-gap button small { font: 700 11px/1.2 var(--mono); }
+.list-position-navigation { display: flex; flex-wrap: wrap; gap: 6px; }
+.list-position-navigation button { min-height: 40px; white-space: normal; }
+
+@container list-positions-lesson (max-width: 380px) {
+  .list-position-content { padding-inline: 8px; }
+  .list-position-board { padding-inline: 5px; }
+  .list-position-batteries { gap: 3px; padding-inline: 2px; }
+  .list-position-gap { flex-basis: 26px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .list-position-slot[data-shift] .list-position-shift { animation: none; }
+}

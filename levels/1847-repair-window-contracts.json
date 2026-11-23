@@ -1,0 +1,329 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-repair-window-contracts",
+  "order": 1847,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "algorithm-advanced",
+      "topic": "dynamic-programming"
+    },
+    {
+      "unit": "algorithm-intro",
+      "topic": "selection-sort"
+    }
+  ],
+  "title": {
+    "zh": "维修窗合约",
+    "en": "Repair Window Contracts"
+  },
+  "concept": {
+    "zh": "单工位 · 收益冲突 · 并列时少接单",
+    "en": "One bay · Competing rewards · Fewer jobs on a tie"
+  },
+  "brief": {
+    "zh": "tasks 每单为 [开始, 结束, 报酬]，已按结束时间升序。所选维修必须从开始一直占到结束，不能重叠，结束时刻可以接下一单，报酬可以为 0。返回 [能拿到的最高总报酬, 达到此报酬最少要接几单]。可以一单都不接。",
+    "en": "Each task is [start, end, reward] and the tasks are sorted by end time. A selected repair occupies the bay for its entire interval. Jobs cannot overlap, but another can begin right when one ends. Rewards may be zero. Return [highest total reward, fewest jobs needed to get that reward]. You may decline every job."
+  },
+  "hints": [],
+  "functionName": "best_repair_contracts",
+  "starterCode": "def best_repair_contracts(tasks):\n    pass\n",
+  "solutionCode": "def best_repair_contracts(tasks):\n    best = [[0, 0]]\n    for i in range(len(tasks)):\n        current = tasks[i]\n        compatible = i\n        while compatible > 0 and tasks[compatible - 1][1] > current[0]:\n            compatible -= 1\n        before = best[compatible]\n        reward = before[0] + current[2]\n        chosen = before[1] + 1\n        skip = best[i]\n        if reward > skip[0] or (reward == skip[0] and chosen < skip[1]):\n            best.append([reward, chosen])\n        else:\n            best.append(skip)\n    return best[len(tasks)]\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "读取维修时段和报酬",
+        "en": "Read an interval and reward"
+      },
+      "code": "    for task in tasks:\n        start = task[0]\n        end = task[1]\n        reward = task[2]"
+    },
+    {
+      "label": {
+        "zh": "记录空工单的成绩",
+        "en": "Record the result with zero jobs"
+      },
+      "code": "    best = [[0, 0]]"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          [
+            0,
+            2,
+            4
+          ],
+          [
+            1,
+            4,
+            8
+          ],
+          [
+            2,
+            5,
+            5
+          ],
+          [
+            5,
+            7,
+            3
+          ]
+        ]
+      ],
+      "expected": [
+        12,
+        3
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            2,
+            6
+          ],
+          [
+            2,
+            3,
+            4
+          ],
+          [
+            0,
+            3,
+            10
+          ],
+          [
+            3,
+            5,
+            3
+          ]
+        ]
+      ],
+      "expected": [
+        13,
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            1,
+            2,
+            0
+          ],
+          [
+            0,
+            4,
+            0
+          ]
+        ]
+      ],
+      "expected": [
+        0,
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            5,
+            18
+          ],
+          [
+            1,
+            5,
+            20
+          ],
+          [
+            2,
+            5,
+            19
+          ],
+          [
+            5,
+            7,
+            1
+          ]
+        ]
+      ],
+      "expected": [
+        21,
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            3,
+            6
+          ],
+          [
+            1,
+            4,
+            7
+          ],
+          [
+            4,
+            5,
+            3
+          ],
+          [
+            0,
+            5,
+            11
+          ],
+          [
+            4,
+            6,
+            6
+          ],
+          [
+            5,
+            7,
+            4
+          ],
+          [
+            6,
+            9,
+            6
+          ]
+        ]
+      ],
+      "expected": [
+        19,
+        3
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": [
+        0,
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            2,
+            3,
+            1
+          ]
+        ]
+      ],
+      "expected": [
+        1,
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            1,
+            2,
+            2
+          ],
+          [
+            0,
+            2,
+            4
+          ],
+          [
+            2,
+            3,
+            2
+          ],
+          [
+            3,
+            4,
+            2
+          ],
+          [
+            2,
+            4,
+            4
+          ],
+          [
+            0,
+            4,
+            8
+          ]
+        ]
+      ],
+      "expected": [
+        8,
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            3,
+            25
+          ],
+          [
+            3,
+            4,
+            15
+          ],
+          [
+            1,
+            5,
+            52
+          ],
+          [
+            5,
+            9,
+            26
+          ],
+          [
+            4,
+            14,
+            51
+          ],
+          [
+            0,
+            15,
+            90
+          ]
+        ]
+      ],
+      "expected": [
+        91,
+        3
+      ]
+    }
+  ]
+}

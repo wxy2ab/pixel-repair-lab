@@ -1,0 +1,317 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "routing",
+    "order": 60,
+    "title": {
+      "zh": "算法进阶",
+      "en": "Intermediate Algorithms"
+    }
+  },
+  "kind": "lecture",
+  "id": "depth-first-notes",
+  "order": 1220,
+  "stage": "explain",
+  "topic": {
+    "id": "depth-first",
+    "order": 3,
+    "title": {
+      "zh": "深度优先搜索",
+      "en": "Depth-first search"
+    }
+  },
+  "title": {
+    "zh": "沿一条路走到底",
+    "en": "Follow one route as far as it goes"
+  },
+  "concept": {
+    "zh": "截止、回退与访问记录",
+    "en": "Depth, backtracking, and visited nodes"
+  },
+  "brief": {
+    "zh": "用栈记住还没有走完的岔路。先查最后放进去的节点，走不通时回到下一条岔路。",
+    "en": "Use a stack to remember branches that are still waiting. Try the last node you added, then return to another branch when a path ends."
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "栈顶先处理",
+        "en": "Take the top of the stack first"
+      },
+      "body": {
+        "zh": "用 append 把邻居压到栈顶，用 pop() 从顶上取下一个。最后压入的邻居会最先被查看。",
+        "en": "Use append to put neighbors on the stack and pop() to take the next one from its top. The last neighbor added is the first one examined."
+      }
+    },
+    {
+      "title": {
+        "zh": "记下已经看过的节点",
+        "en": "Record which nodes you have visited"
+      },
+      "body": {
+        "zh": "有环的地图可能带你回到原处。用字典记下选过的节点，取出一个已访问的节点时就跳过它。",
+        "en": "A cycle can take you back to an earlier node. Record visited nodes in a dictionary and skip any you have already handled."
+      }
+    },
+    {
+      "title": {
+        "zh": "找能不能走通",
+        "en": "Find whether a path exists"
+      },
+      "body": {
+        "zh": "当问题只问能不能到达，深度优先搜索可以一直探路。第一次找到的路线可能需要更多步。",
+        "en": "Depth-first search can explore until it finds whether the goal is reachable. The first route it finds may take more steps."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "先把 B 压入栈，再把 C 压入栈，下一次 pop() 会得到什么？",
+      "en": "Push B, then push C. What does the next pop() return?"
+    },
+    "options": [
+      {
+        "zh": "B",
+        "en": "B"
+      },
+      {
+        "zh": "C",
+        "en": "C"
+      },
+      {
+        "zh": "B 和 C 同时返回",
+        "en": "Both B and C"
+      }
+    ],
+    "correct": 1,
+    "feedback": {
+      "zh": "栈遵守后进先出。C 在栈顶，所以先拿到 C。",
+      "en": "A stack is last in, first out. C is on top, so it comes out first."
+    }
+  },
+  "animation": {
+    "layout": "stack",
+    "frames": [
+      {
+        "caption": {
+          "zh": "从 A 开始，把它放在栈顶。",
+          "en": "Start in room A and put it on the stack."
+        },
+        "items": [
+          {
+            "id": "stack",
+            "label": {
+              "zh": "栈顶",
+              "en": "Stack top"
+            },
+            "value": {
+              "zh": "A",
+              "en": "A"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "取出 A，记下已经到过的房间。",
+          "en": "Pop A and record that this room has been visited."
+        },
+        "items": [
+          {
+            "id": "visited",
+            "label": {
+              "zh": "已访问",
+              "en": "Visited"
+            },
+            "value": {
+              "zh": "A",
+              "en": "A"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "A 有两条岔路。先把 B 放入等待栈。",
+          "en": "A has two branches. Push B onto the waiting stack first."
+        },
+        "items": [
+          {
+            "id": "stack",
+            "label": {
+              "zh": "等待栈",
+              "en": "Waiting stack"
+            },
+            "value": {
+              "zh": "B",
+              "en": "B"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "再放入 C。C 在 B 的上面，所以下一次先处理 C。",
+          "en": "Push C next. It sits above B, so C is processed first."
+        },
+        "items": [
+          {
+            "id": "stack",
+            "label": {
+              "zh": "等待栈",
+              "en": "Waiting stack"
+            },
+            "value": {
+              "zh": "B → C",
+              "en": "B → C"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "取出栈顶的 C。B 留在栈里，等这条岔路走完。",
+          "en": "Pop C. B waits on the stack while you follow this branch."
+        },
+        "items": [
+          {
+            "id": "visited",
+            "label": {
+              "zh": "已访问",
+              "en": "Visited"
+            },
+            "value": {
+              "zh": "A → C",
+              "en": "A → C"
+            },
+            "state": "active"
+          },
+          {
+            "id": "stack",
+            "label": {
+              "zh": "栈顶",
+              "en": "Stack top"
+            },
+            "value": {
+              "zh": "B",
+              "en": "B"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "C 通往 D。把 D 压在 B 上面。",
+          "en": "C leads to D. Push D above B."
+        },
+        "items": [
+          {
+            "id": "stack",
+            "label": {
+              "zh": "等待栈",
+              "en": "Waiting stack"
+            },
+            "value": {
+              "zh": "B → D",
+              "en": "B → D"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "来到 D。这条岔路到底了，栈里还记着 B。",
+          "en": "Visit D. This branch ends here, and B is still on the stack."
+        },
+        "items": [
+          {
+            "id": "visited",
+            "label": {
+              "zh": "已访问",
+              "en": "Visited"
+            },
+            "value": {
+              "zh": "A → C → D",
+              "en": "A → C → D"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "取出一直在等待的 B。四个房间都看过了，栈也空了。",
+          "en": "Return to B, the room still waiting. All four rooms have been visited and the stack is empty."
+        },
+        "items": [
+          {
+            "id": "visited",
+            "label": {
+              "zh": "访问顺序",
+              "en": "Visit order"
+            },
+            "value": {
+              "zh": "A → C → D → B",
+              "en": "A → C → D → B"
+            },
+            "state": "active"
+          }
+        ]
+      }
+    ],
+    "workstation": {
+      "kind": "depth-first",
+      "checkpoints": [
+        {
+          "line": 4
+        },
+        {
+          "line": 8
+        },
+        {
+          "line": 11
+        },
+        {
+          "line": 11,
+          "visit": 2
+        },
+        {
+          "line": 8,
+          "visit": 2
+        },
+        {
+          "line": 11,
+          "visit": 3
+        },
+        {
+          "line": 8,
+          "visit": 3
+        },
+        {
+          "line": 8,
+          "visit": 4
+        }
+      ]
+    }
+  },
+  "execution": {
+    "source": "positions = {\"A\": [1, 0], \"B\": [0, 0], \"C\": [1, 1], \"D\": [2, 1]}\ngraph = {\"A\": [\"B\", \"C\"], \"B\": [], \"C\": [\"D\"], \"D\": []}\nvisited = []\nstack = [\"A\"]\nwhile len(stack) > 0:\n    room = stack.pop()\n    if room not in visited:\n        visited.append(room)\n        for neighbor in graph[room]:\n            if neighbor not in visited:\n                stack.append(neighbor)\nsay(str(len(visited)))",
+    "cases": [
+      {
+        "label": {
+          "zh": "沿一条路走到底",
+          "en": "Follow one route as far as it goes"
+        },
+        "input": 0,
+        "expected": "4"
+      }
+    ]
+  }
+}

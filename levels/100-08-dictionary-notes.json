@@ -1,0 +1,470 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "dictionary-notes",
+  "order": 1007,
+  "unit": {
+    "id": "structures",
+    "order": 40,
+    "title": {
+      "zh": "数据结构",
+      "en": "Data Structures"
+    }
+  },
+  "topic": {
+    "id": "dictionaries",
+    "order": 4,
+    "title": {
+      "zh": "字典",
+      "en": "Dictionaries"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "字典",
+    "en": "Dictionaries"
+  },
+  "concept": {
+    "zh": "用键查找、登记和更新对应的值",
+    "en": "Use keys to look up, add, and update values"
+  },
+  "brief": {
+    "zh": "用电池名字当键，电量当值。查出已有电池的电量，再登记新电池，最后给已登记的电池补电。",
+    "en": "Use each battery’s name as a key and its charge as the value. Look up a charge, register a new battery, then update the charge for a battery that is already registered."
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "按名字查电量",
+        "en": "Look up a charge by name"
+      },
+      "body": {
+        "zh": "名字是键，电量是值。在 records 里用键 B 查到 4 格。读出的 4 格可以先存起来，之后再用来计算。",
+        "en": "The name is the key and the charge is the value. Looking up B in records gives 4 units. Save that reading for the calculation later."
+      }
+    },
+    {
+      "title": {
+        "zh": "新名字增加一条记录",
+        "en": "A new name adds a record"
+      },
+      "body": {
+        "zh": "D 还没有登记。把电量 3 写到键 D 下，字典就有了 D 对应的记录。",
+        "en": "D is new to the register. Write its charge of 3 under key D to add its record."
+      }
+    },
+    {
+      "title": {
+        "zh": "同一个名字可以有新的值",
+        "en": "An existing name can get a new value"
+      },
+      "body": {
+        "zh": "B 原来有 4 格，补 3 格后是 7 格。把 7 存回键 B，B 对应的值变了，名字和记录条数都保持原样。",
+        "en": "B starts at 4 and gains 3, bringing it to 7. Store 7 under the same key B. The name and the number of records stay the same."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "B 已经登记了 4 格。给它补 3 格后，哪句代码会更新 B 的记录？",
+      "en": "B is already registered with 4 units. After adding 3, which line updates B’s record?"
+    },
+    "options": [
+      {
+        "zh": "records[\"B\"] = 7",
+        "en": "records[\"B\"] = 7"
+      },
+      {
+        "zh": "records[\"D\"] = 7",
+        "en": "records[\"D\"] = 7"
+      },
+      {
+        "zh": "records[\"B\"] = 3",
+        "en": "records[\"B\"] = 3"
+      }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "还是用名字 B 当键，把补完后的总电量 7 存回这一条。",
+      "en": "Use the same key B and store the total charge of 7 in that record."
+    }
+  },
+  "animation": {
+    "layout": "row",
+    "frames": [
+      {
+        "caption": {
+          "zh": "按名字查 B，取到它原来的 4 格。",
+          "en": "Look up B by name to read its starting charge of 4."
+        },
+        "items": [
+          {
+            "id": "battery-a",
+            "label": {
+              "zh": "键 A",
+              "en": "Key A"
+            },
+            "value": {
+              "zh": "2 格",
+              "en": "2 units"
+            },
+            "state": "done"
+          },
+          {
+            "id": "battery-b",
+            "label": {
+              "zh": "键 B",
+              "en": "Key B"
+            },
+            "value": {
+              "zh": "4 格",
+              "en": "4 units"
+            },
+            "state": "active"
+          },
+          {
+            "id": "battery-c",
+            "label": {
+              "zh": "键 C",
+              "en": "Key C"
+            },
+            "value": {
+              "zh": "6 格",
+              "en": "6 units"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "D 第一次来，给它增加一条电量为 3 的记录。",
+          "en": "D is new. Add a record for its charge of 3."
+        },
+        "items": [
+          {
+            "id": "battery-a",
+            "label": {
+              "zh": "键 A",
+              "en": "Key A"
+            },
+            "value": {
+              "zh": "2 格",
+              "en": "2 units"
+            },
+            "state": "done"
+          },
+          {
+            "id": "battery-b",
+            "label": {
+              "zh": "键 B",
+              "en": "Key B"
+            },
+            "value": {
+              "zh": "4 格",
+              "en": "4 units"
+            },
+            "state": "done"
+          },
+          {
+            "id": "battery-c",
+            "label": {
+              "zh": "键 C",
+              "en": "Key C"
+            },
+            "value": {
+              "zh": "6 格",
+              "en": "6 units"
+            },
+            "state": "done"
+          },
+          {
+            "id": "battery-d",
+            "label": {
+              "zh": "键 D",
+              "en": "Key D"
+            },
+            "value": {
+              "zh": "3 格",
+              "en": "3 units"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "先算 B 的新电量，4 加 3 得到 7。登记表暂时还是 4。",
+          "en": "Calculate B’s new charge first. Adding 3 to 4 gives 7. The register still says 4."
+        },
+        "items": [
+          {
+            "id": "battery-a",
+            "label": {
+              "zh": "键 A",
+              "en": "Key A"
+            },
+            "value": {
+              "zh": "2 格",
+              "en": "2 units"
+            },
+            "state": "done"
+          },
+          {
+            "id": "battery-b",
+            "label": {
+              "zh": "键 B",
+              "en": "Key B"
+            },
+            "value": {
+              "zh": "4 格",
+              "en": "4 units"
+            },
+            "state": "active"
+          },
+          {
+            "id": "battery-c",
+            "label": {
+              "zh": "键 C",
+              "en": "Key C"
+            },
+            "value": {
+              "zh": "6 格",
+              "en": "6 units"
+            },
+            "state": "done"
+          },
+          {
+            "id": "battery-d",
+            "label": {
+              "zh": "键 D",
+              "en": "Key D"
+            },
+            "value": {
+              "zh": "3 格",
+              "en": "3 units"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "把 7 存到已有的键 B 下。登记表里的 A、C、D 仍保留原来的电量。",
+          "en": "Store 7 under the existing key B. A, C, and D keep their original charges."
+        },
+        "items": [
+          {
+            "id": "battery-a",
+            "label": {
+              "zh": "键 A",
+              "en": "Key A"
+            },
+            "value": {
+              "zh": "2 格",
+              "en": "2 units"
+            },
+            "state": "done"
+          },
+          {
+            "id": "battery-b",
+            "label": {
+              "zh": "键 B",
+              "en": "Key B"
+            },
+            "value": {
+              "zh": "7 格",
+              "en": "7 units"
+            },
+            "state": "active"
+          },
+          {
+            "id": "battery-c",
+            "label": {
+              "zh": "键 C",
+              "en": "Key C"
+            },
+            "value": {
+              "zh": "6 格",
+              "en": "6 units"
+            },
+            "state": "done"
+          },
+          {
+            "id": "battery-d",
+            "label": {
+              "zh": "键 D",
+              "en": "Key D"
+            },
+            "value": {
+              "zh": "3 格",
+              "en": "3 units"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  },
+  "execution": {
+    "source": "records = read_named_batteries()\nreading = records[\"B\"]\nrecords[\"D\"] = 3\nnew_charge = reading + 3\nrecords[\"B\"] = new_charge\nsay(str(records))",
+    "cases": [],
+    "dictionaryLesson": {
+      "cases": [
+        {
+          "label": {
+            "zh": "维修站的电量登记台",
+            "en": "The repair station register"
+          },
+          "batteries": [
+            {
+              "name": "A",
+              "charge": 2
+            },
+            {
+              "name": "B",
+              "charge": 4
+            },
+            {
+              "name": "C",
+              "charge": 6
+            }
+          ],
+          "key": "B",
+          "arrival": {
+            "name": "D",
+            "charge": 3
+          },
+          "increment": 3,
+          "expected": {
+            "reading": 4,
+            "records": {
+              "A": 2,
+              "B": 7,
+              "C": 6,
+              "D": 3
+            }
+          }
+        },
+        {
+          "label": {
+            "zh": "登记 T，给 R 补电",
+            "en": "Register T and charge R"
+          },
+          "batteries": [
+            {
+              "name": "P",
+              "charge": 5
+            },
+            {
+              "name": "R",
+              "charge": 2
+            },
+            {
+              "name": "Q",
+              "charge": 0
+            }
+          ],
+          "key": "R",
+          "arrival": {
+            "name": "T",
+            "charge": 3
+          },
+          "increment": 2,
+          "expected": {
+            "reading": 2,
+            "records": {
+              "P": 5,
+              "R": 4,
+              "Q": 0,
+              "T": 3
+            }
+          },
+          "predictions": {
+            "readings": [
+              4,
+              2,
+              0
+            ],
+            "records": [
+              {
+                "P": 5,
+                "R": 2,
+                "Q": 0,
+                "T": 3
+              },
+              {
+                "P": 5,
+                "R": 4,
+                "Q": 0,
+                "T": 3
+              },
+              {
+                "P": 5,
+                "R": 4,
+                "Q": 0
+              }
+            ]
+          },
+          "source": "records = read_named_batteries()\nreading = records[\"R\"]\nrecords[\"T\"] = 3\nnew_charge = reading + 2\nrecords[\"R\"] = new_charge\nsay(str(records))"
+        },
+        {
+          "label": {
+            "zh": "给 0 格电的电池补电",
+            "en": "Charge a battery starting at zero"
+          },
+          "batteries": [
+            {
+              "name": "K",
+              "charge": 0
+            },
+            {
+              "name": "M",
+              "charge": 1
+            }
+          ],
+          "key": "K",
+          "arrival": {
+            "name": "L",
+            "charge": 4
+          },
+          "increment": 3,
+          "expected": {
+            "reading": 0,
+            "records": {
+              "K": 3,
+              "M": 1,
+              "L": 4
+            }
+          },
+          "predictions": {
+            "readings": [
+              3,
+              1,
+              0
+            ],
+            "records": [
+              {
+                "K": 0,
+                "M": 1,
+                "L": 4
+              },
+              {
+                "K": 3,
+                "M": 1,
+                "L": 4
+              },
+              {
+                "K": 0,
+                "M": 4,
+                "L": 4
+              }
+            ]
+          },
+          "source": "records = read_named_batteries()\nreading = records[\"K\"]\nrecords[\"L\"] = 4\nnew_charge = reading + 3\nrecords[\"K\"] = new_charge\nsay(str(records))"
+        }
+      ]
+    }
+  }
+}

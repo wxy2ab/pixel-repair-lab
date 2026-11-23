@@ -1,0 +1,230 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "yolox-object-detection-notes",
+  "order": 550,
+  "stage": "explain",
+  "unit": {
+    "id": "yolox",
+    "order": 150,
+    "title": {
+      "zh": "YOLOX",
+      "en": "YOLOX"
+    }
+  },
+  "topic": {
+    "id": "object-detection",
+    "order": 1,
+    "title": {
+      "zh": "目标检测",
+      "en": "Object detection"
+    }
+  },
+  "title": {
+    "zh": "照片里有什么，在哪里？",
+    "en": "What Is in the Photo, and Where?"
+  },
+  "brief": {
+    "zh": "跟着一张照片，看看像素是怎样变成可以核对的预测。",
+    "en": "Follow a photo as its pixels become predictions you can check."
+  },
+  "concept": {
+    "zh": "目标检测给每个候选物体预测类别、位置和分数。",
+    "en": "Object detection predicts a class, location, and score for each candidate object."
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "一张图可以有多个答案",
+        "en": "One image can have several answers"
+      },
+      "body": {
+        "zh": "只回答“这是一张有狗的照片”是图像分类。目标检测还会指出狗在哪儿。同一张图的每个候选对象可以有各自的类别和框。",
+        "en": "Answering only ‘this photo contains a dog’ is image classification. Object detection also says where the dog is. Each candidate object can have its own class and box."
+      }
+    },
+    {
+      "title": {
+        "zh": "先用眼睛核对",
+        "en": "Check the image yourself"
+      },
+      "body": {
+        "zh": "光线、遮挡、大小和拍摄角度都会影响预测。模型可能漏掉物体，也可能把物体认错。看原图和模型的框，才能发现这些情况。",
+        "en": "Lighting, occlusion, size, and camera angle can affect predictions. The model can miss an object or give it the wrong label. Compare its boxes with the original photo to notice these cases."
+      }
+    }
+  ],
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": {
+          "zh": "照相机把有狗和椅子的场景保存为像素。",
+          "en": "The camera records a scene with a dog and a chair as pixels."
+        },
+        "items": [
+          {
+            "id": "camera",
+            "label": {
+              "zh": "原图",
+              "en": "Photo"
+            },
+            "value": {
+              "zh": "狗和椅子",
+              "en": "Dog and chair"
+            },
+            "state": "active"
+          },
+          {
+            "id": "model",
+            "label": {
+              "zh": "检测模型",
+              "en": "Detector"
+            },
+            "value": {
+              "zh": "等待像素",
+              "en": "Waiting for pixels"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "模型为每个候选区域分别猜测类别。",
+          "en": "The model guesses a class for each candidate region."
+        },
+        "items": [
+          {
+            "id": "camera",
+            "label": {
+              "zh": "原图",
+              "en": "Photo"
+            },
+            "value": {
+              "zh": "像素已送入",
+              "en": "Pixels sent"
+            },
+            "state": "done"
+          },
+          {
+            "id": "model",
+            "label": {
+              "zh": "检测模型",
+              "en": "Detector"
+            },
+            "value": {
+              "zh": "给候选区域分类",
+              "en": "Classify regions"
+            },
+            "state": "active"
+          },
+          {
+            "id": "dog",
+            "label": {
+              "zh": "左边的框",
+              "en": "Left box"
+            },
+            "value": {
+              "zh": "狗",
+              "en": "Dog"
+            }
+          },
+          {
+            "id": "chair",
+            "label": {
+              "zh": "右边的框",
+              "en": "Right box"
+            },
+            "value": {
+              "zh": "椅子",
+              "en": "Chair"
+            }
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "换成一张椅子被遮住的照片。模型只返回狗，漏掉了椅子。",
+          "en": "Switch to a photo where the chair is partly hidden. The model returns only the dog and misses the chair."
+        },
+        "items": [
+          {
+            "id": "camera",
+            "label": {
+              "zh": "新照片",
+              "en": "New photo"
+            },
+            "value": {
+              "zh": "椅子被遮住",
+              "en": "Chair partly hidden"
+            },
+            "state": "active"
+          },
+          {
+            "id": "model",
+            "label": {
+              "zh": "检测模型",
+              "en": "Detector"
+            },
+            "value": {
+              "zh": "返回一个预测",
+              "en": "One prediction"
+            },
+            "state": "done"
+          },
+          {
+            "id": "dog",
+            "label": {
+              "zh": "左边的框",
+              "en": "Left box"
+            },
+            "value": {
+              "zh": "狗",
+              "en": "Dog"
+            },
+            "state": "done"
+          },
+          {
+            "id": "chair",
+            "label": {
+              "zh": "椅子",
+              "en": "Chair"
+            },
+            "value": {
+              "zh": "没有检测框",
+              "en": "No detection box"
+            },
+            "state": "muted"
+          }
+        ]
+      }
+    ]
+  },
+  "question": {
+    "prompt": {
+      "zh": "在新照片里，模型只画了狗的框。要判断椅子是否被漏掉，下一步该做什么？",
+      "en": "Only the dog has a box in the new photo. How can you check whether the model missed the chair?"
+    },
+    "options": [
+      {
+        "zh": "查看原图，看有没有被遮住的椅子",
+        "en": "Look for a partly hidden chair in the original photo"
+      },
+      {
+        "zh": "只数检测框的数量",
+        "en": "Only count the detection boxes"
+      },
+      {
+        "zh": "把狗的框改名为椅子",
+        "en": "Rename the dog's box to chair"
+      }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "用原图核对预测。看到了椅子但没有它的框，才知道出现了漏检。",
+      "en": "Check predictions against the photo. Seeing a chair without a box tells you it was missed."
+    }
+  }
+}

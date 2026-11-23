@@ -1,0 +1,144 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "ai-specific-keep-and-remove",
+  "order": 1724,
+  "unit": {
+    "id": "ai-review",
+    "order": 170,
+    "title": {
+      "zh": "核对与修正",
+      "en": "Review and Revision"
+    }
+  },
+  "topic": {
+    "id": "specific-correction",
+    "order": 2,
+    "title": {
+      "zh": "写清修改",
+      "en": "Give Specific Corrections"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "修改两行并保留正确项",
+    "en": "Fix Two Rows and Preserve the Rest"
+  },
+  "brief": {
+    "zh": "装箱区需要三张标签、两张包裹纸和四颗螺丝，把磁铁留在架上。让 AI 沿用初稿起草，检查后一次写清需要改的内容。",
+    "en": "The packing area needs three labels, two sheets of wrapping paper, and four screws. Leave the magnet on the shelf. Ask the AI to start from the draft and describe each necessary change after reviewing it."
+  },
+  "concept": {
+    "zh": "一句反馈可以包含改数量和删除物品，两件事分别说清。",
+    "en": "A single prompt can specify both a new quantity and an item to remove. State each change explicitly."
+  },
+  "hints": [
+    {
+      "zh": "把每条修改写成一句。复查时也查已经正确的两行。",
+      "en": "Give each change its own sentence. Recheck the two good rows as well."
+    }
+  ],
+  "inventory": [
+    {
+      "id": "label",
+      "label": {
+        "zh": "标签",
+        "en": "Label"
+      },
+      "aliases": [
+        "labels",
+        "标贴"
+      ]
+    },
+    {
+      "id": "wrap",
+      "label": {
+        "zh": "包裹纸",
+        "en": "Wrapping paper"
+      },
+      "aliases": [
+        "wrap"
+      ]
+    },
+    {
+      "id": "screw",
+      "label": {
+        "zh": "螺丝",
+        "en": "Screw"
+      },
+      "aliases": [
+        "screws",
+        "螺钉"
+      ]
+    },
+    {
+      "id": "magnet",
+      "label": {
+        "zh": "磁铁",
+        "en": "Magnet"
+      },
+      "aliases": [
+        "magnets",
+        "磁石"
+      ]
+    }
+  ],
+  "required": {
+    "label": 3,
+    "wrap": 2,
+    "screw": 4
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "screw",
+        "quantity": 1
+      }
+    ],
+    "cards": [
+      {
+        "zh": "螺丝改为 4 颗。",
+        "en": "Set screws to 4."
+      },
+      {
+        "zh": "去掉磁铁。",
+        "en": "Remove the magnet."
+      },
+      {
+        "zh": "其他项目保持原样。",
+        "en": "Keep the other entries."
+      }
+    ],
+    "draft": {
+      "items": [
+        {
+          "id": "label",
+          "quantity": 3
+        },
+        {
+          "id": "wrap",
+          "quantity": 2
+        },
+        {
+          "id": "screw",
+          "quantity": 4
+        },
+        {
+          "id": "magnet",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  "examplePrompts": {
+    "zh": [
+      "标签改为 3 张。先保留初稿中的其他项目。",
+      "螺丝改为 4 颗。去掉磁铁。其他项目保持原样。"
+    ],
+    "en": [
+      "Set labels to 3. Keep the other draft entries for now.",
+      "Set screws to 4. Remove the magnet. Keep the other entries."
+    ]
+  }
+}

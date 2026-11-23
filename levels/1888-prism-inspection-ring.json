@@ -1,0 +1,352 @@
+{
+  "version": 1,
+  "id": "challenge-prism-inspection-ring",
+  "order": 1888,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": {
+    "zh": "棱镜转台脱身",
+    "en": "Prism Turntable Escape"
+  },
+  "concept": {
+    "zh": "逃脱 · 转台换位、双件验收",
+    "en": "Escape · Turntable transfers and two prisms"
+  },
+  "brief": {
+    "zh": "两枚棱镜将先后换台。云母追踪芽芽，瓷轮沿固定轨道巡视。收齐 2 件标记货物，带到标出的出口。避开 2 台追击或巡线的对手；同格或相向换位都会被拦下。首张地图限 19 回合，复测限 18 回合。 第 4, 8 回合结束时切换通道并转移未取的货物；占用的门当次保持开启。从容模式须用同一程序通过两张地图。 控制台的 A、B 调度表列出两局地形、货物、机器人起点和调闸坐标。 巡线表 cycle 从第 0 回合起依次循环。追击机每回合向芽芽上回合的位置走一步；最短路线并列时按上、右、下、左选。",
+    "en": "Two prisms change platforms in succession. Mica follows Sprout, while Porcelain patrols a fixed rail. Recover all 2 marked items and reach the marked exit. Avoid 2 chasing or patrolling rivals. Sharing a tile or swapping positions with one ends the run. The first map allows 19 turns and the second allows 18. After turns 4, 8, gates change and unclaimed cargo is transferred. Occupied gates stay open for that shift. In Relaxed mode, win both maps with the same program. The A and B schedule cards include both maps, cargo, rival starts and gate coordinates. Patrol cycles start at turn 0. Chasers step toward your previous position, breaking shortest-path ties up, right, down, left."
+  },
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "rival-strategy"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "#########",
+    "#.......#",
+    "##.#.##.#",
+    "#.....#.#",
+    "#...#...#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 2,
+    "y": 5
+  },
+  "items": [
+    {
+      "id": "cell-1",
+      "x": 6,
+      "y": 4
+    },
+    {
+      "id": "cell-2",
+      "x": 2,
+      "y": 1
+    }
+  ],
+  "opponents": [
+    {
+      "id": "rival-1",
+      "title": {
+        "zh": "云母",
+        "en": "Mica"
+      },
+      "start": {
+        "x": 7,
+        "y": 5
+      },
+      "policy": {
+        "kind": "pursue"
+      }
+    },
+    {
+      "id": "rival-2",
+      "title": {
+        "zh": "瓷轮",
+        "en": "Porcelain"
+      },
+      "start": {
+        "x": 5,
+        "y": 3
+      },
+      "policy": {
+        "kind": "patrol",
+        "path": [
+          {
+            "x": 5,
+            "y": 3
+          },
+          {
+            "x": 5,
+            "y": 4
+          },
+          {
+            "x": 6,
+            "y": 4
+          },
+          {
+            "x": 5,
+            "y": 4
+          }
+        ]
+      }
+    }
+  ],
+  "objective": {
+    "kind": "escape",
+    "exit": {
+      "x": 7,
+      "y": 1
+    },
+    "itemIds": [
+      "cell-1",
+      "cell-2"
+    ]
+  },
+  "maxTurns": 19,
+  "shifts": [
+    {
+      "turn": 4,
+      "open": [
+        {
+          "x": 4,
+          "y": 4
+        }
+      ],
+      "close": [
+        {
+          "x": 1,
+          "y": 4
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "cell-1",
+          "x": 7,
+          "y": 4
+        }
+      ]
+    },
+    {
+      "turn": 8,
+      "open": [
+        {
+          "x": 5,
+          "y": 2
+        }
+      ],
+      "close": [
+        {
+          "x": 2,
+          "y": 3
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "cell-2",
+          "x": 3,
+          "y": 5
+        }
+      ]
+    }
+  ],
+  "starterCode": "while True:\n    state = scan()\n    wait()\n",
+  "solutionCode": "first_start = [2, 5]\nif scan()[\"player\"] == first_start:\n    route = [\"U\", \"U\", \"U\", \"U\", \"P\", \"D\", \"W\", \"D\", \"R\", \"R\", \"D\", \"R\", \"R\", \"R\", \"P\", \"U\", \"U\", \"U\"]\nelse:\n    route = [\"U\", \"P\", \"R\", \"L\", \"D\", \"D\", \"D\", \"R\", \"R\", \"U\", \"R\", \"P\", \"R\", \"R\", \"D\", \"D\", \"L\"]\ndirections = {\"U\": \"up\", \"R\": \"right\", \"D\": \"down\", \"L\": \"left\"}\nfor action in route:\n    if action == \"P\":\n        pick()\n    elif action == \"W\":\n        wait()\n    else:\n        move(directions[action])\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "读取本回合快照",
+        "en": "Read the current round"
+      },
+      "code": "state = scan()\nposition = state[\"player\"]\nboard = state[\"tiles\"]"
+    },
+    {
+      "label": {
+        "zh": "检查脚下货物",
+        "en": "Check this tile for cargo"
+      },
+      "code": "state = scan()\nfor item in state[\"items\"]:\n    if [item[\"x\"], item[\"y\"]] == state[\"player\"]:\n        pick()\n        break"
+    },
+    {
+      "label": {
+        "zh": "查询下一次切换",
+        "en": "Check the next shift"
+      },
+      "code": "state = scan()\nnext_shift = state[\"nextShift\"]"
+    },
+    {
+      "label": {
+        "zh": "首场 A · 地图与调度表",
+        "en": "Match A · map and schedule"
+      },
+      "code": "plan_a = {\n    \"tiles\": [\n        \"#########\",\n        \"#.......#\",\n        \"##.#.##.#\",\n        \"#.....#.#\",\n        \"#...#...#\",\n        \"#.......#\",\n        \"#########\",\n    ],\n    \"start\": [2, 5],\n    \"exit\": [7, 1],\n    \"cargo\": {\"cell-1\": [6, 4], \"cell-2\": [2, 1]},\n    \"rivals\": {\n        \"rival-1\": {\"start\": [7, 5], \"policy\": \"pursue\"},\n        \"rival-2\": {\"start\": [5, 3], \"policy\": \"patrol\", \"cycle\": [[5, 3], [5, 4], [6, 4], [5, 4]]},\n    },\n    \"shifts\": [\n        {\"turn\": 4, \"open\": [[4, 4]], \"close\": [[1, 4]], \"transfer\": {\"cell-1\": [7, 4]}},\n        {\"turn\": 8, \"open\": [[5, 2]], \"close\": [[2, 3]], \"transfer\": {\"cell-2\": [3, 5]}},\n    ]\n}"
+    },
+    {
+      "label": {
+        "zh": "复测 B · 地图与调度表",
+        "en": "Rematch B · map and schedule"
+      },
+      "code": "plan_b = {\n    \"tiles\": [\n        \"#########\",\n        \"#.......#\",\n        \"#.#.#.#.#\",\n        \"#.#.....#\",\n        \"#..#....#\",\n        \"#.....#.#\",\n        \"#########\",\n    ],\n    \"start\": [1, 2],\n    \"exit\": [5, 5],\n    \"cargo\": {\"cell-1\": [5, 4], \"cell-2\": [1, 1]},\n    \"rivals\": {\n        \"rival-1\": {\"start\": [7, 1], \"policy\": \"pursue\"},\n        \"rival-2\": {\"start\": [2, 5], \"policy\": \"patrol\", \"cycle\": [[2, 5], [3, 5], [4, 5], [5, 5], [4, 5], [3, 5]]},\n    },\n    \"shifts\": [\n        {\"turn\": 4, \"open\": [[6, 5]], \"close\": [[6, 1]], \"transfer\": {\"cell-1\": [4, 3]}},\n        {\"turn\": 8, \"open\": [[3, 4]], \"close\": [[1, 3]], \"transfer\": {\"cell-2\": [2, 1]}},\n    ]\n}"
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "#########",
+        "#.......#",
+        "#.#.#.#.#",
+        "#.#.....#",
+        "#..#....#",
+        "#.....#.#",
+        "#########"
+      ],
+      "start": {
+        "x": 1,
+        "y": 2
+      },
+      "items": [
+        {
+          "id": "cell-1",
+          "x": 5,
+          "y": 4
+        },
+        {
+          "id": "cell-2",
+          "x": 1,
+          "y": 1
+        }
+      ],
+      "opponents": [
+        {
+          "id": "rival-1",
+          "title": {
+            "zh": "云母",
+            "en": "Mica"
+          },
+          "start": {
+            "x": 7,
+            "y": 1
+          },
+          "policy": {
+            "kind": "pursue"
+          }
+        },
+        {
+          "id": "rival-2",
+          "title": {
+            "zh": "瓷轮",
+            "en": "Porcelain"
+          },
+          "start": {
+            "x": 2,
+            "y": 5
+          },
+          "policy": {
+            "kind": "patrol",
+            "path": [
+              {
+                "x": 2,
+                "y": 5
+              },
+              {
+                "x": 3,
+                "y": 5
+              },
+              {
+                "x": 4,
+                "y": 5
+              },
+              {
+                "x": 5,
+                "y": 5
+              },
+              {
+                "x": 4,
+                "y": 5
+              },
+              {
+                "x": 3,
+                "y": 5
+              }
+            ]
+          }
+        }
+      ],
+      "objective": {
+        "kind": "escape",
+        "exit": {
+          "x": 5,
+          "y": 5
+        },
+        "itemIds": [
+          "cell-1",
+          "cell-2"
+        ]
+      },
+      "maxTurns": 18,
+      "shifts": [
+        {
+          "turn": 4,
+          "open": [
+            {
+              "x": 6,
+              "y": 5
+            }
+          ],
+          "close": [
+            {
+              "x": 6,
+              "y": 1
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "cell-1",
+              "x": 4,
+              "y": 3
+            }
+          ]
+        },
+        {
+          "turn": 8,
+          "open": [
+            {
+              "x": 3,
+              "y": 4
+            }
+          ],
+          "close": [
+            {
+              "x": 1,
+              "y": 3
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "cell-2",
+              "x": 2,
+              "y": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

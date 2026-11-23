@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-repair-script-revision",
+  "order": 1872,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "python-advanced",
+      "topic": "nested-loops"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "dynamic-programming"
+    }
+  ],
+  "title": {
+    "zh": "校准口令改版",
+    "en": "Calibration Script Revision"
+  },
+  "concept": {
+    "zh": "三种改动的最低代价",
+    "en": "Least cost across three kinds of edit"
+  },
+  "brief": {
+    "zh": "把旧口令 old 改成新口令 new。可在任意位置插入一个字符、删除一个字符或把一个字符替换为另一个，单价依次是 insert、erase、replace，均为非负整数。保留原字符免费。返回最低总价，口令可以为空。",
+    "en": "Turn the old command string into new. At any position, inserting, deleting and replacing one character cost insert, erase and replace respectively. All costs are nonnegative integers, and keeping a character is free. Return the lowest total price. Either command can be empty."
+  },
+  "hints": [],
+  "functionName": "revision_cost",
+  "starterCode": "def revision_cost(old, new, insert, erase, replace):\n    pass\n",
+  "solutionCode": "def revision_cost(old, new, insert, erase, replace):\n    before = []\n    for j in range(len(new) + 1):\n        before.append(j * insert)\n    for i in range(1, len(old) + 1):\n        row = [i * erase]\n        for j in range(1, len(new) + 1):\n            best = before[j - 1]\n            if old[i - 1] != new[j - 1]:\n                best += replace\n            add_cost = row[j - 1] + insert\n            drop_cost = before[j] + erase\n            if add_cost < best:\n                best = add_cost\n            if drop_cost < best:\n                best = drop_cost\n            row.append(best)\n        before = row\n    return before[-1]\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "处理空串时按删价逐字累计",
+        "en": "Use the removal rate for the initial row"
+      },
+      "code": "    before = []\n    for j in range(len(new) + 1):\n        before.append(j * erase)"
+    },
+    {
+      "label": {
+        "zh": "为逐个字符试三种单价",
+        "en": "Compare three edit costs per character"
+      },
+      "code": "    for i in range(1, len(old) + 1):\n        row = [i * erase]\n        for j in range(1, len(new) + 1):\n            best = before[j - 1]\n            if old[i - 1] != new[j - 1]:\n                best += replace\n            add_cost = row[j - 1] + insert\n            drop_cost = before[j] + erase"
+    },
+    {
+      "label": {
+        "zh": "给空口令定价",
+        "en": "Price edits from an empty command"
+      },
+      "code": "    before = []\n    for j in range(len(new) + 1):\n        before.append(j * insert)"
+    },
+    {
+      "label": {
+        "zh": "送交最终报价",
+        "en": "Send the final quote"
+      },
+      "code": "    return before[-1]"
+    },
+    {
+      "label": {
+        "zh": "保留最低报价",
+        "en": "Keep the lowest quote"
+      },
+      "code": "            if add_cost < best:\n                best = add_cost\n            if drop_cost < best:\n                best = drop_cost\n            row.append(best)\n        before = row"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        "ABC",
+        "ADC",
+        2,
+        1,
+        8
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        "BA",
+        "AB",
+        1,
+        1,
+        3
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        "",
+        "ABC",
+        4,
+        2,
+        1
+      ],
+      "expected": 12
+    },
+    {
+      "args": [
+        "CAB",
+        "",
+        2,
+        5,
+        1
+      ],
+      "expected": 15
+    },
+    {
+      "args": [
+        "AA",
+        "AA",
+        0,
+        0,
+        1
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        "KITTEN",
+        "SITTING",
+        1,
+        1,
+        1
+      ],
+      "expected": 3
+    }
+  ]
+}

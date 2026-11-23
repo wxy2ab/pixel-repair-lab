@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "python-program-web",
+  "order": 701,
+  "unit": { "id": "foundations", "order": 10, "title": { "zh": "Python 基础", "en": "Python Foundations" } },
+  "stage": "explain",
+  "overview": true,
+  "title": { "zh": "网页程序（Web）", "en": "Web Programs" },
+  "brief": {
+    "zh": "在补电网页里选一个起始电量，发送给服务器。看看数字怎样回到你眼前的网页。",
+    "en": "Choose a starting charge on the charging page and send it to the server. See how the answer gets back to your page."
+  },
+  "concept": { "zh": "浏览器发请求，服务器算结果", "en": "The browser asks and the server calculates" },
+  "hints": [],
+  "execution": {
+    "source": "charge = scan()\nresult = charge + 3\nsay(str(result))",
+    "cases": [
+      { "label": { "zh": "起始电量 6 格", "en": "Start with 6 units" }, "input": 6, "expected": "9" },
+      { "label": { "zh": "起始电量 1 格", "en": "Start with 1 unit" }, "input": 1, "expected": "4" },
+      { "label": { "zh": "起始电量 0 格", "en": "Start with 0 units" }, "input": 0, "expected": "3" }
+    ],
+    "intro": { "mode": "interfaces", "interface": "web", "rule": { "zh": "在原电量上加 3 格", "en": "Add 3 units to the starting charge" } }
+  },
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": { "zh": "你点了发送，浏览器把选中的 6 放进请求，送到服务器。", "en": "When you click Send, the browser puts your chosen number, 6, in a request to the server." },
+        "items": [
+          { "id": "request", "label": { "zh": "浏览器发送请求", "en": "Browser sends request" }, "value": { "zh": "6 格", "en": "6 units" }, "state": "active" },
+          { "id": "process", "label": { "zh": "服务器运行程序", "en": "Server runs the program" }, "state": "muted" },
+          { "id": "response", "label": { "zh": "服务器发回响应", "en": "Server sends response" }, "state": "muted" },
+          { "id": "output", "label": { "zh": "浏览器显示结果", "en": "Browser displays result" }, "state": "muted" }
+        ]
+      },
+      {
+        "caption": { "zh": "服务器收到请求，让补电程序用 6 来计算。补电程序按规则加 3。", "en": "The server receives the request and runs the charging program with 6. The program adds 3." },
+        "items": [
+          { "id": "request", "label": { "zh": "浏览器发送请求", "en": "Browser sends request" }, "value": { "zh": "6 格", "en": "6 units" }, "state": "done" },
+          { "id": "process", "label": { "zh": "服务器运行程序", "en": "Server runs the program" }, "value": { "zh": "6 + 3", "en": "6 + 3" }, "state": "active" },
+          { "id": "response", "label": { "zh": "服务器发回响应", "en": "Server sends response" }, "state": "muted" },
+          { "id": "output", "label": { "zh": "浏览器显示结果", "en": "Browser displays result" }, "state": "muted" }
+        ]
+      },
+      {
+        "caption": { "zh": "服务器把算出的 9 放进响应，发回给刚才的浏览器。", "en": "The server puts the result, 9, in a response to the browser." },
+        "items": [
+          { "id": "request", "label": { "zh": "浏览器发送请求", "en": "Browser sends request" }, "value": { "zh": "6 格", "en": "6 units" }, "state": "done" },
+          { "id": "process", "label": { "zh": "服务器运行程序", "en": "Server runs the program" }, "value": { "zh": "6 + 3", "en": "6 + 3" }, "state": "done" },
+          { "id": "response", "label": { "zh": "服务器发回响应", "en": "Server sends response" }, "value": { "zh": "9 格", "en": "9 units" }, "state": "active" },
+          { "id": "output", "label": { "zh": "浏览器显示结果", "en": "Browser displays result" }, "state": "muted" }
+        ]
+      },
+      {
+        "caption": { "zh": "浏览器收到响应，从里面读到 9，把它显示在你打开的网页上。", "en": "The browser receives the response, reads the 9 and shows it on the page you opened." },
+        "items": [
+          { "id": "request", "label": { "zh": "浏览器发送请求", "en": "Browser sends request" }, "value": { "zh": "6 格", "en": "6 units" }, "state": "done" },
+          { "id": "process", "label": { "zh": "服务器运行程序", "en": "Server runs the program" }, "value": { "zh": "6 + 3", "en": "6 + 3" }, "state": "done" },
+          { "id": "response", "label": { "zh": "服务器发回响应", "en": "Server sends response" }, "value": { "zh": "9 格", "en": "9 units" }, "state": "done" },
+          { "id": "output", "label": { "zh": "浏览器显示结果", "en": "Browser displays result" }, "value": { "zh": "9 格", "en": "9 units" }, "state": "active" }
+        ]
+      }
+    ]
+  },
+  "sections": [
+    {
+      "title": { "zh": "浏览器负责发出输入和显示结果", "en": "The browser sends input and shows the result" },
+      "body": { "zh": "浏览器打开网页，记住你选的起始电量。点击发送时，它把数字放进一条请求，向服务器要结果。收到回信后，浏览器把结果放进网页。", "en": "The browser opens the page and remembers the charge you choose. When you click Send, it puts that number in a request asking the server for an answer. When the reply arrives, the browser puts the answer on the page." }
+    },
+    {
+      "title": { "zh": "服务器负责计算并回信", "en": "The server calculates and replies" },
+      "body": { "zh": "服务器是接收请求并回信的一方。这个例子里，它拿到请求里的数字，让补电程序加 3，再把结果放进回信。服务器发回的这条回信叫响应。", "en": "The server receives the request and replies. Here it takes the number from the request, runs the charging program to add 3 and sends back the result. The server's reply is called a response." }
+    }
+  ],
+  "question": {
+    "prompt": { "zh": "这次你要从网页给芽芽补电，选了 1 格。哪条路线会把结果 4 显示到你眼前？", "en": "This time you choose 1 unit on the web page. Which route gets the result, 4, onto your screen?" },
+    "options": [
+      { "zh": "浏览器发出 1，服务器算出 4 并回信，浏览器显示 4。", "en": "The browser sends 1, the server works out 4 and replies, and the browser shows 4." },
+      { "zh": "服务器发出 1，浏览器算出 4 并回信，服务器显示 4。", "en": "The server sends 1, the browser works out 4 and replies, and the server shows 4." },
+      { "zh": "浏览器发出 1，服务器把 1 送回，浏览器显示 1。", "en": "The browser sends 1, the server sends back 1, and the browser shows 1." }
+    ],
+    "correct": 0,
+    "feedback": { "zh": "浏览器把你的输入交给服务器，服务器算出结果，再由浏览器显示。试试发送 1 格，沿着回放找出数字从 1 变成 4 的那一步。", "en": "The browser passes your input to the server. The server calculates the result, and the browser displays it. Send 1 unit and follow the replay to see where it changes to 4." }
+  }
+}

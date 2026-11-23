@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "python-program-gui",
+  "order": 700,
+  "unit": { "id": "foundations", "order": 10, "title": { "zh": "Python 基础", "en": "Python Foundations" } },
+  "stage": "explain",
+  "overview": true,
+  "title": { "zh": "图形界面程序（GUI）", "en": "GUI Programs" },
+  "brief": {
+    "zh": "在补电窗口里选一个起始电量，再点「计算新电量」。",
+    "en": "Choose a starting charge in the calculator window, then click Calculate the new charge."
+  },
+  "concept": { "zh": "用窗口和按钮给程序传入数字", "en": "Give a program a number with window controls" },
+  "hints": [],
+  "execution": {
+    "source": "charge = scan()\nresult = charge + 3\nsay(str(result))",
+    "cases": [
+      { "label": { "zh": "起始电量 6 格", "en": "Start with 6 units" }, "input": 6, "expected": "9" },
+      { "label": { "zh": "起始电量 1 格", "en": "Start with 1 unit" }, "input": 1, "expected": "4" },
+      { "label": { "zh": "起始电量 0 格", "en": "Start with 0 units" }, "input": 0, "expected": "3" }
+    ],
+    "intro": { "mode": "interfaces", "interface": "gui", "rule": { "zh": "在原电量上加 3 格", "en": "Add 3 units to the starting charge" } }
+  },
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": { "zh": "在窗口里选好 6 格。点击计算按钮后，界面把选中的数字交给程序。", "en": "Choose 6 units in the window. When you click Calculate, the interface gives your chosen number to the program." },
+        "items": [
+          { "id": "input", "label": { "zh": "窗口传入选择", "en": "Window sends the selection" }, "value": { "zh": "6 格", "en": "6 units" }, "state": "active" },
+          { "id": "process", "label": { "zh": "程序计算", "en": "Program calculates" }, "state": "muted" },
+          { "id": "output", "label": { "zh": "窗口显示结果", "en": "Window shows the result" }, "state": "muted" }
+        ]
+      },
+      {
+        "caption": { "zh": "补电程序读取输入 6，按原来的规则加 3。", "en": "The program reads 6 and follows the same rule to add 3." },
+        "items": [
+          { "id": "input", "label": { "zh": "窗口传入选择", "en": "Window sends the selection" }, "value": { "zh": "6 格", "en": "6 units" }, "state": "done" },
+          { "id": "process", "label": { "zh": "程序计算", "en": "Program calculates" }, "value": { "zh": "6 + 3", "en": "6 + 3" }, "state": "active" },
+          { "id": "output", "label": { "zh": "窗口显示结果", "en": "Window shows the result" }, "state": "muted" }
+        ]
+      },
+      {
+        "caption": { "zh": "界面把程序算出的 9 格写到窗口的结果区。", "en": "The interface displays the program's result, 9 units, in the window." },
+        "items": [
+          { "id": "input", "label": { "zh": "窗口传入选择", "en": "Window sends the selection" }, "value": { "zh": "6 格", "en": "6 units" }, "state": "done" },
+          { "id": "process", "label": { "zh": "程序计算", "en": "Program calculates" }, "value": { "zh": "6 + 3", "en": "6 + 3" }, "state": "done" },
+          { "id": "output", "label": { "zh": "窗口显示结果", "en": "Window shows the result" }, "value": { "zh": "9 格", "en": "9 units" }, "state": "active" }
+        ]
+      }
+    ]
+  },
+  "sections": [
+    {
+      "title": { "zh": "窗口记住你的选择", "en": "The window remembers your choice" },
+      "body": { "zh": "窗口、按钮等操作区域组成图形用户界面，简称 GUI。补电窗口先记住你选的起始电量，等你点击「计算新电量」，才把这个数字交给补电程序。", "en": "Windows and controls such as buttons make up a graphical user interface, or GUI. The calculator remembers your choice and passes it to the charging program when you click Calculate the new charge." }
+    },
+    {
+      "title": { "zh": "计算结果回到窗口", "en": "The result goes back to the window" },
+      "body": { "zh": "补电程序把算好的新电量交给界面，结果就出现在窗口里。用终端或窗口提交同一个数字，补电程序照同一条规则得到相同的结果。", "en": "The program gives the new charge to the interface, which shows it in the window. When you submit the same number in the terminal or in the window, the program follows the same rule and gives the same result." }
+    }
+  ],
+  "question": {
+    "prompt": { "zh": "你在窗口里选好了 1 格电。下一步怎么让补电程序用这个数字计算？", "en": "You selected 1 unit in the window. What makes the charging program use that number?" },
+    "options": [
+      { "zh": "等结果区自己更新。", "en": "Wait for the result area to update by itself." },
+      { "zh": "再选一次「起始电量 1 格」。", "en": "Choose Start with 1 unit again." },
+      { "zh": "点击「计算新电量」。", "en": "Click Calculate the new charge." }
+    ],
+    "correct": 2,
+    "feedback": { "zh": "点计算按钮后，窗口才把选中的 1 交给程序。试着操作一次，在结果区找到算出的 4 格。", "en": "Clicking Calculate gives the selected 1 to the program. Try it and find the result of 4 units in the window." }
+  }
+}

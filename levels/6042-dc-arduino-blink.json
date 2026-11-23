@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "kind": "arduino",
+  "id": "dc-arduino-blink",
+  "order": 6042,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "arduino-io",
+    "order": 5,
+    "title": {
+      "zh": "Arduino 输入与输出",
+      "en": "Arduino Inputs and Outputs"
+    }
+  },
+  "stage": "demo",
+  "title": {
+    "zh": "运行第一盏闪灯",
+    "en": "Run Your First Blinking Lamp"
+  },
+  "brief": {
+    "zh": "让程序跑一轮亮灭，再暂停并逐步执行。观察正在执行的语句、经过的时间和板上的 L。把亮灯时间改长后，再比较两次闪烁。",
+    "en": "Run a full flash, then pause and step through the sketch. Watch the highlighted statement, elapsed time and L on the board. Lengthen the on time and compare the two flashes."
+  },
+  "concept": {
+    "zh": "运行并观察 Blink",
+    "en": "Run and observe Blink"
+  },
+  "hints": [],
+  "sketch": {
+    "mode": "blink",
+    "onMs": 500,
+    "offMs": 500,
+    "delayChoices": [
+      250,
+      500,
+      1000
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "vision-opencv",
+  "order": 303,
+  "stage": "demo",
+  "unit": { "id": "opencv", "order": 140, "title": { "zh": "OpenCV", "en": "OpenCV" } },
+  "topic": { "id": "image-processing", "order": 3, "title": { "zh": "模糊与阈值处理", "en": "Blur and thresholding" } },
+  "mode": "filter",
+  "title": { "zh": "用亮度分离图形", "en": "Separate Shapes by Brightness" },
+  "brief": { "zh": "校准板上有四个不同亮度的圆点。调整亮度阈值，观察哪些圆点会保留下来。", "en": "Four dots on the calibration board have different brightness levels. Adjust the threshold and see which dots remain." },
+  "concept": { "zh": "OpenCV 把比阈值亮的像素变成白色，其余像素变成黑色，再数出连在一起的白色区域。", "en": "OpenCV turns pixels brighter than the threshold white and the rest black, then counts the connected white regions." },
+  "hints": [
+    { "zh": "从 115 提高到 180，看保留的区域和白色像素数怎么变。", "en": "Raise the threshold from 115 to 180. Compare the number of regions and white pixels." }
+  ],
+  "cases": [{
+    "image": "calibration",
+    "label": { "zh": "校准板亮度实验", "en": "Calibration-board brightness experiment" },
+    "prompt": { "zh": "改变阈值，比较输入图片和得到的黑白图。再选 7 × 7 模糊，检查白色区域边缘和像素数。", "en": "Change the threshold and compare the original board with the mask. Then try 7 × 7 blur and check the mask edges and white pixel count." },
+    "initial": { "blur": 0, "threshold": 115 }
+  }]
+}

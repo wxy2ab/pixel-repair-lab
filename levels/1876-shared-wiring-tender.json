@@ -1,0 +1,207 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-shared-wiring-tender",
+  "order": 1876,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "depth-first"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "weighted-path"
+    }
+  ],
+  "title": {
+    "zh": "联合布线竞标",
+    "en": "Shared Wiring Tender"
+  },
+  "concept": {
+    "zh": "已有线路与最低补网报价",
+    "en": "Cheapest network with existing wiring"
+  },
+  "brief": {
+    "zh": "n 个工位编号 0 到 n−1。installed 中的 [a,b] 是现有双向线路。offers 中每项 [a,b,cost] 是可增建的双向线及非负报价。让任意工位之间都能互通，返回最低新增费用，无法全连通时返回 -1。空车间和已经全连通的车间费用为 0。",
+    "en": "Workstations are numbered 0 through n−1. Each [a,b] in installed is an existing two-way link. Each [a,b,cost] in offers is an optional two-way link with a nonnegative price. Return the minimum new cost to connect all stations, or -1 if impossible. An empty or already connected workshop costs 0."
+  },
+  "hints": [],
+  "functionName": "wiring_bill",
+  "starterCode": "def wiring_bill(n, installed, offers):\n    pass\n",
+  "solutionCode": "def wiring_bill(n, installed, offers):\n    groups = []\n    for station in range(n):\n        groups.append(station)\n    lines = []\n    for cable in installed:\n        lines.append([cable[0], cable[1], 0])\n    for cable in offers:\n        lines.append(cable)\n    total = 0\n    for round in range(n - 1):\n        winner = None\n        for line in lines:\n            if groups[line[0]] != groups[line[1]]:\n                if winner is None or line[2] < winner[2]:\n                    winner = line\n        if winner is None:\n            return -1\n        old = groups[winner[1]]\n        new = groups[winner[0]]\n        for station in range(n):\n            if groups[station] == old:\n                groups[station] = new\n        total += winner[2]\n    return total\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "每轮采用首份可接通报价",
+        "en": "Take the first quote joining different groups"
+      },
+      "code": "    total = 0\n    for round in range(n - 1):\n        winner = None\n        for line in lines:\n            if groups[line[0]] != groups[line[1]]:\n                if winner is None:\n                    winner = line\n        if winner is None:\n            return -1"
+    },
+    {
+      "label": {
+        "zh": "为剩余连通组选报价",
+        "en": "Choose quotes between separate groups"
+      },
+      "code": "    total = 0\n    for round in range(n - 1):\n        winner = None\n        for line in lines:\n            if groups[line[0]] != groups[line[1]]:\n                if winner is None or line[2] < winner[2]:\n                    winner = line\n        if winner is None:\n            return -1"
+    },
+    {
+      "label": {
+        "zh": "登记工位所属的连通组",
+        "en": "Record workstation groups"
+      },
+      "code": "    groups = []\n    for station in range(n):\n        groups.append(station)\n    lines = []\n    for cable in installed:\n        lines.append([cable[0], cable[1], 0])\n    for cable in offers:\n        lines.append(cable)"
+    },
+    {
+      "label": {
+        "zh": "返回新增费用",
+        "en": "Return the new cost"
+      },
+      "code": "    return total"
+    },
+    {
+      "label": {
+        "zh": "合并两个工位组",
+        "en": "Combine two workstation groups"
+      },
+      "code": "        old = groups[winner[1]]\n        new = groups[winner[0]]\n        for station in range(n):\n            if groups[station] == old:\n                groups[station] = new\n        total += winner[2]"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        4,
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            2,
+            9
+          ],
+          [
+            0,
+            2,
+            2
+          ],
+          [
+            2,
+            3,
+            3
+          ],
+          [
+            1,
+            3,
+            8
+          ]
+        ]
+      ],
+      "expected": 5
+    },
+    {
+      "args": [
+        3,
+        [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        []
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        3,
+        [],
+        [
+          [
+            0,
+            1,
+            1
+          ]
+        ]
+      ],
+      "expected": -1
+    },
+    {
+      "args": [
+        2,
+        [],
+        [
+          [
+            0,
+            1,
+            7
+          ],
+          [
+            1,
+            0,
+            2
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        0,
+        [],
+        []
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        4,
+        [],
+        [
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            2,
+            3,
+            0
+          ],
+          [
+            0,
+            2,
+            5
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ]
+      ],
+      "expected": 4
+    }
+  ]
+}

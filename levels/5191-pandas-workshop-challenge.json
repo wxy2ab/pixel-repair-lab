@@ -1,0 +1,177 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "pandas-workshop-challenge",
+  "order": 5191,
+  "stage": "challenge",
+  "unit": {
+    "id": "pandas",
+    "order": 110,
+    "title": {
+      "zh": "pandas",
+      "en": "pandas"
+    }
+  },
+  "title": {
+    "zh": "交付一张干净的车间读数表",
+    "en": "Deliver a Clean Workshop Table"
+  },
+  "brief": {
+    "zh": "先把日志清洗好，再在清洗结果里提取车间的温度。",
+    "en": "Clean the log, then extract the Workshop temperatures from the cleaned result."
+  },
+  "concept": {
+    "zh": "清洗后再选行，拼写不同的同一区域就能匹配。",
+    "en": "Filtering after cleanup lets different spellings of the same area match."
+  },
+  "hints": [
+    {
+      "zh": "编号 8 的区域名含空格和大写字母，编号 11 的温度无法转换。",
+      "en": "Record 8 has spaces and uppercase letters in its area, while record 11 has a nonnumeric reading."
+    }
+  ],
+  "steps": [
+    {
+      "operation": "clean",
+      "input": "raw",
+      "label": {
+        "zh": "清洗原始日志",
+        "en": "Clean the source log"
+      },
+      "prompt": {
+        "zh": "统一区域名、剔除缺测温度、按编号去重。",
+        "en": "Normalize area names, drop missing readings, and deduplicate by ID."
+      },
+      "initial": {
+        "trim": false,
+        "dropMissing": false,
+        "deduplicate": false
+      },
+      "solution": {
+        "trim": true,
+        "dropMissing": true,
+        "deduplicate": true
+      },
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            "hangar",
+            18
+          ],
+          [
+            2,
+            1,
+            "workshop",
+            24
+          ],
+          [
+            3,
+            1,
+            "storage",
+            20
+          ],
+          [
+            4,
+            2,
+            "hangar",
+            22
+          ],
+          [
+            5,
+            2,
+            "workshop",
+            28
+          ],
+          [
+            7,
+            3,
+            "hangar",
+            26
+          ],
+          [
+            8,
+            3,
+            "workshop",
+            32
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16
+          ],
+          [
+            10,
+            4,
+            "hangar",
+            30
+          ],
+          [
+            12,
+            4,
+            "storage",
+            24
+          ],
+          [
+            13,
+            4,
+            "workshop",
+            36
+          ]
+        ]
+      }
+    },
+    {
+      "operation": "table",
+      "input": "previous",
+      "label": {
+        "zh": "选出车间记录",
+        "en": "Select Workshop records"
+      },
+      "prompt": {
+        "zh": "只保留清洗后属于车间的行，显示区域和读数。",
+        "en": "Keep only cleaned Workshop rows, showing area and reading."
+      },
+      "initial": {
+        "columns": "all",
+        "zone": "all"
+      },
+      "solution": {
+        "columns": "zone-reading",
+        "zone": "workshop"
+      },
+      "goal": {
+        "columns": [
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            "workshop",
+            24
+          ],
+          [
+            "workshop",
+            28
+          ],
+          [
+            "workshop",
+            32
+          ],
+          [
+            "workshop",
+            36
+          ]
+        ]
+      }
+    }
+  ]
+}

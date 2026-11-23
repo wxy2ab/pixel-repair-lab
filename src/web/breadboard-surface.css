@@ -1,0 +1,176 @@
+.bread-surface {
+  min-width: 0;
+  color: #d6e5df;
+}
+.bread-bin {
+  max-width: 670px;
+  margin: 0 auto;
+  padding: 9px;
+  border: 1px solid #576b67;
+  border-radius: 10px;
+  background: #273d3e;
+  box-shadow: inset 0 -3px #142b2e;
+}
+.bread-bin h3 {
+  margin: 0 0 7px;
+  font: 650 .88rem var(--sans, system-ui), sans-serif;
+  color: #eef1e5;
+}
+.bread-compartments { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; }
+.bread-compartment {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #65766d;
+  border-radius: 6px;
+  background: #e8e9d8;
+  box-shadow: inset 0 2px 4px #6b7b682f;
+}
+.bread-compartment:focus-within { outline: 2px solid #83d8cf; outline-offset: 1px; }
+.bread-compartment[data-picked="true"] { border-color: #fabd52; background: #fff1c6; box-shadow: inset 0 0 0 2px #b77d22; }
+.bread-part-pick {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 1px;
+  padding: 4px 2px;
+  min-width: 0;
+  border: 0;
+  border-radius: 5px;
+  color: #223c33;
+  background: transparent;
+  cursor: grab;
+  touch-action: manipulation;
+}
+.bread-part-pick:active { cursor: grabbing; }
+.bread-part-pick:hover { background: #ffffff50; }
+.bread-part-pick > svg { height: 29px; width: 51px; max-width: 65%; }
+.bread-part-pick strong { color: #203d32; font: 700 .86rem var(--sans,system-ui), sans-serif; }
+.bread-part-pick span { color: #455e52; font: 550 .7rem var(--mono,monospace); }
+.bread-part-tools { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; padding: 0 2px 3px; }
+.bread-part-tools button, .bread-fitting-guide button {
+  min-height: 25px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  border: 1px solid #a7b6a6;
+  color: #294d42;
+  background: #f5f5e8;
+  font: 600 .74rem var(--sans, system-ui), sans-serif;
+  cursor: pointer;
+}
+.bread-part-tools button:hover, .bread-fitting-guide button:hover { background: #d2e8d7; }
+.bread-fitting-guide {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  max-width: 670px;
+  margin: 6px auto 3px;
+  min-height: 25px;
+  color: #d2e3d9;
+  font-size: .82rem;
+  line-height: 1.4;
+}
+.bread-fitting-guide[data-invalid="true"] { color: #ffcf84; }
+.bread-tin { fill: none; stroke: #7d8e88; stroke-linecap: round; stroke-width: 3; }
+.bread-part-handle {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  cursor: grab;
+  touch-action: manipulation;
+}
+.bread-part-handle[aria-pressed] { cursor: pointer; }
+.bread-part-handle:hover, .bread-part-handle:focus-visible { outline: 2px dashed #396d63; outline-offset: -2px; }
+.bread-polarity { paint-order: stroke; stroke: #eef2e4; stroke-width: 2.6px; }
+.bread-footprint { opacity: .70; pointer-events: none; }
+.bread-footprint > path { fill: none; stroke: #047c72; stroke-width: 3; stroke-dasharray: 4 3; }
+.bread-footprint[data-fits="false"] > path { stroke: #b65742; }
+.bread-terminal[data-preview="valid"] .bread-focus-ring { stroke: #09786f; fill: #b7e3c5; }
+.bread-terminal[data-preview="invalid"] .bread-focus-ring { stroke: #b53f23; fill: #ffdfb8; }
+.bread-surface > svg {
+  display: block;
+  width: 100%;
+  max-width: 670px;
+  height: auto;
+  margin: 0 auto;
+  font-family: var(--sans, system-ui), sans-serif;
+  user-select: none;
+}
+.bread-row-label, .bread-strip text, .bread-polarity {
+  fill: #405047;
+  font: 700 14px var(--mono, monospace);
+}
+.bread-strip > rect { fill: #d2ddc9; stroke: #bacab6; }
+.bread-strip > path { fill: none; stroke: #b1c0a9; stroke-width: 5; }
+.bread-strip[data-highlight="true"] > rect { fill: #f9e6a8; stroke: #c28d3c; stroke-width: 2; }
+.bread-strip[data-highlight="true"] > path { stroke: #ceac67; }
+.bread-lead {
+  fill: none;
+  stroke: #788983;
+  stroke-width: 3.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.bread-source text { fill: #edf5e8; font: 700 15px var(--mono, monospace); }
+.bread-source .bread-source-label { fill: #d8e9df; font: 650 13px var(--sans, system-ui), sans-serif; }
+.bread-source[data-tripped="true"] .bread-supply-reading { fill: #ffcb95; }
+.bread-terminal[role="button"] { cursor: pointer; touch-action: manipulation; }
+.bread-terminal:focus-visible { outline: none; }
+.bread-focus-ring { fill: none; stroke: transparent; stroke-width: 2.3; }
+.bread-terminal[role="button"]:hover .bread-focus-ring, .bread-terminal:focus-visible .bread-focus-ring {
+  stroke: #22747f;
+  fill: #d0ede477;
+}
+.bread-terminal[data-port="true"]:is(:hover,:focus-visible) .bread-focus-ring { stroke: #a3eddf; }
+.bread-terminal[data-selected="true"] .bread-focus-ring {
+  stroke: #b56a13;
+  fill: #fbe6a2;
+  stroke-dasharray: 4 2;
+}
+.bread-plug { fill: #dcad59; stroke: #513f30; stroke-width: 1.8; }
+.bread-terminal[data-selected="true"] .bread-plug { fill: #ffe38c; }
+.bread-jumper, .bread-flow { pointer-events: none; }
+.bread-jumper > path, .bread-flow > path {
+  fill: none;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.bread-jumper .bread-wire-shadow { stroke-width: 7; stroke: #263f36; opacity: .8; }
+.bread-flow > path { stroke-width: 3; stroke-dasharray: 5 10; animation: bread-current-flow .68s linear infinite; }
+.bread-flow-current > path { stroke: #ffe486; }
+.bread-flow-input > path { stroke: #90ffde; }
+@keyframes bread-current-flow { to { stroke-dashoffset: -15; } }
+@media (prefers-reduced-motion: reduce) {
+  .bread-flow > path { animation: none; }
+}
+.bread-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px 8px;
+  margin: 5px auto 0;
+  max-width: 670px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.bread-strip-key {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  gap: 3px;
+  padding: 3px 4px;
+  border-radius: 5px;
+  background: #d2ddc9;
+}
+.bread-strip-key i { height: 4px; width: 4px; border-radius: 50%; background: #42574e; }
+.bread-flow-key { display: inline-flex; gap: 4px; align-items: center; font-weight: 600; }
+.bread-flow-key i { font-style: normal; color: #ffe486; }
+.bread-flow-key[data-kind="input"] i { color: #90ffde; }

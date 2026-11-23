@@ -1,0 +1,235 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "challenge-overlap-shift-equipment",
+  "order": 1904,
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "交错班次的共享工具箱",
+    "en": "Shared Tools Across Two Shifts"
+  },
+  "brief": {
+    "zh": "早班开放东组 2 台工位和西组 3 台；晚班开放同一批西组工位和北组 4 台。每台在用工位要 1 只可复用测表，每个在场小组要 1 本可复用手册，换班时工具全部归还。每只测表需要 1 张校准贴，每个不同工位贴 1 张位置牌。每台工位每开一个班次用掉 1 片擦布。配齐最少物资，样机和废签留库。逐轮复核 AI 清单。",
+    "en": "The early shift uses 2 east benches and 3 west benches. The late shift uses those same west benches and 4 north benches. Each active bench needs a reusable meter and each active team a reusable manual. Return all tools between shifts. Add one calibration sticker per meter, one location badge per distinct bench, and one disposable wipe per bench per shift. Pack the minimum. Leave prototype meters and void tags behind. Audit each AI revision."
+  },
+  "concept": {
+    "zh": "并用峰值、重复使用和耗材累计",
+    "en": "Peak concurrency, reuse and consumable totals"
+  },
+  "prerequisites": [
+    {
+      "unit": "ai",
+      "topic": "constraints"
+    },
+    {
+      "unit": "ai-review",
+      "topic": "review"
+    },
+    {
+      "unit": "ai-review",
+      "topic": "multi-turn"
+    }
+  ],
+  "hints": [],
+  "inventory": [
+    {
+      "id": "meter",
+      "label": {
+        "zh": "测表",
+        "en": "meter"
+      },
+      "aliases": [
+        "meters"
+      ]
+    },
+    {
+      "id": "manual",
+      "label": {
+        "zh": "手册",
+        "en": "manual"
+      },
+      "aliases": [
+        "manuals"
+      ]
+    },
+    {
+      "id": "cal-sticker",
+      "label": {
+        "zh": "校准贴",
+        "en": "calibration sticker"
+      },
+      "aliases": [
+        "calibration stickers"
+      ]
+    },
+    {
+      "id": "location-badge",
+      "label": {
+        "zh": "位置牌",
+        "en": "location badge"
+      },
+      "aliases": [
+        "location badges"
+      ]
+    },
+    {
+      "id": "wipe",
+      "label": {
+        "zh": "擦布",
+        "en": "wipe"
+      },
+      "aliases": [
+        "wipes"
+      ]
+    },
+    {
+      "id": "prototype",
+      "label": {
+        "zh": "样机",
+        "en": "prototype meter"
+      },
+      "aliases": [
+        "prototype meters"
+      ]
+    },
+    {
+      "id": "void-tag",
+      "label": {
+        "zh": "废签",
+        "en": "void tag"
+      },
+      "aliases": [
+        "void tags"
+      ]
+    }
+  ],
+  "required": {
+    "meter": 7,
+    "manual": 2,
+    "cal-sticker": 7,
+    "location-badge": 9,
+    "wipe": 12
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "meter",
+        "quantity": 9
+      },
+      {
+        "itemId": "void-tag",
+        "quantity": 1
+      },
+      {
+        "itemId": "wipe",
+        "quantity": 7
+      }
+    ],
+    "draft": {
+      "items": [
+        {
+          "id": "meter",
+          "quantity": 12
+        },
+        {
+          "id": "manual",
+          "quantity": 4
+        },
+        {
+          "id": "location-badge",
+          "quantity": 12
+        },
+        {
+          "id": "wipe",
+          "quantity": 9
+        },
+        {
+          "id": "prototype",
+          "quantity": 1
+        }
+      ]
+    },
+    "cards": [
+      {
+        "zh": "测表改为 7。",
+        "en": "Pack 7 meters."
+      },
+      {
+        "zh": "测表改为 12。",
+        "en": "Pack 12 meters."
+      },
+      {
+        "zh": "手册改为 4。",
+        "en": "Pack 4 manuals."
+      },
+      {
+        "zh": "手册改为 2。",
+        "en": "Pack 2 manuals."
+      },
+      {
+        "zh": "校准贴改为 7。",
+        "en": "Pack 7 calibration stickers."
+      },
+      {
+        "zh": "校准贴改为 9。",
+        "en": "Pack 9 calibration stickers."
+      },
+      {
+        "zh": "位置牌改为 9。",
+        "en": "Pack 9 location badges."
+      },
+      {
+        "zh": "位置牌改为 12。",
+        "en": "Pack 12 location badges."
+      },
+      {
+        "zh": "擦布改为 9。",
+        "en": "Pack 9 wipes."
+      },
+      {
+        "zh": "擦布改为 12。",
+        "en": "Pack 12 wipes."
+      },
+      {
+        "zh": "移除样机。",
+        "en": "Remove the prototype meter."
+      },
+      {
+        "zh": "样机改为 1。",
+        "en": "Pack 1 prototype meter."
+      },
+      {
+        "zh": "移除废签。",
+        "en": "Remove the void tag."
+      },
+      {
+        "zh": "废签改为 1。",
+        "en": "Pack 1 void tag."
+      }
+    ]
+  },
+  "examplePrompts": {
+    "zh": [
+      "测表改为 7。 手册改为 2。 校准贴改为 7。 位置牌改为 9。 擦布改为 12。 移除样机。 移除废签。",
+      "测表改为 7。",
+      "移除废签。",
+      "擦布改为 12。"
+    ],
+    "en": [
+      "Pack 7 meters. Pack 2 manuals. Pack 7 calibration stickers. Pack 9 location badges. Pack 12 wipes. Remove the prototype meter. Remove the void tag.",
+      "Pack 7 meters.",
+      "Remove the void tag.",
+      "Pack 12 wipes."
+    ]
+  }
+}

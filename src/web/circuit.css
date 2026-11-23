@@ -1,0 +1,46 @@
+.circuit-cases { padding: 10px 13px 0; }
+.circuit-workbench {
+  display: grid;
+  justify-items: center;
+  gap: 15px;
+  margin: 12px;
+  padding: 18px 12px;
+  border: 1px solid #344b65;
+  border-radius: 9px;
+  background: radial-gradient(ellipse at 50% 20%, #213952, transparent), #111c2d;
+}
+.bit-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 7px; }
+.bit-switch {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  min-width: 59px;
+  padding: 7px;
+  border: 1px solid #405976;
+  border-radius: 8px;
+  color: #c3d3e9;
+  background: #20334c;
+  font-size: 14px;
+}
+.bit-switch strong { display: grid; place-items: center; width: 29px; height: 29px; border-radius: 5px; color: #c8dbf4; background: #152538; font: 700 18px var(--mono); }
+.bit-switch small { font-size: 12px; color: #b6cce8; }
+.bit-switch span small { margin-left: 4px; color: #a8c6fb; font: 650 12px var(--mono); }
+.bit-switch[aria-pressed='true'] { border-color: #579b84; background: #214539; }
+.bit-switch[aria-pressed='true'] strong { color: #153e32; background: var(--mint); box-shadow: 0 0 11px #63edbd55; }
+.bit-switch:hover { border-color: #89b9d4; }
+.binary-readout { display: flex; gap: 9px; align-items: center; justify-content: center; color: #b5c9e5; }
+.binary-readout > div { display: grid; justify-items: center; min-width: 82px; padding: 4px 9px; background: #182a41; border: 1px solid #3b5370; border-radius: 7px; }
+.binary-readout strong { color: #bafbdf; font: 700 20px var(--mono); overflow-wrap: anywhere; }
+.binary-readout small { font-size: 13px; color: #a8bfdd; }
+.gate-workbench { display: flex; justify-content: center; align-items: center; min-height: 53px; }
+.gate-wire { position: relative; min-width: 30px; padding-right: 5px; color: #adc7ef; font: 700 14px var(--mono); }
+.gate-wire:empty { height: 2px; background: #5a708e; }
+.gate-wire-1:empty { background: var(--mint); }
+.gate-symbol { display: grid; place-items: center; width: 75px; min-height: 45px; padding: 4px; border: 2px solid #6c8db5; border-radius: 8px 24px 24px 8px; background: #2b4260; color: #e4f0ff; font: 700 15px var(--mono); }
+.gate-or, .gate-xor { border-radius: 4px 50% 50% 4px; }
+.gate-not { border-radius: 6px 27px 27px 6px; }
+.gate-lamp { display: grid; place-items: center; width: 35px; height: 35px; border: 1px solid #627897; border-radius: 50%; background: #233651; color: #c1d3eb; font: 700 15px var(--mono); }
+.gate-lamp-1 { border-color: #a2fcd4; background: var(--mint); color: #163d31; box-shadow: 0 0 14px #5ff2be65; }
+.truth-table caption { text-align: left; padding: 2px 0 6px; color: var(--muted); font-size: 14px; }
+.truth-active { color: #c2ffe7; background: #244236; font-weight: 700; }
+.circuit-targets { margin: 0 0 11px; padding-left: 1.25em; color: #c3d7f0; }

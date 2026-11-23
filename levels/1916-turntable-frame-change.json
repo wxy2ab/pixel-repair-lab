@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "challenge-turntable-frame-change",
+  "order": 1916,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "prerequisites": [{"unit": "architecture", "topic": "memory"}, {"unit": "architecture", "topic": "registers"}, {"unit": "architecture", "topic": "instructions"}],
+  "title": {"zh": "转台换坐标", "en": "Switch Coordinate Frames"},
+  "concept": {"zh": "运动外推与坐标系变换", "en": "Extrapolation and a frame change"},
+  "brief": {"zh": "地址 0、1 是机器人的东、北坐标，2、3 是每拍向东、北的位移，4、5 是转台中心东、北坐标。机器人再走两拍。转台用中心作原点，以北为新 X、以西为新 Y。将两拍后的新坐标写入 0、1，新方向下的每拍位移写入 2、3。保留中心，把新 X+新 Y 写入 6 和 ACC。", "en": "Addresses 0 and 1 hold the robot’s east and north coordinates, 2 and 3 are its east and north displacement per tick, and 4 and 5 are the turntable centre. Move forward two ticks. Use the centre as the new origin, with north as X and west as Y. Store the new position in 0 and 1 and the displacement in the new axes in 2 and 3. Keep the centre and write new X + new Y to 6 and ACC."},
+  "hints": [],
+  "allowedOps": ["LOAD", "ADD", "SUB", "STORE", "HALT"],
+  "starterCode": "HALT\n",
+  "solutionCode": "LOAD 0\nADD 2\nADD 2\nSUB 4\nSTORE 6\nLOAD 1\nADD 3\nADD 3\nSUB 5\nSTORE 0\nSUB 0\nSUB 6\nSTORE 1\nLOAD 2\nSTORE 6\nLOAD 3\nSTORE 2\nSUB 2\nSUB 6\nSTORE 3\nLOAD 0\nADD 1\nSTORE 6\nHALT\n",
+  "cases": [
+    {"label": {"zh": "验收样本 1", "en": "Acceptance sample 1"}, "memory": [4, 10, 3, -2, 1, 1, 99], "accumulator": 5, "goal": {"memory": [{"address": 0, "value": 5}, {"address": 1, "value": -9}, {"address": 2, "value": -2}, {"address": 3, "value": -3}, {"address": 4, "value": 1}, {"address": 5, "value": 1}, {"address": 6, "value": -4}], "accumulator": -4}},
+    {"label": {"zh": "验收样本 2", "en": "Acceptance sample 2"}, "memory": [-1, -4, -2, 5, 3, -2, 14], "accumulator": -9, "goal": {"memory": [{"address": 0, "value": 8}, {"address": 1, "value": 8}, {"address": 2, "value": 5}, {"address": 3, "value": 2}, {"address": 4, "value": 3}, {"address": 5, "value": -2}, {"address": 6, "value": 16}], "accumulator": 16}},
+    {"label": {"zh": "验收样本 3", "en": "Acceptance sample 3"}, "memory": [0, 0, 0, 0, -2, 3, 7], "accumulator": 13, "goal": {"memory": [{"address": 0, "value": -3}, {"address": 1, "value": -2}, {"address": 2, "value": 0}, {"address": 3, "value": 0}, {"address": 4, "value": -2}, {"address": 5, "value": 3}, {"address": 6, "value": -5}], "accumulator": -5}},
+    {"label": {"zh": "验收样本 4", "en": "Acceptance sample 4"}, "memory": [8, 6, 2, -3, 12, 0, -40], "accumulator": 1, "goal": {"memory": [{"address": 0, "value": 0}, {"address": 1, "value": 0}, {"address": 2, "value": -3}, {"address": 3, "value": -2}, {"address": 4, "value": 12}, {"address": 5, "value": 0}, {"address": 6, "value": 0}], "accumulator": 0}},
+    {"label": {"zh": "验收样本 5", "en": "Acceptance sample 5"}, "memory": [14, -7, 0, -2, 10, 3, 22], "accumulator": -8, "goal": {"memory": [{"address": 0, "value": -14}, {"address": 1, "value": -4}, {"address": 2, "value": -2}, {"address": 3, "value": 0}, {"address": 4, "value": 10}, {"address": 5, "value": 3}, {"address": 6, "value": -18}], "accumulator": -18}}
+  ]
+}

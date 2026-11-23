@@ -1,0 +1,211 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-two-line-changeover",
+  "order": 1878,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "python-advanced",
+      "topic": "nested-loops"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "dynamic-programming"
+    }
+  ],
+  "title": {
+    "zh": "双线换轨总调度",
+    "en": "Twin-Line Changeover"
+  },
+  "concept": {
+    "zh": "最短工时和最少换线",
+    "en": "Fastest completion with fewest transfers"
+  },
+  "brief": {
+    "zh": "顺序完成所有工段。times[i] 是第 i 段在 A、B 两线各自的工时。switches[i] 是从第 i 段进入第 i+1 段时 [A 转 B, B 转 A] 的额外耗时。第一段任选线，留在原线换轨耗时为 0。返回 [最短总工时, 达到最短工时的最少换线次数]。空工单返回 [0, 0]。",
+    "en": "Complete every stage in order. times[i] contains [time on A, time on B] at stage i. switches[i] holds the extra [A to B, B to A] transfer times between stages i and i+1. Start on either line. Staying on a line costs no transfer time. Return [minimum total time, fewest transfers among schedules at that time]. An empty job returns [0, 0]."
+  },
+  "hints": [],
+  "functionName": "line_schedule",
+  "starterCode": "def line_schedule(times, switches):\n    pass\n",
+  "solutionCode": "def line_schedule(times, switches):\n    if len(times) == 0:\n        return [0, 0]\n    previous = [[times[0][0], 0], [times[0][1], 0]]\n    for i in range(1, len(times)):\n        current = []\n        for line in range(2):\n            other = 1 - line\n            time = previous[line][0]\n            count = previous[line][1]\n            transfer = previous[other][0] + switches[i - 1][other]\n            changes = previous[other][1] + 1\n            if transfer < time or (transfer == time and changes < count):\n                time = transfer\n                count = changes\n            current.append([time + times[i][line], count])\n        previous = current\n    a = previous[0]\n    b = previous[1]\n    if b[0] < a[0] or (b[0] == a[0] and b[1] < a[1]):\n        return b\n    return a\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "工时持平时优先换线",
+        "en": "Prefer a transfer when times tie"
+      },
+      "code": "    for i in range(1, len(times)):\n        current = []\n        for line in range(2):\n            other = 1 - line\n            time = previous[line][0]\n            count = previous[line][1]\n            transfer = previous[other][0] + switches[i - 1][other]\n            changes = previous[other][1] + 1\n            if transfer <= time:\n                time = transfer\n                count = changes\n            current.append([time + times[i][line], count])\n        previous = current"
+    },
+    {
+      "label": {
+        "zh": "逐段比较直行和换轨",
+        "en": "Compare staying and changing at each stage"
+      },
+      "code": "    for i in range(1, len(times)):\n        current = []\n        for line in range(2):\n            other = 1 - line\n            time = previous[line][0]\n            count = previous[line][1]\n            transfer = previous[other][0] + switches[i - 1][other]\n            changes = previous[other][1] + 1\n            if transfer < time or (transfer == time and changes < count):\n                time = transfer\n                count = changes\n            current.append([time + times[i][line], count])\n        previous = current"
+    },
+    {
+      "label": {
+        "zh": "记录两条线的初始工时",
+        "en": "Set initial times on both lines"
+      },
+      "code": "    if len(times) == 0:\n        return [0, 0]\n    previous = [[times[0][0], 0], [times[0][1], 0]]"
+    },
+    {
+      "label": {
+        "zh": "在两条终点线之间裁定",
+        "en": "Choose between the two finish lines"
+      },
+      "code": "    a = previous[0]\n    b = previous[1]\n    if b[0] < a[0] or (b[0] == a[0] and b[1] < a[1]):\n        return b\n    return a"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          [
+            1,
+            9
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            1,
+            9
+          ]
+        ],
+        [
+          [
+            1,
+            4
+          ],
+          [
+            5,
+            1
+          ]
+        ]
+      ],
+      "expected": [
+        5,
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            0
+          ]
+        ]
+      ],
+      "expected": [
+        2,
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            8,
+            2
+          ],
+          [
+            2,
+            10
+          ]
+        ],
+        [
+          [
+            0,
+            8
+          ]
+        ]
+      ],
+      "expected": [
+        10,
+        0
+      ]
+    },
+    {
+      "args": [
+        [],
+        []
+      ],
+      "expected": [
+        0,
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            3,
+            2
+          ]
+        ],
+        []
+      ],
+      "expected": [
+        2,
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            4
+          ],
+          [
+            9,
+            2
+          ],
+          [
+            10,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            5
+          ],
+          [
+            2,
+            8
+          ]
+        ]
+      ],
+      "expected": [
+        5,
+        1
+      ]
+    }
+  ]
+}

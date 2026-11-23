@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "routing",
+    "order": 60,
+    "title": {
+      "zh": "算法进阶",
+      "en": "Intermediate Algorithms"
+    }
+  },
+  "kind": "algorithm",
+  "id": "binary-half",
+  "order": 1202,
+  "stage": "exercise",
+  "topic": {
+    "id": "binary-search",
+    "order": 1,
+    "title": {
+      "zh": "二分查找",
+      "en": "Binary search"
+    }
+  },
+  "title": {
+    "zh": "下一轮该查哪一半",
+    "en": "Choose the next half"
+  },
+  "concept": {
+    "zh": "判断中点比较结果",
+    "en": "Use the midpoint comparison"
+  },
+  "brief": {
+    "zh": "写出 binary_half(values, target)。在升序列表里比较中点。目标在左侧返回 \"left\"，在右侧返回 \"right\"，刚好相等返回 \"found\"。空列表返回 \"empty\"。",
+    "en": "Write binary_half(values, target). Compare the midpoint of the ascending list. Return \"left\", \"right\", or \"found\" based on the comparison. Return \"empty\" for an empty list."
+  },
+  "hints": [
+    {
+      "zh": "中点索引是 (len(values) - 1) // 2，先处理列表为空的情况。",
+      "en": "Use (len(values) - 1) // 2 as the midpoint index. Handle the empty list first."
+    }
+  ],
+  "functionName": "binary_half",
+  "starterCode": "def binary_half(values, target):\n    return \"empty\"\n",
+  "solutionCode": "def binary_half(values, target):\n    if len(values) == 0:\n        return \"empty\"\n    mid = (len(values) - 1) // 2\n    if target == values[mid]:\n        return \"found\"\n    if target < values[mid]:\n        return \"left\"\n    return \"right\"\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "检查空列表",
+        "en": "Check the empty list"
+      },
+      "code": "    if len(values) == 0:\n        return \"empty\""
+    },
+    {
+      "label": {
+        "zh": "计算中点",
+        "en": "Compute the midpoint"
+      },
+      "code": "    mid = (len(values) - 1) // 2"
+    },
+    {
+      "label": {
+        "zh": "判断命中",
+        "en": "Check for a match"
+      },
+      "code": "    if target == values[mid]:\n        return \"found\""
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [],
+        8
+      ],
+      "expected": "empty"
+    },
+    {
+      "args": [
+        [
+          1,
+          4,
+          8,
+          10,
+          13
+        ],
+        4
+      ],
+      "expected": "left"
+    },
+    {
+      "args": [
+        [
+          1,
+          4,
+          8,
+          10,
+          13
+        ],
+        9
+      ],
+      "expected": "right"
+    },
+    {
+      "args": [
+        [
+          3,
+          7,
+          12,
+          18
+        ],
+        7
+      ],
+      "expected": "found"
+    },
+    {
+      "args": [
+        [
+          -4,
+          3,
+          5,
+          12
+        ],
+        4
+      ],
+      "expected": "right"
+    }
+  ]
+}

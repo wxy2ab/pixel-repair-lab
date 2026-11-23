@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "opencv-green-reading",
+  "order": 546,
+  "stage": "exercise",
+  "unit": { "id": "opencv", "order": 140, "title": { "zh": "OpenCV", "en": "OpenCV" } },
+  "topic": { "id": "color", "order": 2, "title": { "zh": "颜色与通道", "en": "Color and channels" } },
+  "mode": "color",
+  "title": { "zh": "从青色格子里取出绿色", "en": "Read Green from a Cyan Tile" },
+  "brief": { "zh": "一块看起来是青色的像素，也有自己的绿色亮度。", "en": "A pixel that looks cyan still has a green reading." },
+  "concept": { "zh": "像素的外观由三个通道一起组成。单个通道可以单独读取。", "en": "All three channels create the pixel’s appearance. You can read each channel on its own." },
+  "hints": [{ "zh": "第 0 行从左往右数，青色格子的 x 是 4。", "en": "Counting from the left in row 0, the cyan tile has x = 4." }],
+  "cases": [{
+    "image": "calibration",
+    "label": { "zh": "读取单通道", "en": "Read a single channel" },
+    "prompt": { "zh": "在 (4, 0) 只读取绿色通道。", "en": "Read only the green channel at (4, 0)." },
+    "initial": { "x": 4, "y": 0, "channel": "rgb" },
+    "goal": { "x": 4, "y": 0, "channel": "green", "channelValue": 190 },
+    "solution": { "x": 4, "y": 0, "channel": "green" }
+  }]
+}

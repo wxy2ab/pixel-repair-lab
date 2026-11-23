@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "routing",
+    "order": 60,
+    "title": {
+      "zh": "算法进阶",
+      "en": "Intermediate Algorithms"
+    }
+  },
+  "kind": "replay",
+  "id": "rival-strategy-replay",
+  "order": 1231,
+  "stage": "demo",
+  "topic": {
+    "id": "rival-strategy",
+    "order": 4,
+    "title": {
+      "zh": "对抗策略",
+      "en": "Rival strategy"
+    }
+  },
+  "title": {
+    "zh": "对手占位时绕开",
+    "en": "Go around an occupied tile"
+  },
+  "concept": {
+    "zh": "从扫描结果选择安全动作",
+    "en": "Choose a safe action from the scan"
+  },
+  "brief": {
+    "zh": "比较两张训练棋盘。芽芽只使用一次当前扫描，就能改变第一步。",
+    "en": "Compare two training boards. The current scan changes Sprout’s first move."
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "右边有巡逻机器人",
+        "en": "A patrol bot is on the right"
+      },
+      "source": "nearby = scan()\nif nearby[\"right\"] == \"enemy\":\n    say(\"detour\")\n    move(\"down\")\nelse:\n    say(\"clear\")\n    move(\"right\")",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "enemies": [
+          {
+            "path": [
+              {
+                "x": 3,
+                "y": 2
+              },
+              {
+                "x": 3,
+                "y": 3
+              }
+            ]
+          }
+        ],
+        "allowedApi": [
+          "scan",
+          "say",
+          "move"
+        ],
+        "objectives": [
+          {
+            "type": "exit",
+            "x": 2,
+            "y": 3
+          }
+        ]
+      }
+    },
+    {
+      "title": {
+        "zh": "对手在远处",
+        "en": "The rival is farther away"
+      },
+      "source": "nearby = scan()\nif nearby[\"right\"] == \"enemy\":\n    say(\"detour\")\n    move(\"down\")\nelse:\n    say(\"clear\")\n    move(\"right\")",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "enemies": [
+          {
+            "path": [
+              {
+                "x": 5,
+                "y": 3
+              },
+              {
+                "x": 5,
+                "y": 2
+              }
+            ]
+          }
+        ],
+        "allowedApi": [
+          "scan",
+          "say",
+          "move"
+        ],
+        "objectives": [
+          {
+            "type": "exit",
+            "x": 3,
+            "y": 2
+          }
+        ]
+      }
+    }
+  ]
+}

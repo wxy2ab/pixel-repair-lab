@@ -1,0 +1,198 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "python-intermediate",
+    "order": 20,
+    "title": {
+      "zh": "Python 进阶",
+      "en": "Intermediate Python"
+    }
+  },
+  "kind": "grid",
+  "id": "bag-slot-lookup",
+  "order": 842,
+  "stage": "exercise",
+  "topic": {
+    "id": "collections",
+    "order": 4,
+    "title": {
+      "zh": "列表与字典",
+      "en": "Lists and dictionaries"
+    }
+  },
+  "title": {
+    "zh": "取出指定位置的零件",
+    "en": "Take a part from a given slot"
+  },
+  "concept": {
+    "zh": "从 0 开始的列表索引",
+    "en": "Zero-based list indexes"
+  },
+  "brief": {
+    "zh": "扫描包里的零件清单和指定位置，用列表索引提交对应零件。不同包的顺序和编号会变化。",
+    "en": "Scan the bag’s list and requested slot. Use a list index to submit the part in that slot. Different bags have different lists and slots."
+  },
+  "hints": [
+    {
+      "zh": "清单和位置都来自 scan()。第 0 项才是列表的第一项。",
+      "en": "Both the list and slot come from scan(). Index 0 is the first element."
+    }
+  ],
+  "tiles": [
+    "#######",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#######"
+  ],
+  "start": {
+    "x": 2,
+    "y": 2
+  },
+  "input": {
+    "parts": [
+      "bolt",
+      "wire",
+      "gear"
+    ],
+    "slot": 1
+  },
+  "allowedApi": [
+    "scan",
+    "submit"
+  ],
+  "objectives": [
+    {
+      "type": "submit",
+      "values": [
+        "wire"
+      ],
+      "origin": "list-index"
+    }
+  ],
+  "variants": [
+    {
+      "input": {
+        "parts": [
+          "spring",
+          "clip"
+        ],
+        "slot": 0
+      },
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            "spring"
+          ],
+          "origin": "list-index"
+        }
+      ]
+    },
+    {
+      "input": {
+        "parts": [
+          "lamp",
+          "clip",
+          "nut"
+        ],
+        "slot": 2
+      },
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            "nut"
+          ],
+          "origin": "list-index"
+        }
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "scan-bag",
+      "label": {
+        "zh": "扫描包里的信息",
+        "en": "Read the bag information"
+      },
+      "template": "bag = scan()"
+    },
+    {
+      "id": "read-parts",
+      "label": {
+        "zh": "取出零件清单",
+        "en": "Get the part list"
+      },
+      "template": "parts = bag[\"parts\"]"
+    },
+    {
+      "id": "read-slot",
+      "label": {
+        "zh": "取得指定位置",
+        "en": "Get the requested slot"
+      },
+      "template": "slot = bag[\"slot\"]"
+    },
+    {
+      "id": "send-part",
+      "label": {
+        "zh": "按位置提交零件",
+        "en": "Submit a part by index"
+      },
+      "template": "submit(parts[{{position}}])",
+      "parameters": [
+        {
+          "name": "position",
+          "label": {
+            "zh": "列表位置",
+            "en": "List index"
+          },
+          "choices": [
+            {
+              "id": "first",
+              "label": {
+                "zh": "第 0 项",
+                "en": "Index 0"
+              },
+              "code": "0"
+            },
+            {
+              "id": "second",
+              "label": {
+                "zh": "第 1 项",
+                "en": "Index 1"
+              },
+              "code": "1"
+            },
+            {
+              "id": "requested",
+              "label": {
+                "zh": "扫描到的位置",
+                "en": "Scanned slot"
+              },
+              "code": "slot"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "scan-bag"
+    },
+    {
+      "cardId": "read-parts"
+    },
+    {
+      "cardId": "read-slot"
+    },
+    {
+      "cardId": "send-part",
+      "values": {
+        "position": "requested"
+      }
+    }
+  ]
+}

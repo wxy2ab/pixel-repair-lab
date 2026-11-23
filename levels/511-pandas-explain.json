@@ -1,0 +1,215 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "pandas-groups-lesson",
+  "order": 511,
+  "stage": "explain",
+  "unit": {
+    "id": "pandas",
+    "order": 110,
+    "title": {
+      "zh": "pandas",
+      "en": "pandas"
+    }
+  },
+  "topic": {
+    "id": "tables",
+    "order": 1,
+    "title": {
+      "zh": "数据表与列",
+      "en": "Tables and columns"
+    }
+  },
+  "title": {
+    "zh": "给表格的每列起名字",
+    "en": "Give Each Table Column a Name"
+  },
+  "brief": {
+    "zh": "用 pandas 的 DataFrame 挑出需要的列和符合条件的行。",
+    "en": "Use a pandas DataFrame to pick the columns and matching rows you need."
+  },
+  "concept": {
+    "zh": "一行是一条记录，列名表示这条记录的哪一种信息。",
+    "en": "A row is one record, and each named column holds one kind of information."
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "表格可以混合数据类型",
+        "en": "A table can mix data types"
+      },
+      "body": {
+        "zh": "DataFrame 的 id 和 day 列可以存数字，zone 列可以存区域名称。每行里的各列属于同一条测量记录。",
+        "en": "A DataFrame can hold numbers in id and day and area names in zone. All columns in a row describe the same measurement."
+      }
+    },
+    {
+      "title": {
+        "zh": "选行回答“哪些记录”",
+        "en": "Select rows to answer “which records?”"
+      },
+      "body": {
+        "zh": "df.loc[df['zone'] == 'hangar'] 只保留 zone 恰好是 hangar 的行。",
+        "en": "df.loc[df['zone'] == 'hangar'] keeps rows whose zone exactly matches hangar."
+      }
+    },
+    {
+      "title": {
+        "zh": "选列回答“要看什么”",
+        "en": "Select columns to answer “what should I see?”"
+      },
+      "body": {
+        "zh": "df[['zone', 'reading']] 保留每行的区域和读数。需要同时选行和列时，可以在同一次 .loc 操作中组合两个选择。",
+        "en": "df[['zone', 'reading']] shows each row’s area and reading. Use .loc to combine row and column choices."
+      }
+    }
+  ],
+  "animation": {
+    "layout": "row",
+    "frames": [
+      {
+        "caption": {
+          "zh": "原表的三列分别表示日期、区域和温度。",
+          "en": "The source table has three columns for day, area, and temperature."
+        },
+        "items": [
+          {
+            "id": "day",
+            "label": {
+              "zh": "日期 day",
+              "en": "Day"
+            },
+            "value": {
+              "zh": "1 · 2 · 3",
+              "en": "1 · 2 · 3"
+            }
+          },
+          {
+            "id": "zone",
+            "label": {
+              "zh": "区域 zone",
+              "en": "Area"
+            },
+            "value": {
+              "zh": "机库 · 仓库 · 机库",
+              "en": "hangar · storage · hangar"
+            }
+          },
+          {
+            "id": "reading",
+            "label": {
+              "zh": "温度 reading",
+              "en": "Reading"
+            },
+            "value": {
+              "zh": "16 · 19 · 21",
+              "en": "16 · 19 · 21"
+            }
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "只选机库的行：第 1 天和第 3 天。",
+          "en": "Keep hangar rows: days 1 and 3."
+        },
+        "items": [
+          {
+            "id": "day",
+            "label": {
+              "zh": "日期 day",
+              "en": "Day"
+            },
+            "value": {
+              "zh": "1 · 3",
+              "en": "1 · 3"
+            },
+            "state": "active"
+          },
+          {
+            "id": "zone",
+            "label": {
+              "zh": "区域 zone",
+              "en": "Area"
+            },
+            "value": {
+              "zh": "机库 · 机库",
+              "en": "hangar · hangar"
+            },
+            "state": "active"
+          },
+          {
+            "id": "reading",
+            "label": {
+              "zh": "温度 reading",
+              "en": "Reading"
+            },
+            "value": {
+              "zh": "16 · 21",
+              "en": "16 · 21"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "输出只显示日期和温度。这两列仍各有两个值。",
+          "en": "Show only day and temperature. Both columns still have two values."
+        },
+        "items": [
+          {
+            "id": "day",
+            "label": {
+              "zh": "日期 day",
+              "en": "Day"
+            },
+            "value": {
+              "zh": "1 · 3",
+              "en": "1 · 3"
+            },
+            "state": "done"
+          },
+          {
+            "id": "reading",
+            "label": {
+              "zh": "温度 reading",
+              "en": "Reading"
+            },
+            "value": {
+              "zh": "16 · 21",
+              "en": "16 · 21"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  },
+  "question": {
+    "prompt": {
+      "zh": "已选好机库的两行，只显示 reading 列后，还有几行？",
+      "en": "After selecting the two hangar rows, how many rows remain if you only show reading?"
+    },
+    "options": [
+      {
+        "zh": "1 行",
+        "en": "1 row"
+      },
+      {
+        "zh": "2 行",
+        "en": "2 rows"
+      },
+      {
+        "zh": "3 行",
+        "en": "3 rows"
+      }
+    ],
+    "correct": 1,
+    "feedback": {
+      "zh": "选列会改变显示的字段，两个机库读数仍各占一行。",
+      "en": "Column selection changes the fields on display. The two hangar readings still occupy separate rows."
+    }
+  }
+}

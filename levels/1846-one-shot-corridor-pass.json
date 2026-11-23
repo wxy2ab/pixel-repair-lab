@@ -1,0 +1,300 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-one-shot-corridor-pass",
+  "order": 1846,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "algorithm-advanced",
+      "topic": "weighted-path"
+    },
+    {
+      "unit": "python-intermediate",
+      "topic": "collections"
+    }
+  ],
+  "title": {
+    "zh": "单次免耗通行证",
+    "en": "One-Shot Corridor Pass"
+  },
+  "concept": {
+    "zh": "带权单向路 · 一次免耗 · 最低总耗电",
+    "en": "Weighted one-way roads · One free edge · Minimum charge spent"
+  },
+  "brief": {
+    "zh": "size 个路口由 corridors 相连，每条为 [起点, 终点, 耗电量]，只可沿该方向走，耗电大于 0。你有一次性通行证，可以把走过的任意一条通道耗电变为 0，也可以不使用。从 start 到 exit_node 所需的最小总耗电是多少？不能到达时返回 -1。路口从 0 编号，可能有多条通道通向同一处。",
+    "en": "There are size junctions. Each corridor is [from, to, charge cost], travels one way, and costs a positive amount. Your single-use pass can make any one traversed corridor free, or you can leave it unused. Return the minimum total charge from start to exit_node, or -1 if no route exists. Junction indices start at zero and parallel corridors are allowed."
+  },
+  "hints": [],
+  "functionName": "minimum_pass_cost",
+  "starterCode": "def minimum_pass_cost(size, corridors, start, exit_node):\n    pass\n",
+  "solutionCode": "def minimum_pass_cost(size, corridors, start, exit_node):\n    unused = []\n    used = []\n    for node in range(size):\n        unused.append(None)\n        used.append(None)\n    unused[start] = 0\n    for iteration in range(2 * size - 1):\n        updated = False\n        for corridor in corridors:\n            a = corridor[0]\n            b = corridor[1]\n            cost = corridor[2]\n            if unused[a] is not None:\n                candidate = unused[a] + cost\n                if unused[b] is None or candidate < unused[b]:\n                    unused[b] = candidate\n                    updated = True\n                if used[b] is None or unused[a] < used[b]:\n                    used[b] = unused[a]\n                    updated = True\n            if used[a] is not None:\n                candidate = used[a] + cost\n                if used[b] is None or candidate < used[b]:\n                    used[b] = candidate\n                    updated = True\n        if not updated:\n            break\n    without = unused[exit_node]\n    with_pass = used[exit_node]\n    if without is None:\n        return -1\n    if with_pass is not None and with_pass < without:\n        return with_pass\n    return without\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "读取单向通道",
+        "en": "Read a one-way corridor"
+      },
+      "code": "    for corridor in corridors:\n        a = corridor[0]\n        b = corridor[1]\n        cost = corridor[2]"
+    },
+    {
+      "label": {
+        "zh": "初始化费用记录",
+        "en": "Initialize cost records"
+      },
+      "code": "    costs = []\n    for node in range(size):\n        costs.append(None)"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        4,
+        [
+          [
+            0,
+            1,
+            3
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [
+            0,
+            2,
+            20
+          ],
+          [
+            2,
+            3,
+            2
+          ]
+        ],
+        0,
+        3
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        5,
+        [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            1,
+            3,
+            8
+          ],
+          [
+            3,
+            4,
+            5
+          ],
+          [
+            0,
+            2,
+            7
+          ],
+          [
+            2,
+            3,
+            20
+          ],
+          [
+            2,
+            4,
+            18
+          ]
+        ],
+        0,
+        4
+      ],
+      "expected": 7
+    },
+    {
+      "args": [
+        4,
+        [
+          [
+            0,
+            1,
+            1
+          ],
+          [
+            1,
+            2,
+            4
+          ],
+          [
+            2,
+            1,
+            1
+          ]
+        ],
+        0,
+        3
+      ],
+      "expected": -1
+    },
+    {
+      "args": [
+        3,
+        [
+          [
+            1,
+            0,
+            2
+          ],
+          [
+            2,
+            1,
+            5
+          ]
+        ],
+        0,
+        2
+      ],
+      "expected": -1
+    },
+    {
+      "args": [
+        3,
+        [
+          [
+            0,
+            1,
+            11
+          ]
+        ],
+        1,
+        1
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        2,
+        [
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            1,
+            2
+          ]
+        ],
+        0,
+        1
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        7,
+        [
+          [
+            5,
+            6,
+            4
+          ],
+          [
+            4,
+            5,
+            10
+          ],
+          [
+            3,
+            4,
+            4
+          ],
+          [
+            2,
+            3,
+            20
+          ],
+          [
+            1,
+            2,
+            11
+          ],
+          [
+            0,
+            1,
+            10
+          ],
+          [
+            0,
+            3,
+            200
+          ]
+        ],
+        0,
+        6
+      ],
+      "expected": 18
+    },
+    {
+      "args": [
+        6,
+        [
+          [
+            0,
+            1,
+            6
+          ],
+          [
+            1,
+            4,
+            3
+          ],
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            2,
+            3,
+            20
+          ],
+          [
+            3,
+            4,
+            11
+          ],
+          [
+            4,
+            5,
+            30
+          ],
+          [
+            3,
+            5,
+            50
+          ]
+        ],
+        0,
+        5
+      ],
+      "expected": 9
+    }
+  ]
+}

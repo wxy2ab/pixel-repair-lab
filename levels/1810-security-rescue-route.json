@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-security-rescue-route",
+  "order": 1810,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "门禁救援路线",
+    "en": "Locked-Gate Rescue Route"
+  },
+  "concept": {
+    "zh": "最短路线 · 通行状态",
+    "en": "Shortest paths · Access state"
+  },
+  "brief": {
+    "zh": "给定地图 board、起点 start 和出口 goal。坐标为从 0 开始的 [x, y]，起点和出口都在空地 . 上。芽芽每步走上、右、下、左中的一格，不能穿墙 #。走到任一 K 格会取得通行证，从下一步起可通过任意 D 门。返回步数最少的方向列表，方向写成 up、right、down、left。若有多条最短路线，从第一步开始比较，按上、右、下、左依次优先。到不了返回 None，起点就是出口则返回 []。",
+    "en": "Given a board, start, and exit goal, use zero-based [x, y] coordinates. The start and exit are both on open . tiles. Sprout can move one cell up, right, down, or left and cannot cross # walls. Stepping onto any K tile grants a pass that opens every D gate from the next step onward. Return the shortest list of directions, using up, right, down, and left. Break ties from the first differing step in that order. Return None if the exit is unreachable or [] if the start is already the exit."
+  },
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    },
+    {
+      "unit": "structures",
+      "topic": "dictionaries"
+    }
+  ],
+  "hints": [],
+  "functionName": "rescue_route",
+  "starterCode": "def rescue_route(board, start, goal):\n    pass\n",
+  "solutionCode": "def rescue_route(board, start, goal):\n    directions = [\"up\", \"right\", \"down\", \"left\"]\n    offsets = [[0, -1], [1, 0], [0, 1], [-1, 0]]\n    width = len(board[0])\n    height = len(board)\n    cells = width * height\n    queue = [[start[0], start[1], False, []]]\n    seen = {start[1] * width + start[0]: True}\n    while len(queue) > 0:\n        cell = queue.pop(0)\n        if [cell[0], cell[1]] == goal:\n            return cell[3]\n        for index in range(4):\n            x = cell[0] + offsets[index][0]\n            y = cell[1] + offsets[index][1]\n            if x < 0 or x >= width or y < 0 or y >= height:\n                continue\n            tile = board[y][x]\n            if tile == \"#\" or (tile == \"D\" and not cell[2]):\n                continue\n            access = cell[2] or tile == \"K\"\n            key = y * width + x\n            if access:\n                key += cells\n            if key not in seen:\n                seen[key] = True\n                queue.append([x, y, access, cell[3] + [directions[index]]])\n    return None\n",
+  "snippets": [],
+  "cases": [
+    {"args":[["######","#..D.#","#.####","#K####","######"],[1,1],[4,1]],"expected":["down","down","up","up","right","right","right"]},
+    {"args":[[".....","..#..","....."],[2,2],[2,0]],"expected":["right","up","up","left"]},
+    {"args":[["#######","#.....#","#.#D#.#","#...K.#","#######"],[1,1],[5,1]],"expected":["right","right","right","right"]},
+    {"args":[["########","#..D...#","#.##.#.#","#K.D.K.#","########"],[1,1],[6,1]],"expected":["down","down","up","up","right","right","right","right","right"]},
+    {"args":[["#######","#..DK.#","#######"],[1,1],[5,1]],"expected":null},
+    {"args":[["########","#.KDD..#","########"],[1,1],[6,1]],"expected":["right","right","right","right","right"]},
+    {"args":[["..."],[1,0],[1,0]],"expected":[]}
+  ]
+}

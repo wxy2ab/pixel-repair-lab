@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "kind": "arduino",
+  "id": "dc-arduino-idle-light",
+  "order": 6044,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "arduino-io",
+    "order": 5,
+    "title": {
+      "zh": "Arduino 输入与输出",
+      "en": "Arduino Inputs and Outputs"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "松手才亮的空闲灯",
+    "en": "Light the Idle Indicator"
+  },
+  "brief": {
+    "zh": "维修台空闲时需要亮灯。让松开的按键点亮 L，按下时熄灭。分别试一遍，观察 D2 的输入和 L 的输出。",
+    "en": "The workbench needs an idle light. Make L shine while the button is released and go off while it is pressed. Try each state and watch the D2 input and L output."
+  },
+  "concept": {
+    "zh": "用两个按键状态核对输入和输出",
+    "en": "Test the input and output for both button states"
+  },
+  "hints": [],
+  "sketch": {
+    "mode": "button",
+    "lightWhen": "pressed",
+    "goal": {
+      "lightWhen": "released"
+    }
+  }
+}

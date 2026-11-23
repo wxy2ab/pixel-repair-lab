@@ -1,0 +1,387 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-compressed-route-telegram",
+  "order": 1821,
+  "difficulty": "intermediate",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "structures",
+      "topic": "dictionaries"
+    },
+    {
+      "unit": "python-advanced",
+      "topic": "nested-loops"
+    }
+  ],
+  "title": {
+    "zh": "压缩路线电报",
+    "en": "Compressed Route Telegram"
+  },
+  "concept": {
+    "zh": "次数编码 · 字典解码 · 三张地图",
+    "en": "Run lengths · Codebook lookup · Three maps"
+  },
+  "brief": {
+    "zh": "扫描里有路线电报 packets 和本次的方向字典 directions。每个电报包是［代号，重复次数］。按包的顺序执行，从字典读取每个实际方向，再拾取出口处的零件。同一程序要处理三张地图，代号和次数都会换。",
+    "en": "The scan holds a telegram named packets and the current directions codebook. Each packet is [code, repeat count]. Follow the packets in order, looking up each direction in the codebook, then pick up the part at the exit. One program must handle all three maps, with different codes and counts."
+  },
+  "hints": [],
+  "tiles": [
+    "#########",
+    "#.#.....#",
+    "#.#.###.#",
+    "#...#...#",
+    "#####.###",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 1,
+    "y": 1
+  },
+  "turnLimit": 16,
+  "input": {
+    "packets": [
+      [
+        "A",
+        2
+      ],
+      [
+        "B",
+        2
+      ],
+      [
+        "C",
+        2
+      ],
+      [
+        "B",
+        4
+      ],
+      [
+        "A",
+        2
+      ],
+      [
+        "D",
+        2
+      ],
+      [
+        "A",
+        1
+      ]
+    ],
+    "directions": {
+      "A": "down",
+      "B": "right",
+      "C": "up",
+      "D": "left"
+    }
+  },
+  "items": [
+    {
+      "id": "dispatch-cell",
+      "x": 5,
+      "y": 4
+    }
+  ],
+  "objectives": [
+    {
+      "type": "moves",
+      "origin": "dict-index"
+    },
+    {
+      "type": "collect",
+      "itemIds": [
+        "dispatch-cell"
+      ]
+    },
+    {
+      "type": "exit",
+      "x": 5,
+      "y": 4
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "#########",
+        "#.....#.#",
+        "#.###.#.#",
+        "#...#...#",
+        "###.#####",
+        "#.......#",
+        "#########"
+      ],
+      "start": {
+        "x": 7,
+        "y": 1
+      },
+      "turnLimit": 17,
+      "input": {
+        "packets": [
+          [
+            "S",
+            2
+          ],
+          [
+            "N",
+            2
+          ],
+          [
+            "E",
+            2
+          ],
+          [
+            "N",
+            4
+          ],
+          [
+            "S",
+            2
+          ],
+          [
+            "W",
+            2
+          ],
+          [
+            "S",
+            2
+          ]
+        ],
+        "directions": {
+          "S": "down",
+          "N": "left",
+          "E": "up",
+          "W": "right"
+        }
+      },
+      "items": [
+        {
+          "id": "dispatch-cell",
+          "x": 3,
+          "y": 5
+        }
+      ],
+      "objectives": [
+        {
+          "type": "moves",
+          "origin": "dict-index"
+        },
+        {
+          "type": "collect",
+          "itemIds": [
+            "dispatch-cell"
+          ]
+        },
+        {
+          "type": "exit",
+          "x": 3,
+          "y": 5
+        }
+      ]
+    },
+    {
+      "tiles": [
+        "#########",
+        "#.......#",
+        "#######.#",
+        "#.......#",
+        "#.#######",
+        "#.......#",
+        "#########"
+      ],
+      "start": {
+        "x": 7,
+        "y": 1
+      },
+      "turnLimit": 11,
+      "input": {
+        "packets": [
+          [
+            "1",
+            2
+          ],
+          [
+            "2",
+            6
+          ],
+          [
+            "1",
+            2
+          ]
+        ],
+        "directions": {
+          "1": "down",
+          "2": "left"
+        }
+      },
+      "items": [
+        {
+          "id": "dispatch-cell",
+          "x": 1,
+          "y": 5
+        }
+      ],
+      "objectives": [
+        {
+          "type": "moves",
+          "origin": "dict-index"
+        },
+        {
+          "type": "collect",
+          "itemIds": [
+            "dispatch-cell"
+          ]
+        },
+        {
+          "type": "exit",
+          "x": 1,
+          "y": 5
+        }
+      ]
+    }
+  ],
+  "allowedApi": [
+    "scan",
+    "move",
+    "pick"
+  ],
+  "cards": [
+    {
+      "id": "read",
+      "label": {
+        "zh": "读入电报",
+        "en": "Read the telegram"
+      },
+      "template": "telegram = scan()"
+    },
+    {
+      "id": "packets",
+      "label": {
+        "zh": "逐包处理",
+        "en": "Process each packet"
+      },
+      "template": "for packet in telegram[\"packets\"]:",
+      "block": true
+    },
+    {
+      "id": "decode",
+      "label": {
+        "zh": "查方向字典",
+        "en": "Look up direction"
+      },
+      "template": "direction = telegram[\"directions\"][packet[0]]"
+    },
+    {
+      "id": "repeat",
+      "label": {
+        "zh": "按包内次数重复",
+        "en": "Repeat the requested count"
+      },
+      "template": "for step_number in range(packet[1]):",
+      "block": true
+    },
+    {
+      "id": "move-decoded",
+      "label": {
+        "zh": "按解出的方向移动",
+        "en": "Move in the decoded direction"
+      },
+      "template": "move(direction)"
+    },
+    {
+      "id": "move",
+      "label": {
+        "zh": "向指定方向走一步",
+        "en": "Take one step in the chosen direction"
+      },
+      "template": "move({{direction}})",
+      "parameters": [
+        {
+          "name": "direction",
+          "label": {
+            "zh": "方向",
+            "en": "Direction"
+          },
+          "choices": [
+            {
+              "id": "up",
+              "label": {
+                "zh": "上",
+                "en": "Up"
+              },
+              "code": "\"up\""
+            },
+            {
+              "id": "right",
+              "label": {
+                "zh": "右",
+                "en": "Right"
+              },
+              "code": "\"right\""
+            },
+            {
+              "id": "down",
+              "label": {
+                "zh": "下",
+                "en": "Down"
+              },
+              "code": "\"down\""
+            },
+            {
+              "id": "left",
+              "label": {
+                "zh": "左",
+                "en": "Left"
+              },
+              "code": "\"left\""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pick",
+      "label": {
+        "zh": "拾取零件",
+        "en": "Pick up the part"
+      },
+      "template": "pick()"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "packets",
+      "children": [
+        {
+          "cardId": "decode"
+        },
+        {
+          "cardId": "repeat",
+          "children": [
+            {
+              "cardId": "move-decoded"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cardId": "pick"
+    }
+  ]
+}

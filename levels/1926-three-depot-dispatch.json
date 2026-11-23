@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-three-depot-dispatch",
+  "order": 1926,
+  "difficulty": "advanced",
+  "unit": { "id": "challenge-zone", "order": 90, "title": { "zh": "挑战场", "en": "Challenge Arena" } },
+  "stage": "challenge",
+  "prerequisites": [{ "unit": "routing", "topic": "breadth-first" }, { "unit": "python-intermediate", "topic": "for-loops" }],
+  "title": { "zh": "三仓导航派送", "en": "Three-Depot Dispatch" },
+  "concept": { "zh": "复用寻路函数 · 三张地图 · 最短路", "en": "Reuse a route planner · Three maps · Shortest paths" },
+  "brief": {
+    "zh": "三个仓库的起点、出口和墙各不相同。让同一份程序读取当前地图，沿最短路到达出口并打开货箱。可装入自己保存的 plan_route，也可以装入课程版。read_map() 给出 tiles、start 和 goal；立在地上的镜子也会标成墙。每张图的回合数刚好够走一条最短路再开箱。",
+    "en": "Each depot has a different start, exit and layout. Use one program to read each map, take a shortest route to its exit and open the chest. Import your saved plan_route or the course version. read_map() supplies tiles, start and goal. A standing mirror is marked as a wall. Each map gives you just enough turns for a shortest route and one pick."
+  },
+  "hints": [],
+  "tiles": ["#######", "#...#.#", "#.#...#", "#...#.#", "#######"],
+  "start": { "x": 1, "y": 3 },
+  "turnLimit": 7,
+  "devices": [{ "kind": "chest", "id": "dispatch-crate", "x": 5, "y": 1 }],
+  "objectives": [{ "type": "collect", "itemIds": ["dispatch-crate"] }, { "type": "exit", "x": 5, "y": 1 }],
+  "variants": [
+    {
+      "tiles": ["########", "#...#..#", "#.#.#.##", "#.#....#", "########"],
+      "start": { "x": 6, "y": 1 },
+      "turnLimit": 10,
+      "devices": [{ "kind": "chest", "id": "dispatch-crate", "x": 1, "y": 1 }],
+      "objectives": [{ "type": "collect", "itemIds": ["dispatch-crate"] }, { "type": "exit", "x": 1, "y": 1 }]
+    },
+    {
+      "tiles": ["#######", "#.....#", "#.###.#", "#.....#", "#######"],
+      "start": { "x": 5, "y": 3 },
+      "turnLimit": 9,
+      "devices": [
+        { "kind": "chest", "id": "dispatch-crate", "x": 1, "y": 3 },
+        { "kind": "mirror", "id": "display-mirror", "x": 3, "y": 3, "orientation": "/" }
+      ],
+      "objectives": [{ "type": "collect", "itemIds": ["dispatch-crate"] }, { "type": "exit", "x": 1, "y": 3 }]
+    }
+  ],
+  "allowedApi": ["read_map", "move", "pick"],
+  "helpers": ["plan_route"],
+  "cards": [
+    {
+      "id": "import-planner",
+      "label": { "zh": "装入课程导航函数", "en": "Import the course navigator" },
+      "template": "from algorithms import plan_route"
+    },
+    {
+      "id": "import-mine",
+      "label": { "zh": "装入我保存的导航函数", "en": "Import my saved navigator" },
+      "template": "from my_algorithms import plan_route"
+    },
+    {
+      "id": "read",
+      "label": { "zh": "读取本仓地图", "en": "Read this depot map" },
+      "template": "station = read_map()"
+    },
+    {
+      "id": "plan",
+      "label": { "zh": "计算到出口的路线", "en": "Plan a route to the exit" },
+      "template": "directions = plan_route(station[\"tiles\"], station[\"start\"], station[\"goal\"])"
+    },
+    {
+      "id": "each",
+      "label": { "zh": "依次取出方向", "en": "Visit each direction" },
+      "template": "for direction in directions:",
+      "block": true
+    },
+    {
+      "id": "follow",
+      "label": { "zh": "按这个方向走一格", "en": "Move one square that way" },
+      "template": "move(direction)"
+    },
+    { "id": "open", "label": { "zh": "打开出口的货箱", "en": "Open the dispatch chest" }, "template": "pick()" }
+  ],
+  "solutionCards": [
+    { "cardId": "import-planner" },
+    { "cardId": "read" },
+    { "cardId": "plan" },
+    { "cardId": "each", "children": [{ "cardId": "follow" }] },
+    { "cardId": "open" }
+  ]
+}

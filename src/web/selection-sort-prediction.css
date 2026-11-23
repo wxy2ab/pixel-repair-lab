@@ -1,0 +1,54 @@
+.selection-sort-prediction { min-inline-size: 0; }
+
+.selection-sort-prediction .search-battery-tile {
+  min-inline-size: 42px;
+  max-inline-size: 100%;
+}
+
+.selection-sort-prediction .sort-pick-field {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.sort-pick-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sort-pick-slots li {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  min-width: 39px;
+  max-width: 100%;
+  padding: 5px 6px;
+  border: 1px solid #4c627d;
+  border-radius: 6px;
+  background: #21354b;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.sort-pick-slots small { color: var(--muted); font-size: .68rem; }
+.sort-pick-slots strong { color: #e9f3ff; font: 750 .91rem/1.25 var(--mono); }
+.sort-pick-slots [data-next='true'] { border-style: dashed; border-color: #83a4cd; }
+.sort-pick-slots [data-match='true'] { border-color: #64a98f; background: #214239; }
+.sort-pick-slots [data-match='false'] { border-color: #a98254; background: #3b3028; }
+.sort-pick-status { color: var(--mint); font: 750 .78rem/1 var(--mono); }
+.sort-pick-slots [data-match='false'] .sort-pick-status { color: var(--warm); }
+
+.sort-pick-options button[data-used='true'] {
+  border-color: #567791;
+  background: #1d2c3c;
+  opacity: .55;
+}
+
+.sort-pick-options button[aria-disabled='true'] { cursor: default; }
+.sort-pick-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.sort-pick-actions button { min-height: 40px; white-space: normal; }
+.selection-sort-prediction .sort-pick-field .for-prediction-values { margin-block-start: 0; }

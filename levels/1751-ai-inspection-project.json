@@ -1,0 +1,167 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "ai-inspection-project",
+  "order": 1751,
+  "unit": {
+    "id": "ai-review",
+    "order": 170,
+    "title": {
+      "zh": "核对与修正",
+      "en": "Review and Revision"
+    }
+  },
+  "stage": "challenge",
+  "courseFinal": true,
+  "title": {
+    "zh": "综合项目 · 双点巡检的补给清单",
+    "en": "Final Project · Supplies for Two Inspection Stops"
+  },
+  "brief": {
+    "zh": "北门小队需要 1 块滤网、2 节电池和 1 个夹子。水泵小队需要 2 块滤网、1 节电池和 1 张防水标签。两队共用一个箱子，磁铁和备用线圈都留在货架。请和 AI 生成一份合并清单，核对每一轮，再确认交付。",
+    "en": "The north gate team needs 1 filter, 2 batteries, and 1 clip. The pump team needs 2 filters, 1 battery, and 1 waterproof label. Both teams share one box. Leave the magnet and spare coil on the shelf. Work with AI to create one combined manifest, review every round, and approve the final delivery."
+  },
+  "concept": {
+    "zh": "把两个小队的数量合成一个清楚的请求，按任务核对，修正每轮结果。",
+    "en": "Combine both teams’ counts into a clear request, review against the assignment, and correct each round."
+  },
+  "hints": [
+    {
+      "zh": "先合并两队对滤网和电池的数量要求。",
+      "en": "Combine the teams’ filter and battery counts first."
+    },
+    {
+      "zh": "每轮都同时检查数量和禁放要求。解决一处差异后，回头检查其他行。",
+      "en": "Review both counts and exclusions round by round. After fixing a difference, check the other rows again."
+    }
+  ],
+  "inventory": [
+    {
+      "id": "filter",
+      "label": {
+        "zh": "滤网",
+        "en": "Filter"
+      },
+      "aliases": [
+        "filters",
+        "滤片"
+      ]
+    },
+    {
+      "id": "battery",
+      "label": {
+        "zh": "电池",
+        "en": "Battery"
+      },
+      "aliases": [
+        "batteries",
+        "电芯"
+      ]
+    },
+    {
+      "id": "clip",
+      "label": {
+        "zh": "夹子",
+        "en": "Clip"
+      },
+      "aliases": [
+        "clips",
+        "固定夹"
+      ]
+    },
+    {
+      "id": "waterproof",
+      "label": {
+        "zh": "防水标签",
+        "en": "Waterproof label"
+      },
+      "aliases": [
+        "waterproof labels",
+        "防水贴"
+      ]
+    },
+    {
+      "id": "magnet",
+      "label": {
+        "zh": "磁铁",
+        "en": "Magnet"
+      },
+      "aliases": [
+        "magnets",
+        "磁石"
+      ]
+    },
+    {
+      "id": "coil",
+      "label": {
+        "zh": "备用线圈",
+        "en": "Spare coil"
+      },
+      "aliases": [
+        "spare coils",
+        "备用绕组"
+      ]
+    }
+  ],
+  "required": {
+    "filter": 3,
+    "battery": 3,
+    "clip": 1,
+    "waterproof": 1
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "filter",
+        "quantity": 2
+      },
+      {
+        "itemId": "magnet",
+        "quantity": 1
+      }
+    ],
+    "cards": [
+      {
+        "zh": "准备一份两队共用的单箱清单。",
+        "en": "Create one manifest for the shared box."
+      },
+      {
+        "zh": "滤网改为 3 块。",
+        "en": "Set filters to 3."
+      },
+      {
+        "zh": "电池改为 3 节。",
+        "en": "Set batteries to 3."
+      },
+      {
+        "zh": "夹子改为 1 个。",
+        "en": "Set clips to 1."
+      },
+      {
+        "zh": "防水标签改为 1 张。",
+        "en": "Set waterproof labels to 1."
+      },
+      {
+        "zh": "不要放磁铁。",
+        "en": "Leave out the magnet."
+      },
+      {
+        "zh": "不要放备用线圈。",
+        "en": "Leave out the spare coil."
+      }
+    ]
+  },
+  "examplePrompts": {
+    "zh": [
+      "请生成两支小队共用的单箱清单。滤网改为 3 块，电池改为 3 节，夹子改为 1 个，防水标签改为 1 张。不要放磁铁。不要放备用线圈。",
+      "滤网改为 3 块。保留其他项目。",
+      "去掉磁铁。保留其他项目。"
+    ],
+    "en": [
+      "Create one combined manifest for both teams. Pack 3 filters, 3 batteries, 1 clip, and 1 waterproof label. Leave out the magnet. Leave out the spare coil.",
+      "Set filters to 3. Keep the other entries.",
+      "Remove the magnet. Keep the other entries."
+    ]
+  }
+}

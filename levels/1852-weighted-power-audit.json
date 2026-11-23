@@ -1,0 +1,274 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "challenge-weighted-power-audit",
+  "order": 1852,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "architecture",
+      "topic": "memory"
+    },
+    {
+      "unit": "architecture",
+      "topic": "registers"
+    },
+    {
+      "unit": "architecture",
+      "topic": "instructions"
+    }
+  ],
+  "title": {
+    "zh": "电源负载双校验",
+    "en": "Two Weighted Power Checks"
+  },
+  "concept": {
+    "zh": "加权核算 · 两份报告 · 保留原始读数",
+    "en": "Weighted readings · Two reports · Preserve the inputs"
+  },
+  "brief": {
+    "zh": "三路传感器的旧读数 A、B、C 在地址 0、1、2，有些是负数。把负载指标 2A + 5B − 3C 写入地址 3，把备用指标 3A − B + C 写入地址 4。保留地址 0、1、2 和地址 5 的工单号。ACC 留下负载指标减备用指标的差值。开机时两个报告格和 ACC 里的旧值可能不同，程序必须通过五组用例。",
+    "en": "Old readings A, B, and C are in addresses 0, 1, and 2. Some readings are negative. Write the load index 2A + 5B − 3C to address 3 and the reserve index 3A − B + C to address 4. Preserve the three source readings and the ticket number at address 5. Leave the load index minus the reserve index in ACC. The report cells and ACC may hold different old values at startup. Pass all five cases."
+  },
+  "hints": [],
+  "allowedOps": [
+    "LOAD",
+    "ADD",
+    "SUB",
+    "STORE",
+    "HALT"
+  ],
+  "starterCode": "HALT\n",
+  "solutionCode": "LOAD 0\nADD 0\nADD 1\nADD 1\nADD 1\nADD 1\nADD 1\nSUB 2\nSUB 2\nSUB 2\nSTORE 3\nLOAD 0\nADD 0\nADD 0\nSUB 1\nADD 2\nSTORE 4\nLOAD 3\nSUB 4\nHALT\n",
+  "cases": [
+    {
+      "label": {
+        "zh": "主电源上载",
+        "en": "Primary supply under load"
+      },
+      "memory": [
+        4,
+        6,
+        3,
+        99,
+        1,
+        51
+      ],
+      "accumulator": 10,
+      "goal": {
+        "accumulator": 20,
+        "memory": [
+          {
+            "address": 0,
+            "value": 4
+          },
+          {
+            "address": 1,
+            "value": 6
+          },
+          {
+            "address": 2,
+            "value": 3
+          },
+          {
+            "address": 3,
+            "value": 29
+          },
+          {
+            "address": 4,
+            "value": 9
+          },
+          {
+            "address": 5,
+            "value": 51
+          }
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "负值仪表",
+        "en": "Negative readings"
+      },
+      "memory": [
+        -3,
+        2,
+        -5,
+        42,
+        72,
+        62
+      ],
+      "accumulator": 11,
+      "goal": {
+        "accumulator": 35,
+        "memory": [
+          {
+            "address": 0,
+            "value": -3
+          },
+          {
+            "address": 1,
+            "value": 2
+          },
+          {
+            "address": 2,
+            "value": -5
+          },
+          {
+            "address": 3,
+            "value": 19
+          },
+          {
+            "address": 4,
+            "value": -16
+          },
+          {
+            "address": 5,
+            "value": 62
+          }
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "牵引力反转",
+        "en": "Reverse draw"
+      },
+      "memory": [
+        2,
+        0,
+        4,
+        3,
+        7,
+        23
+      ],
+      "accumulator": -15,
+      "goal": {
+        "accumulator": -18,
+        "memory": [
+          {
+            "address": 0,
+            "value": 2
+          },
+          {
+            "address": 1,
+            "value": 0
+          },
+          {
+            "address": 2,
+            "value": 4
+          },
+          {
+            "address": 3,
+            "value": -8
+          },
+          {
+            "address": 4,
+            "value": 10
+          },
+          {
+            "address": 5,
+            "value": 23
+          }
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "两个指标相同",
+        "en": "Equal indices"
+      },
+      "memory": [
+        6,
+        1,
+        0,
+        93,
+        62,
+        18
+      ],
+      "accumulator": 0,
+      "goal": {
+        "accumulator": 0,
+        "memory": [
+          {
+            "address": 0,
+            "value": 6
+          },
+          {
+            "address": 1,
+            "value": 1
+          },
+          {
+            "address": 2,
+            "value": 0
+          },
+          {
+            "address": 3,
+            "value": 17
+          },
+          {
+            "address": 4,
+            "value": 17
+          },
+          {
+            "address": 5,
+            "value": 18
+          }
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "三路都为负",
+        "en": "All readings below zero"
+      },
+      "memory": [
+        -1,
+        -4,
+        -2,
+        -6,
+        8,
+        5
+      ],
+      "accumulator": 61,
+      "goal": {
+        "accumulator": -15,
+        "memory": [
+          {
+            "address": 0,
+            "value": -1
+          },
+          {
+            "address": 1,
+            "value": -4
+          },
+          {
+            "address": 2,
+            "value": -2
+          },
+          {
+            "address": 3,
+            "value": -16
+          },
+          {
+            "address": 4,
+            "value": -1
+          },
+          {
+            "address": 5,
+            "value": 5
+          }
+        ]
+      }
+    }
+  ]
+}

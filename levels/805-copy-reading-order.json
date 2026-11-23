@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "python-intermediate",
+    "order": 20,
+    "title": {
+      "zh": "Python 进阶",
+      "en": "Intermediate Python"
+    }
+  },
+  "kind": "grid",
+  "id": "copy-reading-order",
+  "order": 822,
+  "stage": "exercise",
+  "topic": {
+    "id": "for-loops",
+    "order": 2,
+    "title": {
+      "zh": "for 循环",
+      "en": "For loops"
+    }
+  },
+  "title": {
+    "zh": "把读数逐个传回",
+    "en": "Send readings one by one"
+  },
+  "concept": {
+    "zh": "for 遍历一组值",
+    "en": "Use for to visit a list"
+  },
+  "brief": {
+    "zh": "按扫描结果的顺序逐个提交读数。有相同值时也要逐次提交。",
+    "en": "Submit each scanned value in its original order. Submit repeated readings each time they appear."
+  },
+  "hints": [
+    {
+      "zh": "每一轮 reading 只代表一个数，所以把提交卡放在 for 的缩进块里。",
+      "en": "On each turn reading holds one value. Put the submit card inside the for block."
+    }
+  ],
+  "tiles": [
+    "#######",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#######"
+  ],
+  "start": {
+    "x": 2,
+    "y": 2
+  },
+  "input": [
+    3,
+    7,
+    3,
+    2
+  ],
+  "allowedApi": [
+    "scan",
+    "submit"
+  ],
+  "objectives": [
+    {
+      "type": "submit",
+      "values": [
+        3,
+        7,
+        3,
+        2
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "input": [
+        2,
+        2,
+        8
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            2,
+            2,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "input": [
+        9
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            9
+          ]
+        }
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "scan-all",
+      "label": {
+        "zh": "扫描整批读数",
+        "en": "Scan the batch"
+      },
+      "template": "readings = scan()"
+    },
+    {
+      "id": "for-reading",
+      "label": {
+        "zh": "逐个查看读数",
+        "en": "Visit each reading"
+      },
+      "template": "for reading in readings:",
+      "block": true
+    },
+    {
+      "id": "report-reading",
+      "label": {
+        "zh": "提交当前读数",
+        "en": "Submit the current reading"
+      },
+      "template": "submit(reading)"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "scan-all"
+    },
+    {
+      "cardId": "for-reading",
+      "children": [
+        {
+          "cardId": "report-reading"
+        }
+      ]
+    }
+  ]
+}

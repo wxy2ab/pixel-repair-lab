@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "python-intermediate",
+    "order": 20,
+    "title": {
+      "zh": "Python 进阶",
+      "en": "Intermediate Python"
+    }
+  },
+  "kind": "replay",
+  "id": "control-flow-replay",
+  "order": 821,
+  "stage": "demo",
+  "topic": {
+    "id": "for-loops",
+    "order": 2,
+    "title": {
+      "zh": "for 循环",
+      "en": "For loops"
+    }
+  },
+  "title": {
+    "zh": "按规则处理一批读数",
+    "en": "Process a Batch by Rule"
+  },
+  "concept": {
+    "zh": "逐项处理和固定次数",
+    "en": "Visit items and repeat a fixed number of times"
+  },
+  "brief": {
+    "zh": "查看 for 怎样逐项筛选读数，再比较 range 怎样控制移动次数。",
+    "en": "See how for filters a batch of readings, then compare it with a range loop that controls movement."
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "筛出所有达到 5 的读数",
+        "en": "Keep every reading of at least 5"
+      },
+      "source": "readings = scan()\nfor reading in readings:\n    if reading >= 5:\n        submit(reading)",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "input": [
+          8,
+          1,
+          5,
+          5
+        ],
+        "allowedApi": [
+          "scan",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              8,
+              5,
+              5
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "title": {
+        "zh": "用 range 决定右移次数",
+        "en": "Use range to count rightward moves"
+      },
+      "source": "steps = scan()\nfor step in range(steps):\n    move(\"right\")\nsay(\"ready\")",
+      "scenario": {
+        "tiles": [
+          "########",
+          "#......#",
+          "#......#",
+          "########"
+        ],
+        "start": {
+          "x": 1,
+          "y": 1
+        },
+        "input": 4,
+        "allowedApi": [
+          "scan",
+          "move",
+          "say"
+        ],
+        "objectives": [
+          {
+            "type": "exit",
+            "x": 5,
+            "y": 1
+          }
+        ]
+      }
+    }
+  ]
+}

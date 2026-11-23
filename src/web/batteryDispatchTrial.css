@@ -1,0 +1,225 @@
+.battery-dispatch-trial {
+  min-width: 0;
+  container-type: inline-size;
+}
+
+.dispatch-trial-content,
+.dispatch-run {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.dispatch-trial-content { padding: clamp(10px, 2.5cqi, 18px); }
+
+.dispatch-roles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+  gap: 10px;
+}
+
+.dispatch-role,
+.dispatch-board > section {
+  min-width: 0;
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface-raised);
+}
+
+.dispatch-role { padding: 7px 10px 10px; }
+.dispatch-role legend { padding-inline: 4px; color: #eef5ff; font-weight: 700; }
+.dispatch-role p { margin-bottom: 8px; color: var(--muted); font-size: .875rem; }
+.dispatch-role[data-needs-change] { border-color: #b28a50; }
+.dispatch-role .dispatch-hint { margin: 8px 0 0; }
+.dispatch-trial-content .dispatch-hint { color: var(--warm); }
+
+.dispatch-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.dispatch-choices button {
+  min-width: 0;
+  min-height: 40px;
+  padding-inline: 3px;
+  overflow-wrap: anywhere;
+}
+
+.dispatch-choices button[aria-pressed='true'] {
+  border-color: var(--mint);
+  background: #234b3d;
+  color: #ecfff6;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px var(--mint);
+}
+
+.dispatch-ticket {
+  display: grid;
+  grid-template-columns: minmax(125px, 1fr) minmax(0, 2fr);
+  align-items: start;
+  gap: 14px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #19283d;
+}
+
+.dispatch-ticket h3,
+.dispatch-board h4 {
+  margin: 0 0 7px;
+  color: #e5effc;
+  font-size: .9rem;
+}
+
+.dispatch-ticket p { margin: 0 0 8px; color: var(--muted); font-size: .875rem; }
+
+.dispatch-batteries,
+.dispatch-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dispatch-batteries:empty { display: none; }
+.dispatch-actions li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 4px 7px;
+  border: 1px solid #465b75;
+  border-radius: 6px;
+  background: #21354b;
+  color: #e1edfb;
+  font-size: .8rem;
+}
+
+.dispatch-actions li[data-action='stage'] { background: #243a43; border-color: #4c6c74; }
+.dispatch-actions li[aria-current] { border-color: var(--mint); color: var(--mint); }
+.dispatch-action-number { color: inherit; font: 700 .75rem var(--mono); }
+
+.dispatch-battery {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  min-width: 40px;
+  max-width: 100%;
+  padding: 4px 7px;
+  border: 1px solid #4c667f;
+  border-radius: 6px;
+  background: #253a51;
+  overflow-wrap: anywhere;
+}
+
+.dispatch-battery strong { min-width: 0; color: #f1f8ff; font: 700 .875rem var(--mono); }
+.dispatch-battery small { font-size: .72rem; color: #c3d9ef; }
+.dispatch-battery[data-queue-head] small,
+.dispatch-battery[data-stack-top] small { color: var(--mint); }
+
+.dispatch-charge {
+  position: relative;
+  min-width: 21px;
+  margin-inline-end: 3px;
+  padding: 1px 3px;
+  border: 1px solid #67a98e;
+  border-radius: 3px;
+  background: #1b473e;
+  color: #defff1;
+  font: 700 .78rem var(--mono);
+  text-align: center;
+}
+
+.dispatch-charge::after {
+  position: absolute;
+  top: 25%;
+  left: 100%;
+  width: 3px;
+  height: 50%;
+  border-radius: 0 2px 2px 0;
+  background: #67a98e;
+  content: '';
+}
+
+.dispatch-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 10px; min-width: 0; }
+.dispatch-trial-content p:is([role='status'], [role='alert']) { margin: 0; }
+.dispatch-progress { color: var(--muted); font: .8rem var(--mono); }
+.coding-device-controls .dispatch-hint { color: var(--warm); }
+.dispatch-step { display: grid; gap: 7px; min-width: 0; }
+.dispatch-step-caption { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 9px; }
+.dispatch-moving { border-color: var(--mint); background: #244638; animation: dispatch-battery-in .18s ease-out; }
+
+.dispatch-source {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid #429574;
+  border-radius: 6px;
+  background: #16362e;
+  color: #e6fff3;
+  font: .85rem/1.5 var(--mono);
+}
+
+.dispatch-source span { flex: 0 0 2ch; color: var(--mint); }
+.dispatch-source code { min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.dispatch-board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 7px;
+}
+
+.dispatch-board > section { padding: clamp(6px, 1.8cqi, 12px); }
+.dispatch-board > section[data-active] { border-color: #519a7f; }
+.dispatch-board .dispatch-battery[data-active],
+.dispatch-board .dispatch-records > div[data-active] { border-color: var(--mint); background: #244638; }
+.dispatch-board .dispatch-battery { animation: dispatch-battery-in .18s ease-out; }
+.dispatch-stack { flex-direction: column; flex-wrap: nowrap; align-items: start; }
+.dispatch-stack .dispatch-battery { min-width: min(100%, 72px); }
+.dispatch-empty { margin: 0; color: var(--dim); font-size: .85rem; }
+
+.dispatch-records { display: flex; flex-wrap: wrap; gap: 5px; margin: 0; }
+.dispatch-records > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  min-width: min(100%, 60px);
+  padding: 4px 6px;
+  border: 1px solid #465b75;
+  border-radius: 6px;
+  background: #22374f;
+  overflow-wrap: anywhere;
+}
+
+.dispatch-records dt { min-width: 0; color: #f1f8ff; font: 700 .875rem var(--mono); }
+.dispatch-records dd { margin: 0; color: #d8e7f9; font-size: .8rem; }
+.dispatch-results .dispatch-battery { flex-direction: column; }
+
+@keyframes dispatch-battery-in {
+  from { opacity: .55; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 580px) {
+  .dispatch-ticket { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dispatch-board .dispatch-battery, .dispatch-moving { animation: none; }
+}
+.dispatch-instrument[data-running=true] .teaching-model-tray,
+.collection-prediction [data-testid=structure-trace] [data-teaching-model=structure-dispatch] .teaching-model-tray {
+  height: clamp(236px, 30vw, 330px);
+}

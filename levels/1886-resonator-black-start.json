@@ -1,0 +1,741 @@
+{
+  "version": 1,
+  "id": "challenge-resonator-black-start",
+  "order": 1886,
+  "kind": "grid",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": {
+    "zh": "谐振器熄灯重启",
+    "en": "Resonator Black Start"
+  },
+  "concept": {
+    "zh": "安全步进、三件装配、双份读数",
+    "en": "Safe CPU ticks, three components and two memory readings"
+  },
+  "brief": {
+    "zh": "收齐 coil、fuse、relay 并到出口。执行 CPU 程序直到 HALT。地址 3 要保留地址 0 与 1 初值的和；地址 4 要保留前三个地址初值之和。先提交部分和，再提交总和，两次都须读内存。CPU 单步会推动巡逻。 限 37 回合，避开巡逻。scan() 列出巡线、目标坐标和 compass 方向表。第二张地图将图纸旋转半圈。",
+    "en": "Collect coil, fuse and relay, reach the exit, and run the CPU to HALT. Leave the sum of the original cells 0 and 1 in cell 3, and the sum of original cells 0 through 2 in cell 4. Submit the partial sum followed by the total, both from memory reads. Each CPU step advances the patrols. Avoid patrols within 37 turns. scan() lists patrol cycles, goal locations and the compass for plan directions. The second map rotates the plan by 180 degrees."
+  },
+  "prerequisites": [
+    {
+      "unit": "architecture",
+      "topic": "instructions"
+    },
+    {
+      "unit": "architecture",
+      "topic": "memory"
+    },
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "###########",
+    "#.#.......#",
+    "#..##.###.#",
+    "#...#...#.#",
+    "##..#####.#",
+    "#.......#.#",
+    "#.###.#.#.#",
+    "#.........#",
+    "###########"
+  ],
+  "start": {
+    "x": 1,
+    "y": 7
+  },
+  "items": [
+    {
+      "id": "coil",
+      "x": 6,
+      "y": 5
+    },
+    {
+      "id": "fuse",
+      "x": 1,
+      "y": 1
+    },
+    {
+      "id": "relay",
+      "x": 9,
+      "y": 7
+    }
+  ],
+  "enemies": [
+    {
+      "path": [
+        {
+          "x": 5,
+          "y": 6
+        },
+        {
+          "x": 5,
+          "y": 7
+        },
+        {
+          "x": 4,
+          "y": 7
+        },
+        {
+          "x": 5,
+          "y": 7
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 5,
+          "y": 3
+        },
+        {
+          "x": 6,
+          "y": 3
+        },
+        {
+          "x": 7,
+          "y": 3
+        },
+        {
+          "x": 6,
+          "y": 3
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 4,
+          "y": 7
+        },
+        {
+          "x": 5,
+          "y": 7
+        },
+        {
+          "x": 5,
+          "y": 6
+        },
+        {
+          "x": 5,
+          "y": 7
+        }
+      ]
+    }
+  ],
+  "turnLimit": 37,
+  "input": {
+    "compass": {
+      "N": "up",
+      "E": "right",
+      "S": "down",
+      "W": "left"
+    },
+    "parts": {
+      "coil": [
+        6,
+        5
+      ],
+      "fuse": [
+        1,
+        1
+      ],
+      "relay": [
+        9,
+        7
+      ]
+    },
+    "exit": [
+      9,
+      1
+    ],
+    "patrols": [
+      [
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          5,
+          7
+        ]
+      ],
+      [
+        [
+          5,
+          3
+        ],
+        [
+          6,
+          3
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          6,
+          3
+        ]
+      ],
+      [
+        [
+          4,
+          7
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ]
+      ]
+    ]
+  },
+  "objectives": [
+    {
+      "type": "collect",
+      "itemIds": [
+        "coil",
+        "fuse",
+        "relay"
+      ]
+    },
+    {
+      "type": "memory",
+      "address": 3,
+      "value": 11
+    },
+    {
+      "type": "memory",
+      "address": 4,
+      "value": 17
+    },
+    {
+      "type": "halt"
+    },
+    {
+      "type": "submit",
+      "values": [
+        11,
+        17
+      ],
+      "origin": "memory-load"
+    },
+    {
+      "type": "exit",
+      "x": 9,
+      "y": 1
+    }
+  ],
+  "memory": [
+    8,
+    3,
+    6,
+    0,
+    0
+  ],
+  "instructions": [
+    {
+      "op": "LOAD",
+      "address": 0
+    },
+    {
+      "op": "ADD",
+      "address": 1
+    },
+    {
+      "op": "STORE",
+      "address": 3
+    },
+    {
+      "op": "ADD",
+      "address": 2
+    },
+    {
+      "op": "STORE",
+      "address": 4
+    },
+    {
+      "op": "HALT"
+    }
+  ],
+  "allowedApi": [
+    "move",
+    "pick",
+    "scan",
+    "submit",
+    "load",
+    "step"
+  ],
+  "cards": [
+    {
+      "id": "read",
+      "label": {
+        "zh": "读取图纸和工单",
+        "en": "Read plan and work order"
+      },
+      "template": "board = scan()"
+    },
+    {
+      "id": "N",
+      "label": {
+        "zh": "图纸北",
+        "en": "Plan north"
+      },
+      "template": "move(board[\"compass\"][\"N\"])"
+    },
+    {
+      "id": "E",
+      "label": {
+        "zh": "图纸东",
+        "en": "Plan east"
+      },
+      "template": "move(board[\"compass\"][\"E\"])"
+    },
+    {
+      "id": "S",
+      "label": {
+        "zh": "图纸南",
+        "en": "Plan south"
+      },
+      "template": "move(board[\"compass\"][\"S\"])"
+    },
+    {
+      "id": "W",
+      "label": {
+        "zh": "图纸西",
+        "en": "Plan west"
+      },
+      "template": "move(board[\"compass\"][\"W\"])"
+    },
+    {
+      "id": "grab",
+      "label": {
+        "zh": "拾取并读取件名",
+        "en": "Pick up and read the ID"
+      },
+      "template": "part = pick()"
+    },
+    {
+      "id": "tick",
+      "label": {
+        "zh": "CPU 单步",
+        "en": "Tick the CPU"
+      },
+      "template": "step()"
+    },
+    {
+      "id": "partial",
+      "label": {
+        "zh": "提交地址 3",
+        "en": "Send cell 3"
+      },
+      "template": "submit(load(3))"
+    },
+    {
+      "id": "total",
+      "label": {
+        "zh": "提交地址 4",
+        "en": "Send cell 4"
+      },
+      "template": "submit(load(4))"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "W"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "S"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "E"
+    },
+    {
+      "cardId": "grab"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "N"
+    },
+    {
+      "cardId": "tick"
+    },
+    {
+      "cardId": "tick"
+    },
+    {
+      "cardId": "tick"
+    },
+    {
+      "cardId": "tick"
+    },
+    {
+      "cardId": "tick"
+    },
+    {
+      "cardId": "tick"
+    },
+    {
+      "cardId": "partial"
+    },
+    {
+      "cardId": "total"
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "###########",
+        "#.........#",
+        "#.#.#.###.#",
+        "#.#.......#",
+        "#.#####..##",
+        "#.#...#...#",
+        "#.###.##..#",
+        "#.......#.#",
+        "###########"
+      ],
+      "start": {
+        "x": 9,
+        "y": 1
+      },
+      "items": [
+        {
+          "id": "coil",
+          "x": 4,
+          "y": 3
+        },
+        {
+          "id": "fuse",
+          "x": 9,
+          "y": 7
+        },
+        {
+          "id": "relay",
+          "x": 1,
+          "y": 1
+        }
+      ],
+      "enemies": [
+        {
+          "path": [
+            {
+              "x": 5,
+              "y": 2
+            },
+            {
+              "x": 5,
+              "y": 1
+            },
+            {
+              "x": 6,
+              "y": 1
+            },
+            {
+              "x": 5,
+              "y": 1
+            }
+          ]
+        },
+        {
+          "path": [
+            {
+              "x": 5,
+              "y": 5
+            },
+            {
+              "x": 4,
+              "y": 5
+            },
+            {
+              "x": 3,
+              "y": 5
+            },
+            {
+              "x": 4,
+              "y": 5
+            }
+          ]
+        },
+        {
+          "path": [
+            {
+              "x": 6,
+              "y": 1
+            },
+            {
+              "x": 5,
+              "y": 1
+            },
+            {
+              "x": 5,
+              "y": 2
+            },
+            {
+              "x": 5,
+              "y": 1
+            }
+          ]
+        }
+      ],
+      "turnLimit": 37,
+      "input": {
+        "compass": {
+          "N": "down",
+          "E": "left",
+          "S": "up",
+          "W": "right"
+        },
+        "parts": {
+          "coil": [
+            4,
+            3
+          ],
+          "fuse": [
+            9,
+            7
+          ],
+          "relay": [
+            1,
+            1
+          ]
+        },
+        "exit": [
+          1,
+          7
+        ],
+        "patrols": [
+          [
+            [
+              5,
+              2
+            ],
+            [
+              5,
+              1
+            ],
+            [
+              6,
+              1
+            ],
+            [
+              5,
+              1
+            ]
+          ],
+          [
+            [
+              5,
+              5
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              3,
+              5
+            ],
+            [
+              4,
+              5
+            ]
+          ],
+          [
+            [
+              6,
+              1
+            ],
+            [
+              5,
+              1
+            ],
+            [
+              5,
+              2
+            ],
+            [
+              5,
+              1
+            ]
+          ]
+        ]
+      },
+      "objectives": [
+        {
+          "type": "collect",
+          "itemIds": [
+            "coil",
+            "fuse",
+            "relay"
+          ]
+        },
+        {
+          "type": "memory",
+          "address": 3,
+          "value": 13
+        },
+        {
+          "type": "memory",
+          "address": 4,
+          "value": 23
+        },
+        {
+          "type": "halt"
+        },
+        {
+          "type": "submit",
+          "values": [
+            13,
+            23
+          ],
+          "origin": "memory-load"
+        },
+        {
+          "type": "exit",
+          "x": 1,
+          "y": 7
+        }
+      ],
+      "memory": [
+        2,
+        11,
+        10,
+        0,
+        0
+      ],
+      "instructions": [
+        {
+          "op": "LOAD",
+          "address": 0
+        },
+        {
+          "op": "ADD",
+          "address": 1
+        },
+        {
+          "op": "STORE",
+          "address": 3
+        },
+        {
+          "op": "ADD",
+          "address": 2
+        },
+        {
+          "op": "STORE",
+          "address": 4
+        },
+        {
+          "op": "HALT"
+        }
+      ]
+    }
+  ]
+}

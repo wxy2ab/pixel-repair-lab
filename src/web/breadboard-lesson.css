@@ -1,0 +1,42 @@
+.breadboard-lesson { align-items: start; min-width: 0; }
+.breadboard-lesson > *, .breadboard-lesson .device-window__body { min-width: 0; }
+.breadboard-reading {
+  margin: 8px 0 0; padding: 7px 10px; border-left: 3px solid #84b7a4;
+  border-radius: 0 4px 4px 0; background: #19333b; color: #d8e8df;
+  font-size: .88rem; line-height: 1.5;
+}
+.breadboard-signals { margin-bottom: 10px; }
+.breadboard-controls { display: grid; min-width: 0; gap: 0; }
+.breadboard-controls section { min-width: 0; padding: 12px 0; }
+.breadboard-controls section:first-child { padding-top: 0; }
+.breadboard-controls section:last-child { padding-bottom: 0; }
+.breadboard-controls section + section { border-top: 1px solid #aec2c6; }
+.breadboard-controls h2 { margin: 0 0 5px; font-size: 1rem; }
+.breadboard-transfer h2 { color: #245f56; }
+.breadboard-transfer button { max-width: 100%; white-space: normal; text-align: start; }
+.breadboard-controls p { margin: 4px 0 8px; line-height: 1.5; font-size: .9rem; }
+.breadboard-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.breadboard-actions + .breadboard-actions { margin-top: 8px; }
+.breadboard-actions button, .breadboard-controls > section > button { min-height: 36px; }
+.breadboard-actions .subtle-button[aria-pressed='true'] { border-color: #488364; background: #c2e7cf; color: #163a2c; }
+.breadboard-wires, .breadboard-help { margin-bottom: 8px; }
+.breadboard-wires summary, .breadboard-help summary { width: fit-content; cursor: pointer; font-weight: 600; font-size: .9rem; }
+.breadboard-wires ul { overflow-y: auto; max-height: 11rem; list-style: none; margin: 5px 0; padding: 0; }
+.breadboard-wires li {
+  display: flex; align-items: center; justify-content: space-between; gap: 5px;
+  padding: 3px 0; font-size: .8rem; overflow-wrap: anywhere;
+}
+.breadboard-wires li button { flex-shrink: 0; padding: 2px 7px; }
+.breadboard-controls .breadboard-prediction { margin: 8px 0; padding-inline-start: 8px; border-inline-start: 2px solid #648c79; }
+.breadboard-observations { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 6px; margin: 8px 0; }
+.breadboard-observations > div { padding: 5px 8px; border: 1px solid #a4b8b9; border-radius: 5px; }
+.breadboard-observations dt { font-size: .75rem; }
+.breadboard-observations dd { font-weight: 650; font-size: .9rem; margin: 0; }
+.breadboard-observations small { display: block; font-size: .73rem; font-weight: 500; overflow-wrap: anywhere; }
+.command-desk .breadboard-controls .win-message { color: #20603e; }
+.command-desk .breadboard-controls .error-message { color: #863e23; }
+.bread-repair-card h3 { margin: 12px 0 4px; font-size: .88rem; }
+.bread-ticket-notes { display: grid; gap: 3px; padding: 0; margin: 6px 0; list-style: none; }
+.bread-ticket-notes li { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 8px; background: #e6f1e8; border-left: 3px solid #5b8775; font-size: .83rem; }
+.bread-ticket-notes strong { font-variant-numeric: tabular-nums; }
+.bread-ticket-notes small { display: block; color: #3f6059; }

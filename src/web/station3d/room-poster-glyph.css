@@ -1,0 +1,42 @@
+.room-poster-meter, .room-poster-dial {
+  display: inline-flex;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  border: 2px solid #94a59b;
+  box-shadow: inset 0 1px 2px #153330, 0 2px 1px #172a29b3;
+}
+.room-poster-meter {
+  gap: 3px; min-width: 36px; height: 27px; padding: 2px 4px;
+  background: #203e40; border-radius: 5px;
+  color: #f1be78;
+}
+.room-poster-meter[data-target='run'] { color: #a4ebbf; }
+.room-poster-column {
+  align-self: flex-end; width: 5px; background: currentColor; border-radius: 1px;
+}
+.room-poster-lamp {
+  width: 6px; height: 6px; box-sizing: border-box;
+  border-radius: 50%; background: #334d4c; border: 1px solid #77978c;
+}
+.room-poster-lamp[data-lit='true'] {
+  background: currentColor; border-color: currentColor; box-shadow: 0 0 4px currentColor;
+}
+.room-poster-play {
+  margin-left: 2px; border-block: 6px solid transparent; border-left: 9px solid currentColor;
+}
+.room-poster-dial {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f0cb99, #c38b51 69%, #806447);
+  transform: rotate(-65deg);
+}
+.room-poster-dial i {
+  align-self: flex-start; margin-top: 2px; width: 3px; height: 9px; border-radius: 2px; background: #323c38;
+}
+.lesson-room-layer[data-setting='1'] .room-poster-dial { transform: rotate(65deg); }
+.lesson-room-layer[data-setting='2'] .room-poster-dial { transform: rotate(0deg); }
+@media (prefers-reduced-motion: no-preference) {
+  .room-poster-dial { transition: transform .18s ease; }
+  .room-poster-column { transition: height .18s ease; }
+}

@@ -1,0 +1,396 @@
+{
+  "version": 1,
+  "kind": "arena",
+  "id": "challenge-junction-race",
+  "order": 1803,
+  "difficulty": "intermediate",
+  "stage": "challenge",
+  "prerequisites": [
+    { "unit": "python-intermediate" },
+    { "unit": "routing", "topic": "breadth-first" }
+  ],
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "岔路争夺战",
+    "en": "Junction Rush"
+  },
+  "concept": {
+    "zh": "一对三 · 电池竞速",
+    "en": "One versus three · Battery race"
+  },
+  "brief": {
+    "zh": "你和三台机器人争夺 11 块电池。电池抢完或打满 16 回合时，你的电池数必须超过每个对手。平局不算赢。从容模式下，同一程序要在三张地图都获胜。",
+    "en": "Race three robots for 11 batteries. When the batteries run out or 16 turns pass, you must have more than every rival. A tie does not win. In Relaxed mode, one program must win on all three maps."
+  },
+  "hints": [],
+  "tiles": [
+    "#########",
+    "#.......#",
+    "#.##.#..#",
+    "#....#..#",
+    "#.#.....#",
+    "#...#...#",
+    "#########"
+  ],
+  "start": {
+    "x": 2,
+    "y": 3
+  },
+  "opponents": [
+    {
+      "id": "amber",
+      "title": {
+        "zh": "琥珀号",
+        "en": "Amber"
+      },
+      "start": {
+        "x": 7,
+        "y": 3
+      },
+      "policy": {
+        "kind": "collect"
+      }
+    },
+    {
+      "id": "jade",
+      "title": {
+        "zh": "青玉号",
+        "en": "Jade"
+      },
+      "start": {
+        "x": 6,
+        "y": 4
+      },
+      "policy": {
+        "kind": "collect"
+      }
+    },
+    {
+      "id": "cobalt",
+      "title": {
+        "zh": "钴蓝号",
+        "en": "Cobalt"
+      },
+      "start": {
+        "x": 4,
+        "y": 2
+      },
+      "policy": {
+        "kind": "collect"
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": "battery-0",
+      "x": 7,
+      "y": 5
+    },
+    {
+      "id": "battery-1",
+      "x": 1,
+      "y": 1
+    },
+    {
+      "id": "battery-2",
+      "x": 5,
+      "y": 1
+    },
+    {
+      "id": "battery-3",
+      "x": 3,
+      "y": 4
+    },
+    {
+      "id": "battery-4",
+      "x": 6,
+      "y": 1
+    },
+    {
+      "id": "battery-5",
+      "x": 6,
+      "y": 3
+    },
+    {
+      "id": "battery-6",
+      "x": 5,
+      "y": 4
+    },
+    {
+      "id": "battery-7",
+      "x": 1,
+      "y": 2
+    },
+    {
+      "id": "battery-8",
+      "x": 4,
+      "y": 1
+    },
+    {
+      "id": "battery-9",
+      "x": 3,
+      "y": 1
+    },
+    {
+      "id": "battery-10",
+      "x": 7,
+      "y": 2
+    }
+  ],
+  "maxTurns": 16,
+  "objective": {
+    "kind": "score"
+  },
+  "starterCode": "while True:\n    wait()\n",
+  "solutionCode": "def graph_for(board, width):\n    graph = {}\n    for y in range(len(board)):\n        for x in range(width):\n            if board[y][x] == \"#\":\n                continue\n            neighbors = []\n            for step in [[0,-1,\"up\"],[1,0,\"right\"],[0,1,\"down\"],[-1,0,\"left\"]]:\n                nx = x + step[0]\n                ny = y + step[1]\n                if 0 <= nx and nx < width and 0 <= ny and ny < len(board) and board[ny][nx] == \".\":\n                    neighbors.append([ny * width + nx, step[2]])\n            graph[y * width + x] = neighbors\n    return graph\n\ndef routes(graph, cache, start):\n    if start in cache:\n        return cache[start]\n    queue = [start]\n    table = {start: [0, None]}\n    for cell in queue:\n        previous = table[cell]\n        for edge in graph[cell]:\n            neighbor = edge[0]\n            if neighbor in table:\n                continue\n            first = previous[1]\n            if first is None:\n                first = edge[1]\n            table[neighbor] = [previous[0] + 1, first]\n            queue.append(neighbor)\n    cache[start] = table\n    return table\n\ndef steps_to(table, cell):\n    if cell in table:\n        return table[cell][0]\n    return 999\n\ndef nearest_rival(rivals, cell):\n    nearest = 999\n    for rival in rivals:\n        steps = steps_to(rival, cell)\n        if steps < nearest:\n            nearest = steps\n    return nearest\n\ndef rival_routes(graph, cache, width, opponents):\n    result = []\n    for opponent in opponents:\n        result.append(routes(graph, cache, opponent[\"y\"] * width + opponent[\"x\"]))\n    return result\n\ndef decide(state, width, graph, cache):\n    player = state[\"player\"]\n    start = player[1] * width + player[0]\n    items = state[\"items\"]\n    if len(items) == 0:\n        return \"wait\"\n    for item in items:\n        if [item[\"x\"], item[\"y\"]] == player:\n            return \"pick\"\n    mine = routes(graph, cache, start)\n    rivals = rival_routes(graph, cache, width, state[\"opponents\"])\n    chosen = None\n    best_safe = False\n    best_steps = 999\n    best_lead = -999\n    for item in items:\n        cell = item[\"y\"] * width + item[\"x\"]\n        if cell not in mine:\n            continue\n        steps = mine[cell][0]\n        lead = nearest_rival(rivals, cell) - steps\n        safe = lead > 0\n        if chosen is None or (safe and not best_safe) or (safe == best_safe and (steps < best_steps or (steps == best_steps and lead > best_lead))):\n            chosen = cell\n            best_safe = safe\n            best_steps = steps\n            best_lead = lead\n    if chosen is None:\n        return \"wait\"\n    return mine[chosen][1]\n\nstate = scan()\nboard = state[\"tiles\"]\nwidth = len(board[0])\ngraph = graph_for(board, width)\ncache = {}\nwhile True:\n    action = decide(state, width, graph, cache)\n    if action == \"pick\":\n        pick()\n    elif action == \"wait\":\n        wait()\n    else:\n        move(action)\n    state = scan()\n",
+  "snippets": [],
+  "variants": [
+    {
+      "tiles": [
+        "#########",
+        "#.......#",
+        "#.#.#...#",
+        "#.#.#.#.#",
+        "#.....#.#",
+        "#.......#",
+        "#########"
+      ],
+      "start": {
+        "x": 4,
+        "y": 5
+      },
+      "opponents": [
+        {
+          "id": "amber",
+          "title": {
+            "zh": "琥珀号",
+            "en": "Amber"
+          },
+          "start": {
+            "x": 6,
+            "y": 1
+          },
+          "policy": {
+            "kind": "collect"
+          }
+        },
+        {
+          "id": "jade",
+          "title": {
+            "zh": "青玉号",
+            "en": "Jade"
+          },
+          "start": {
+            "x": 7,
+            "y": 2
+          },
+          "policy": {
+            "kind": "collect"
+          }
+        },
+        {
+          "id": "cobalt",
+          "title": {
+            "zh": "钴蓝号",
+            "en": "Cobalt"
+          },
+          "start": {
+            "x": 4,
+            "y": 4
+          },
+          "policy": {
+            "kind": "collect"
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": "battery-0",
+          "x": 5,
+          "y": 1
+        },
+        {
+          "id": "battery-1",
+          "x": 2,
+          "y": 4
+        },
+        {
+          "id": "battery-2",
+          "x": 1,
+          "y": 3
+        },
+        {
+          "id": "battery-3",
+          "x": 5,
+          "y": 4
+        },
+        {
+          "id": "battery-4",
+          "x": 2,
+          "y": 5
+        },
+        {
+          "id": "battery-5",
+          "x": 7,
+          "y": 5
+        },
+        {
+          "id": "battery-6",
+          "x": 3,
+          "y": 3
+        },
+        {
+          "id": "battery-7",
+          "x": 3,
+          "y": 4
+        },
+        {
+          "id": "battery-8",
+          "x": 5,
+          "y": 3
+        },
+        {
+          "id": "battery-9",
+          "x": 3,
+          "y": 1
+        },
+        {
+          "id": "battery-10",
+          "x": 7,
+          "y": 4
+        }
+      ],
+      "maxTurns": 16,
+      "objective": {
+        "kind": "score"
+      }
+    },
+    {
+      "tiles": [
+        "#########",
+        "#.......#",
+        "#..#....#",
+        "#..#.#..#",
+        "#....#..#",
+        "#.......#",
+        "#########"
+      ],
+      "start": {
+        "x": 6,
+        "y": 3
+      },
+      "opponents": [
+        {
+          "id": "amber",
+          "title": {
+            "zh": "琥珀号",
+            "en": "Amber"
+          },
+          "start": {
+            "x": 5,
+            "y": 5
+          },
+          "policy": {
+            "kind": "collect"
+          }
+        },
+        {
+          "id": "jade",
+          "title": {
+            "zh": "青玉号",
+            "en": "Jade"
+          },
+          "start": {
+            "x": 4,
+            "y": 5
+          },
+          "policy": {
+            "kind": "collect"
+          }
+        },
+        {
+          "id": "cobalt",
+          "title": {
+            "zh": "钴蓝号",
+            "en": "Cobalt"
+          },
+          "start": {
+            "x": 6,
+            "y": 5
+          },
+          "policy": {
+            "kind": "collect"
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": "battery-0",
+          "x": 2,
+          "y": 2
+        },
+        {
+          "id": "battery-1",
+          "x": 2,
+          "y": 5
+        },
+        {
+          "id": "battery-2",
+          "x": 7,
+          "y": 5
+        },
+        {
+          "id": "battery-3",
+          "x": 4,
+          "y": 3
+        },
+        {
+          "id": "battery-4",
+          "x": 5,
+          "y": 1
+        },
+        {
+          "id": "battery-5",
+          "x": 6,
+          "y": 4
+        },
+        {
+          "id": "battery-6",
+          "x": 6,
+          "y": 2
+        },
+        {
+          "id": "battery-7",
+          "x": 7,
+          "y": 3
+        },
+        {
+          "id": "battery-8",
+          "x": 7,
+          "y": 2
+        },
+        {
+          "id": "battery-9",
+          "x": 1,
+          "y": 5
+        },
+        {
+          "id": "battery-10",
+          "x": 7,
+          "y": 1
+        }
+      ],
+      "maxTurns": 16,
+      "objective": {
+        "kind": "score"
+      }
+    }
+  ]
+}

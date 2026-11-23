@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "kind": "breadboard",
+  "id": "dc-breadboard-meter-repair",
+  "order": 6060,
+  "unit": { "id": "digital-circuits", "order": 85, "title": { "zh": "数字电路", "en": "Digital Circuits" } },
+  "stage": "challenge",
+  "title": { "zh": "万用表维修单：不亮的呼叫灯", "en": "Meter Repair Ticket · The Dark Call Light" },
+  "brief": {
+    "zh": "值班员按下按钮，呼叫灯却没亮。用万用表判断是跳线插错孔还是 LED 接反。修好后，把表笔放回原孔对照读数，再用按下、松开两次试灯完成维修记录。",
+    "en": "The operator pressed the button, but the call light stayed dark. Use the meter to decide whether a jumper is misplaced or the LED is backwards. Repair the light, retest the same contacts, and check both button positions for your repair record."
+  },
+  "concept": { "zh": "用通断和电压读数定位呼叫灯故障", "en": "Locate a call-light fault using continuity and voltage readings" },
+  "hints": [
+    {
+      "zh": "先把电源关掉。正常的灯路从 D13 经过电阻和 LED 回到 GND。选通断档，拿两支表笔查你怀疑的那一段跳线。",
+      "en": "Switch the power off. The working lamp path goes from D13 through the resistor and LED, then back to GND. Choose continuity and put the probes at the two contacts you expect a jumper to join."
+    },
+    {
+      "zh": "通电后选直流电压档，运行程序再按住按钮。黑笔放 GND、红笔放 D13，可以看输出电压；也可以红笔放 LED 的 A 端、黑笔放 K 端，读灯两端的电压。",
+      "en": "For DC volts, power up, run the sketch and press the button. Put black on GND and red on D13 to check the output. To read across the LED, put red on its A leg and black on K."
+    },
+    {
+      "zh": "只量到 D13 有电压，还不能说明电流经过了灯。如果一端悬空，读数也不能拿来比较。换一对有明确连接的接点，再和刚才的读数对照。",
+      "en": "Voltage at D13 alone cannot tell you whether current flows through the lamp. A floating contact also gives you no stable comparison. Move the probes to two contacts with known connections and compare your readings."
+    }
+  ],
+  "board": {
+    "mode": "call-lamp",
+    "programId": "dc-arduino-beacon",
+    "initialParts": [
+      { "kind": "button", "pins": ["A1", "A2"] },
+      { "kind": "resistor", "pins": ["A3", "A4"] },
+      { "kind": "led", "pins": ["A5", "A6"] }
+    ],
+    "initialWires": [],
+    "solutionWires": [["uno-D2","B1"],["B2","GND"],["uno-D13","B3"],["B4","B5"],["B6","C2"]],
+    "faults": [
+      { "kind": "wrong-jumper", "wire": ["B6","C2"], "wrongPin": "C5" },
+      { "kind": "reversed-led" }
+    ]
+  }
+}

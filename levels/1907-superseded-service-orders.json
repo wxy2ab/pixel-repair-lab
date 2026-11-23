@@ -1,0 +1,235 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "challenge-superseded-service-orders",
+  "order": 1907,
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "只认最后一张维修单",
+    "en": "Only the Latest Ticket Counts"
+  },
+  "brief": {
+    "zh": "同一设备只认最后一条记录。按时间收到：A 普通、B 紧急、C 普通、D 紧急、B 取消、A 升为紧急、E 普通、C 取消、B 恢复为普通。每个最终紧急单要 2 枚红贴和 1 个保险片；每个最终普通单要 1 枚蓝贴和 1 个卡脚。每个仍有效设备用 1 张回执。撤单纸和失效章不发货。逐轮审核。",
+    "en": "Only the latest ticket for each unit counts. In order: A routine, B urgent, C routine, D urgent, B cancelled, A raised to urgent, E routine, C cancelled, B reopened as routine. Each final urgent job needs two red patches and one fuse. Each final routine job needs one blue patch and one bracket. Add one receipt per active unit. Leave cancellation slips and void stamps in the office. Audit every revision."
+  },
+  "concept": {
+    "zh": "按键覆盖、撤销恢复与分类配件",
+    "en": "Overwriting by key, cancellation, reinstatement and parts by category"
+  },
+  "prerequisites": [
+    {
+      "unit": "ai",
+      "topic": "constraints"
+    },
+    {
+      "unit": "ai-review",
+      "topic": "review"
+    },
+    {
+      "unit": "ai-review",
+      "topic": "multi-turn"
+    }
+  ],
+  "hints": [],
+  "inventory": [
+    {
+      "id": "red-patch",
+      "label": {
+        "zh": "红贴",
+        "en": "red patch"
+      },
+      "aliases": [
+        "red patches"
+      ]
+    },
+    {
+      "id": "fuse",
+      "label": {
+        "zh": "保险片",
+        "en": "fuse"
+      },
+      "aliases": [
+        "fuses"
+      ]
+    },
+    {
+      "id": "blue-patch",
+      "label": {
+        "zh": "蓝贴",
+        "en": "blue patch"
+      },
+      "aliases": [
+        "blue patches"
+      ]
+    },
+    {
+      "id": "bracket",
+      "label": {
+        "zh": "卡脚",
+        "en": "bracket"
+      },
+      "aliases": [
+        "brackets"
+      ]
+    },
+    {
+      "id": "receipt",
+      "label": {
+        "zh": "回执",
+        "en": "receipt"
+      },
+      "aliases": [
+        "receipts"
+      ]
+    },
+    {
+      "id": "cancel-slip",
+      "label": {
+        "zh": "撤单纸",
+        "en": "cancellation slip"
+      },
+      "aliases": [
+        "cancellation slips"
+      ]
+    },
+    {
+      "id": "void-stamp",
+      "label": {
+        "zh": "失效章",
+        "en": "void stamp"
+      },
+      "aliases": [
+        "void stamps"
+      ]
+    }
+  ],
+  "required": {
+    "red-patch": 4,
+    "fuse": 2,
+    "blue-patch": 2,
+    "bracket": 2,
+    "receipt": 4
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "blue-patch",
+        "quantity": 1
+      },
+      {
+        "itemId": "receipt",
+        "quantity": 5
+      },
+      {
+        "itemId": "void-stamp",
+        "quantity": 1
+      }
+    ],
+    "draft": {
+      "items": [
+        {
+          "id": "red-patch",
+          "quantity": 6
+        },
+        {
+          "id": "fuse",
+          "quantity": 3
+        },
+        {
+          "id": "blue-patch",
+          "quantity": 3
+        },
+        {
+          "id": "receipt",
+          "quantity": 5
+        },
+        {
+          "id": "cancel-slip",
+          "quantity": 2
+        }
+      ]
+    },
+    "cards": [
+      {
+        "zh": "红贴改为 4。",
+        "en": "Pack 4 red patches."
+      },
+      {
+        "zh": "红贴改为 6。",
+        "en": "Pack 6 red patches."
+      },
+      {
+        "zh": "保险片改为 3。",
+        "en": "Pack 3 fuses."
+      },
+      {
+        "zh": "保险片改为 2。",
+        "en": "Pack 2 fuses."
+      },
+      {
+        "zh": "蓝贴改为 2。",
+        "en": "Pack 2 blue patches."
+      },
+      {
+        "zh": "蓝贴改为 3。",
+        "en": "Pack 3 blue patches."
+      },
+      {
+        "zh": "卡脚改为 2。",
+        "en": "Pack 2 brackets."
+      },
+      {
+        "zh": "卡脚改为 1。",
+        "en": "Pack 1 bracket."
+      },
+      {
+        "zh": "回执改为 5。",
+        "en": "Pack 5 receipts."
+      },
+      {
+        "zh": "回执改为 4。",
+        "en": "Pack 4 receipts."
+      },
+      {
+        "zh": "移除撤单纸。",
+        "en": "Remove the cancellation slip."
+      },
+      {
+        "zh": "撤单纸改为 2。",
+        "en": "Pack 2 cancellation slips."
+      },
+      {
+        "zh": "移除失效章。",
+        "en": "Remove the void stamp."
+      },
+      {
+        "zh": "失效章改为 1。",
+        "en": "Pack 1 void stamp."
+      }
+    ]
+  },
+  "examplePrompts": {
+    "zh": [
+      "红贴改为 4。 保险片改为 2。 蓝贴改为 2。 卡脚改为 2。 回执改为 4。 移除撤单纸。 移除失效章。",
+      "蓝贴改为 2。",
+      "回执改为 4。",
+      "移除失效章。"
+    ],
+    "en": [
+      "Pack 4 red patches. Pack 2 fuses. Pack 2 blue patches. Pack 2 brackets. Pack 4 receipts. Remove the cancellation slip. Remove the void stamp.",
+      "Pack 2 blue patches.",
+      "Pack 4 receipts.",
+      "Remove the void stamp."
+    ]
+  }
+}

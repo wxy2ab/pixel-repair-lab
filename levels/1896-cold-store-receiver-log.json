@@ -1,0 +1,311 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "challenge-cold-store-receiver-log",
+  "order": 1896,
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "冷库接收机的中位读数",
+    "en": "Cold-Store Receiver Median"
+  },
+  "brief": {
+    "zh": "每次有效传输都代表接收机工作一次。重复编号也计入，坏读数不计入。审查第 2 天起仓储区每次传输，提交明细和位于正中间的温度。",
+    "en": "Each valid transmission is one event for the receiver, even when an ID repeats. Discard bad readings. Audit storage transmissions from day 2 onward and deliver both their detail log and their median temperature."
+  },
+  "concept": {
+    "zh": "重发计数、区域标准化与中位数",
+    "en": "Retransmissions, normalized area names and median"
+  },
+  "prerequisites": [
+    {
+      "unit": "pandas",
+      "topic": "cleaning"
+    },
+    {
+      "unit": "numpy",
+      "topic": "masks"
+    },
+    {
+      "unit": "pandas",
+      "topic": "tables"
+    },
+    {
+      "unit": "statistics",
+      "topic": "center-spread"
+    }
+  ],
+  "hints": [],
+  "steps": [
+    {
+      "operation": "clean",
+      "label": {
+        "zh": "有效传输",
+        "en": "Valid transmissions"
+      },
+      "prompt": {
+        "zh": "统一区域名称，去掉无效读数，每一次有效重发都保留。",
+        "en": "Normalize area names, remove invalid readings and retain every valid retransmission."
+      },
+      "initial": {
+        "trim": false,
+        "dropMissing": false,
+        "deduplicate": true
+      },
+      "solution": {
+        "trim": true,
+        "dropMissing": true,
+        "deduplicate": false
+      },
+      "input": "raw",
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            "hangar",
+            18.0
+          ],
+          [
+            2,
+            1,
+            "workshop",
+            24.0
+          ],
+          [
+            3,
+            1,
+            "storage",
+            20.0
+          ],
+          [
+            4,
+            2,
+            "hangar",
+            22.0
+          ],
+          [
+            5,
+            2,
+            "workshop",
+            28.0
+          ],
+          [
+            7,
+            3,
+            "hangar",
+            26.0
+          ],
+          [
+            8,
+            3,
+            "workshop",
+            32.0
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16.0
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16.0
+          ],
+          [
+            10,
+            4,
+            "hangar",
+            30.0
+          ],
+          [
+            12,
+            4,
+            "storage",
+            24.0
+          ],
+          [
+            13,
+            4,
+            "workshop",
+            36.0
+          ]
+        ]
+      }
+    },
+    {
+      "operation": "mask",
+      "label": {
+        "zh": "接收窗口",
+        "en": "Receiver window"
+      },
+      "prompt": {
+        "zh": "剔除启用日前的数据，保留第 2 天及以后的全部有效传输。",
+        "en": "Exclude days before commissioning. Keep every valid transmission on or after day 2."
+      },
+      "initial": {
+        "column": "day",
+        "comparison": "lte",
+        "threshold": 2
+      },
+      "solution": {
+        "column": "day",
+        "comparison": "gte",
+        "threshold": 2
+      },
+      "input": "previous",
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            4,
+            2,
+            "hangar",
+            22.0
+          ],
+          [
+            5,
+            2,
+            "workshop",
+            28.0
+          ],
+          [
+            7,
+            3,
+            "hangar",
+            26.0
+          ],
+          [
+            8,
+            3,
+            "workshop",
+            32.0
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16.0
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16.0
+          ],
+          [
+            10,
+            4,
+            "hangar",
+            30.0
+          ],
+          [
+            12,
+            4,
+            "storage",
+            24.0
+          ],
+          [
+            13,
+            4,
+            "workshop",
+            36.0
+          ]
+        ]
+      }
+    },
+    {
+      "operation": "table",
+      "label": {
+        "zh": "仓储区明细",
+        "en": "Storage detail"
+      },
+      "prompt": {
+        "zh": "只交仓储区的区域名和温度两列，按接收顺序排列。",
+        "en": "Return only the area and reading columns for storage, in arrival order."
+      },
+      "initial": {
+        "columns": "day-zone",
+        "zone": "all"
+      },
+      "solution": {
+        "columns": "zone-reading",
+        "zone": "storage"
+      },
+      "input": "previous",
+      "goal": {
+        "columns": [
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            "storage",
+            16.0
+          ],
+          [
+            "storage",
+            16.0
+          ],
+          [
+            "storage",
+            24.0
+          ]
+        ]
+      }
+    },
+    {
+      "operation": "summary",
+      "label": {
+        "zh": "中间读数",
+        "en": "Middle reading"
+      },
+      "prompt": {
+        "zh": "对刚提交的整张明细求中位数，每次传输权重相同。",
+        "en": "Find the median of the entire detail log. Each transmission has the same weight."
+      },
+      "initial": {
+        "statistic": "mean",
+        "zone": "all"
+      },
+      "solution": {
+        "statistic": "median",
+        "zone": "all"
+      },
+      "input": "previous",
+      "goal": {
+        "columns": [
+          "statistic",
+          "value"
+        ],
+        "rows": [
+          [
+            "median",
+            16.0
+          ]
+        ]
+      }
+    }
+  ]
+}

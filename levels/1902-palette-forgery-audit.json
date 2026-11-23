@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "challenge-palette-forgery-audit",
+  "order": 1902,
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "三枚错码色签",
+    "en": "Three Mislabelled Swatches"
+  },
+  "brief": {
+    "zh": "校准色卡上的坐标标签掉了。读三张检测单，利用通道差值和位置把每个色块找回来，再提交指定的通道读数。坐标从左上角的零开始。",
+    "en": "Coordinate labels fell off a calibration chart. Resolve each ticket using the channel differences and position clues, then submit the requested channel. Coordinates start at zero in the top-left corner."
+  },
+  "concept": {
+    "zh": "RGB 通道差、位置筛选与灰度测量",
+    "en": "RGB differences, position constraints and grayscale measurement"
+  },
+  "prerequisites": [
+    {
+      "unit": "opencv",
+      "topic": "pixels"
+    },
+    {
+      "unit": "opencv",
+      "topic": "color"
+    },
+    {
+      "unit": "opencv",
+      "topic": "image-processing"
+    }
+  ],
+  "hints": [],
+  "mode": "color",
+  "cases": [
+    {
+      "image": "calibration",
+      "label": {
+        "zh": "蓝色回波",
+        "en": "Blue echo"
+      },
+      "prompt": {
+        "zh": "在色卡的下半部寻找一个色块：蓝色比红色多 155，绿色介于 130 和 150 之间。提交该色块的绿色通道读数。",
+        "en": "Find the tile in the lower half where blue exceeds red by 155 and green is between 130 and 150. Submit its green channel reading."
+      },
+      "initial": {
+        "x": 4,
+        "y": 3,
+        "channel": "blue"
+      },
+      "goal": {
+        "x": 5,
+        "y": 2,
+        "channel": "green",
+        "channelValue": 145
+      },
+      "solution": {
+        "x": 5,
+        "y": 2,
+        "channel": "green"
+      }
+    },
+    {
+      "image": "calibration",
+      "label": {
+        "zh": "去色后的温标",
+        "en": "Monochrome heat label"
+      },
+      "prompt": {
+        "zh": "红色比绿色多 105，绿色比蓝色多 95。找到同时符合的色块，提交它转换为灰度的读数。",
+        "en": "Red exceeds green by 105 and green exceeds blue by 95. Find the tile satisfying both clues and submit its grayscale reading."
+      },
+      "initial": {
+        "x": 2,
+        "y": 1,
+        "channel": "red"
+      },
+      "goal": {
+        "x": 4,
+        "y": 1,
+        "channel": "gray",
+        "channelValue": 151
+      },
+      "solution": {
+        "x": 4,
+        "y": 1,
+        "channel": "gray"
+      }
+    },
+    {
+      "image": "calibration",
+      "label": {
+        "zh": "两条接近的峰",
+        "en": "Two near-equal peaks"
+      },
+      "prompt": {
+        "zh": "红加蓝等于 355，蓝比红高 5，绿色更低。提交这两条高通道中较弱的那一条。",
+        "en": "Red plus blue equals 355. Blue is five above red, and green is lower than both. Submit the weaker of the two high channels."
+      },
+      "initial": {
+        "x": 1,
+        "y": 3,
+        "channel": "green"
+      },
+      "goal": {
+        "x": 5,
+        "y": 0,
+        "channel": "red",
+        "channelValue": 175
+      },
+      "solution": {
+        "x": 5,
+        "y": 0,
+        "channel": "red"
+      }
+    }
+  ]
+}

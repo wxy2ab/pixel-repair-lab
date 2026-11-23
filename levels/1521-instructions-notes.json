@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "cpu-instructions-notes",
+  "order": 1521,
+  "unit": { "id": "architecture", "order": 90, "title": { "zh": "计算机结构", "en": "Computer Architecture" } },
+  "topic": { "id": "instructions", "order": 3, "title": { "zh": "指令", "en": "Instructions" } },
+  "stage": "explain",
+  "title": { "zh": "取指、辨认、执行", "en": "Fetch, Decode, Execute" },
+  "brief": { "zh": "看 CPU 怎样找到一条指令、辨认它的动作和地址，再更新机器状态。", "en": "See how the CPU finds an instruction, identifies its operation and address, and updates the machine state." },
+  "concept": { "zh": "PC 找指令，指令名称决定动作，地址指向数据。", "en": "PC locates the instruction, the opcode selects the operation, and the address locates data." },
+  "hints": [],
+  "sections": [
+    { "title": { "zh": "用 PC 取指", "en": "Fetch using PC" }, "body": { "zh": "CPU 从 PC 指向的指令位置取出一条指令。PC 从 0 数起；程序里的空行和注释不是指令。", "en": "The CPU fetches the instruction at the position in PC. PC counts from zero. Blank lines and comments are not instructions." } },
+    { "title": { "zh": "分清指令名和地址", "en": "Identify the operation and address" }, "body": { "zh": "STORE 2 里的 STORE 告诉 CPU 写入，2 告诉它写哪个内存格。HALT 单独写，它让 CPU 停机，无需内存地址。", "en": "In STORE 2, STORE tells the CPU to write and 2 identifies the destination cell. HALT stops the CPU and takes no address." } },
+    { "title": { "zh": "执行后准备下一次", "en": "Prepare for the next instruction" }, "body": { "zh": "CPU 按这条指令更新寄存器或内存，PC 随即前进。发生停机时，后面的指令不会继续执行。", "en": "The CPU updates its registers or memory as instructed, then PC advances. Once the CPU halts, execution stops." } }
+  ],
+  "animation": {
+    "layout": "pipeline",
+    "hardware": {
+      "kind": "cpu",
+      "source": "LOAD 0\nADD 1\nSTORE 3\nHALT\nSTORE 2",
+      "memory": [8, 7, 0, 2],
+      "checkpoints": [
+        { "pc": 0, "phase": "fetch" },
+        { "pc": 0, "phase": "execute" },
+        { "pc": 1, "phase": "execute" },
+        { "pc": 2, "phase": "fetch" },
+        { "pc": 2, "phase": "decode" },
+        { "pc": 2, "phase": "execute" },
+        { "pc": 3, "phase": "fetch" },
+        { "pc": 3, "phase": "execute" }
+      ]
+    },
+    "frames": [
+      { "caption": { "zh": "从 PC 0 开始。第一条指令 LOAD 0 要取地址 0 里的电量。", "en": "Begin at PC 0. The first instruction, LOAD 0, will read the charge at address 0." }, "items": [
+        { "id": "fetch", "label": { "zh": "取指", "en": "Fetch" }, "value": { "zh": "PC 0 → LOAD 0", "en": "PC 0 → LOAD 0" }, "state": "active" }
+      ] },
+      { "caption": { "zh": "LOAD 0 把 8 送进 ACC，PC 前进到 1。", "en": "LOAD 0 sends 8 to ACC. PC advances to 1." }, "items": [
+        { "id": "execute", "label": { "zh": "执行", "en": "Execute" }, "value": { "zh": "ACC ← 8", "en": "ACC ← 8" }, "state": "active" }
+      ] },
+      { "caption": { "zh": "ADD 1 把地址 1 的 7 和 ACC 的 8 送进运算器。15 回到 ACC，PC 前进到 2。", "en": "ADD 1 sends 7 from address 1 and 8 from ACC to the arithmetic unit. The result, 15, returns to ACC. PC advances to 2." }, "items": [
+        { "id": "execute", "label": { "zh": "执行", "en": "Execute" }, "value": { "zh": "8 + 7 → 15", "en": "8 + 7 → 15" }, "state": "active" }
+      ] },
+      { "caption": { "zh": "取指。PC 是 2，取出指令序号 2 的 STORE 3。", "en": "Fetch. PC is 2, so fetch instruction 2, STORE 3." }, "items": [
+        { "id": "fetch", "label": { "zh": "取指", "en": "Fetch" }, "value": { "zh": "PC 2 → STORE 3", "en": "PC 2 → STORE 3" }, "state": "active" },
+        { "id": "decode", "label": { "zh": "辨认", "en": "Decode" }, "value": { "zh": "等待指令", "en": "Awaiting instruction" }, "state": "muted" },
+        { "id": "execute", "label": { "zh": "执行", "en": "Execute" }, "value": { "zh": "等待辨认", "en": "Awaiting decode" }, "state": "muted" }
+      ] },
+      { "caption": { "zh": "辨认。动作是写内存。写入位置是地址 3。", "en": "Decode. The operation is a memory write at address 3." }, "items": [
+        { "id": "fetch", "label": { "zh": "取指", "en": "Fetch" }, "value": { "zh": "STORE 3", "en": "STORE 3" }, "state": "done" },
+        { "id": "decode", "label": { "zh": "辨认", "en": "Decode" }, "value": { "zh": "写入地址 3", "en": "Write address 3" }, "state": "active" },
+        { "id": "execute", "label": { "zh": "执行", "en": "Execute" }, "value": { "zh": "等待写入", "en": "Awaiting write" }, "state": "muted" }
+      ] },
+      { "caption": { "zh": "执行。把 ACC 的 15 写到地址 3，PC 从 2 前进到 3。", "en": "Execute. Write the 15 in ACC to address 3. PC moves from 2 to 3." }, "items": [
+        { "id": "fetch", "label": { "zh": "取指", "en": "Fetch" }, "value": { "zh": "STORE 3", "en": "STORE 3" }, "state": "done" },
+        { "id": "decode", "label": { "zh": "辨认", "en": "Decode" }, "value": { "zh": "写入地址 3", "en": "Write address 3" }, "state": "done" },
+        { "id": "execute", "label": { "zh": "执行", "en": "Execute" }, "value": { "zh": "地址 3 ← 15", "en": "Address 3 ← 15" }, "state": "active" }
+      ] },
+      { "caption": { "zh": "PC 3 取到 HALT。这条指令只有动作名。", "en": "PC 3 fetches HALT. This instruction has just an operation name." }, "items": [
+        { "id": "fetch", "label": { "zh": "取指", "en": "Fetch" }, "value": { "zh": "PC 3 → HALT", "en": "PC 3 → HALT" }, "state": "active" }
+      ] },
+      { "caption": { "zh": "CPU 停机。下一行的 STORE 2 留在程序里，地址 2 仍保存着 0。", "en": "The CPU halts. STORE 2 is still in the program, and address 2 still holds 0." }, "items": [
+        { "id": "execute", "label": { "zh": "执行", "en": "Execute" }, "value": { "zh": "HALT", "en": "HALT" }, "state": "active" }
+      ] }
+    ]
+  },
+  "question": {
+    "prompt": { "zh": "CPU 遇到 HALT 时，从哪里读取要处理的数据？", "en": "Where does HALT read the data it needs to process?" },
+    "options": [{ "zh": "内存地址 0", "en": "Memory address 0" }, { "zh": "ACC", "en": "ACC" }, { "zh": "HALT 不需要读数据", "en": "HALT needs no data" }],
+    "correct": 2,
+    "feedback": { "zh": "HALT 只让 CPU 停机，不需要操作数。", "en": "HALT stops the CPU and takes no operand." }
+  }
+}

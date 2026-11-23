@@ -1,0 +1,188 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "cpu-clock",
+  "order": 10,
+  "unit": {
+    "id": "architecture",
+    "order": 90,
+    "title": {
+      "zh": "计算机结构",
+      "en": "Computer Architecture"
+    }
+  },
+  "stage": "exercise",
+  "topic": { "id": "instructions", "order": 3, "title": { "zh": "指令", "en": "Instructions" } },
+  "title": {
+    "zh": "CPU 的四个时钟",
+    "en": "Four Ticks of the CPU"
+  },
+  "concept": {
+    "zh": "指令、程序计数器与累加器",
+    "en": "Instructions, program counter, and accumulator"
+  },
+  "brief": {
+    "zh": "处理器已经装入一段程序。让它逐条执行指令，把前两个地址的数相加并存入地址 2，最后停在 HALT。",
+    "en": "The processor has a program ready. Execute it one instruction at a time to add the first two memory values, write the result to address 2, and reach HALT."
+  },
+  "hints": [
+    {
+      "zh": "每个 step() 执行一条指令。程序计数器指向下一条指令，累加器保存计算中的值。",
+      "en": "Each step() executes one instruction. The program counter points to the next instruction and the accumulator holds the running value."
+    },
+    {
+      "zh": "LOAD 读取第一个值，ADD 加上第二个，STORE 写入结果，HALT 停机。",
+      "en": "LOAD reads the first value, ADD adds the second, STORE writes the result, and HALT stops the processor."
+    }
+  ],
+  "tiles": [
+    "#########",
+    "#.......#",
+    "#.##.##.#",
+    "#.......#",
+    "#.#...#.#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 4,
+    "y": 3
+  },
+  "memory": [
+    8,
+    5,
+    0
+  ],
+  "instructions": [
+    {
+      "op": "LOAD",
+      "address": 0
+    },
+    {
+      "op": "ADD",
+      "address": 1
+    },
+    {
+      "op": "STORE",
+      "address": 2
+    },
+    {
+      "op": "HALT"
+    }
+  ],
+  "allowedApi": [
+    "step"
+  ],
+  "objectives": [
+    {
+      "type": "memory",
+      "address": 2,
+      "value": 13
+    },
+    {
+      "type": "halt"
+    }
+  ],
+  "variants": [
+    {
+      "memory": [
+        4,
+        6,
+        1
+      ],
+      "objectives": [
+        {
+          "type": "memory",
+          "address": 2,
+          "value": 10
+        },
+        {
+          "type": "halt"
+        }
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "step",
+      "label": {
+        "zh": "执行一条 CPU 指令",
+        "en": "Execute one CPU instruction"
+      },
+      "template": "step()"
+    },
+    {
+      "id": "repeat",
+      "label": {
+        "zh": "重复指定次数",
+        "en": "Repeat a chosen number of times"
+      },
+      "template": "for tick in range({{count}}):",
+      "parameters": [
+        {
+          "name": "count",
+          "label": {
+            "zh": "次数",
+            "en": "Times"
+          },
+          "choices": [
+            {
+              "id": "1",
+              "label": {
+                "zh": "1",
+                "en": "1"
+              },
+              "code": "1"
+            },
+            {
+              "id": "2",
+              "label": {
+                "zh": "2",
+                "en": "2"
+              },
+              "code": "2"
+            },
+            {
+              "id": "3",
+              "label": {
+                "zh": "3",
+                "en": "3"
+              },
+              "code": "3"
+            },
+            {
+              "id": "4",
+              "label": {
+                "zh": "4",
+                "en": "4"
+              },
+              "code": "4"
+            },
+            {
+              "id": "5",
+              "label": {
+                "zh": "5",
+                "en": "5"
+              },
+              "code": "5"
+            }
+          ]
+        }
+      ],
+      "block": true
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "repeat",
+      "values": {
+        "count": "4"
+      },
+      "children": [
+        {
+          "cardId": "step"
+        }
+      ]
+    }
+  ]
+}

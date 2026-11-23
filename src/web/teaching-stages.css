@@ -1,0 +1,19 @@
+/* Keep explanatory notes on the writing surface and responses within the console. */
+.lesson-annotations { margin-top: 17px; padding-top: 14px; border-top: 1px solid #95b7aa45; }
+.lesson-annotations article + article { margin-top: 13px; }
+.lesson-annotations h3, .replay-dispatch h3, .replay-subheading { font-size: 15px; line-height: 1.45; }
+.lesson-annotations p, .replay-dispatch p { margin: 4px 0 0; font-size: 14px; line-height: 1.62; }
+.teaching-panel.lesson-prediction { padding: 0; }
+.command-desk__body > :not(:first-child).lesson-prediction { margin-top: 17px; padding-top: 15px; border-top: 1px solid #7295a04a; }
+.lesson-prediction .choices-column { flex-direction: column; align-items: stretch; }
+.lesson-prediction .choices-column button { justify-content: start; }
+.command-desk .lesson-prediction .error-message, .program-interfaces .command-desk .error-message { color: #833e27; }
+.command-desk .lesson-prediction .win-message { color: #165d47; }
+.replay-dispatch { margin: 0 0 12px; }
+.replay-subheading { margin: 15px 0 7px; }
+.replay-example-picker { min-width: 0; margin: 0 0 12px; padding: 0; border: 0; }
+.replay-example-picker legend { padding: 0; margin-bottom: 7px; font-size: 14px; font-weight: 650; }
+.lecture-animation .diagram { background: transparent; }
+.lecture-animation .animation-caption { min-height: 0; padding: 8px 0; color: #e2efdc; background: transparent; }
+.lecture-animation .diagram-neutral { background: #31554b; color: #e6f0df; border-color: #77968a; }
+.lecture-animation .diagram-active { background: #396d59; color: #e6ffcd; border-color: #a6d991; }

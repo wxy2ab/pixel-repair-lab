@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "challenge-temperature-incident-log",
+  "order": 1813,
+  "difficulty": "intermediate",
+  "stage": "challenge",
+  "unit": { "id": "challenge-zone", "order": 90, "title": { "zh": "挑战场", "en": "Challenge Arena" } },
+  "prerequisites": [
+    { "unit": "pandas", "topic": "cleaning" },
+    { "unit": "numpy", "topic": "masks" },
+    { "unit": "database", "topic": "sql-groups" }
+  ],
+  "title": { "zh": "高温复查工单", "en": "Heat Incident Review" },
+  "concept": { "zh": "日志清洗 · 按日计数 · 复查排名", "en": "Log cleanup · Daily counts · Review ranking" },
+  "brief": {
+    "zh": "传感器故障后，复查所有至少出现两次有效高温记录的日期。22°C 及以上算高温。交出按高温次数从多到少排列的复查单，同次数按日期从早到晚排列。",
+    "en": "After a sensor fault, review every day with at least two valid high-temperature records. A reading of 22°C or above counts. Rank the days by number of hot readings, highest first. For tied counts, put the earlier day first."
+  },
+  "hints": [],
+  "steps": [
+    {
+      "operation": "clean",
+      "input": "raw",
+      "label": { "zh": "有效传感器日志", "en": "Valid sensor log" },
+      "prompt": {
+        "zh": "区域名称统一用小写并去掉两端空格。只保留有数值的读数，同一编号只保留首条有效记录。",
+        "en": "Area names must be lowercase with surrounding spaces removed. Keep numeric readings only. For a repeated ID, keep its first valid record."
+      },
+      "initial": { "trim": false, "dropMissing": false, "deduplicate": false },
+      "goal": {
+        "columns": ["id", "day", "zone", "reading"],
+        "rows": [
+          [1, 1, "hangar", 18], [2, 1, "workshop", 24], [3, 1, "storage", 20],
+          [4, 2, "hangar", 22], [5, 2, "workshop", 28],
+          [7, 3, "hangar", 26], [8, 3, "workshop", 32], [9, 3, "storage", 16],
+          [10, 4, "hangar", 30], [12, 4, "storage", 24], [13, 4, "workshop", 36]
+        ]
+      },
+      "solution": { "trim": true, "dropMissing": true, "deduplicate": true }
+    },
+    {
+      "operation": "mask",
+      "input": "previous",
+      "label": { "zh": "高温记录", "en": "High-temperature records" },
+      "prompt": { "zh": "只留下达到高温标准的有效记录。", "en": "Keep only valid records that meet the high-temperature standard." },
+      "initial": { "column": "day", "comparison": "lte", "threshold": 3 },
+      "goal": {
+        "columns": ["id", "day", "zone", "reading"],
+        "rows": [[2, 1, "workshop", 24], [4, 2, "hangar", 22], [5, 2, "workshop", 28], [7, 3, "hangar", 26], [8, 3, "workshop", 32], [10, 4, "hangar", 30], [12, 4, "storage", 24], [13, 4, "workshop", 36]]
+      },
+      "solution": { "column": "reading", "comparison": "gte", "threshold": 22 }
+    },
+    {
+      "operation": "group",
+      "input": "previous",
+      "label": { "zh": "每日事件汇总", "en": "Daily incident summary" },
+      "prompt": { "zh": "每天要保留一行，写上那天的高温事件次数。", "en": "Produce one row per day with the number of high-temperature incidents on that day." },
+      "initial": { "by": "zone", "statistic": "mean" },
+      "goal": { "columns": ["day", "count"], "rows": [[1, 1], [2, 2], [3, 2], [4, 3]] },
+      "solution": { "by": "day", "statistic": "count" }
+    },
+    {
+      "operation": "report",
+      "input": "previous",
+      "label": { "zh": "优先复查名单", "en": "Review priority list" },
+      "prompt": { "zh": "交出符合复查门槛的日期和事件数，最优先的日期排在第一行。", "en": "Submit the qualifying days and their incident counts, with the highest-priority day listed first." },
+      "initial": { "minimum": 1, "sort": "key" },
+      "goal": { "columns": ["day", "count"], "rows": [[4, 3], [2, 2], [3, 2]] },
+      "solution": { "minimum": 2, "sort": "value-desc" }
+    }
+  ]
+}

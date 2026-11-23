@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "charge-needed",
+  "order": 734,
+  "unit": {
+    "id": "foundations",
+    "order": 10,
+    "title": {
+      "zh": "Python 基础",
+      "en": "Python Foundations"
+    }
+  },
+  "topic": {
+    "id": "functions",
+    "order": 4,
+    "title": {
+      "zh": "函数与参数",
+      "en": "Functions and Parameters"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "写出按时间充电的函数",
+    "en": "Write the Charge Schedule Function"
+  },
+  "concept": {
+    "zh": "按时间用乘法计算电量",
+    "en": "Multiply the time and the charging rate"
+  },
+  "brief": {
+    "zh": "写好 charge_needed(minutes, per_minute)。每分钟都能充入同样多的电量，返回按指定分钟数能充入的总量。",
+    "en": "Complete charge_needed(minutes, per_minute). Each minute adds the same amount of charge. Return the total added over the given number of minutes."
+  },
+  "hints": [
+    {
+      "zh": "如果每分钟充 3 格，充 2 分钟，就是 2 × 3 格。零分钟会得到 0 格。",
+      "en": "If one minute adds three units, two minutes adds 2 × 3 units. Zero minutes adds zero."
+    },
+    {
+      "zh": "运行检查两种参数改变时的结果，通过后把函数保存到我的算法。",
+      "en": "Run the tests with both parameters changing, then save the function to My algorithms."
+    },
+    {
+      "zh": "把光标点到代码末尾，点击「把时间和充电速度相乘」就能添加返回指令。",
+      "en": "Click at the end of the code, then click Multiply Time by Rate to insert the return statement."
+    }
+  ],
+  "functionName": "charge_needed",
+  "starterCode": "def charge_needed(minutes, per_minute):\n    pass\n",
+  "solutionCode": "def charge_needed(minutes, per_minute):\n    return minutes * per_minute",
+  "snippets": [
+    {
+      "label": {
+        "zh": "把时间和充电速度相乘",
+        "en": "Multiply time by rate"
+      },
+      "code": "    return minutes * per_minute"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        2,
+        3
+      ],
+      "expected": 6
+    },
+    {
+      "args": [
+        5,
+        2
+      ],
+      "expected": 10
+    },
+    {
+      "args": [
+        0,
+        6
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        4,
+        0
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        7,
+        4
+      ],
+      "expected": 28
+    }
+  ]
+}

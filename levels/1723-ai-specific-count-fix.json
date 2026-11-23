@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "ai-specific-count-fix",
+  "order": 1723,
+  "unit": {
+    "id": "ai-review",
+    "order": 170,
+    "title": {
+      "zh": "核对与修正",
+      "en": "Review and Revision"
+    }
+  },
+  "topic": {
+    "id": "specific-correction",
+    "order": 2,
+    "title": {
+      "zh": "写清修改",
+      "en": "Give Specific Corrections"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "改好保险丝的数量",
+    "en": "Fix the Fuse Count"
+  },
+  "brief": {
+    "zh": "给电路维修组准备三根保险丝、两个夹子和一节电池。核对后只修改错误的行。",
+    "en": "Pack three fuses, two clips, and one battery for the circuit repair team. Review the list, then change only the wrong row."
+  },
+  "concept": {
+    "zh": "写出正确的最终数量，保持其他正确项目不变。",
+    "en": "Give the final count and preserve correct entries."
+  },
+  "hints": [
+    {
+      "zh": "最后的数量比“少放一点”更便于核对。",
+      "en": "A final count is easier to check than a request to pack a little less."
+    }
+  ],
+  "inventory": [
+    {
+      "id": "fuse",
+      "label": {
+        "zh": "保险丝",
+        "en": "Fuse"
+      },
+      "aliases": [
+        "fuses",
+        "熔丝"
+      ]
+    },
+    {
+      "id": "clip",
+      "label": {
+        "zh": "夹子",
+        "en": "Clip"
+      },
+      "aliases": [
+        "clips",
+        "固定夹"
+      ]
+    },
+    {
+      "id": "battery",
+      "label": {
+        "zh": "电池",
+        "en": "Battery"
+      },
+      "aliases": [
+        "batteries",
+        "电芯"
+      ]
+    }
+  ],
+  "required": {
+    "fuse": 3,
+    "clip": 2,
+    "battery": 1
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "fuse",
+        "quantity": 4
+      }
+    ],
+    "cards": [
+      {
+        "zh": "保险丝改为 3 根。",
+        "en": "Set fuses to 3."
+      },
+      {
+        "zh": "其他项目保持原样。",
+        "en": "Keep the other entries."
+      }
+    ]
+  },
+  "examplePrompts": {
+    "zh": [
+      "保险丝改为 3 根，夹子改为 2 个，电池改为 1 节。",
+      "保险丝改为 3 根。其他项目保持原样。"
+    ],
+    "en": [
+      "Pack 3 fuses, 2 clips, and 1 battery.",
+      "Set fuses to 3. Keep the other entries."
+    ]
+  }
+}

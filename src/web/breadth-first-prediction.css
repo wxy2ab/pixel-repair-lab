@@ -1,0 +1,26 @@
+.breadth-first-prediction,
+.breadth-prediction-route-map { min-inline-size: 0; }
+
+.breadth-prediction-note { margin: 5px 0 0; color: #bdd0e7; font-size: 13px; }
+
+.breadth-prediction-choices { display: grid; gap: 6px; margin-top: 7px; }
+
+.breadth-prediction-choices button {
+  min-inline-size: 0; min-height: 44px; padding: 7px 8px; white-space: normal; text-align: start;
+}
+
+.breadth-prediction-choices button[aria-pressed='true'] {
+  border-color: #649987; background: #22403e; color: #c9ffea;
+}
+
+.breadth-prediction-sequence {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 3px 5px;
+  font: 700 12px/1.45 var(--mono);
+}
+
+.breadth-prediction-coordinate { white-space: nowrap; }
+.breadth-prediction-arrow { margin-inline-end: 5px; color: #a9c4e4; }
+.breadth-prediction-actual { margin: 9px 0 0; color: #d8eaf9; font-size: 13px; }
+.breadth-prediction-actual .breadth-prediction-sequence { margin-top: 4px; color: #b9f6dc; }
+.breadth-prediction-route-map { display: grid; gap: 5px; max-inline-size: 100%; }
+.breadth-prediction-route-map strong { margin-inline-start: 5px; }

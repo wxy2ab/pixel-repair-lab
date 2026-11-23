@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "routing",
+    "order": 60,
+    "title": { "zh": "算法进阶", "en": "Intermediate Algorithms" }
+  },
+  "kind": "lecture",
+  "id": "binary-search-notes",
+  "order": 1200,
+  "stage": "explain",
+  "topic": {
+    "id": "binary-search",
+    "order": 1,
+    "title": { "zh": "二分查找", "en": "Binary search" }
+  },
+  "title": { "zh": "找出第一块同电量的电池", "en": "Find the First Battery with the Target Charge" },
+  "brief": {
+    "zh": "先用二分查找找到指定电量。再加入几块同电量的电池，看看找到一块后，怎样继续往左找到第一块。",
+    "en": "Use binary search to find the target charge. Then add more batteries with that charge and see how to keep searching on the left for the first one."
+  },
+  "concept": {
+    "zh": "二分查找的范围与第一个匹配位置",
+    "en": "Binary search bounds and the first matching position"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": { "zh": "每轮先检查中间", "en": "Check the middle each round" },
+      "body": {
+        "zh": "电池已按电量从低到高排好。中点偏小就查右边，偏大就查左边。中间有两格时，取靠左的一格。",
+        "en": "The batteries are sorted by charge. Search right if the middle charge is too low and left if it is too high. When there are two middle positions, pick the left one."
+      }
+    },
+    {
+      "title": { "zh": "找到后记下，再查左边", "en": "Save a match and keep searching left" },
+      "body": {
+        "zh": "找到同电量的一块时，先记下位置。若还有更靠前的一块，它只会在左边。待查范围为空时，返回最后记下的位置。",
+        "en": "Save the position of a matching battery. Any earlier match must be to its left. When the search range is empty, return the last saved position."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "想找第一块同电量的电池，中点正好匹配时应该怎么做？",
+      "en": "When the middle battery matches, what should you do to find the first match?"
+    },
+    "options": [
+      { "zh": "记下中点，继续查左边", "en": "Save the middle position and search left" },
+      { "zh": "立刻返回中点", "en": "Return the middle position immediately" }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "中点符合目标，但左边还有可能藏着更靠前的一块。",
+      "en": "The middle battery matches, and the left side may contain an earlier match."
+    }
+  },
+  "execution": {
+    "source": "def find_battery(charges, target):\n    first = 0\n    last = len(charges) - 1\n    comparisons = 0\n    while first <= last:\n        middle = (first + last) // 2\n        charge = charges[middle]\n        comparisons += 1\n        matches = charge == target\n        if matches:\n            return [middle, comparisons]\n        if charge < target:\n            first = middle + 1\n        else:\n            last = middle - 1\n    return [-1, comparisons]\n",
+    "cases": [],
+    "firstBatterySearch": {
+      "firstSource": "def find_first_battery(charges, target):\n    first = 0\n    last = len(charges) - 1\n    found = -1\n    while first <= last:\n        middle = (first + last) // 2\n        charge = charges[middle]\n        matches = charge == target\n        if matches:\n            found = middle\n            last = middle - 1\n        elif charge < target:\n            first = middle + 1\n        else:\n            last = middle - 1\n    return found\n",
+      "demo": {
+        "unique": {
+          "batteries": [
+            { "name": "A", "charge": 1 },
+            { "name": "B", "charge": 3 },
+            { "name": "C", "charge": 5 },
+            { "name": "D", "charge": 7 },
+            { "name": "E", "charge": 9 },
+            { "name": "F", "charge": 11 },
+            { "name": "G", "charge": 13 }
+          ],
+          "target": 11
+        },
+        "repeated": {
+          "batteries": [
+            { "name": "A", "charge": 1 },
+            { "name": "B", "charge": 3 },
+            { "name": "C", "charge": 5 },
+            { "name": "D", "charge": 7 },
+            { "name": "E", "charge": 9 },
+            { "name": "H", "charge": 11 },
+            { "name": "F", "charge": 11 },
+            { "name": "I", "charge": 11 },
+            { "name": "G", "charge": 13 }
+          ],
+          "target": 11
+        }
+      },
+      "practice": {
+        "batteries": [
+          { "name": "J", "charge": 1 },
+          { "name": "K", "charge": 3 },
+          { "name": "L", "charge": 5 },
+          { "name": "M", "charge": 7 },
+          { "name": "N", "charge": 7 },
+          { "name": "P", "charge": 7 },
+          { "name": "Q", "charge": 9 },
+          { "name": "R", "charge": 11 }
+        ],
+        "target": 7,
+        "expected": { "ranges": [[0, 2], [2, 2], [3, 2]], "index": 3 },
+        "predictions": { "ranges": [[], [[0, 2], [2, 2], [3, 2]], [[4, 7], [4, 4], [4, 3]]] }
+      }
+    }
+  }
+}

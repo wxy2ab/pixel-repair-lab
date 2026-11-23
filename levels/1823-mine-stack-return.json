@@ -1,0 +1,367 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-mine-stack-return",
+  "order": 1823,
+  "difficulty": "intermediate",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "structures",
+      "topic": "stacks"
+    },
+    {
+      "unit": "structures",
+      "topic": "dictionaries"
+    }
+  ],
+  "title": {
+    "zh": "矿井原路返航",
+    "en": "Mine Shaft Return"
+  },
+  "concept": {
+    "zh": "足印逆序 · 栈顶弹出 · 回到入口",
+    "en": "Reverse your trail · Stack pops · Return to the start"
+  },
+  "brief": {
+    "zh": "扫描器只保存通往矿井样品的去程方向。采样后原路返回入口，每次返程移动都要按顺序提交该方向，方向必须来自同一个栈。三张地图的去程路线不同，移动和采样各花 1 回合。",
+    "en": "The scanner only stores directions from the entrance to the mine sample. Pick it up and return along the same trail. Submit the direction of every return step in order, taking those directions from a single stack. Each of the three maps has a different path. Moves and pickups cost one turn each."
+  },
+  "hints": [],
+  "tiles": [
+    "#########",
+    "#...#...#",
+    "###.#.#.#",
+    "#.....#.#",
+    "#.#####.#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 1,
+    "y": 1
+  },
+  "input": [
+    "right",
+    "right",
+    "down",
+    "down",
+    "right",
+    "right",
+    "up",
+    "up",
+    "right",
+    "right"
+  ],
+  "items": [
+    {
+      "id": "core-sample",
+      "x": 7,
+      "y": 1
+    }
+  ],
+  "turnLimit": 21,
+  "objectives": [
+    {
+      "type": "collect",
+      "itemIds": [
+        "core-sample"
+      ]
+    },
+    {
+      "type": "submit",
+      "values": [
+        "left",
+        "left",
+        "down",
+        "down",
+        "left",
+        "left",
+        "up",
+        "up",
+        "left",
+        "left"
+      ],
+      "origin": "stack-pop",
+      "sameContainer": true
+    },
+    {
+      "type": "exit",
+      "x": 1,
+      "y": 1
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "#########",
+        "#...#...#",
+        "#.#.#.###",
+        "#.#.....#",
+        "#.#####.#",
+        "#.......#",
+        "#########"
+      ],
+      "start": {
+        "x": 7,
+        "y": 3
+      },
+      "input": [
+        "left",
+        "left",
+        "up",
+        "up",
+        "right",
+        "right"
+      ],
+      "items": [
+        {
+          "id": "core-sample",
+          "x": 7,
+          "y": 1
+        }
+      ],
+      "turnLimit": 13,
+      "objectives": [
+        {
+          "type": "collect",
+          "itemIds": [
+            "core-sample"
+          ]
+        },
+        {
+          "type": "submit",
+          "values": [
+            "left",
+            "left",
+            "down",
+            "down",
+            "right",
+            "right"
+          ],
+          "origin": "stack-pop",
+          "sameContainer": true
+        },
+        {
+          "type": "exit",
+          "x": 7,
+          "y": 3
+        }
+      ]
+    },
+    {
+      "tiles": [
+        "#########",
+        "#.......#",
+        "#.#####.#",
+        "#...#...#",
+        "###.#.###",
+        "#.......#",
+        "#########"
+      ],
+      "start": {
+        "x": 3,
+        "y": 3
+      },
+      "input": [
+        "left",
+        "left",
+        "up",
+        "up",
+        "right",
+        "right",
+        "right",
+        "right",
+        "right",
+        "right",
+        "down",
+        "down"
+      ],
+      "items": [
+        {
+          "id": "core-sample",
+          "x": 7,
+          "y": 3
+        }
+      ],
+      "turnLimit": 25,
+      "objectives": [
+        {
+          "type": "collect",
+          "itemIds": [
+            "core-sample"
+          ]
+        },
+        {
+          "type": "submit",
+          "values": [
+            "up",
+            "up",
+            "left",
+            "left",
+            "left",
+            "left",
+            "left",
+            "left",
+            "down",
+            "down",
+            "right",
+            "right"
+          ],
+          "origin": "stack-pop",
+          "sameContainer": true
+        },
+        {
+          "type": "exit",
+          "x": 3,
+          "y": 3
+        }
+      ]
+    }
+  ],
+  "allowedApi": [
+    "scan",
+    "move",
+    "pick",
+    "submit"
+  ],
+  "cards": [
+    {
+      "id": "read",
+      "label": {
+        "zh": "读入去程",
+        "en": "Read the outward path"
+      },
+      "template": "outward = scan()"
+    },
+    {
+      "id": "stack",
+      "label": {
+        "zh": "建一个空栈",
+        "en": "Create an empty stack"
+      },
+      "template": "trail = []"
+    },
+    {
+      "id": "opposites",
+      "label": {
+        "zh": "建立方向反查表",
+        "en": "Create opposite-direction lookup"
+      },
+      "template": "opposite = {\"up\": \"down\", \"right\": \"left\", \"down\": \"up\", \"left\": \"right\"}"
+    },
+    {
+      "id": "outward",
+      "label": {
+        "zh": "逐个执行去程方向",
+        "en": "Follow each outward direction"
+      },
+      "template": "for direction in outward:",
+      "block": true
+    },
+    {
+      "id": "travel",
+      "label": {
+        "zh": "按记录的方向移动",
+        "en": "Move in the recorded direction"
+      },
+      "template": "move(direction)"
+    },
+    {
+      "id": "remember-same",
+      "label": {
+        "zh": "把当前方向压栈",
+        "en": "Push the current direction"
+      },
+      "template": "trail.append(direction)"
+    },
+    {
+      "id": "remember-inverse",
+      "label": {
+        "zh": "把相反方向压栈",
+        "en": "Push the opposite direction"
+      },
+      "template": "trail.append(opposite[direction])"
+    },
+    {
+      "id": "pick",
+      "label": {
+        "zh": "拾取零件",
+        "en": "Pick up the part"
+      },
+      "template": "pick()"
+    },
+    {
+      "id": "while-trail",
+      "label": {
+        "zh": "只要栈里还有记录",
+        "en": "While the stack still has entries"
+      },
+      "template": "while trail:",
+      "block": true
+    },
+    {
+      "id": "pop-trail",
+      "label": {
+        "zh": "弹出栈顶方向",
+        "en": "Pop the top direction"
+      },
+      "template": "direction = trail.pop()"
+    },
+    {
+      "id": "submit-step",
+      "label": {
+        "zh": "提交移动方向",
+        "en": "Submit the move direction"
+      },
+      "template": "submit(direction)"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "stack"
+    },
+    {
+      "cardId": "opposites"
+    },
+    {
+      "cardId": "outward",
+      "children": [
+        {
+          "cardId": "travel"
+        },
+        {
+          "cardId": "remember-inverse"
+        }
+      ]
+    },
+    {
+      "cardId": "pick"
+    },
+    {
+      "cardId": "while-trail",
+      "children": [
+        {
+          "cardId": "pop-trail"
+        },
+        {
+          "cardId": "travel"
+        },
+        {
+          "cardId": "submit-step"
+        }
+      ]
+    }
+  ]
+}

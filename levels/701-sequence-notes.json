@@ -1,0 +1,295 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "sequence-notes",
+  "order": 701,
+  "unit": {
+    "id": "foundations",
+    "order": 10,
+    "title": {
+      "zh": "Python 基础",
+      "en": "Python Foundations"
+    }
+  },
+  "topic": {
+    "id": "sequence",
+    "order": 1,
+    "title": {
+      "zh": "指令与顺序",
+      "en": "Commands and Sequence"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "指令与顺序",
+    "en": "Commands and Sequence"
+  },
+  "concept": {
+    "zh": "先算出来，才能显示",
+    "en": "Calculate the result before displaying it"
+  },
+  "brief": {
+    "zh": "给芽芽补 3 格电。用图卡安排程序每一步要做的事，再看看调换顺序会发生什么。",
+    "en": "Give Sprout 3 more units of charge. Arrange the cards to tell the program what to do, then see what happens when two steps switch places."
+  },
+  "hints": [],
+  "execution": {
+    "source": "charge = scan()\nresult = charge + 3\nsay(str(result))",
+    "cases": [
+      {
+        "label": {
+          "zh": "起始电量 6 格",
+          "en": "Start with 6 units"
+        },
+        "input": 6,
+        "expected": "9"
+      },
+      {
+        "label": {
+          "zh": "起始电量 1 格",
+          "en": "Start with 1 unit"
+        },
+        "input": 1,
+        "expected": "4"
+      }
+    ],
+    "sequence": {
+      "arrange": [
+        "charge",
+        "read",
+        "display"
+      ],
+      "broken": [
+        "read",
+        "display",
+        "charge"
+      ],
+      "repair": [
+        "charge",
+        "display",
+        "read"
+      ]
+    },
+    "visual": {
+      "title": {
+        "zh": "补电步骤",
+        "en": "Charging steps"
+      },
+      "main": [
+        {
+          "id": "read",
+          "line": 1,
+          "label": {
+            "zh": "读取电量",
+            "en": "Read the charge"
+          },
+          "note": {
+            "zh": "把电池里的起始电量记进变量。",
+            "en": "Store the starting charge from the battery in a variable."
+          },
+          "icon": "battery"
+        },
+        {
+          "id": "charge",
+          "line": 2,
+          "label": {
+            "zh": "补电",
+            "en": "Add charge"
+          },
+          "note": {
+            "zh": "在刚读到的电量上加 3 格，把新电量存起来。",
+            "en": "Add 3 units to the reading and store the new charge."
+          },
+          "icon": "compute"
+        },
+        {
+          "id": "display",
+          "line": 3,
+          "label": {
+            "zh": "显示结果",
+            "en": "Display the result"
+          },
+          "note": {
+            "zh": "把算好的新电量显示在屏幕上。",
+            "en": "Show the new charge on the screen."
+          },
+          "icon": "display"
+        }
+      ],
+      "functions": [],
+      "practice": []
+    }
+  },
+  "sections": [
+    {
+      "title": {
+        "zh": "下一条指令用到上一步的结果",
+        "en": "The next command uses a result from an earlier step"
+      },
+      "body": {
+        "zh": "补电先要读到起始电量。屏幕要显示的是补电后的电量，所以要等程序把新电量算好。",
+        "en": "To add charge, the program needs the starting charge. The screen shows the new charge, so the program must calculate it first."
+      }
+    },
+    {
+      "title": {
+        "zh": "从卡住的地方往前找",
+        "en": "Look back from where the program stopped"
+      },
+      "body": {
+        "zh": "显示在补电前面时，起始电量已经读到了，存新电量的变量却还没有值。把补电那一步移到显示之前，再运行一次。",
+        "en": "If display comes before charging, the program has read the starting charge, but it has no new charge yet. Move charging before display and run again."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "已经读过电量，为什么接着显示会卡住？",
+      "en": "The program has read the starting charge. Why does it stop if it tries to display next?"
+    },
+    "options": [
+      {
+        "zh": "还没有算出补电后的电量。",
+        "en": "It has not calculated the new charge yet."
+      },
+      {
+        "zh": "没有读到起始电量。",
+        "en": "It did not read the starting charge."
+      },
+      {
+        "zh": "应该把屏幕放在第一步。",
+        "en": "The display should come first."
+      }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "读取给了程序原电量，补电才会产生要显示的新电量。",
+      "en": "Reading gives the program its starting charge. Charging produces the new charge for the display."
+    }
+  },
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": {
+          "zh": "先读到起始电量 6 格。",
+          "en": "Read the starting charge of 6 units first."
+        },
+        "items": [
+          {
+            "id": "read",
+            "label": {
+              "zh": "读取电量",
+              "en": "Read the charge"
+            },
+            "value": {
+              "zh": "6 格",
+              "en": "6 units"
+            },
+            "state": "active"
+          },
+          {
+            "id": "charge",
+            "label": {
+              "zh": "补电",
+              "en": "Add charge"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "display",
+            "label": {
+              "zh": "显示结果",
+              "en": "Display the result"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "把原电量加 3，存下新电量 9 格。",
+          "en": "Add 3 to the starting charge and store the new charge of 9."
+        },
+        "items": [
+          {
+            "id": "read",
+            "label": {
+              "zh": "读取电量",
+              "en": "Read the charge"
+            },
+            "value": {
+              "zh": "6 格",
+              "en": "6 units"
+            },
+            "state": "done"
+          },
+          {
+            "id": "charge",
+            "label": {
+              "zh": "补电",
+              "en": "Add charge"
+            },
+            "value": {
+              "zh": "6 + 3",
+              "en": "6 + 3"
+            },
+            "state": "active"
+          },
+          {
+            "id": "display",
+            "label": {
+              "zh": "显示结果",
+              "en": "Display the result"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "程序已经算出新电量，屏幕现在可以显示 9 格。",
+          "en": "The program has calculated the new charge. The screen can now show 9 units."
+        },
+        "items": [
+          {
+            "id": "read",
+            "label": {
+              "zh": "读取电量",
+              "en": "Read the charge"
+            },
+            "value": {
+              "zh": "6 格",
+              "en": "6 units"
+            },
+            "state": "done"
+          },
+          {
+            "id": "charge",
+            "label": {
+              "zh": "补电",
+              "en": "Add charge"
+            },
+            "value": {
+              "zh": "9 格",
+              "en": "9 units"
+            },
+            "state": "done"
+          },
+          {
+            "id": "display",
+            "label": {
+              "zh": "显示结果",
+              "en": "Display the result"
+            },
+            "value": {
+              "zh": "9 格",
+              "en": "9 units"
+            },
+            "state": "active"
+          }
+        ]
+      }
+    ]
+  }
+}

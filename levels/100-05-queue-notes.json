@@ -1,0 +1,497 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "queue-notes",
+  "order": 1004,
+  "unit": {
+    "id": "structures",
+    "order": 40,
+    "title": {
+      "zh": "数据结构",
+      "en": "Data Structures"
+    }
+  },
+  "topic": {
+    "id": "queues",
+    "order": 3,
+    "title": {
+      "zh": "队列",
+      "en": "Queues"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "队列",
+    "en": "Queues"
+  },
+  "concept": {
+    "zh": "队头、队尾与先进先出",
+    "en": "Front, back, and first in, first out"
+  },
+  "brief": {
+    "zh": "让电池按到达顺序从队尾加入，再从队头取走。观察两端的电池什么时候会换。",
+    "en": "Let batteries join at the back in arrival order and leave from the front. Watch when the batteries at either end change."
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "新来的电池去队尾",
+        "en": "New arrivals join the back"
+      },
+      "body": {
+        "zh": "A、B、C 依次到达。每次用 append 把电池加到列表末尾。新电池成了队尾，已经在排队的电池保持原来的先后。",
+        "en": "A, B, and C arrive in order. Each append adds a battery to the end of the list. It becomes the back. Batteries already in line keep their order."
+      }
+    },
+    {
+      "title": {
+        "zh": "从队头取出",
+        "en": "Take from the front"
+      },
+      "body": {
+        "zh": "用 pop(0) 取走索引 0 上的电池。最早到的 A 先出队，B 往前补成新队头。",
+        "en": "Use pop(0) to remove the battery at index 0. A arrived first and leaves first. B moves to the front."
+      }
+    },
+    {
+      "title": {
+        "zh": "边加入边取出",
+        "en": "Add and remove batteries in turns"
+      },
+      "body": {
+        "zh": "D 到达时从队尾加入，队头仍是 B。取走 B 后，C 和 D 依次留在队里。程序按队头到队尾的顺序写下剩余电池。",
+        "en": "D joins at the back and B stays at the front. After B leaves, C is ahead of D. The program writes out the remaining line from front to back."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "A、B、C 先后到。取走 A 后，D 在队尾加入。接下来取哪块？",
+      "en": "A, B, and C arrive in order. A leaves, then D joins the back. Which battery leaves next?"
+    },
+    "options": [
+      {
+        "zh": "B 号",
+        "en": "B"
+      },
+      {
+        "zh": "C 号",
+        "en": "C"
+      },
+      {
+        "zh": "D 号",
+        "en": "D"
+      }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "取走 A 后，B 最早来到仍在排队。D 从后面加入，下一块还是 B。",
+      "en": "After A leaves, B is the earliest arrival still waiting. D joins behind it, so B is next."
+    }
+  },
+  "animation": {
+    "layout": "row",
+    "frames": [
+      {
+        "caption": {
+          "zh": "只有 A 时，它同时是队头和队尾。",
+          "en": "A is alone, so it is both the front and the back."
+        },
+        "items": [
+          {
+            "id": "battery-a",
+            "label": {
+              "zh": "A 号",
+              "en": "A"
+            },
+            "value": {
+              "zh": "队头和队尾",
+              "en": "Front and back"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "B 和 C 到了，依次从队尾排进来。",
+          "en": "B and C join the back in order."
+        },
+        "items": [
+          {
+            "id": "battery-a",
+            "label": {
+              "zh": "A 号",
+              "en": "A"
+            },
+            "value": {
+              "zh": "队头",
+              "en": "Front"
+            },
+            "state": "active"
+          },
+          {
+            "id": "battery-b",
+            "label": {
+              "zh": "B 号",
+              "en": "B"
+            },
+            "state": "done"
+          },
+          {
+            "id": "battery-c",
+            "label": {
+              "zh": "C 号",
+              "en": "C"
+            },
+            "value": {
+              "zh": "队尾",
+              "en": "Back"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "最早到的 A 先离开，B 往前成了队头。",
+          "en": "A arrived first and leaves first. B moves to the front."
+        },
+        "items": [
+          {
+            "id": "battery-b",
+            "label": {
+              "zh": "B 号",
+              "en": "B"
+            },
+            "value": {
+              "zh": "队头",
+              "en": "Front"
+            },
+            "state": "active"
+          },
+          {
+            "id": "battery-c",
+            "label": {
+              "zh": "C 号",
+              "en": "C"
+            },
+            "value": {
+              "zh": "队尾",
+              "en": "Back"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "D 从队尾加入，队头仍是 B。",
+          "en": "D joins the back. B stays at the front."
+        },
+        "items": [
+          {
+            "id": "battery-b",
+            "label": {
+              "zh": "B 号",
+              "en": "B"
+            },
+            "value": {
+              "zh": "队头",
+              "en": "Front"
+            },
+            "state": "active"
+          },
+          {
+            "id": "battery-c",
+            "label": {
+              "zh": "C 号",
+              "en": "C"
+            },
+            "state": "done"
+          },
+          {
+            "id": "battery-d",
+            "label": {
+              "zh": "D 号",
+              "en": "D"
+            },
+            "value": {
+              "zh": "队尾",
+              "en": "Back"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "取走 B，队里从前往后是 C、D。",
+          "en": "Take B. The line now holds C, then D."
+        },
+        "items": [
+          {
+            "id": "battery-c",
+            "label": {
+              "zh": "C 号",
+              "en": "C"
+            },
+            "value": {
+              "zh": "队头",
+              "en": "Front"
+            },
+            "state": "active"
+          },
+          {
+            "id": "battery-d",
+            "label": {
+              "zh": "D 号",
+              "en": "D"
+            },
+            "value": {
+              "zh": "队尾",
+              "en": "Back"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  },
+  "execution": {
+    "source": "queue = []\ntaken = []\nqueue.append(\"A\")\nqueue.append(\"B\")\nqueue.append(\"C\")\ntaken.append(queue.pop(0))\nqueue.append(\"D\")\ntaken.append(queue.pop(0))\nsay(str(taken))\nsay(str(queue))",
+    "cases": [],
+    "queueLesson": {
+      "cases": [
+        {
+          "label": {
+            "zh": "维修站取件线",
+            "en": "The repair station line"
+          },
+          "batteries": [
+            {
+              "name": "A",
+              "charge": 2
+            },
+            {
+              "name": "B",
+              "charge": 4
+            },
+            {
+              "name": "C",
+              "charge": 6
+            },
+            {
+              "name": "D",
+              "charge": 3
+            }
+          ],
+          "operations": [
+            {
+              "kind": "push",
+              "battery": "A"
+            },
+            {
+              "kind": "push",
+              "battery": "B"
+            },
+            {
+              "kind": "push",
+              "battery": "C"
+            },
+            {
+              "kind": "pop"
+            },
+            {
+              "kind": "push",
+              "battery": "D"
+            },
+            {
+              "kind": "pop"
+            }
+          ],
+          "expected": {
+            "popped": [
+              "A",
+              "B"
+            ],
+            "remaining": [
+              "C",
+              "D"
+            ]
+          }
+        },
+        {
+          "label": {
+            "zh": "后来一块补进队尾",
+            "en": "A later arrival joins the back"
+          },
+          "batteries": [
+            {
+              "name": "P",
+              "charge": 5
+            },
+            {
+              "name": "R",
+              "charge": 2
+            },
+            {
+              "name": "Q",
+              "charge": 0
+            },
+            {
+              "name": "S",
+              "charge": 4
+            }
+          ],
+          "operations": [
+            {
+              "kind": "push",
+              "battery": "P"
+            },
+            {
+              "kind": "push",
+              "battery": "R"
+            },
+            {
+              "kind": "pop"
+            },
+            {
+              "kind": "push",
+              "battery": "Q"
+            },
+            {
+              "kind": "push",
+              "battery": "S"
+            },
+            {
+              "kind": "pop"
+            }
+          ],
+          "expected": {
+            "popped": [
+              "P",
+              "R"
+            ],
+            "remaining": [
+              "Q",
+              "S"
+            ]
+          },
+          "predictions": {
+            "popped": [
+              [
+                "R",
+                "S"
+              ],
+              [
+                "P",
+                "R"
+              ],
+              [
+                "R",
+                "P"
+              ]
+            ],
+            "remaining": [
+              [
+                "S",
+                "Q"
+              ],
+              [
+                "Q",
+                "S"
+              ],
+              [
+                "P",
+                "Q"
+              ]
+            ]
+          },
+          "source": "queue = []\ntaken = []\nqueue.append(\"P\")\nqueue.append(\"R\")\ntaken.append(queue.pop(0))\nqueue.append(\"Q\")\nqueue.append(\"S\")\ntaken.append(queue.pop(0))\nsay(str(taken))\nsay(str(queue))"
+        },
+        {
+          "label": {
+            "zh": "取完再接着排",
+            "en": "Empty the queue and fill it again"
+          },
+          "batteries": [
+            {
+              "name": "K",
+              "charge": 3
+            },
+            {
+              "name": "L",
+              "charge": 1
+            },
+            {
+              "name": "M",
+              "charge": 0
+            }
+          ],
+          "operations": [
+            {
+              "kind": "push",
+              "battery": "K"
+            },
+            {
+              "kind": "pop"
+            },
+            {
+              "kind": "push",
+              "battery": "L"
+            },
+            {
+              "kind": "push",
+              "battery": "M"
+            },
+            {
+              "kind": "pop"
+            },
+            {
+              "kind": "pop"
+            }
+          ],
+          "expected": {
+            "popped": [
+              "K",
+              "L",
+              "M"
+            ],
+            "remaining": []
+          },
+          "predictions": {
+            "popped": [
+              [
+                "K",
+                "M",
+                "L"
+              ],
+              [
+                "K",
+                "L",
+                "M"
+              ],
+              [
+                "L",
+                "K",
+                "M"
+              ]
+            ],
+            "remaining": [
+              [
+                "M"
+              ],
+              [],
+              [
+                "L"
+              ]
+            ]
+          },
+          "source": "queue = []\ntaken = []\nqueue.append(\"K\")\ntaken.append(queue.pop(0))\nqueue.append(\"L\")\nqueue.append(\"M\")\ntaken.append(queue.pop(0))\ntaken.append(queue.pop(0))\nsay(str(taken))\nsay(str(queue))"
+        }
+      ]
+    }
+  }
+}

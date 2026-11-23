@@ -1,0 +1,263 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "binary-beacons",
+  "order": 7,
+  "unit": {
+    "id": "computer",
+    "order": 80,
+    "title": {
+      "zh": "计算机原理",
+      "en": "Computer Systems"
+    }
+  },
+  "topic": {
+    "id": "binary",
+    "order": 1,
+    "title": {
+      "zh": "二进制",
+      "en": "Binary"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "把灯读成数字",
+    "en": "Read the Beacon Lights"
+  },
+  "concept": {
+    "zh": "二进制位权",
+    "en": "Binary place values"
+  },
+  "brief": {
+    "zh": "三盏灯表示一个二进制数。亮灯是 1，灭灯是 0。扫描三盏灯，提交它们表示的十进制数。",
+    "en": "Three lights represent a binary number. A lit light is 1 and an unlit light is 0. Scan all three and submit the number in decimal."
+  },
+  "hints": [
+    {
+      "zh": "最右边的一位值 1。向左每移一位，位权翻倍。",
+      "en": "The rightmost place is worth 1. Each place to its left is worth twice as much."
+    },
+    {
+      "zh": "用每一位的 0 或 1 乘上它的位权，再把结果加起来。",
+      "en": "Multiply each 0 or 1 by its place value, then add the results."
+    }
+  ],
+  "tiles": [
+    "#########",
+    "#.......#",
+    "#.#####.#",
+    "#.......#",
+    "#.#####.#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 4,
+    "y": 3
+  },
+  "input": [
+    1,
+    0,
+    1
+  ],
+  "allowedApi": [
+    "scan",
+    "submit"
+  ],
+  "objectives": [
+    {
+      "type": "submit",
+      "values": [
+        5
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "input": [
+        0,
+        1,
+        1
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "input": [
+        1,
+        1,
+        0
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            6
+          ]
+        }
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "read-bits",
+      "label": {
+        "zh": "读取三盏灯",
+        "en": "Read the three lights"
+      },
+      "template": "bits = scan()"
+    },
+    {
+      "id": "weigh",
+      "label": {
+        "zh": "选择每一位的位权并求和",
+        "en": "Choose the place values and add"
+      },
+      "template": "submit(bits[0] * {{left}} + bits[1] * {{middle}} + bits[2] * {{right}})",
+      "parameters": [
+        {
+          "name": "left",
+          "label": {
+            "zh": "左边",
+            "en": "Left"
+          },
+          "choices": [
+            {
+              "id": "1",
+              "label": {
+                "zh": "1",
+                "en": "1"
+              },
+              "code": "1"
+            },
+            {
+              "id": "2",
+              "label": {
+                "zh": "2",
+                "en": "2"
+              },
+              "code": "2"
+            },
+            {
+              "id": "4",
+              "label": {
+                "zh": "4",
+                "en": "4"
+              },
+              "code": "4"
+            },
+            {
+              "id": "8",
+              "label": {
+                "zh": "8",
+                "en": "8"
+              },
+              "code": "8"
+            }
+          ]
+        },
+        {
+          "name": "middle",
+          "label": {
+            "zh": "中间",
+            "en": "Middle"
+          },
+          "choices": [
+            {
+              "id": "1",
+              "label": {
+                "zh": "1",
+                "en": "1"
+              },
+              "code": "1"
+            },
+            {
+              "id": "2",
+              "label": {
+                "zh": "2",
+                "en": "2"
+              },
+              "code": "2"
+            },
+            {
+              "id": "4",
+              "label": {
+                "zh": "4",
+                "en": "4"
+              },
+              "code": "4"
+            },
+            {
+              "id": "8",
+              "label": {
+                "zh": "8",
+                "en": "8"
+              },
+              "code": "8"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "label": {
+            "zh": "右边",
+            "en": "Right"
+          },
+          "choices": [
+            {
+              "id": "1",
+              "label": {
+                "zh": "1",
+                "en": "1"
+              },
+              "code": "1"
+            },
+            {
+              "id": "2",
+              "label": {
+                "zh": "2",
+                "en": "2"
+              },
+              "code": "2"
+            },
+            {
+              "id": "4",
+              "label": {
+                "zh": "4",
+                "en": "4"
+              },
+              "code": "4"
+            },
+            {
+              "id": "8",
+              "label": {
+                "zh": "8",
+                "en": "8"
+              },
+              "code": "8"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read-bits"
+    },
+    {
+      "cardId": "weigh",
+      "values": {
+        "left": "4",
+        "middle": "2",
+        "right": "1"
+      }
+    }
+  ]
+}

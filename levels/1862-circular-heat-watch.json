@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-circular-heat-watch",
+  "order": 1862,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "structures",
+      "topic": "stacks"
+    },
+    {
+      "unit": "python-advanced",
+      "topic": "nested-loops"
+    }
+  ],
+  "title": {
+    "zh": "环轨高温哨",
+    "en": "Circular Heat Watch"
+  },
+  "concept": {
+    "zh": "环形等待时间与未结读数",
+    "en": "Circular wait times and pending readings"
+  },
+  "brief": {
+    "zh": "readings 依次记录一圈的温度。对每个位置，从下一格起向前绕行，最多走到回到原位置之前。返回各位置第一次遇到严格更高温度所需的步数；始终遇不到就填 0。相同温度不触发警报。",
+    "en": "The temperatures in readings repeat around a ring. For each spot, move forward starting at the next spot and stop before returning to where you began. Return the number of steps to the first strictly hotter spot, or 0 if there is none. Equal temperatures do not trigger the alarm."
+  },
+  "hints": [],
+  "functionName": "heat_wait",
+  "starterCode": "def heat_wait(readings):\n    pass\n",
+  "solutionCode": "def heat_wait(readings):\n    size = len(readings)\n    waiting = []\n    delays = []\n    for i in range(size):\n        delays.append(0)\n    for tick in range(2 * size):\n        i = tick % size\n        while len(waiting) > 0 and readings[waiting[-1]] < readings[i]:\n            old = waiting.pop()\n            delays[old] = tick - old\n        if tick < size:\n            waiting.append(i)\n    return delays\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "扫描第二圈的读数",
+        "en": "Read across the wraparound"
+      },
+      "code": "    for tick in range(2 * size):\n        i = tick % size\n        while len(waiting) > 0 and readings[waiting[-1]] < readings[i]:\n            old = waiting.pop()\n            delays[old] = tick - old"
+    },
+    {
+      "label": {
+        "zh": "登记待处理位置",
+        "en": "Prepare pending positions"
+      },
+      "code": "    size = len(readings)\n    waiting = []\n    delays = []\n    for i in range(size):\n        delays.append(0)"
+    },
+    {
+      "label": {
+        "zh": "结算等温或升温的等待",
+        "en": "Close waits on equal or warmer readings"
+      },
+      "code": "    for tick in range(2 * size):\n        i = tick % size\n        while len(waiting) > 0 and readings[waiting[-1]] <= readings[i]:\n            old = waiting.pop()\n            delays[old] = tick - old"
+    },
+    {
+      "label": {
+        "zh": "送出等待时间",
+        "en": "Send the wait times"
+      },
+      "code": "    return delays"
+    },
+    {
+      "label": {
+        "zh": "首圈登记新位置",
+        "en": "Register spots on their first visit"
+      },
+      "code": "        if tick < size:\n            waiting.append(i)"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          7,
+          3,
+          4,
+          2,
+          6
+        ]
+      ],
+      "expected": [
+        0,
+        1,
+        2,
+        1,
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          2,
+          2,
+          1
+        ]
+      ],
+      "expected": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          1
+        ]
+      ],
+      "expected": [
+        0
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          3,
+          1,
+          3,
+          5
+        ]
+      ],
+      "expected": [
+        3,
+        1,
+        1,
+        0
+      ]
+    }
+  ]
+}

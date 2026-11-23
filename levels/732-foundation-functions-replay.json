@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "kind": "replay",
+  "id": "foundation-functions-replay",
+  "order": 732,
+  "unit": {
+    "id": "foundations",
+    "order": 10,
+    "title": {
+      "zh": "Python 基础",
+      "en": "Python Foundations"
+    }
+  },
+  "topic": {
+    "id": "functions",
+    "order": 4,
+    "title": {
+      "zh": "函数与参数",
+      "en": "Functions and Parameters"
+    }
+  },
+  "stage": "demo",
+  "title": {
+    "zh": "让两个函数接着工作",
+    "en": "Pass Work Between Two Functions"
+  },
+  "concept": {
+    "zh": "调用函数和使用返回值",
+    "en": "Calling functions and using their results"
+  },
+  "brief": {
+    "zh": "先看补电程序里一个函数怎么调用另一个函数，再用同一个函数给两块电池各补一次电。",
+    "en": "Watch one function call another in the charging program, then reuse a function to top up two readings."
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "一个函数读取另一个函数的返回值",
+        "en": "One function uses the result of another"
+      },
+      "source": "def add_charge(current, extra):\n    total = current + extra\n    return total\n\ndef prepare_robot(current):\n    extra = 3\n    ready = add_charge(current, extra)\n    return ready\n\ncharge = scan()\nresult = prepare_robot(charge)\nsubmit(result)",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "allowedApi": [
+          "scan",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              7
+            ]
+          }
+        ],
+        "input": 4
+      }
+    },
+    {
+      "title": {
+        "zh": "两块电池，各补两格电",
+        "en": "Add two units to each of two batteries"
+      },
+      "source": "def top_up(charge):\n    charge = charge + 2\n    return charge\n\nreadings = scan()\nfirst = top_up(readings[0])\nsecond = top_up(readings[1])\nsubmit(first)\nsubmit(second)",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "allowedApi": [
+          "scan",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              4,
+              7
+            ]
+          }
+        ],
+        "input": [
+          2,
+          5
+        ]
+      }
+    }
+  ]
+}

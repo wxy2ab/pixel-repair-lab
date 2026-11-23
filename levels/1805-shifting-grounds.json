@@ -1,0 +1,662 @@
+{
+  "version": 1,
+  "kind": "arena",
+  "id": "challenge-shifting-grid",
+  "order": 1805,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "prerequisites": [
+    { "unit": "structures", "topic": "dictionaries" },
+    { "unit": "routing", "topic": "breadth-first" },
+    { "unit": "algorithm-advanced", "topic": "rival-strategy" }
+  ],
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "变阵争夺战",
+    "en": "Shifting Grounds"
+  },
+  "concept": {
+    "zh": "一对三 · 通道与电池换位",
+    "en": "One versus three · Shifting gates and batteries"
+  },
+  "brief": {
+    "zh": "和三台机器人争抢 12 块电池。电池抢完或打满 21 回合时，必须独占第一。同回合争抢同一块电池时，拾取优先权按芽芽、琥珀号、青玉号、钴蓝号的顺序每回合轮换。第 3、7、11 回合结束后，通道改道，尚未被拿走的指定电池换位。机器人或电池占着的门格当次保持打开。对手会根据比分和通道调整目标。从容模式下，同一程序要赢下三张地图。",
+    "en": "Race three rivals for 12 batteries. Finish first outright when the batteries run out or after 21 turns. For contested pickups, priority rotates each turn from Sprout to Amber, Jade, and Cobalt. Gates switch and designated unclaimed batteries relocate after turns 3, 7, and 11. An occupied gate stays open for that shift. Rivals change targets with the scores and open routes. In Relaxed mode, one program must win on all three maps."
+  },
+  "hints": [],
+  "tiles": [
+    "#########",
+    "#.#..#.##",
+    "#.......#",
+    "##.###.##",
+    "#.......#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 3,
+    "y": 4
+  },
+  "opponents": [
+    {
+      "id": "amber",
+      "title": {
+        "zh": "琥珀号",
+        "en": "Amber"
+      },
+      "policy": {
+        "kind": "adaptive",
+        "style": "secure"
+      },
+      "start": {
+        "x": 5,
+        "y": 4
+      }
+    },
+    {
+      "id": "jade",
+      "title": {
+        "zh": "青玉号",
+        "en": "Jade"
+      },
+      "policy": {
+        "kind": "adaptive",
+        "style": "intercept"
+      },
+      "start": {
+        "x": 1,
+        "y": 4
+      }
+    },
+    {
+      "id": "cobalt",
+      "title": {
+        "zh": "钴蓝号",
+        "en": "Cobalt"
+      },
+      "policy": {
+        "kind": "adaptive",
+        "style": "flex"
+      },
+      "start": {
+        "x": 2,
+        "y": 5
+      }
+    }
+  ],
+  "items": [
+    {
+      "id": "battery-1",
+      "x": 6,
+      "y": 1
+    },
+    {
+      "id": "battery-2",
+      "x": 4,
+      "y": 2
+    },
+    {
+      "id": "battery-3",
+      "x": 3,
+      "y": 1
+    },
+    {
+      "id": "battery-4",
+      "x": 3,
+      "y": 5
+    },
+    {
+      "id": "battery-5",
+      "x": 3,
+      "y": 2
+    },
+    {
+      "id": "battery-6",
+      "x": 5,
+      "y": 5
+    },
+    {
+      "id": "battery-7",
+      "x": 5,
+      "y": 2
+    },
+    {
+      "id": "battery-8",
+      "x": 4,
+      "y": 4
+    },
+    {
+      "id": "battery-9",
+      "x": 1,
+      "y": 2
+    },
+    {
+      "id": "battery-10",
+      "x": 6,
+      "y": 5
+    },
+    {
+      "id": "battery-11",
+      "x": 4,
+      "y": 1
+    },
+    {
+      "id": "battery-12",
+      "x": 1,
+      "y": 5
+    }
+  ],
+  "shifts": [
+    {
+      "turn": 3,
+      "open": [
+        {
+          "x": 1,
+          "y": 3
+        }
+      ],
+      "close": [
+        {
+          "x": 2,
+          "y": 3
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "battery-10",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "battery-7",
+          "x": 4,
+          "y": 5
+        }
+      ]
+    },
+    {
+      "turn": 7,
+      "open": [
+        {
+          "x": 5,
+          "y": 3
+        }
+      ],
+      "close": [
+        {
+          "x": 6,
+          "y": 3
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "battery-5",
+          "x": 5,
+          "y": 4
+        },
+        {
+          "id": "battery-11",
+          "x": 3,
+          "y": 4
+        }
+      ]
+    },
+    {
+      "turn": 11,
+      "open": [
+        {
+          "x": 7,
+          "y": 3
+        }
+      ],
+      "close": [
+        {
+          "x": 1,
+          "y": 3
+        }
+      ],
+      "moveItems": [
+        {
+          "id": "battery-3",
+          "x": 7,
+          "y": 5
+        },
+        {
+          "id": "battery-1",
+          "x": 2,
+          "y": 4
+        }
+      ]
+    }
+  ],
+  "maxTurns": 21,
+  "objective": {
+    "kind": "score"
+  },
+  "starterCode": "while True:\n    state = scan()\n    wait()\n",
+  "solutionCode": "def graph_for(board, width):\n    graph = {}\n    for y in range(len(board)):\n        for x in range(width):\n            if board[y][x] == \"#\":\n                continue\n            neighbors = []\n            for step in [[0, -1, \"up\"], [1, 0, \"right\"], [0, 1, \"down\"], [-1, 0, \"left\"]]:\n                nx = x + step[0]\n                ny = y + step[1]\n                if 0 <= nx and nx < width and 0 <= ny and ny < len(board) and board[ny][nx] == \".\":\n                    neighbors.append([ny * width + nx, step[2]])\n            graph[y * width + x] = neighbors\n    return graph\n\ndef routes(graph, cache, start):\n    if start in cache:\n        return cache[start]\n    queue = [start]\n    table = {start: [0, None]}\n    for cell in queue:\n        distance = table[cell][0]\n        first = table[cell][1]\n        for edge in graph[cell]:\n            neighbor = edge[0]\n            if neighbor in table:\n                continue\n            direction = first\n            if direction is None:\n                direction = edge[1]\n            table[neighbor] = [distance + 1, direction]\n            queue.append(neighbor)\n    cache[start] = table\n    return table\n\ndef rival_distances(graph, cache, width, opponents):\n    tables = []\n    for opponent in opponents:\n        tables.append(routes(graph, cache, opponent[\"y\"] * width + opponent[\"x\"]))\n    return tables\n\ndef nearest_rival(tables, target):\n    nearest = 999\n    for table in tables:\n        if target in table and table[target][0] < nearest:\n            nearest = table[target][0]\n    return nearest\n\ndef choose_action(state, width, graph, cache):\n    player = state[\"player\"]\n    start = player[1] * width + player[0]\n    items = state[\"items\"]\n    for item in items:\n        if item[\"y\"] * width + item[\"x\"] == start:\n            return \"pick\"\n    own_routes = routes(graph, cache, start)\n    rivals = rival_distances(graph, cache, width, state[\"opponents\"])\n    chosen = None\n    best_safe = False\n    best_distance = 999\n    best_lead = -999\n    for item in items:\n        target = item[\"y\"] * width + item[\"x\"]\n        if target not in own_routes:\n            continue\n        distance = own_routes[target][0]\n        lead = nearest_rival(rivals, target) - distance\n        safe = lead > 0\n        if chosen is None or (safe and not best_safe) or (safe == best_safe and (distance < best_distance or (distance == best_distance and lead > best_lead))):\n            chosen = target\n            best_safe = safe\n            best_distance = distance\n            best_lead = lead\n    if chosen is None:\n        return \"wait\"\n    return own_routes[chosen][1]\n\nboard = []\ncache = {}\nwhile True:\n    state = scan()\n    if state[\"tiles\"] != board:\n        board = state[\"tiles\"]\n        width = len(board[0])\n        graph = graph_for(board, width)\n        cache = {}\n    action = choose_action(state, width, graph, cache)\n    if action == \"pick\":\n        pick()\n    elif action == \"wait\":\n        wait()\n    else:\n        move(action)\n",
+  "snippets": [],
+  "variants": [
+    {
+      "tiles": [
+        "#########",
+        "#...#...#",
+        "##......#",
+        "#...#...#",
+        "##..#...#",
+        "#.......#",
+        "#########"
+      ],
+      "start": {
+        "x": 7,
+        "y": 3
+      },
+      "opponents": [
+        {
+          "id": "amber",
+          "title": {
+            "zh": "琥珀号",
+            "en": "Amber"
+          },
+          "policy": {
+            "kind": "adaptive",
+            "style": "secure"
+          },
+          "start": {
+            "x": 6,
+            "y": 2
+          }
+        },
+        {
+          "id": "jade",
+          "title": {
+            "zh": "青玉号",
+            "en": "Jade"
+          },
+          "policy": {
+            "kind": "adaptive",
+            "style": "intercept"
+          },
+          "start": {
+            "x": 7,
+            "y": 2
+          }
+        },
+        {
+          "id": "cobalt",
+          "title": {
+            "zh": "钴蓝号",
+            "en": "Cobalt"
+          },
+          "policy": {
+            "kind": "adaptive",
+            "style": "flex"
+          },
+          "start": {
+            "x": 5,
+            "y": 1
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": "battery-1",
+          "x": 6,
+          "y": 5
+        },
+        {
+          "id": "battery-2",
+          "x": 5,
+          "y": 3
+        },
+        {
+          "id": "battery-3",
+          "x": 5,
+          "y": 2
+        },
+        {
+          "id": "battery-4",
+          "x": 5,
+          "y": 5
+        },
+        {
+          "id": "battery-5",
+          "x": 6,
+          "y": 3
+        },
+        {
+          "id": "battery-6",
+          "x": 2,
+          "y": 4
+        },
+        {
+          "id": "battery-7",
+          "x": 7,
+          "y": 1
+        },
+        {
+          "id": "battery-8",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "battery-9",
+          "x": 6,
+          "y": 1
+        },
+        {
+          "id": "battery-10",
+          "x": 1,
+          "y": 5
+        },
+        {
+          "id": "battery-11",
+          "x": 1,
+          "y": 3
+        },
+        {
+          "id": "battery-12",
+          "x": 2,
+          "y": 5
+        }
+      ],
+      "shifts": [
+        {
+          "turn": 3,
+          "open": [
+            {
+              "x": 4,
+              "y": 1
+            }
+          ],
+          "close": [
+            {
+              "x": 4,
+              "y": 2
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "battery-10",
+              "x": 2,
+              "y": 1
+            },
+            {
+              "id": "battery-1",
+              "x": 6,
+              "y": 4
+            }
+          ]
+        },
+        {
+          "turn": 7,
+          "open": [
+            {
+              "x": 4,
+              "y": 4
+            }
+          ],
+          "close": [
+            {
+              "x": 4,
+              "y": 5
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "battery-12",
+              "x": 5,
+              "y": 4
+            },
+            {
+              "id": "battery-4",
+              "x": 7,
+              "y": 5
+            }
+          ]
+        },
+        {
+          "turn": 11,
+          "open": [
+            {
+              "x": 4,
+              "y": 3
+            }
+          ],
+          "close": [
+            {
+              "x": 4,
+              "y": 1
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "battery-9",
+              "x": 3,
+              "y": 2
+            },
+            {
+              "id": "battery-8",
+              "x": 2,
+              "y": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tiles": [
+        "#########",
+        "#.....#.#",
+        "#.......#",
+        "##.###.##",
+        "#.......#",
+        "#.#..#..#",
+        "#########"
+      ],
+      "start": {
+        "x": 2,
+        "y": 4
+      },
+      "opponents": [
+        {
+          "id": "amber",
+          "title": {
+            "zh": "琥珀号",
+            "en": "Amber"
+          },
+          "policy": {
+            "kind": "adaptive",
+            "style": "secure"
+          },
+          "start": {
+            "x": 4,
+            "y": 5
+          }
+        },
+        {
+          "id": "jade",
+          "title": {
+            "zh": "青玉号",
+            "en": "Jade"
+          },
+          "policy": {
+            "kind": "adaptive",
+            "style": "intercept"
+          },
+          "start": {
+            "x": 7,
+            "y": 4
+          }
+        },
+        {
+          "id": "cobalt",
+          "title": {
+            "zh": "钴蓝号",
+            "en": "Cobalt"
+          },
+          "policy": {
+            "kind": "adaptive",
+            "style": "flex"
+          },
+          "start": {
+            "x": 4,
+            "y": 4
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": "battery-1",
+          "x": 3,
+          "y": 5
+        },
+        {
+          "id": "battery-2",
+          "x": 1,
+          "y": 5
+        },
+        {
+          "id": "battery-3",
+          "x": 3,
+          "y": 2
+        },
+        {
+          "id": "battery-4",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "battery-5",
+          "x": 6,
+          "y": 4
+        },
+        {
+          "id": "battery-6",
+          "x": 3,
+          "y": 1
+        },
+        {
+          "id": "battery-7",
+          "x": 3,
+          "y": 4
+        },
+        {
+          "id": "battery-8",
+          "x": 1,
+          "y": 2
+        },
+        {
+          "id": "battery-9",
+          "x": 7,
+          "y": 1
+        },
+        {
+          "id": "battery-10",
+          "x": 2,
+          "y": 2
+        },
+        {
+          "id": "battery-11",
+          "x": 6,
+          "y": 5
+        },
+        {
+          "id": "battery-12",
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "shifts": [
+        {
+          "turn": 3,
+          "open": [
+            {
+              "x": 1,
+              "y": 3
+            }
+          ],
+          "close": [
+            {
+              "x": 2,
+              "y": 3
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "battery-1",
+              "x": 7,
+              "y": 4
+            },
+            {
+              "id": "battery-8",
+              "x": 4,
+              "y": 4
+            }
+          ]
+        },
+        {
+          "turn": 7,
+          "open": [
+            {
+              "x": 5,
+              "y": 3
+            }
+          ],
+          "close": [
+            {
+              "x": 6,
+              "y": 3
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "battery-12",
+              "x": 6,
+              "y": 2
+            },
+            {
+              "id": "battery-9",
+              "x": 5,
+              "y": 4
+            }
+          ]
+        },
+        {
+          "turn": 11,
+          "open": [
+            {
+              "x": 7,
+              "y": 3
+            }
+          ],
+          "close": [
+            {
+              "x": 1,
+              "y": 3
+            }
+          ],
+          "moveItems": [
+            {
+              "id": "battery-10",
+              "x": 1,
+              "y": 4
+            },
+            {
+              "id": "battery-11",
+              "x": 7,
+              "y": 5
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

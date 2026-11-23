@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "python-intermediate",
+    "order": 20,
+    "title": {
+      "zh": "Python 进阶",
+      "en": "Intermediate Python"
+    }
+  },
+  "kind": "replay",
+  "id": "collections-replay",
+  "order": 841,
+  "stage": "demo",
+  "topic": {
+    "id": "collections",
+    "order": 4,
+    "title": {
+      "zh": "列表与字典",
+      "en": "Lists and dictionaries"
+    }
+  },
+  "title": {
+    "zh": "收进列表，按名取值",
+    "en": "Collect a list and look up a name"
+  },
+  "concept": {
+    "zh": "append 与字典查询",
+    "en": "Append and dictionary lookup"
+  },
+  "brief": {
+    "zh": "对比两个示例。一个保留选中项的顺序，一个用零件名字查货架编号。",
+    "en": "Compare two examples. One keeps selected values in order and the other looks up a shelf number by part name."
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "把通过检查的读数收进列表",
+        "en": "Collect readings that passed the check"
+      },
+      "source": "approved = []\nfor reading in scan():\n    if reading >= 4:\n        approved.append(reading)\nsubmit(approved)",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "input": [
+          0,
+          4,
+          9,
+          3,
+          6
+        ],
+        "allowedApi": [
+          "scan",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              [
+                4,
+                9,
+                6
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "title": {
+        "zh": "按零件名字查货架",
+        "en": "Find the shelf by part name"
+      },
+      "source": "shelves = {\"switch\": 4, \"lamp\": 7}\npart = scan()\nsubmit(shelves[part])",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "input": "lamp",
+        "allowedApi": [
+          "scan",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              7
+            ],
+            "origin": "dict-index"
+          }
+        ]
+      }
+    }
+  ]
+}

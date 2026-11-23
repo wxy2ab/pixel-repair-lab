@@ -1,0 +1,157 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-broken-pad-relay",
+  "order": 1866,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "dynamic-programming"
+    }
+  ],
+  "title": {
+    "zh": "断桥弹射接力",
+    "en": "Broken Bridge Relay"
+  },
+  "concept": {
+    "zh": "最少跳数和并列路线数",
+    "en": "Fewest jumps and number of tied routes"
+  },
+  "brief": {
+    "zh": "从 0 号跳板出发。站在 i 时可往前跳 1 到 reach[i] 格并落在板上。到达最后一块时返回 [最少跳数, 用这个跳数走到的不同路线数]。路线由落脚顺序区分。只有一块时返回 [0, 1]。空桥和到不了终点的桥都返回 [-1, 0]。",
+    "en": "Start on pad 0. From pad i you can jump forward from 1 through reach[i] spots and must land on a pad. Return [fewest jumps to the last pad, number of landing sequences achieving that minimum]. A single pad returns [0, 1]. An empty bridge or an unreachable finish returns [-1, 0]."
+  },
+  "hints": [],
+  "functionName": "relay_jumps",
+  "starterCode": "def relay_jumps(reach):\n    pass\n",
+  "solutionCode": "def relay_jumps(reach):\n    if len(reach) == 0:\n        return [-1, 0]\n    jumps = []\n    paths = []\n    for i in range(len(reach)):\n        jumps.append(-1)\n        paths.append(0)\n    jumps[0] = 0\n    paths[0] = 1\n    for i in range(len(reach)):\n        if jumps[i] < 0:\n            continue\n        end = i + reach[i] + 1\n        if end > len(reach):\n            end = len(reach)\n        for dest in range(i + 1, end):\n            next_jump = jumps[i] + 1\n            if jumps[dest] == -1 or next_jump < jumps[dest]:\n                jumps[dest] = next_jump\n                paths[dest] = paths[i]\n            elif next_jump == jumps[dest]:\n                paths[dest] += paths[i]\n    return [jumps[-1], paths[-1]]\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "枚举从当前板落脚的位置",
+        "en": "List landings from this pad"
+      },
+      "code": "    for i in range(len(reach)):\n        if jumps[i] < 0:\n            continue\n        end = i + reach[i] + 1\n        if end > len(reach):\n            end = len(reach)\n        for dest in range(i + 1, end):\n            next_jump = jumps[i] + 1"
+    },
+    {
+      "label": {
+        "zh": "初始化起点与各板纪录",
+        "en": "Initialize the start and pad records"
+      },
+      "code": "    if len(reach) == 0:\n        return [-1, 0]\n    jumps = []\n    paths = []\n    for i in range(len(reach)):\n        jumps.append(-1)\n        paths.append(0)\n    jumps[0] = 0\n    paths[0] = 1"
+    },
+    {
+      "label": {
+        "zh": "并列时替换登记过的路径数",
+        "en": "Replace the path count on a tie"
+      },
+      "code": "            if jumps[dest] == -1 or next_jump < jumps[dest]:\n                jumps[dest] = next_jump\n                paths[dest] = paths[i]\n            elif next_jump == jumps[dest]:\n                paths[dest] = paths[i]"
+    },
+    {
+      "label": {
+        "zh": "读出终点纪录",
+        "en": "Read the finish record"
+      },
+      "code": "    return [jumps[-1], paths[-1]]"
+    },
+    {
+      "label": {
+        "zh": "登记较短路线与并列路线",
+        "en": "Count shorter and tied routes"
+      },
+      "code": "            if jumps[dest] == -1 or next_jump < jumps[dest]:\n                jumps[dest] = next_jump\n                paths[dest] = paths[i]\n            elif next_jump == jumps[dest]:\n                paths[dest] += paths[i]"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          2,
+          2,
+          2,
+          0
+        ]
+      ],
+      "expected": [
+        2,
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          3,
+          0,
+          0,
+          0
+        ]
+      ],
+      "expected": [
+        1,
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          0,
+          2
+        ]
+      ],
+      "expected": [
+        -1,
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          0
+        ]
+      ],
+      "expected": [
+        0,
+        1
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": [
+        -1,
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          3,
+          3,
+          3,
+          3,
+          0
+        ]
+      ],
+      "expected": [
+        2,
+        3
+      ]
+    }
+  ]
+}

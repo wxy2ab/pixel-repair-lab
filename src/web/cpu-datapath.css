@@ -1,0 +1,20 @@
+.cpu-datapath { display: grid; gap: 7px; min-width: 0; }
+.cpu-datapath .teaching-model { margin-bottom: 0; }
+.cpu-datapath .teaching-model-tray { height: clamp(188px, 22vw, 254px); }
+.cpu-instruction-readout, .cpu-signal-flow, .cpu-probe { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; }
+.cpu-instruction-readout {
+  border-inline-start: 4px solid #82d5ae; border-radius: 5px; padding: 7px 10px;
+  color: #e4f5e8; background: #203c3d; font-size: .87rem;
+}
+.cpu-instruction-readout code { font-weight: 700; color: #ffe9ac; }
+.cpu-counter-trace { margin-inline-start: auto; color: #bed9cd; font-family: var(--mono); }
+.cpu-signal-flow { gap: 4px 6px; list-style: none; padding: 0; margin: 0; }
+.cpu-signal-flow li { display: inline-flex; align-items: baseline; flex-wrap: wrap; gap: 4px; font-size: .82rem; }
+.cpu-signal-flow li + li::before { content: '→'; margin-right: 2px; }
+.cpu-signal-flow code { border-radius: 4px; padding: 2px 5px; color: #18392f; background: #d5eee2; font-weight: 650; }
+.cpu-signal-flow [data-action=alu] code { background: #dce4f4; color: #243854; }
+.cpu-signal-flow [data-action=write] code { background: #f6e1b6; color: #503d21; }
+.cpu-probe { font-size: .83rem; }
+.cpu-probe label { display: inline-flex; align-items: center; gap: 5px; }
+.cpu-probe select { font: inherit; padding: 3px 6px; }
+.cpu-probe code { font-weight: 650; }

@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "database-query-lesson",
+  "order": 531,
+  "stage": "explain",
+  "unit": { "id": "database", "order": 130, "title": { "zh": "数据库", "en": "Databases" } },
+  "topic": { "id": "sql-rows", "order": 1, "title": { "zh": "SQL 筛选和排序", "en": "SQL filters and sorting" } },
+  "title": { "zh": "用 SQL 筛选和排序", "en": "Filter and Sort with SQL" },
+  "brief": { "zh": "跟着三条库存记录走一遍查询，看看哪些记录会留下。", "en": "Follow three inventory rows through a query and see which ones stay." },
+  "concept": { "zh": "WHERE 按条件选行，ORDER BY 排序", "en": "WHERE filters rows and ORDER BY sorts them" },
+  "hints": [],
+  "sections": [
+    { "title": { "zh": "数据保存在表里", "en": "Store data in tables" }, "body": { "zh": "库存表里的每行对应一种物品，每列保存物品名、区域或库存量等信息。用 SQL 可以向数据库提出明确的问题。", "en": "Each inventory row describes an item and its columns hold details such as name, area, and stock. SQL asks the database a precise question." } },
+    { "title": { "zh": "先筛选，再排序", "en": "Filter, then sort" }, "body": { "zh": "WHERE stock >= 4 留下库存至少为 4 的行。ORDER BY stock DESC 把留下的行按库存从大到小排列。", "en": "WHERE stock >= 4 keeps rows with at least 4 in stock. ORDER BY stock DESC puts those rows in descending stock order." } }
+  ],
+  "animation": {
+    "layout": "row",
+    "frames": [
+      { "caption": { "zh": "库存表目前有三行，顺序还没有变。", "en": "The inventory starts with three rows in their original order." }, "items": [
+        { "id": "cable", "label": { "zh": "线缆", "en": "Cable" }, "value": { "zh": "5", "en": "5" } },
+        { "id": "water", "label": { "zh": "水", "en": "Water" }, "value": { "zh": "2", "en": "2" } },
+        { "id": "battery", "label": { "zh": "电池", "en": "Battery" }, "value": { "zh": "8", "en": "8" } }
+      ] },
+      { "caption": { "zh": "WHERE stock >= 4 留下线缆和电池。", "en": "WHERE stock >= 4 keeps the cable and battery rows." }, "items": [
+        { "id": "cable", "label": { "zh": "线缆", "en": "Cable" }, "value": { "zh": "5", "en": "5" }, "state": "active" },
+        { "id": "water", "label": { "zh": "水", "en": "Water" }, "value": { "zh": "2", "en": "2" }, "state": "muted" },
+        { "id": "battery", "label": { "zh": "电池", "en": "Battery" }, "value": { "zh": "8", "en": "8" }, "state": "active" }
+      ] },
+      { "caption": { "zh": "ORDER BY stock DESC 把库存更多的电池排到前面。", "en": "ORDER BY stock DESC puts batteries first because they have more stock." }, "items": [
+        { "id": "battery", "label": { "zh": "电池", "en": "Battery" }, "value": { "zh": "8", "en": "8" }, "state": "done" },
+        { "id": "cable", "label": { "zh": "线缆", "en": "Cable" }, "value": { "zh": "5", "en": "5" }, "state": "done" }
+      ] }
+    ]
+  },
+  "question": {
+    "prompt": { "zh": "如果最低库存改成 6，结果还剩哪一行？", "en": "Which row remains if the minimum stock is raised to 6?" },
+    "options": [{ "zh": "线缆", "en": "Cable" }, { "zh": "电池", "en": "Battery" }, { "zh": "水", "en": "Water" }],
+    "correct": 1,
+    "feedback": { "zh": "只有电池的库存 8 达到新的条件。", "en": "Only the battery stock of 8 reaches the new minimum." }
+  }
+}

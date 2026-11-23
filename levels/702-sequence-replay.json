@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "kind": "replay",
+  "id": "sequence-replay",
+  "order": 702,
+  "unit": {
+    "id": "foundations",
+    "order": 10,
+    "title": {
+      "zh": "Python 基础",
+      "en": "Python Foundations"
+    }
+  },
+  "topic": {
+    "id": "sequence",
+    "order": 1,
+    "title": {
+      "zh": "指令与顺序",
+      "en": "Commands and Sequence"
+    }
+  },
+  "stage": "demo",
+  "title": {
+    "zh": "转个弯，再拾取",
+    "en": "Turn a Corner, Then Pick Up"
+  },
+  "concept": {
+    "zh": "指令顺序与坐标变化",
+    "en": "Command order and positions"
+  },
+  "brief": {
+    "zh": "跟着四条指令走到零件旁。暂停回放，看看每一步把芽芽带到哪一格。",
+    "en": "Follow four lines to collect a part. Pause the replay to see where each step brings Sprout."
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "向上走，转向左，拾取后再向上",
+        "en": "Go up, turn left, pick up, and go up again"
+      },
+      "source": "move(\"up\")\nmove(\"left\")\npick()\nmove(\"up\")",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 4,
+          "y": 3
+        },
+        "allowedApi": [
+          "move",
+          "pick"
+        ],
+        "objectives": [
+          {
+            "type": "collect",
+            "itemIds": [
+              "small-gear"
+            ]
+          },
+          {
+            "type": "exit",
+            "x": 3,
+            "y": 1
+          }
+        ],
+        "items": [
+          {
+            "id": "small-gear",
+            "x": 3,
+            "y": 2
+          }
+        ]
+      }
+    }
+  ]
+}

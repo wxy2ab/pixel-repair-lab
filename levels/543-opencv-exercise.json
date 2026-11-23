@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "opencv-two-bright-regions",
+  "order": 543,
+  "stage": "exercise",
+  "unit": { "id": "opencv", "order": 140, "title": { "zh": "OpenCV", "en": "OpenCV" } },
+  "topic": { "id": "image-processing", "order": 3, "title": { "zh": "模糊与阈值处理", "en": "Blur and thresholding" } },
+  "mode": "filter",
+  "title": { "zh": "只保留两个亮圆点", "en": "Keep Two Bright Dots" },
+  "brief": { "zh": "用 OpenCV 处理校准板，让亮度阈值选出两个互不相连的区域。", "en": "Process the calibration board with OpenCV and tune the threshold to keep two separate regions." },
+  "concept": { "zh": "阈值改变时，白色像素数和连通区域数都会变化。", "en": "Changing the threshold changes the white pixels and the connected regions." },
+  "hints": [{ "zh": "115 会留下三个区域，180 只留下一个。试试中间的值。", "en": "115 keeps three regions and 180 keeps one. Try a value between them." }],
+  "cases": [{
+    "image": "calibration",
+    "label": { "zh": "隔离两个亮圆", "en": "Isolate two bright dots" },
+    "prompt": { "zh": "调整亮度阈值，让 OpenCV 数到恰好 2 个白色区域。", "en": "Adjust the brightness threshold until OpenCV counts exactly two white regions." },
+    "initial": { "blur": 0, "threshold": 115 },
+    "goal": { "regions": 2 },
+    "solution": { "blur": 0, "threshold": 145 }
+  }]
+
+}

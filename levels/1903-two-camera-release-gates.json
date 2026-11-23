@@ -1,0 +1,142 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "challenge-two-camera-release-gates",
+  "order": 1903,
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "双相机放行协议",
+    "en": "Two-Camera Release Protocol"
+  },
+  "brief": {
+    "zh": "两张巡检照要生成三份用途不同的报告。一个场景的两张图共用同一套预处理和置信度门槛。每次先生成预处理图，再核对两张图保留下来的全部候选类别。",
+    "en": "Two inspection photos have three different reporting contracts. Both photos in each contract share the same preprocessing and confidence threshold. Prepare the images, then check the complete label list on each."
+  },
+  "concept": {
+    "zh": "预处理交付标准、共用门槛与低分候选复核",
+    "en": "Preprocessing contracts, a shared threshold and low-score review"
+  },
+  "prerequisites": [
+    {
+      "unit": "opencv",
+      "topic": "image-processing"
+    },
+    {
+      "unit": "yolox",
+      "topic": "object-detection"
+    },
+    {
+      "unit": "yolox",
+      "topic": "detection-confidence"
+    }
+  ],
+  "hints": [],
+  "mode": "project",
+  "cases": [
+    {
+      "image": "pair",
+      "label": {
+        "zh": "小图人员提醒",
+        "en": "Compact personnel alert"
+      },
+      "prompt": {
+        "zh": "保持原色，长边 320 像素。这个提醒只接受人员照中的一个 person 框，犬只照上应没有框。两张图用同一门槛。",
+        "en": "Keep original colors with a 320-pixel long edge. The alert must retain one person in the crew photo and no boxes in the dog photo, using a single threshold."
+      },
+      "initial": {
+        "maxSide": 640,
+        "tone": "gray",
+        "confidence": 35
+      },
+      "goal": {
+        "maxSide": 320,
+        "tone": "original",
+        "labelsByImage": {
+          "labrador": [],
+          "astronaut": [
+            "person"
+          ]
+        }
+      },
+      "solution": {
+        "maxSide": 320,
+        "tone": "original",
+        "confidence": 89
+      }
+    },
+    {
+      "image": "pair",
+      "label": {
+        "zh": "灰度动物登记",
+        "en": "Grayscale animal registry"
+      },
+      "prompt": {
+        "zh": "登记档需要灰度图，长边 640 像素。犬只照保留一个 dog 框，另一张照片不留任何框。",
+        "en": "The registry requires grayscale images with a 640-pixel long edge. Keep one dog in the Labrador photo and no boxes on the other photo."
+      },
+      "initial": {
+        "maxSide": 480,
+        "tone": "brighten",
+        "confidence": 40
+      },
+      "goal": {
+        "maxSide": 640,
+        "tone": "gray",
+        "labelsByImage": {
+          "labrador": [
+            "dog"
+          ],
+          "astronaut": []
+        }
+      },
+      "solution": {
+        "maxSide": 640,
+        "tone": "gray",
+        "confidence": 93
+      }
+    },
+    {
+      "image": "pair",
+      "label": {
+        "zh": "人工复核队列",
+        "en": "Human review queue"
+      },
+      "prompt": {
+        "zh": "复核员要看 320 像素长边的灰度图。犬只照保留 dog；人员照收集 person 和低分的 tie 候选供人工复核，排除其余框。候选标签允许有误。",
+        "en": "Reviewers need grayscale images with a 320-pixel long edge. Keep dog for the Labrador. For the crew portrait, retain person and the low-score tie candidate for inspection, with no other boxes. Candidate labels may be wrong."
+      },
+      "initial": {
+        "maxSide": 640,
+        "tone": "original",
+        "confidence": 75
+      },
+      "goal": {
+        "maxSide": 320,
+        "tone": "gray",
+        "labelsByImage": {
+          "labrador": [
+            "dog"
+          ],
+          "astronaut": [
+            "person",
+            "tie"
+          ]
+        }
+      },
+      "solution": {
+        "maxSide": 320,
+        "tone": "gray",
+        "confidence": 13
+      }
+    }
+  ]
+}

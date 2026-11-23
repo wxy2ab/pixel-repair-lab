@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "challenge-overlapping-heat-orders",
+  "order": 1911,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "prerequisites": [{"unit": "architecture", "topic": "memory"}, {"unit": "architecture", "topic": "registers"}, {"unit": "architecture", "topic": "instructions"}],
+  "title": {"zh": "两份重叠的调温工单", "en": "Overlapping Heat Orders"},
+  "concept": {"zh": "差分读数与区间调节", "en": "Delta readings and overlapping adjustments"},
+  "brief": {"zh": "ACC 是进站温度，地址 0 到 4 是随后五站各自相对前一站的温度变化。地址 5 的工单只调节第 1 至 3 站，地址 6 的工单只调节第 2 至 4 站（站号从 0 开始，均含两端）。重叠处两次都算。将每站的最终温度写回对应地址，保留两份工单。ACC 留下第 4 站比第 0 站高多少度，可以为负。", "en": "ACC is the entry temperature. Addresses 0 through 4 are changes from the preceding stop. The signed adjustment at 5 applies only to stops 1 through 3 inclusive. The one at 6 applies only to stops 2 through 4 inclusive. Stops start at 0, and both orders apply where they overlap. Replace each change with that stop’s final temperature, preserve both orders, and leave stop 4 minus stop 0 in ACC."},
+  "hints": [],
+  "allowedOps": ["LOAD", "ADD", "SUB", "STORE", "HALT"],
+  "starterCode": "HALT\n",
+  "solutionCode": "ADD 0\nSTORE 0\nADD 1\nADD 5\nSTORE 1\nADD 2\nADD 6\nSTORE 2\nADD 3\nSTORE 3\nADD 4\nSUB 5\nSTORE 4\nSUB 0\nHALT\n",
+  "cases": [
+    {"label": {"zh": "验收样本 1", "en": "Acceptance sample 1"}, "memory": [1, -3, 4, 0, 2, 5, -2], "accumulator": 10, "goal": {"memory": [{"address": 0, "value": 11}, {"address": 1, "value": 13}, {"address": 2, "value": 15}, {"address": 3, "value": 15}, {"address": 4, "value": 12}, {"address": 5, "value": 5}, {"address": 6, "value": -2}], "accumulator": 1}},
+    {"label": {"zh": "验收样本 2", "en": "Acceptance sample 2"}, "memory": [0, 0, 0, 0, 0, 7, -7], "accumulator": 0, "goal": {"memory": [{"address": 0, "value": 0}, {"address": 1, "value": 7}, {"address": 2, "value": 0}, {"address": 3, "value": 0}, {"address": 4, "value": -7}, {"address": 5, "value": 7}, {"address": 6, "value": -7}], "accumulator": -7}},
+    {"label": {"zh": "验收样本 3", "en": "Acceptance sample 3"}, "memory": [-2, -2, -2, -2, -2, -4, -3], "accumulator": 6, "goal": {"memory": [{"address": 0, "value": 4}, {"address": 1, "value": -2}, {"address": 2, "value": -7}, {"address": 3, "value": -9}, {"address": 4, "value": -7}, {"address": 5, "value": -4}, {"address": 6, "value": -3}], "accumulator": -11}},
+    {"label": {"zh": "验收样本 4", "en": "Acceptance sample 4"}, "memory": [8, -1, 0, 2, -9, 0, 3], "accumulator": -5, "goal": {"memory": [{"address": 0, "value": 3}, {"address": 1, "value": 2}, {"address": 2, "value": 5}, {"address": 3, "value": 7}, {"address": 4, "value": -2}, {"address": 5, "value": 0}, {"address": 6, "value": 3}], "accumulator": -5}},
+    {"label": {"zh": "验收样本 5", "en": "Acceptance sample 5"}, "memory": [2, 0, 5, 0, -4, 3, 0], "accumulator": 29, "goal": {"memory": [{"address": 0, "value": 31}, {"address": 1, "value": 34}, {"address": 2, "value": 39}, {"address": 3, "value": 39}, {"address": 4, "value": 32}, {"address": 5, "value": 3}, {"address": 6, "value": 0}], "accumulator": 1}}
+  ]
+}

@@ -1,0 +1,378 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "dc-gates-notes",
+  "order": 6031,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "logic-signals",
+    "order": 4,
+    "title": {
+      "zh": "逻辑门与信号",
+      "en": "Logic Gates and Signals"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "哪种信号能点亮呼叫灯？",
+    "en": "Which Signals Turn On the Call Lamp?"
+  },
+  "brief": {
+    "zh": "两个传感器向维修台报告 0 或 1。换一条规则，看看同样的报告会不会点亮呼叫灯。",
+    "en": "Two sensors report 0 or 1 to the workshop. Change the rule and see whether the very same reports light the call lamp."
+  },
+  "concept": {
+    "zh": "与门、或门和非门",
+    "en": "AND, OR and NOT gates"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "让电路按规则选输出",
+        "en": "A circuit that follows a rule"
+      },
+      "body": {
+        "zh": "我们可以用晶体管开关组成逻辑门。门把输入信号读作 0 或 1，再按照固定规则送出一个 0 或 1。这个输出可以控制一盏灯。",
+        "en": "Transistor switches can be combined into a logic gate. The gate reads input signals as 0 or 1 and follows a fixed rule to send out a 0 or a 1. That output can control a lamp."
+      }
+    },
+    {
+      "title": {
+        "zh": "两个条件还是任一条件？",
+        "en": "Both signals or either one?"
+      },
+      "body": {
+        "zh": "与门 AND 要求 A 和 B 都是 1。或门 OR 只要 A、B 中至少一个是 1 就输出 1，包括两个都是 1 的时候。",
+        "en": "AND gives 1 when A and B are both 1. OR gives 1 when at least one is 1, including when both are 1."
+      }
+    },
+    {
+      "title": {
+        "zh": "一个输入也能做决定",
+        "en": "A rule for just one input"
+      },
+      "body": {
+        "zh": "非门 NOT 只接一个输入 A。A 为 0 时它输出 1，A 为 1 时它输出 0。",
+        "en": "NOT uses a single input, A. It gives 1 for an input of 0 and 0 for an input of 1."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "需要两个传感器都发出 1 才亮灯，选哪个门？",
+      "en": "Which gate lights a lamp only when both sensors report 1?"
+    },
+    "options": [
+      {
+        "zh": "OR（或门）",
+        "en": "OR"
+      },
+      {
+        "zh": "NOT（非门）",
+        "en": "NOT"
+      },
+      {
+        "zh": "AND（与门）",
+        "en": "AND"
+      }
+    ],
+    "correct": 2,
+    "feedback": {
+      "zh": "AND 会等两个输入都变成 1。只收到一个 1 时，另一端的 0 还会让输出保持 0。",
+      "en": "AND waits for two ones. With only one 1, the other input is still 0 and keeps the output at 0."
+    }
+  },
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": {
+          "zh": "A 报告 1、B 报告 0。AND 的第二个条件还没满足。",
+          "en": "A reports 1 and B reports 0. AND is waiting for the second signal."
+        },
+        "items": [
+          {
+            "id": "a",
+            "label": {
+              "zh": "传感器 A",
+              "en": "Sensor A"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "b",
+            "label": {
+              "zh": "传感器 B",
+              "en": "Sensor B"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "gate",
+            "label": {
+              "zh": "控制规则",
+              "en": "Rule"
+            },
+            "value": {
+              "zh": "AND",
+              "en": "AND"
+            },
+            "state": "active"
+          },
+          {
+            "id": "lamp",
+            "label": {
+              "zh": "呼叫灯",
+              "en": "Call lamp"
+            },
+            "value": {
+              "zh": "灭 · 0",
+              "en": "Off · 0"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "保留两个输入，换成 OR。一端是 1，灯就亮了。",
+          "en": "Keep the same inputs and switch to OR. One input is 1, so the lamp lights up."
+        },
+        "items": [
+          {
+            "id": "a",
+            "label": {
+              "zh": "传感器 A",
+              "en": "Sensor A"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "b",
+            "label": {
+              "zh": "传感器 B",
+              "en": "Sensor B"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "gate",
+            "label": {
+              "zh": "控制规则",
+              "en": "Rule"
+            },
+            "value": {
+              "zh": "OR",
+              "en": "OR"
+            },
+            "state": "active"
+          },
+          {
+            "id": "lamp",
+            "label": {
+              "zh": "呼叫灯",
+              "en": "Call lamp"
+            },
+            "value": {
+              "zh": "亮 · 1",
+              "en": "On · 1"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "B 也变成 1。两个 1 也满足 OR。",
+          "en": "B changes to 1. Two ones still satisfy OR."
+        },
+        "items": [
+          {
+            "id": "a",
+            "label": {
+              "zh": "传感器 A",
+              "en": "Sensor A"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "b",
+            "label": {
+              "zh": "传感器 B",
+              "en": "Sensor B"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "gate",
+            "label": {
+              "zh": "控制规则",
+              "en": "Rule"
+            },
+            "value": {
+              "zh": "OR",
+              "en": "OR"
+            },
+            "state": "active"
+          },
+          {
+            "id": "lamp",
+            "label": {
+              "zh": "呼叫灯",
+              "en": "Call lamp"
+            },
+            "value": {
+              "zh": "亮 · 1",
+              "en": "On · 1"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "换成 NOT，只读 A。A 为 1，呼叫灯熄灭。",
+          "en": "Switch to NOT. It reads only A. Since A is 1, the lamp goes off."
+        },
+        "items": [
+          {
+            "id": "a",
+            "label": {
+              "zh": "传感器 A",
+              "en": "Sensor A"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "b",
+            "label": {
+              "zh": "传感器 B",
+              "en": "Sensor B"
+            },
+            "value": {
+              "zh": "未接入",
+              "en": "Unused"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "gate",
+            "label": {
+              "zh": "控制规则",
+              "en": "Rule"
+            },
+            "value": {
+              "zh": "NOT",
+              "en": "NOT"
+            },
+            "state": "active"
+          },
+          {
+            "id": "lamp",
+            "label": {
+              "zh": "呼叫灯",
+              "en": "Call lamp"
+            },
+            "value": {
+              "zh": "灭 · 0",
+              "en": "Off · 0"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "把 A 拨回 0，NOT 的输出变成 1。",
+          "en": "Flip A back to 0. NOT now gives a 1."
+        },
+        "items": [
+          {
+            "id": "a",
+            "label": {
+              "zh": "传感器 A",
+              "en": "Sensor A"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "b",
+            "label": {
+              "zh": "传感器 B",
+              "en": "Sensor B"
+            },
+            "value": {
+              "zh": "未接入",
+              "en": "Unused"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "gate",
+            "label": {
+              "zh": "控制规则",
+              "en": "Rule"
+            },
+            "value": {
+              "zh": "NOT",
+              "en": "NOT"
+            },
+            "state": "active"
+          },
+          {
+            "id": "lamp",
+            "label": {
+              "zh": "呼叫灯",
+              "en": "Call lamp"
+            },
+            "value": {
+              "zh": "亮 · 1",
+              "en": "On · 1"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  }
+}

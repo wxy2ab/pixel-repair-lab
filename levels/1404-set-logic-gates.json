@@ -1,0 +1,142 @@
+{
+  "version": 1,
+  "kind": "circuit",
+  "id": "set-logic-gates",
+  "order": 1404,
+  "unit": {
+    "id": "computer",
+    "order": 80,
+    "title": {
+      "zh": "计算机原理",
+      "en": "Computer Systems"
+    }
+  },
+  "topic": {
+    "id": "logic-gates",
+    "order": 2,
+    "title": {
+      "zh": "逻辑门",
+      "en": "Logic Gates"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "按条件配置逻辑控制板",
+    "en": "Wire the Switchboard to Match Each Goal"
+  },
+  "concept": {
+    "zh": "同时满足门的类型与输出",
+    "en": "Match both the gate and the output"
+  },
+  "brief": {
+    "zh": "先选对本轮要求的门，再拨动输入，让输出灯亮或灭。",
+    "en": "Select the required gate first, then flip the inputs so the output light is on or off as requested."
+  },
+  "hints": [
+    {
+      "zh": "AND 要亮时两边都开。OR 要灭时两边都关。",
+      "en": "For AND to turn on, turn on both inputs. For OR to turn off, turn off both inputs."
+    },
+    {
+      "zh": "NOT 的结果只随 A 改变。XOR 可以在两边一样时熄灭。",
+      "en": "The NOT output follows A. XOR turns off when the inputs are equal."
+    }
+  ],
+  "mode": "logic",
+  "gateChoices": [
+    "AND",
+    "OR",
+    "NOT",
+    "XOR"
+  ],
+  "cases": [
+    {
+      "label": {
+        "zh": "把 AND 的输出拨到 1",
+        "en": "Set an AND gate to output 1"
+      },
+      "bits": [
+        1,
+        0
+      ],
+      "gate": "OR",
+      "goal": {
+        "gate": "AND",
+        "output": 1
+      },
+      "solution": {
+        "bits": [
+          1,
+          1
+        ],
+        "gate": "AND"
+      }
+    },
+    {
+      "label": {
+        "zh": "把 OR 的输出拨到 0",
+        "en": "Set an OR gate to output 0"
+      },
+      "bits": [
+        0,
+        1
+      ],
+      "gate": "AND",
+      "goal": {
+        "gate": "OR",
+        "output": 0
+      },
+      "solution": {
+        "bits": [
+          0,
+          0
+        ],
+        "gate": "OR"
+      }
+    },
+    {
+      "label": {
+        "zh": "把 NOT 的输出拨到 0",
+        "en": "Set a NOT gate to output 0"
+      },
+      "bits": [
+        0,
+        0
+      ],
+      "gate": "XOR",
+      "goal": {
+        "gate": "NOT",
+        "output": 0
+      },
+      "solution": {
+        "bits": [
+          1,
+          0
+        ],
+        "gate": "NOT"
+      }
+    },
+    {
+      "label": {
+        "zh": "两边从 1 开始，让 XOR 灯灭",
+        "en": "Start with both inputs on and make XOR output 0"
+      },
+      "bits": [
+        1,
+        1
+      ],
+      "gate": "OR",
+      "goal": {
+        "gate": "XOR",
+        "output": 0
+      },
+      "solution": {
+        "bits": [
+          1,
+          1
+        ],
+        "gate": "XOR"
+      }
+    }
+  ]
+}

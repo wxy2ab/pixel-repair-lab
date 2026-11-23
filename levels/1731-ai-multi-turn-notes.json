@@ -1,0 +1,256 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "ai-multi-turn-notes",
+  "order": 1731,
+  "unit": {
+    "id": "ai-review",
+    "order": 170,
+    "title": {
+      "zh": "核对与修正",
+      "en": "Review and Revision"
+    }
+  },
+  "topic": {
+    "id": "multi-turn",
+    "order": 3,
+    "title": {
+      "zh": "多轮修正",
+      "en": "Revise Across Turns"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "修好后，再查一遍",
+    "en": "Check Again After the Fix"
+  },
+  "brief": {
+    "zh": "跟着三轮清单，看见已修好的问题和新出现的问题。",
+    "en": "Follow three manifests to spot a fixed problem and a newly introduced one."
+  },
+  "concept": {
+    "zh": "每次修正后都回到任务要求，把整张清单重新核对。",
+    "en": "Return to the original assignment and recheck the whole manifest after each correction."
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "把每轮结果留作对照",
+        "en": "Keep each result for comparison"
+      },
+      "body": {
+        "zh": "第一轮漏装了一块滤网。你提出修正后，可以比较两张清单，看看 AI 动了哪些行。",
+        "en": "The first list omits a filter. After your correction, compare the two manifests to see which rows changed."
+      }
+    },
+    {
+      "title": {
+        "zh": "新改动也可能带来问题",
+        "en": "A revision can introduce a mistake"
+      },
+      "body": {
+        "zh": "第二轮有了滤网，却多了备用线圈。再次核对，记下新问题。所有项目都符合原任务后，再确认。",
+        "en": "The second list adds the filter and includes an extra spare coil. Review it again and note the new issue. Confirm once every row meets the original assignment."
+      }
+    }
+  ],
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      {
+        "caption": {
+          "zh": "原任务需要一块滤网和一盏检修灯，备用线圈留在架上。",
+          "en": "The task calls for one filter and one work lamp. Leave the spare coil on the shelf."
+        },
+        "items": [
+          {
+            "id": "filter",
+            "label": {
+              "zh": "滤网",
+              "en": "Filter"
+            },
+            "value": {
+              "zh": "目标 1",
+              "en": "Target 1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "lamp",
+            "label": {
+              "zh": "检修灯",
+              "en": "Work lamp"
+            },
+            "value": {
+              "zh": "目标 1",
+              "en": "Target 1"
+            }
+          },
+          {
+            "id": "coil",
+            "label": {
+              "zh": "备用线圈",
+              "en": "Spare coil"
+            },
+            "value": {
+              "zh": "目标 0",
+              "en": "Target 0"
+            }
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "第一轮漏装滤网。提出一条添加滤网的修正。",
+          "en": "Round 1 omits the filter. Ask the AI to add one filter."
+        },
+        "items": [
+          {
+            "id": "filter",
+            "label": {
+              "zh": "滤网",
+              "en": "Filter"
+            },
+            "value": {
+              "zh": "第 1 轮 · 0",
+              "en": "Round 1 · 0"
+            },
+            "state": "active"
+          },
+          {
+            "id": "lamp",
+            "label": {
+              "zh": "检修灯",
+              "en": "Work lamp"
+            },
+            "value": {
+              "zh": "第 1 轮 · 1",
+              "en": "Round 1 · 1"
+            }
+          },
+          {
+            "id": "coil",
+            "label": {
+              "zh": "备用线圈",
+              "en": "Spare coil"
+            },
+            "value": {
+              "zh": "第 1 轮 · 0",
+              "en": "Round 1 · 0"
+            }
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "第二轮有了滤网，同时多出一个备用线圈。现在请 AI 去掉线圈。",
+          "en": "Round 2 includes the filter and an extra spare coil. Ask the AI to remove the coil."
+        },
+        "items": [
+          {
+            "id": "filter",
+            "label": {
+              "zh": "滤网",
+              "en": "Filter"
+            },
+            "value": {
+              "zh": "第 2 轮 · 1",
+              "en": "Round 2 · 1"
+            }
+          },
+          {
+            "id": "lamp",
+            "label": {
+              "zh": "检修灯",
+              "en": "Work lamp"
+            },
+            "value": {
+              "zh": "第 2 轮 · 1",
+              "en": "Round 2 · 1"
+            }
+          },
+          {
+            "id": "coil",
+            "label": {
+              "zh": "备用线圈",
+              "en": "Spare coil"
+            },
+            "value": {
+              "zh": "第 2 轮 · 1",
+              "en": "Round 2 · 1"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "第三轮三行都符合要求，现在可以确认清单。",
+          "en": "All three rows match in round 3. You can approve the manifest now."
+        },
+        "items": [
+          {
+            "id": "filter",
+            "label": {
+              "zh": "滤网",
+              "en": "Filter"
+            },
+            "value": {
+              "zh": "第 3 轮 · 1",
+              "en": "Round 3 · 1"
+            }
+          },
+          {
+            "id": "lamp",
+            "label": {
+              "zh": "检修灯",
+              "en": "Work lamp"
+            },
+            "value": {
+              "zh": "第 3 轮 · 1",
+              "en": "Round 3 · 1"
+            }
+          },
+          {
+            "id": "coil",
+            "label": {
+              "zh": "备用线圈",
+              "en": "Spare coil"
+            },
+            "value": {
+              "zh": "第 3 轮 · 0",
+              "en": "Round 3 · 0"
+            },
+            "state": "active"
+          }
+        ]
+      }
+    ]
+  },
+  "question": {
+    "prompt": {
+      "zh": "AI 修好了上轮漏装的滤网。下一步做什么？",
+      "en": "The AI added the filter that was missing last time. What comes next?"
+    },
+    "options": [
+      {
+        "zh": "立刻确认清单。",
+        "en": "Approve the manifest immediately."
+      },
+      {
+        "zh": "只核对滤网那一行。",
+        "en": "Check only the filter row."
+      },
+      {
+        "zh": "对照原任务重新核对所有行。",
+        "en": "Review all rows against the original assignment."
+      }
+    ],
+    "correct": 2,
+    "feedback": {
+      "zh": "修正后的清单可能同时改变了其他行。全部核对后才确认。",
+      "en": "A correction may also change other rows. Review them all before approving."
+    }
+  }
+}

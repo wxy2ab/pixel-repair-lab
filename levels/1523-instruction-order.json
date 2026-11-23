@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "cpu-instruction-order",
+  "order": 1523,
+  "unit": { "id": "architecture", "order": 90, "title": { "zh": "计算机结构", "en": "Computer Architecture" } },
+  "topic": { "id": "instructions", "order": 3, "title": { "zh": "指令", "en": "Instructions" } },
+  "stage": "exercise",
+  "title": { "zh": "备份原值再写回", "en": "Back Up a Value Before Overwriting" },
+  "brief": { "zh": "先把地址 0 的原值备份到地址 3。再用地址 1 的值减去地址 0 的原值，把差写回地址 0。保留地址 1 和 2 的值，最后停机。", "en": "Back up the original value from address 0 to address 3. Subtract that original value from address 1 and write the result back to address 0. Preserve addresses 1 and 2, then halt." },
+  "concept": { "zh": "写回会替换旧值；指令顺序决定什么时候还有原值。", "en": "A write replaces the previous value. Instruction order determines when the original is still available." },
+  "hints": [{ "zh": "先完成 LOAD 0 和 STORE 3。接着用 LOAD 1 重新开始计算。备份做好之后，就能用 SUB 3 读取旧值。", "en": "Start with LOAD 0 and STORE 3. Use LOAD 1 to start the calculation. Then SUB 3 reads the backed-up value." }],
+  "allowedOps": ["LOAD", "SUB", "STORE", "HALT"],
+  "starterCode": "HALT\n",
+  "solutionCode": "LOAD 0\nSTORE 3\nLOAD 1\nSUB 3\nSTORE 0\nHALT\n",
+  "cases": [
+    { "label": { "zh": "结果为正", "en": "Positive result" }, "memory": [4, 11, 81, 0], "goal": { "memory": [{ "address": 0, "value": 7 }, { "address": 1, "value": 11 }, { "address": 2, "value": 81 }, { "address": 3, "value": 4 }] } },
+    { "label": { "zh": "结果为负", "en": "Negative result" }, "memory": [13, 6, 32, 99], "accumulator": 45, "goal": { "memory": [{ "address": 0, "value": -7 }, { "address": 1, "value": 6 }, { "address": 2, "value": 32 }, { "address": 3, "value": 13 }] } }
+  ]
+}

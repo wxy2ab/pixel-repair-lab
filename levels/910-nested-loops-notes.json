@@ -1,0 +1,454 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "nested-loops-notes",
+  "order": 910,
+  "unit": {
+    "id": "python-advanced",
+    "order": 30,
+    "title": {
+      "zh": "Python 高级",
+      "en": "Advanced Python"
+    }
+  },
+  "topic": {
+    "id": "nested-loops",
+    "order": 2,
+    "title": {
+      "zh": "嵌套循环",
+      "en": "Nested Loops"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "嵌套循环",
+    "en": "Nested Loops"
+  },
+  "brief": {
+    "zh": "外层循环选一排，内层循环给这一排的电池逐块补 3 格。",
+    "en": "The outer loop picks a row. The inner loop adds 3 units to each battery in that row."
+  },
+  "concept": {
+    "zh": "外层选排，内层逐块补电",
+    "en": "Outer loop for rows, inner loop for batteries"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "外层循环选一排",
+        "en": "The outer loop selects a row"
+      },
+      "body": {
+        "zh": "每进入一轮外层循环，row 就指向新的一排，charged_row 从空列表开始记录这一排的结果。",
+        "en": "At the start of each outer turn, row becomes the next row, and charged_row starts empty to hold that row’s results."
+      }
+    },
+    {
+      "title": {
+        "zh": "内层循环逐块补电",
+        "en": "The inner loop charges one battery at a time"
+      },
+      "body": {
+        "zh": "内层循环依次取出当前排的电量，每块加 3 格。处理完这一排，保存整排结果，再回到外层换一排。",
+        "en": "The inner loop takes each charge in the current row and adds 3. When that row is finished, save its results and return to the outer loop for the next row."
+      }
+    },
+    {
+      "title": {
+        "zh": "每排可以有不同块数",
+        "en": "Rows can have different lengths"
+      },
+      "body": {
+        "zh": "一排有几块电池，内层就在这一排补几次。遇到空排时不会补电，仍会记下这一排的空结果。",
+        "en": "Each row gets one charging turn per battery. An empty row gets no charging turns, and its empty result is still recorded."
+      }
+    }
+  ],
+  "animation": {
+    "layout": "row",
+    "frames": [
+      {
+        "caption": {
+          "zh": "外层先选第 1 排，有两块电池。",
+          "en": "The outer loop selects row 1, which has two batteries."
+        },
+        "items": [
+          {
+            "id": "row-1",
+            "label": {
+              "zh": "第 1 排",
+              "en": "Row 1"
+            },
+            "value": {
+              "zh": "[1, 4]",
+              "en": "[1, 4]"
+            },
+            "state": "active"
+          },
+          {
+            "id": "row-2",
+            "label": {
+              "zh": "第 2 排",
+              "en": "Row 2"
+            },
+            "value": {
+              "zh": "[2, 0]",
+              "en": "[2, 0]"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "内层先给第 1 块补 3 格，电量从 1 变成 4。",
+          "en": "The inner loop adds 3 to the first battery, taking it from 1 to 4."
+        },
+        "items": [
+          {
+            "id": "row-1",
+            "label": {
+              "zh": "第 1 排",
+              "en": "Row 1"
+            },
+            "value": {
+              "zh": "[4, 4]",
+              "en": "[4, 4]"
+            },
+            "state": "active"
+          },
+          {
+            "id": "row-2",
+            "label": {
+              "zh": "第 2 排",
+              "en": "Row 2"
+            },
+            "value": {
+              "zh": "[2, 0]",
+              "en": "[2, 0]"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "内层给第 2 块补电，记下第 1 排的结果 [4, 7]。",
+          "en": "The inner loop charges the second battery and the program records row 1 as [4, 7]."
+        },
+        "items": [
+          {
+            "id": "row-1",
+            "label": {
+              "zh": "第 1 排",
+              "en": "Row 1"
+            },
+            "value": {
+              "zh": "[4, 7]",
+              "en": "[4, 7]"
+            },
+            "state": "done"
+          },
+          {
+            "id": "row-2",
+            "label": {
+              "zh": "第 2 排",
+              "en": "Row 2"
+            },
+            "value": {
+              "zh": "[2, 0]",
+              "en": "[2, 0]"
+            },
+            "state": "muted"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "外层换到第 2 排，内层从这一排的第 1 块开始。",
+          "en": "The outer loop moves to row 2 and the inner loop starts with its first battery."
+        },
+        "items": [
+          {
+            "id": "row-1",
+            "label": {
+              "zh": "第 1 排",
+              "en": "Row 1"
+            },
+            "value": {
+              "zh": "[4, 7]",
+              "en": "[4, 7]"
+            },
+            "state": "done"
+          },
+          {
+            "id": "row-2",
+            "label": {
+              "zh": "第 2 排",
+              "en": "Row 2"
+            },
+            "value": {
+              "zh": "[2, 0]",
+              "en": "[2, 0]"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "两排都补完，一共补了 4 次。",
+          "en": "Both rows are finished. The program charged four batteries."
+        },
+        "items": [
+          {
+            "id": "row-1",
+            "label": {
+              "zh": "第 1 排",
+              "en": "Row 1"
+            },
+            "value": {
+              "zh": "[4, 7]",
+              "en": "[4, 7]"
+            },
+            "state": "done"
+          },
+          {
+            "id": "row-2",
+            "label": {
+              "zh": "第 2 排",
+              "en": "Row 2"
+            },
+            "value": {
+              "zh": "[5, 3]",
+              "en": "[5, 3]"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  },
+  "question": {
+    "prompt": {
+      "zh": "第 1 排刚补完，程序接下来处理哪块电池？",
+      "en": "Row 1 just finished. Which battery does the program charge next?"
+    },
+    "options": [
+      {
+        "zh": "第 2 排的第 1 块",
+        "en": "The first battery in row 2"
+      },
+      {
+        "zh": "第 2 排的第 2 块",
+        "en": "The second battery in row 2"
+      },
+      {
+        "zh": "第 1 排的第 1 块",
+        "en": "The first battery in row 1"
+      }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "外层换到第 2 排，内层会从新一排的第 1 块开始。",
+      "en": "The outer loop selects row 2, and the inner loop starts with the first battery in that row."
+    }
+  },
+  "execution": {
+    "source": "rows = read_battery_rows()\nresults = []\nfor row in rows:\n    charged_row = []\n    for charge in row:\n        charged_row.append(charge + 3)\n    results.append(charged_row)\nsay(str(results))",
+    "cases": [],
+    "nestedLoops": {
+      "increment": 3,
+      "cases": [
+        {
+          "label": {
+            "zh": "维修台上的两排电池",
+            "en": "Two rows on the workbench"
+          },
+          "rows": [
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              0
+            ]
+          ],
+          "expected": {
+            "rounds": 4,
+            "rows": [
+              [
+                4,
+                7
+              ],
+              [
+                5,
+                3
+              ]
+            ]
+          }
+        },
+        {
+          "label": {
+            "zh": "三排长短不同",
+            "en": "Three rows of different lengths"
+          },
+          "rows": [
+            [
+              2,
+              0,
+              4
+            ],
+            [
+              5
+            ],
+            [
+              1,
+              3
+            ]
+          ],
+          "expected": {
+            "rounds": 6,
+            "rows": [
+              [
+                5,
+                3,
+                7
+              ],
+              [
+                8
+              ],
+              [
+                4,
+                6
+              ]
+            ]
+          },
+          "predictions": {
+            "rounds": [
+              3,
+              6,
+              9
+            ],
+            "rows": [
+              [
+                [
+                  5,
+                  3,
+                  7
+                ],
+                [
+                  5
+                ],
+                [
+                  1,
+                  3
+                ]
+              ],
+              [
+                [
+                  5,
+                  3,
+                  7
+                ],
+                [
+                  8
+                ],
+                [
+                  4,
+                  6
+                ]
+              ],
+              [
+                [
+                  5,
+                  0,
+                  4
+                ],
+                [
+                  8
+                ],
+                [
+                  4,
+                  3
+                ]
+              ]
+            ]
+          }
+        },
+        {
+          "label": {
+            "zh": "中间一排是空的",
+            "en": "The middle row is empty"
+          },
+          "rows": [
+            [
+              0
+            ],
+            [],
+            [
+              4,
+              2
+            ]
+          ],
+          "expected": {
+            "rounds": 3,
+            "rows": [
+              [
+                3
+              ],
+              [],
+              [
+                7,
+                5
+              ]
+            ]
+          },
+          "predictions": {
+            "rounds": [
+              2,
+              4,
+              3
+            ],
+            "rows": [
+              [
+                [
+                  3
+                ],
+                [
+                  3
+                ],
+                [
+                  7,
+                  5
+                ]
+              ],
+              [
+                [
+                  3
+                ],
+                [],
+                [
+                  7,
+                  5
+                ]
+              ],
+              [
+                [
+                  3
+                ],
+                [],
+                [
+                  4,
+                  2
+                ]
+              ]
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

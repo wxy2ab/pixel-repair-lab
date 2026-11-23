@@ -1,0 +1,222 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "convert-repair-scores",
+  "order": 422,
+  "unit": {
+    "id": "python-advanced",
+    "order": 30,
+    "title": {
+      "zh": "Python 高级",
+      "en": "Advanced Python"
+    }
+  },
+  "stage": "exercise",
+  "topic": { "id": "function-design", "order": 1, "title": { "zh": "函数设计", "en": "Function Design" } },
+  "title": {
+    "zh": "装上计分转换器",
+    "en": "Build a Score Converter"
+  },
+  "concept": {
+    "zh": "参数、返回值与重复调用",
+    "en": "Parameters, return values, and repeated calls"
+  },
+  "brief": {
+    "zh": "每个维修分数都要翻倍再加 1。写一个函数负责转换，然后用它逐个计算并提交结果。",
+    "en": "Double every repair score and add one. Write a function for the conversion, then call it for each score and submit the result."
+  },
+  "hints": [
+    {
+      "zh": "先定义函数并返回计算值。再读取列表，为每一项调用一次。",
+      "en": "Define the function and return its calculation. Then scan the list and call the function for each item."
+    }
+  ],
+  "tiles": [
+    "#######",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#######"
+  ],
+  "start": {
+    "x": 2,
+    "y": 2
+  },
+  "allowedApi": [
+    "scan",
+    "submit"
+  ],
+  "objectives": [
+    {
+      "type": "submit",
+      "values": [
+        9,
+        5,
+        15
+      ]
+    }
+  ],
+  "input": [
+    4,
+    2,
+    7
+  ],
+  "cards": [
+    {
+      "id": "define",
+      "label": {
+        "zh": "定义一个转换函数",
+        "en": "Define a conversion function"
+      },
+      "template": "def score(value):",
+      "block": true
+    },
+    {
+      "id": "return",
+      "label": {
+        "zh": "算好并返回结果",
+        "en": "Calculate and return the result"
+      },
+      "template": "return value * {{factor}} + {{extra}}",
+      "parameters": [
+        {
+          "name": "factor",
+          "label": {
+            "zh": "乘以",
+            "en": "Multiply by"
+          },
+          "choices": [
+            {
+              "id": "1",
+              "label": {
+                "zh": "1",
+                "en": "1"
+              },
+              "code": "1"
+            },
+            {
+              "id": "2",
+              "label": {
+                "zh": "2",
+                "en": "2"
+              },
+              "code": "2"
+            },
+            {
+              "id": "3",
+              "label": {
+                "zh": "3",
+                "en": "3"
+              },
+              "code": "3"
+            }
+          ]
+        },
+        {
+          "name": "extra",
+          "label": {
+            "zh": "加上",
+            "en": "Add"
+          },
+          "choices": [
+            {
+              "id": "0",
+              "label": {
+                "zh": "0",
+                "en": "0"
+              },
+              "code": "0"
+            },
+            {
+              "id": "1",
+              "label": {
+                "zh": "1",
+                "en": "1"
+              },
+              "code": "1"
+            },
+            {
+              "id": "2",
+              "label": {
+                "zh": "2",
+                "en": "2"
+              },
+              "code": "2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "read",
+      "label": {
+        "zh": "扫描所有分数",
+        "en": "Scan the starting scores"
+      },
+      "template": "scores = scan()"
+    },
+    {
+      "id": "each",
+      "label": {
+        "zh": "逐个处理分数",
+        "en": "For each score"
+      },
+      "template": "for value in scores:",
+      "block": true
+    },
+    {
+      "id": "call",
+      "label": {
+        "zh": "调用函数并提交",
+        "en": "Call the function and submit"
+      },
+      "template": "submit(score(value))"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "define",
+      "children": [
+        {
+          "cardId": "return",
+          "values": {
+            "factor": "2",
+            "extra": "1"
+          }
+        }
+      ]
+    },
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "each",
+      "children": [
+        {
+          "cardId": "call"
+        }
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "input": [
+        0,
+        5,
+        20,
+        1
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            1,
+            11,
+            41,
+            3
+          ]
+        }
+      ]
+    }
+  ]
+}

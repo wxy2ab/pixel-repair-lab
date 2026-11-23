@@ -1,0 +1,234 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-verified-intake",
+  "order": 1820,
+  "difficulty": "intermediate",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "foundations",
+      "topic": "sequence"
+    },
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    }
+  ],
+  "title": {
+    "zh": "封签取件单",
+    "en": "Sealed Intake Run"
+  },
+  "concept": {
+    "zh": "定序取件 · 验收记录 · 限步",
+    "en": "Ordered pickups · Intake log · Turn budget"
+  },
+  "brief": {
+    "zh": "按青玉 (4,2)、石板 (2,5)、琥珀 (8,5)、珍珠 (7,2) 的顺序拾取并提交零件编号，然后停在出口。备用零件不计入验收。拾取和移动各耗 1 回合，提交不耗回合。全程最多 25 回合。",
+    "en": "Pick up and submit the part IDs in this order: jade (4,2), slate (2,5), amber (8,5), pearl (7,2). Then stop at the exit. The spare parts do not count toward the intake. Moving and picking up each cost one turn. Submitting is free. You have 25 turns."
+  },
+  "hints": [],
+  "tiles": [
+    "###########",
+    "#....#....#",
+    "#.#.....#.#",
+    "#.........#",
+    "#.##...##.#",
+    "#.........#",
+    "###########"
+  ],
+  "start": {
+    "x": 5,
+    "y": 3
+  },
+  "turnLimit": 25,
+  "items": [
+    {
+      "id": "jade",
+      "x": 4,
+      "y": 2
+    },
+    {
+      "id": "slate",
+      "x": 2,
+      "y": 5
+    },
+    {
+      "id": "amber",
+      "x": 8,
+      "y": 5
+    },
+    {
+      "id": "pearl",
+      "x": 7,
+      "y": 2
+    },
+    {
+      "id": "rust",
+      "x": 3,
+      "y": 3
+    },
+    {
+      "id": "spare",
+      "x": 6,
+      "y": 1
+    }
+  ],
+  "allowedApi": [
+    "move",
+    "pick",
+    "submit"
+  ],
+  "objectives": [
+    {
+      "type": "collect",
+      "itemIds": [
+        "jade",
+        "slate",
+        "amber",
+        "pearl"
+      ]
+    },
+    {
+      "type": "submit",
+      "values": [
+        "jade",
+        "slate",
+        "amber",
+        "pearl"
+      ]
+    },
+    {
+      "type": "exit",
+      "x": 5,
+      "y": 2
+    }
+  ],
+  "cards": [
+    {
+      "id": "up",
+      "label": {
+        "zh": "向上",
+        "en": "Up"
+      },
+      "template": "move(\"up\")"
+    },
+    {
+      "id": "right",
+      "label": {
+        "zh": "向右",
+        "en": "Right"
+      },
+      "template": "move(\"right\")"
+    },
+    {
+      "id": "down",
+      "label": {
+        "zh": "向下",
+        "en": "Down"
+      },
+      "template": "move(\"down\")"
+    },
+    {
+      "id": "left",
+      "label": {
+        "zh": "向左",
+        "en": "Left"
+      },
+      "template": "move(\"left\")"
+    },
+    {
+      "id": "log-intake",
+      "label": {
+        "zh": "拾取并登记编号",
+        "en": "Pick up and log the ID"
+      },
+      "template": "submit(pick())"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "left"
+    },
+    {
+      "cardId": "log-intake"
+    },
+    {
+      "cardId": "down"
+    },
+    {
+      "cardId": "down"
+    },
+    {
+      "cardId": "down"
+    },
+    {
+      "cardId": "left"
+    },
+    {
+      "cardId": "left"
+    },
+    {
+      "cardId": "log-intake"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "log-intake"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "left"
+    },
+    {
+      "cardId": "left"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "log-intake"
+    },
+    {
+      "cardId": "left"
+    },
+    {
+      "cardId": "left"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "kind": "breadboard",
+  "id": "dc-breadboard-call-lamp",
+  "order": 6050,
+  "unit": { "id": "digital-circuits", "order": 85, "title": { "zh": "数字电路", "en": "Digital Circuits" } },
+  "stage": "challenge",
+  "courseFinal": true,
+  "title": { "zh": "面包板项目：接出呼叫灯", "en": "Breadboard Project · Wire the Call Light" },
+  "brief": {
+    "zh": "把开关灯的面包板接到 Arduino 上，让按钮把信号送给 D2，让 D13 控制电阻和外接 LED。运行呼叫灯程序，看按下和松开时灯会怎样。",
+    "en": "Connect your button-light breadboard to the Arduino. Let the button send its signal to D2 and use D13 to drive the resistor and external LED. Run the call-light sketch and test the light with the button pressed and released."
+  },
+  "concept": { "zh": "让同一段程序读取接好的按钮，驱动外接 LED", "en": "Use the same sketch to read a wired button and drive an external LED" },
+  "hints": [
+    { "zh": "灯亮时选直流电压档，把红表笔放在 LED 的 A 端、黑表笔放在 K 端，读一读电压。交换两支表笔的位置，再看看数字的正负。", "en": "While the lamp is lit, select DC volts. Put the red probe on the LED's A leg and black on K. Read the voltage, then swap the probes and check the sign." },
+    { "zh": "程序用 D2 读取按钮。它有内部上拉电阻，松开时读 HIGH，按下时需要一条通往 GND 的路。", "en": "The sketch reads the button on D2. Its internal pull-up gives HIGH when released. Pressing the button should make a path to GND." },
+    { "zh": "在这块 Uno 上，LED_BUILTIN 对应 D13。它能给外接 LED 提供输出。检查电阻是否和 LED 串联，LED 的两端方向是否正确。", "en": "On this Uno, LED_BUILTIN is D13. It can drive your external LED. Check that the resistor is in series with the LED and that the LED faces the right way." },
+    { "zh": "记住按下按钮时的 D13 读数和灯光，再翻转 LED，重新运行。哪一个变了？如果只把一只脚换到同一编号的另一个孔呢？", "en": "Note D13 and the light when you press the button. Flip the LED and run the sketch again. What changed? What if you move a leg to another hole on the same strip?" }
+  ],
+  "board": {
+    "mode": "call-lamp",
+    "programId": "dc-arduino-beacon",
+    "carryFrom": "dc-breadboard-loop",
+    "initialParts": [],
+    "solutionParts": [
+      { "kind": "button", "pins": ["A1","A2"] },
+      { "kind": "resistor", "pins": ["A3","A4"] },
+      { "kind": "led", "pins": ["A5","A6"] }
+    ],
+    "initialWires": [],
+    "solutionWires": [["uno-D2","B1"],["B2","GND"],["uno-D13","B3"],["B4","B5"],["B6","C2"]]
+  }
+}

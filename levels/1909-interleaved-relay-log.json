@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "challenge-interleaved-relay-log",
+  "order": 1909,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "prerequisites": [{"unit": "architecture", "topic": "memory"}, {"unit": "architecture", "topic": "registers"}, {"unit": "architecture", "topic": "instructions"}],
+  "title": {"zh": "交错的双轨行车记录", "en": "Interleaved Rail Logs"},
+  "concept": {"zh": "两条独立的增量记录", "en": "Two independent streams of changes"},
+  "brief": {"zh": "左轨的起始读数在 ACC，右轨的起始读数在地址 6。地址 0 到 5 依次交替存着左、右轨各三次的变化量。把六个变化量就地换成各自轨道当时的实际读数，保留地址 6。停机时 ACC 报告最后一次左轨读数减右轨读数。", "en": "ACC starts with the left rail reading. Address 6 holds the starting right rail reading. Addresses 0 to 5 alternate left and right changes for three rounds. Replace each change in place with its own rail’s reading at that moment. Preserve address 6 and halt with the last left reading minus the last right reading in ACC."},
+  "hints": [],
+  "allowedOps": ["LOAD", "ADD", "SUB", "STORE", "HALT"],
+  "starterCode": "HALT\n",
+  "solutionCode": "ADD 0\nSTORE 0\nADD 2\nSTORE 2\nADD 4\nSTORE 4\nLOAD 6\nADD 1\nSTORE 1\nADD 3\nSTORE 3\nADD 5\nSTORE 5\nLOAD 4\nSUB 5\nHALT\n",
+  "cases": [
+    {"label": {"zh": "验收样本 1", "en": "Acceptance sample 1"}, "memory": [3, -2, 5, 4, -1, 1, 7], "accumulator": 9, "goal": {"memory": [{"address": 0, "value": 12}, {"address": 1, "value": 5}, {"address": 2, "value": 17}, {"address": 3, "value": 9}, {"address": 4, "value": 16}, {"address": 5, "value": 10}, {"address": 6, "value": 7}], "accumulator": 6}},
+    {"label": {"zh": "验收样本 2", "en": "Acceptance sample 2"}, "memory": [-6, 7, 0, -3, 8, -8, -4], "accumulator": 2, "goal": {"memory": [{"address": 0, "value": -4}, {"address": 1, "value": 3}, {"address": 2, "value": -4}, {"address": 3, "value": 0}, {"address": 4, "value": 4}, {"address": 5, "value": -8}, {"address": 6, "value": -4}], "accumulator": 12}},
+    {"label": {"zh": "验收样本 3", "en": "Acceptance sample 3"}, "memory": [1, 0, 1, 0, 1, 0, 0], "accumulator": 0, "goal": {"memory": [{"address": 0, "value": 1}, {"address": 1, "value": 0}, {"address": 2, "value": 2}, {"address": 3, "value": 0}, {"address": 4, "value": 3}, {"address": 5, "value": 0}, {"address": 6, "value": 0}], "accumulator": 3}},
+    {"label": {"zh": "验收样本 4", "en": "Acceptance sample 4"}, "memory": [0, 0, 0, 0, 0, 0, 8], "accumulator": -3, "goal": {"memory": [{"address": 0, "value": -3}, {"address": 1, "value": 8}, {"address": 2, "value": -3}, {"address": 3, "value": 8}, {"address": 4, "value": -3}, {"address": 5, "value": 8}, {"address": 6, "value": 8}], "accumulator": -11}},
+    {"label": {"zh": "验收样本 5", "en": "Acceptance sample 5"}, "memory": [4, -4, -4, 4, -7, 7, 2], "accumulator": 2, "goal": {"memory": [{"address": 0, "value": 6}, {"address": 1, "value": -2}, {"address": 2, "value": 2}, {"address": 3, "value": 2}, {"address": 4, "value": -5}, {"address": 5, "value": 9}, {"address": 6, "value": 2}], "accumulator": -14}}
+  ]
+}

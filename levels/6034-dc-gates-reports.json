@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "kind": "circuit",
+  "id": "dc-gates-reports",
+  "order": 6034,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "logic-signals",
+    "order": 4,
+    "title": {
+      "zh": "逻辑门与信号",
+      "en": "Logic Gates and Signals"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "为两种报告接好信号灯",
+    "en": "Wire Two Different Status Signals"
+  },
+  "brief": {
+    "zh": "左边的 A 值 2，右边的 B 值 1。先设置两位报告，再让每张工单指定的逻辑门得出正确的灯光。",
+    "en": "The left bit A is worth 2 and the right bit B is worth 1. Set the two-bit report, then apply each order’s gate to get the requested light."
+  },
+  "concept": {
+    "zh": "同时检查二进制报告与门的输出",
+    "en": "Check the binary report and gate output together"
+  },
+  "hints": [],
+  "mode": "combined",
+  "gateChoices": [
+    "AND",
+    "OR",
+    "NOT"
+  ],
+  "cases": [
+    {
+      "label": {
+        "zh": "呼叫台 · 报告 2，任一端呼叫就亮",
+        "en": "Call desk · report 2, light when either end calls"
+      },
+      "bits": [
+        0,
+        0
+      ],
+      "gate": "AND",
+      "goal": {
+        "value": 2,
+        "gate": "OR",
+        "output": 1
+      },
+      "solution": {
+        "bits": [
+          1,
+          0
+        ],
+        "gate": "OR"
+      }
+    },
+    {
+      "label": {
+        "zh": "断线提醒 · 报告 1，A 为 0 时亮",
+        "en": "Broken-line alert · report 1, light when A is 0"
+      },
+      "bits": [
+        1,
+        0
+      ],
+      "gate": "OR",
+      "goal": {
+        "value": 1,
+        "gate": "NOT",
+        "output": 1
+      },
+      "solution": {
+        "bits": [
+          0,
+          1
+        ],
+        "gate": "NOT"
+      }
+    }
+  ]
+}

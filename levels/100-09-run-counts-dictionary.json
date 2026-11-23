@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "kind": "replay",
+  "id": "run-counts-dictionary",
+  "order": 1008,
+  "unit": {
+    "id": "structures",
+    "order": 40,
+    "title": {
+      "zh": "数据结构",
+      "en": "Data Structures"
+    }
+  },
+  "topic": {
+    "id": "dictionaries",
+    "order": 4,
+    "title": {
+      "zh": "字典",
+      "en": "Dictionaries"
+    }
+  },
+  "stage": "demo",
+  "title": {
+    "zh": "让字典记录零件数量",
+    "en": "Keep Part Counts in a Dictionary"
+  },
+  "concept": {
+    "zh": "从按键查找到按键更新",
+    "en": "Look up and update values by key"
+  },
+  "brief": {
+    "zh": "先查看名字对应哪个编号，再用字典把同类零件合到同一个计数里。",
+    "en": "Look up a number by name, then use a dictionary to put parts of the same kind in one count."
+  },
+  "hints": [],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": {
+        "zh": "字典：按机器人名字找频道",
+        "en": "Dictionary: use a robot name to find a channel"
+      },
+      "source": "channels = {\"lumi\": 4, \"pip\": 7}\nrobot = scan()\nsubmit(channels[robot])",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "allowedApi": [
+          "scan",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              4
+            ],
+            "origin": "dict-index",
+            "sameContainer": true
+          }
+        ],
+        "input": "lumi"
+      }
+    },
+    {
+      "title": {
+        "zh": "把收到的线缆和垫圈分类计数",
+        "en": "Count how many cables and washers arrived"
+      },
+      "source": "parts = scan()\ncounts = {}\nfor part in parts:\n    if part in counts:\n        counts[part] = counts[part] + 1\n    else:\n        counts[part] = 1\nsubmit(counts[\"cable\"])\nsubmit(counts[\"washer\"])",
+      "scenario": {
+        "tiles": [
+          "#######",
+          "#.....#",
+          "#.....#",
+          "#.....#",
+          "#######"
+        ],
+        "start": {
+          "x": 2,
+          "y": 2
+        },
+        "allowedApi": [
+          "scan",
+          "submit"
+        ],
+        "objectives": [
+          {
+            "type": "submit",
+            "values": [
+              2,
+              1
+            ],
+            "origin": "dict-index",
+            "sameContainer": true
+          }
+        ],
+        "input": [
+          "cable",
+          "washer",
+          "cable"
+        ]
+      }
+    }
+  ]
+}

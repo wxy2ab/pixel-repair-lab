@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "numpy-battery-filter",
+  "order": 502,
+  "stage": "demo",
+  "unit": {
+    "id": "numpy",
+    "order": 100,
+    "title": {
+      "zh": "NumPy",
+      "en": "NumPy"
+    }
+  },
+  "topic": {
+    "id": "masks",
+    "order": 2,
+    "title": {
+      "zh": "布尔掩码",
+      "en": "Boolean masks"
+    }
+  },
+  "title": {
+    "zh": "给整列读数设一道门槛",
+    "en": "Set a Cutoff for a Whole Column"
+  },
+  "brief": {
+    "zh": "调一调温度条件。哪几行被 NumPy 掩码保留下来？",
+    "en": "Change the temperature condition. Which rows does the NumPy mask keep?"
+  },
+  "concept": {
+    "zh": "用一次比较生成掩码，再根据掩码选出记录。",
+    "en": "Create a mask with one comparison and use it to select records."
+  },
+  "hints": [
+    {
+      "zh": "把条件从至少 24 °C 切换成至多 24 °C，留意 24 °C 的记录。",
+      "en": "Switch from at least 24 °C to at most 24 °C and watch the readings of exactly 24 °C."
+    }
+  ],
+  "steps": [
+    {
+      "operation": "mask",
+      "input": "clean",
+      "label": {
+        "zh": "调整掩码",
+        "en": "Adjust the mask"
+      },
+      "prompt": {
+        "zh": "改变比较方向或门槛，观察等于门槛的读数是否留下。",
+        "en": "Change the comparison or cutoff and watch whether readings equal to the cutoff stay."
+      },
+      "initial": {
+        "column": "reading",
+        "comparison": "gte",
+        "threshold": 24
+      }
+    }
+  ]
+}

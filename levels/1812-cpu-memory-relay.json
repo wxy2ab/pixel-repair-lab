@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "challenge-cpu-memory-relay",
+  "order": 1812,
+  "difficulty": "intermediate",
+  "stage": "challenge",
+  "unit": { "id": "challenge-zone", "order": 90, "title": { "zh": "挑战场", "en": "Challenge Arena" } },
+  "prerequisites": [
+    { "unit": "architecture", "topic": "memory" },
+    { "unit": "architecture", "topic": "registers" },
+    { "unit": "architecture", "topic": "instructions" }
+  ],
+  "title": { "zh": "内存轮换接力", "en": "Memory Relay" },
+  "concept": { "zh": "原地轮换 · 留存核对值", "en": "In-place relay · Verification value" },
+  "brief": {
+    "zh": "把地址 0、1、2 的电量原地轮换：原 0 号移到 2 号，原 1 号移到 0 号，原 2 号移到 1 号。用轮换前的电量算出核对值（原 0 号 + 原 1 号 − 原 2 号），同时写入地址 3 和 ACC。保留地址 4 的备用电量。同一份程序须在四组数据中都通过。",
+    "en": "Rotate the readings in addresses 0, 1, and 2 in place: move old 0 to address 2, old 1 to address 0, and old 2 to address 1. Compute the verification value from the original readings (old 0 + old 1 − old 2) and leave it in both address 3 and ACC. Keep the reserve at address 4 intact. One program must pass all four cases."
+  },
+  "hints": [],
+  "allowedOps": ["LOAD", "ADD", "SUB", "STORE", "HALT"],
+  "starterCode": "HALT\n",
+  "solutionCode": "LOAD 0\nSTORE 3\nLOAD 1\nSTORE 0\nLOAD 2\nSTORE 1\nLOAD 3\nSTORE 2\nADD 0\nSUB 1\nSTORE 3\nHALT\n",
+  "cases": [
+    {
+      "label": { "zh": "早班记录", "en": "Morning readings" },
+      "memory": [11, 4, 7, 99, 81],
+      "accumulator": 18,
+      "goal": {
+        "accumulator": 8,
+        "memory": [{ "address": 0, "value": 4 }, { "address": 1, "value": 7 }, { "address": 2, "value": 11 }, { "address": 3, "value": 8 }, { "address": 4, "value": 81 }]
+      }
+    },
+    {
+      "label": { "zh": "负数核对值", "en": "Negative verification" },
+      "memory": [2, 1, 19, 0, 6],
+      "accumulator": -11,
+      "goal": {
+        "accumulator": -16,
+        "memory": [{ "address": 0, "value": 1 }, { "address": 1, "value": 19 }, { "address": 2, "value": 2 }, { "address": 3, "value": -16 }, { "address": 4, "value": 6 }]
+      }
+    },
+    {
+      "label": { "zh": "空电池入库", "en": "Empty battery arrival" },
+      "memory": [0, 13, 13, -7, 40],
+      "accumulator": 54,
+      "goal": {
+        "accumulator": 0,
+        "memory": [{ "address": 0, "value": 13 }, { "address": 1, "value": 13 }, { "address": 2, "value": 0 }, { "address": 3, "value": 0 }, { "address": 4, "value": 40 }]
+      }
+    },
+    {
+      "label": { "zh": "同量入库", "en": "Matching readings" },
+      "memory": [9, 9, 1, 63, 0],
+      "accumulator": 17,
+      "goal": {
+        "accumulator": 17,
+        "memory": [{ "address": 0, "value": 9 }, { "address": 1, "value": 1 }, { "address": 2, "value": 9 }, { "address": 3, "value": 17 }, { "address": 4, "value": 0 }]
+      }
+    }
+  ]
+}

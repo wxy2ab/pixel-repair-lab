@@ -1,0 +1,179 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "routing",
+    "order": 60,
+    "title": {
+      "zh": "算法进阶",
+      "en": "Intermediate Algorithms"
+    }
+  },
+  "kind": "lecture",
+  "id": "routing-notes",
+  "order": 1210,
+  "stage": "explain",
+  "topic": {
+    "id": "breadth-first",
+    "order": 2,
+    "title": {
+      "zh": "广度优先搜索",
+      "en": "Breadth-first search"
+    }
+  },
+  "title": {
+    "zh": "一层层找电池",
+    "en": "Find the Battery One Layer at a Time"
+  },
+  "brief": {
+    "zh": "帮芽芽绕过墙去拿电池。每次取出队头，按上、右、下、左的顺序查看邻格，把能走且没记过的格子加入队尾。",
+    "en": "Help Sprout find the battery around the walls. Take one cell from the front of the queue, then check its neighbors in up, right, down, left order. Add open, unseen cells to the back."
+  },
+  "concept": {
+    "zh": "队列、访问标记和最短路线",
+    "en": "The queue, visited cells, and shortest routes"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "入队就记下",
+        "en": "Mark a cell as soon as it joins the queue"
+      },
+      "body": {
+        "zh": "入队时记下步数和从哪一格来。另一条路遇到同一格时，就知道它已经排过队。",
+        "en": "Record the number of moves and the previous cell when a cell joins the queue. If another route reaches it, the search can tell it has already been queued."
+      }
+    },
+    {
+      "title": {
+        "zh": "先处理步数少的格子",
+        "en": "Process the cells with fewer moves first"
+      },
+      "body": {
+        "zh": "每走一格都算一步。队列会先取出一步能到的格子，再取出两步能到的格子。取到电池时，沿着从哪一格来的记录倒着找，就能还原一条最短路线。",
+        "en": "Each move costs one step. The queue processes all cells one move away before cells two moves away. When it reaches the battery, follow the recorded previous cells to recover a shortest route."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "另一个方向也能走到已入队的格子，需要再加一次吗？",
+      "en": "Another direction can reach a cell already in the queue. Should it be added again?"
+    },
+    "options": [
+      {
+        "zh": "不用，它入队时已经记下了",
+        "en": "No. It was marked when it joined the queue."
+      },
+      {
+        "zh": "要，再放到队尾",
+        "en": "Yes. Put it at the back again."
+      }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "第一次入队时已经记录了最少步数，不用重复搜索。",
+      "en": "The first time the cell joined the queue, the search recorded the fewest moves needed to reach it."
+    }
+  },
+  "execution": {
+    "source": "def find_battery_route(board, start, goal):\n    width = len(board[0])\n    queue = [start]\n    distance = {start[1] * width + start[0]: 0}\n    parent = {}\n    order = []\n    while len(queue) > 0:\n        cell = queue.pop(0)\n        order.append(cell)\n        if cell == goal:\n            path = [cell]\n            while cell != start:\n                cell = parent[cell[1] * width + cell[0]]\n                path.insert(0, cell)\n            return [order, path]\n        for delta in [[0, -1], [1, 0], [0, 1], [-1, 0]]:\n            x = cell[0] + delta[0]\n            y = cell[1] + delta[1]\n            if x < 0 or y < 0 or x >= width or y >= len(board):\n                continue\n            if board[y][x] == \"#\":\n                continue\n            key = y * width + x\n            if key in distance:\n                continue\n            distance[key] = distance[cell[1] * width + cell[0]] + 1\n            parent[key] = cell\n            queue.append([x, y])\n    return [order, []]\n",
+    "cases": [],
+    "breadthFirstLesson": {
+      "demo": {
+        "tiles": [
+          ".#.",
+          "...",
+          "..#"
+        ],
+        "start": [0, 0],
+        "goal": [2, 0]
+      },
+      "practice": {
+        "tiles": [
+          "....",
+          ".##.",
+          "...."
+        ],
+        "start": [0, 1],
+        "goal": [3, 1],
+        "expected": {
+          "order": [
+            [0, 1],
+            [0, 0],
+            [0, 2],
+            [1, 0],
+            [1, 2],
+            [2, 0],
+            [2, 2],
+            [3, 0],
+            [3, 2],
+            [3, 1]
+          ],
+          "path": [
+            [0, 1],
+            [0, 0],
+            [1, 0],
+            [2, 0],
+            [3, 0],
+            [3, 1]
+          ]
+        },
+        "predictions": {
+          "orders": [
+            [
+              [0, 1],
+              [0, 0],
+              [1, 0],
+              [2, 0],
+              [3, 0],
+              [3, 1]
+            ],
+            [
+              [0, 1],
+              [0, 0],
+              [0, 2],
+              [1, 0],
+              [1, 2],
+              [2, 0],
+              [2, 2],
+              [3, 0],
+              [3, 2],
+              [3, 1]
+            ],
+            [
+              [0, 1],
+              [0, 2],
+              [0, 0],
+              [1, 2],
+              [1, 0],
+              [2, 2],
+              [2, 0],
+              [3, 2],
+              [3, 0],
+              [3, 1]
+            ]
+          ],
+          "paths": [
+            [
+              [0, 1],
+              [0, 2],
+              [1, 2],
+              [2, 2],
+              [3, 2],
+              [3, 1]
+            ],
+            [
+              [0, 1],
+              [0, 0],
+              [1, 0],
+              [2, 0],
+              [3, 0],
+              [3, 1]
+            ]
+          ]
+        }
+      }
+    }
+  }
+}

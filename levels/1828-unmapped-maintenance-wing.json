@@ -1,0 +1,384 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-unmapped-maintenance-wing",
+  "order": 1828,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "depth-first"
+    },
+    {
+      "unit": "structures",
+      "topic": "dictionaries"
+    },
+    {
+      "unit": "python-advanced",
+      "topic": "function-design"
+    }
+  ],
+  "title": {
+    "zh": "失图的检修区",
+    "en": "The Unmapped Wing"
+  },
+  "concept": {
+    "zh": "三张未登记的地图 · 去重回溯 · 返回入口",
+    "en": "Three unmapped layouts · Revisit tracking · Return to entry"
+  },
+  "brief": {
+    "zh": "给三张形状不同的检修图写同一份搜索程序。地图可能有回环和死路，起点均是出口。扫描只显示与当前位置相邻的四格，找到的零件要全部带回。每张地图给足了每格初访和返回各走一次以及拾取的回合，重复探索可能会超时。",
+    "en": "Write one search program for three different maintenance layouts. Maps can have loops and dead ends, and the entrance is also the exit. A scan reports only the four adjacent tiles. Retrieve all parts and return to the entrance. Each budget allows one arrival and return per tile plus pickups, so exploring the same branches again can run over budget."
+  },
+  "hints": [],
+  "tiles": [
+    "########",
+    "#...####",
+    "#.#....#",
+    "#...##.#",
+    "###....#",
+    "#####..#",
+    "########"
+  ],
+  "start": {
+    "x": 1,
+    "y": 1
+  },
+  "items": [
+    {
+      "id": "sensor-1",
+      "x": 3,
+      "y": 1
+    },
+    {
+      "id": "sensor-2",
+      "x": 2,
+      "y": 3
+    },
+    {
+      "id": "sensor-3",
+      "x": 6,
+      "y": 5
+    }
+  ],
+  "turnLimit": 37,
+  "objectives": [
+    {
+      "type": "collect",
+      "itemIds": [
+        "sensor-1",
+        "sensor-2",
+        "sensor-3"
+      ]
+    },
+    {
+      "type": "exit",
+      "x": 1,
+      "y": 1
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "########",
+        "#......#",
+        "#.####.#",
+        "#.#....#",
+        "#...##.#",
+        "###....#",
+        "########"
+      ],
+      "start": {
+        "x": 1,
+        "y": 1
+      },
+      "items": [
+        {
+          "id": "sensor-1",
+          "x": 6,
+          "y": 2
+        },
+        {
+          "id": "sensor-2",
+          "x": 3,
+          "y": 3
+        },
+        {
+          "id": "sensor-3",
+          "x": 6,
+          "y": 5
+        }
+      ],
+      "turnLimit": 43,
+      "objectives": [
+        {
+          "type": "collect",
+          "itemIds": [
+            "sensor-1",
+            "sensor-2",
+            "sensor-3"
+          ]
+        },
+        {
+          "type": "exit",
+          "x": 1,
+          "y": 1
+        }
+      ]
+    },
+    {
+      "tiles": [
+        "########",
+        "#...#..#",
+        "#.#.#.##",
+        "#.#.#..#",
+        "#......#",
+        "##.###.#",
+        "########"
+      ],
+      "start": {
+        "x": 6,
+        "y": 1
+      },
+      "items": [
+        {
+          "id": "sensor-1",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "sensor-2",
+          "x": 2,
+          "y": 5
+        },
+        {
+          "id": "sensor-3",
+          "x": 6,
+          "y": 5
+        }
+      ],
+      "turnLimit": 41,
+      "objectives": [
+        {
+          "type": "collect",
+          "itemIds": [
+            "sensor-1",
+            "sensor-2",
+            "sensor-3"
+          ]
+        },
+        {
+          "type": "exit",
+          "x": 6,
+          "y": 1
+        }
+      ]
+    }
+  ],
+  "allowedApi": [
+    "scan",
+    "move",
+    "pick"
+  ],
+  "cards": [
+    {
+      "id": "visited",
+      "label": {
+        "zh": "建立访问记录",
+        "en": "Create the visit record"
+      },
+      "template": "visited = {}"
+    },
+    {
+      "id": "offsets",
+      "label": {
+        "zh": "建立方向坐标表",
+        "en": "Set direction offsets"
+      },
+      "template": "offsets = {\"up\": [0, -1], \"right\": [1, 0], \"down\": [0, 1], \"left\": [-1, 0]}"
+    },
+    {
+      "id": "opposites",
+      "label": {
+        "zh": "建立方向反查表",
+        "en": "Set opposite directions"
+      },
+      "template": "opposite = {\"up\": \"down\", \"right\": \"left\", \"down\": \"up\", \"left\": \"right\"}"
+    },
+    {
+      "id": "define",
+      "label": {
+        "zh": "定义搜索一格的函数",
+        "en": "Define a function to search from a tile"
+      },
+      "template": "def sweep(x, y):",
+      "block": true
+    },
+    {
+      "id": "mark",
+      "label": {
+        "zh": "把当前坐标标为已访问",
+        "en": "Mark the current tile visited"
+      },
+      "template": "visited[str(x) + \",\" + str(y)] = True"
+    },
+    {
+      "id": "scan",
+      "label": {
+        "zh": "扫描相邻格子",
+        "en": "Scan the neighboring tiles"
+      },
+      "template": "nearby = scan()"
+    },
+    {
+      "id": "direction",
+      "label": {
+        "zh": "逐个检查相邻方向",
+        "en": "Inspect each neighboring direction"
+      },
+      "template": "for direction in offsets:",
+      "block": true
+    },
+    {
+      "id": "x",
+      "label": {
+        "zh": "计算邻格横坐标",
+        "en": "Compute neighbor X"
+      },
+      "template": "nx = x + offsets[direction][0]"
+    },
+    {
+      "id": "y",
+      "label": {
+        "zh": "计算邻格纵坐标",
+        "en": "Compute neighbor Y"
+      },
+      "template": "ny = y + offsets[direction][1]"
+    },
+    {
+      "id": "walkable",
+      "label": {
+        "zh": "相邻格可走且未访问",
+        "en": "If the neighbor is walkable and unvisited"
+      },
+      "template": "if nearby[direction] != \"wall\" and str(nx) + \",\" + str(ny) not in visited:",
+      "block": true
+    },
+    {
+      "id": "advance",
+      "label": {
+        "zh": "走到邻格",
+        "en": "Step into the neighbor"
+      },
+      "template": "move(direction)"
+    },
+    {
+      "id": "part",
+      "label": {
+        "zh": "如果走进了零件格",
+        "en": "If this tile showed a part"
+      },
+      "template": "if nearby[direction] == \"item\":",
+      "block": true
+    },
+    {
+      "id": "pick",
+      "label": {
+        "zh": "拾取零件",
+        "en": "Pick up the part"
+      },
+      "template": "pick()"
+    },
+    {
+      "id": "recurse",
+      "label": {
+        "zh": "搜索邻格的分支",
+        "en": "Explore branches from that tile"
+      },
+      "template": "sweep(nx, ny)"
+    },
+    {
+      "id": "back",
+      "label": {
+        "zh": "返回上一个格子",
+        "en": "Go back to the previous tile"
+      },
+      "template": "move(opposite[direction])"
+    },
+    {
+      "id": "begin",
+      "label": {
+        "zh": "从相对坐标零点出发",
+        "en": "Begin at relative coordinates zero"
+      },
+      "template": "sweep(0, 0)"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "visited"
+    },
+    {
+      "cardId": "offsets"
+    },
+    {
+      "cardId": "opposites"
+    },
+    {
+      "cardId": "define",
+      "children": [
+        {
+          "cardId": "mark"
+        },
+        {
+          "cardId": "scan"
+        },
+        {
+          "cardId": "direction",
+          "children": [
+            {
+              "cardId": "x"
+            },
+            {
+              "cardId": "y"
+            },
+            {
+              "cardId": "walkable",
+              "children": [
+                {
+                  "cardId": "advance"
+                },
+                {
+                  "cardId": "part",
+                  "children": [
+                    {
+                      "cardId": "pick"
+                    }
+                  ]
+                },
+                {
+                  "cardId": "recurse"
+                },
+                {
+                  "cardId": "back"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cardId": "begin"
+    }
+  ]
+}

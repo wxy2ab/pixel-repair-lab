@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "kind": "circuit",
+  "id": "dc-diode-demo",
+  "order": 6012,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "diode-loop",
+    "order": 2,
+    "title": {
+      "zh": "二极管与通路",
+      "en": "Diodes and Current Paths"
+    }
+  },
+  "stage": "demo",
+  "title": {
+    "zh": "翻转二极管，看电流走哪条路",
+    "en": "Flip a Diode on the Bench"
+  },
+  "brief": {
+    "zh": "先合开关，跟着电流标记绕一圈。换到第二组，保持开关闭合，只翻转普通二极管，观察红灯。",
+    "en": "Close the switch and follow the current markers around the loop. In the second case, keep the switch closed, flip only the ordinary diode, and watch the red LED."
+  },
+  "concept": {
+    "zh": "闭合回路与二极管的方向",
+    "en": "A complete loop and diode polarity"
+  },
+  "hints": [],
+  "mode": "diode",
+  "cases": [
+    {
+      "label": {
+        "zh": "先接通断开的回路",
+        "en": "Connect the open loop"
+      },
+      "bits": [
+        0,
+        1
+      ]
+    },
+    {
+      "label": {
+        "zh": "比较二极管的两个朝向",
+        "en": "Compare both diode directions"
+      },
+      "bits": [
+        1,
+        0
+      ]
+    }
+  ]
+}

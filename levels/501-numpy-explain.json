@@ -1,0 +1,238 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "numpy-mask-lesson",
+  "order": 501,
+  "stage": "explain",
+  "unit": {
+    "id": "numpy",
+    "order": 100,
+    "title": {
+      "zh": "NumPy",
+      "en": "NumPy"
+    }
+  },
+  "topic": {
+    "id": "masks",
+    "order": 2,
+    "title": {
+      "zh": "布尔掩码",
+      "en": "Boolean masks"
+    }
+  },
+  "title": {
+    "zh": "一次筛选一整列",
+    "en": "Filter a Whole Column"
+  },
+  "brief": {
+    "zh": "给每条读数标出 True 或 False，再保留符合条件的记录。",
+    "en": "Mark every reading True or False, then keep matching records."
+  },
+  "concept": {
+    "zh": "布尔掩码的每个位置与原表的同一行对应。",
+    "en": "Each mask position matches the same row in the original table."
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "比较整列",
+        "en": "Compare a whole column"
+      },
+      "body": {
+        "zh": "用 NumPy 写 readings >= 25，每个温度与 25 比较一次，得到一列布尔值。",
+        "en": "With NumPy, readings >= 25 compares each temperature with 25 and produces an array of Boolean values."
+      }
+    },
+    {
+      "title": {
+        "zh": "按掩码选行",
+        "en": "Select rows with the mask"
+      },
+      "body": {
+        "zh": "位置 0 的掩码如果为 True，就保留原表第 0 号行。把掩码放进方括号，保留下来的行仍按原顺序排列。",
+        "en": "A True at position 0 selects the first row of the original table. Apply a mask with brackets, and the selected rows keep their original order."
+      }
+    },
+    {
+      "title": {
+        "zh": "等号会保留边界",
+        "en": "Equality includes the boundary"
+      },
+      "body": {
+        "zh": "≥ 25 会保留 25。要找出不超过某个数的读数，用 ≤。",
+        "en": "≥ 25 keeps 25. Use ≤ to find values at or below the cutoff."
+      }
+    }
+  ],
+  "animation": {
+    "layout": "row",
+    "frames": [
+      {
+        "caption": {
+          "zh": "按原表的顺序读出四个温度。",
+          "en": "Read four temperatures in their original order."
+        },
+        "items": [
+          {
+            "id": "a",
+            "label": {
+              "zh": "记录 A",
+              "en": "Record A"
+            },
+            "value": {
+              "zh": "17 °C",
+              "en": "17 °C"
+            }
+          },
+          {
+            "id": "b",
+            "label": {
+              "zh": "记录 B",
+              "en": "Record B"
+            },
+            "value": {
+              "zh": "31 °C",
+              "en": "31 °C"
+            }
+          },
+          {
+            "id": "c",
+            "label": {
+              "zh": "记录 C",
+              "en": "Record C"
+            },
+            "value": {
+              "zh": "23 °C",
+              "en": "23 °C"
+            }
+          },
+          {
+            "id": "d",
+            "label": {
+              "zh": "记录 D",
+              "en": "Record D"
+            },
+            "value": {
+              "zh": "25 °C",
+              "en": "25 °C"
+            }
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "分别和 25 比较，达到 25 的位置变亮。",
+          "en": "Compare with 25. Positions at or above 25 light up."
+        },
+        "items": [
+          {
+            "id": "a",
+            "label": {
+              "zh": "记录 A",
+              "en": "Record A"
+            },
+            "value": {
+              "zh": "False",
+              "en": "False"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "b",
+            "label": {
+              "zh": "记录 B",
+              "en": "Record B"
+            },
+            "value": {
+              "zh": "True",
+              "en": "True"
+            },
+            "state": "active"
+          },
+          {
+            "id": "c",
+            "label": {
+              "zh": "记录 C",
+              "en": "Record C"
+            },
+            "value": {
+              "zh": "False",
+              "en": "False"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "d",
+            "label": {
+              "zh": "记录 D",
+              "en": "Record D"
+            },
+            "value": {
+              "zh": "True",
+              "en": "True"
+            },
+            "state": "active"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "输出掩码为 True 的两行。",
+          "en": "Output the two rows marked True."
+        },
+        "items": [
+          {
+            "id": "b",
+            "label": {
+              "zh": "记录 B",
+              "en": "Record B"
+            },
+            "value": {
+              "zh": "31 °C",
+              "en": "31 °C"
+            },
+            "state": "done"
+          },
+          {
+            "id": "d",
+            "label": {
+              "zh": "记录 D",
+              "en": "Record D"
+            },
+            "value": {
+              "zh": "25 °C",
+              "en": "25 °C"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  },
+  "question": {
+    "prompt": {
+      "zh": "把条件改为不超过 23 °C，哪些记录会留下？",
+      "en": "Which rows stay if the cutoff changes to 23 °C or lower?"
+    },
+    "options": [
+      {
+        "zh": "A 和 C",
+        "en": "A and C"
+      },
+      {
+        "zh": "只有 A",
+        "en": "A only"
+      },
+      {
+        "zh": "B 和 D",
+        "en": "B and D"
+      }
+    ],
+    "correct": 0,
+    "feedback": {
+      "zh": "17 小于 23，23 等于边界。对应位置的掩码都是 True。",
+      "en": "17 is below the cutoff, and 23 equals it. Both mask positions are True."
+    }
+  }
+}

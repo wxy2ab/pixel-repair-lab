@@ -1,0 +1,147 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-antenna-rise-records",
+  "order": 1861,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "structures",
+      "topic": "lists"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "dynamic-programming"
+    }
+  ],
+  "title": {
+    "zh": "天线爬升纪录",
+    "en": "Antenna Ascent Records"
+  },
+  "concept": {
+    "zh": "严格递增子序列的长度与条数",
+    "en": "Length and count of strictly rising subsequences"
+  },
+  "brief": {
+    "zh": "按 heights 的原顺序选若干根天线，每根都要比刚选的上一根高，可以跳过。返回 [最多能选几根, 达到这个长度的选法数]。只要选中的位置不同就算另一种选法。没有天线时返回 [0, 0]。",
+    "en": "Select antennas in their original order from heights. You may skip some, but each selected antenna must be taller than the last. Return [maximum number selected, number of ways to reach that length]. Different positions give different choices. Return [0, 0] for an empty row."
+  },
+  "hints": [],
+  "functionName": "rise_records",
+  "starterCode": "def rise_records(heights):\n    pass\n",
+  "solutionCode": "def rise_records(heights):\n    lengths = []\n    counts = []\n    best = 0\n    ways = 0\n    for i in range(len(heights)):\n        length = 1\n        count = 1\n        for j in range(i):\n            if heights[j] < heights[i]:\n                candidate = lengths[j] + 1\n                if candidate > length:\n                    length = candidate\n                    count = counts[j]\n                elif candidate == length:\n                    count += counts[j]\n        lengths.append(length)\n        counts.append(count)\n        if length > best:\n            best = length\n            ways = count\n        elif length == best:\n            ways += count\n    return [best, ways]\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "连接前面较矮的天线",
+        "en": "Connect earlier, shorter antennas"
+      },
+      "code": "    for i in range(len(heights)):\n        length = 1\n        count = 1\n        for j in range(i):\n            if heights[j] < heights[i]:\n                candidate = lengths[j] + 1\n                if candidate > length:\n                    length = candidate\n                    count = counts[j]\n                elif candidate == length:\n                    count += counts[j]"
+    },
+    {
+      "label": {
+        "zh": "连接前面不高于本站的天线",
+        "en": "Include earlier antennas of equal height"
+      },
+      "code": "    for i in range(len(heights)):\n        length = 1\n        count = 1\n        for j in range(i):\n            if heights[j] <= heights[i]:\n                candidate = lengths[j] + 1\n                if candidate > length:\n                    length = candidate\n                    count = counts[j]\n                elif candidate == length:\n                    count += counts[j]"
+    },
+    {
+      "label": {
+        "zh": "建立逐站记录",
+        "en": "Set up the records"
+      },
+      "code": "    lengths = []\n    counts = []\n    best = 0\n    ways = 0"
+    },
+    {
+      "label": {
+        "zh": "上交纪录",
+        "en": "Submit the record"
+      },
+      "code": "    return [best, ways]"
+    },
+    {
+      "label": {
+        "zh": "登记本站并汇总",
+        "en": "Record this stop and update totals"
+      },
+      "code": "        lengths.append(length)\n        counts.append(count)\n        if length > best:\n            best = length\n            ways = count\n        elif length == best:\n            ways += count"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          1,
+          3,
+          5,
+          4,
+          7
+        ]
+      ],
+      "expected": [
+        4,
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          2,
+          2,
+          2
+        ]
+      ],
+      "expected": [
+        1,
+        3
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": [
+        0,
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          1,
+          2,
+          3
+        ]
+      ],
+      "expected": [
+        3,
+        3
+      ]
+    },
+    {
+      "args": [
+        [
+          6,
+          4,
+          2,
+          0
+        ]
+      ],
+      "expected": [
+        1,
+        4
+      ]
+    }
+  ]
+}

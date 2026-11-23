@@ -1,0 +1,259 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "challenge-reserve-inspection-band",
+  "order": 1897,
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "候补席的仪表读数",
+    "en": "Readings on the Reserve List"
+  },
+  "brief": {
+    "zh": "首轮检修只覆盖前 3 天。凡读数至少 20°C 的已清洗记录，按温度从高到低排队，同温由较小编号优先。第一名直接送检。交出第二到第四名的读数和它们的平均温度。",
+    "en": "The first inspection covers days 1 through 3. Rank cleaned readings of at least 20°C, hottest first, with lower IDs winning ties. The first reading goes straight to inspection. Deliver the readings ranked second through fourth and their mean."
+  },
+  "concept": {
+    "zh": "SQL 并列排序、数组切片与均值",
+    "en": "SQL tie ordering, array slicing and mean"
+  },
+  "prerequisites": [
+    {
+      "unit": "numpy",
+      "topic": "masks"
+    },
+    {
+      "unit": "database",
+      "topic": "sql-rows"
+    },
+    {
+      "unit": "numpy",
+      "topic": "arrays"
+    },
+    {
+      "unit": "statistics",
+      "topic": "center-spread"
+    }
+  ],
+  "hints": [],
+  "steps": [
+    {
+      "operation": "mask",
+      "label": {
+        "zh": "首轮窗口",
+        "en": "First inspection window"
+      },
+      "prompt": {
+        "zh": "只选首轮涵盖的日期，保留完整原始列。",
+        "en": "Select only days in the first inspection window and retain every column."
+      },
+      "initial": {
+        "column": "day",
+        "comparison": "gte",
+        "threshold": 3
+      },
+      "solution": {
+        "column": "day",
+        "comparison": "lte",
+        "threshold": 3
+      },
+      "input": "clean",
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            "hangar",
+            18.0
+          ],
+          [
+            2,
+            1,
+            "workshop",
+            24.0
+          ],
+          [
+            3,
+            1,
+            "storage",
+            20.0
+          ],
+          [
+            4,
+            2,
+            "hangar",
+            22.0
+          ],
+          [
+            5,
+            2,
+            "workshop",
+            28.0
+          ],
+          [
+            7,
+            3,
+            "hangar",
+            26.0
+          ],
+          [
+            8,
+            3,
+            "workshop",
+            32.0
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16.0
+          ]
+        ]
+      }
+    },
+    {
+      "operation": "query",
+      "label": {
+        "zh": "温度排队单",
+        "en": "Heat queue"
+      },
+      "prompt": {
+        "zh": "取所有区域达到门槛的记录，只留下编号和读数，按工单规则排名。",
+        "en": "Keep the qualifying records across all areas. Return just ID and reading in ticket priority order."
+      },
+      "initial": {
+        "columns": "all",
+        "zone": "hangar",
+        "minimum": 22,
+        "sort": "id"
+      },
+      "solution": {
+        "columns": "id-reading",
+        "zone": "all",
+        "minimum": 20,
+        "sort": "reading-desc"
+      },
+      "input": "previous",
+      "goal": {
+        "columns": [
+          "id",
+          "reading"
+        ],
+        "rows": [
+          [
+            8,
+            32.0
+          ],
+          [
+            5,
+            28.0
+          ],
+          [
+            7,
+            26.0
+          ],
+          [
+            2,
+            24.0
+          ],
+          [
+            4,
+            22.0
+          ],
+          [
+            3,
+            20.0
+          ]
+        ]
+      }
+    },
+    {
+      "operation": "array",
+      "label": {
+        "zh": "候补读数",
+        "en": "Reserve readings"
+      },
+      "prompt": {
+        "zh": "只取第二至第四名的温度。这份数组保留它们在热度排名里的从零起算位置。",
+        "en": "Keep only the second through fourth temperatures. Preserve their zero-based indices in the ranking."
+      },
+      "initial": {
+        "column": "reading",
+        "start": 0,
+        "stop": 3
+      },
+      "solution": {
+        "column": "reading",
+        "start": 1,
+        "stop": 4
+      },
+      "input": "previous",
+      "goal": {
+        "columns": [
+          "index",
+          "reading"
+        ],
+        "rows": [
+          [
+            1,
+            28.0
+          ],
+          [
+            2,
+            26.0
+          ],
+          [
+            3,
+            24.0
+          ]
+        ]
+      }
+    },
+    {
+      "operation": "summary",
+      "label": {
+        "zh": "候补均温",
+        "en": "Reserve mean"
+      },
+      "prompt": {
+        "zh": "用候补席上的全部读数算平均温度。",
+        "en": "Compute the mean temperature using all reserve readings."
+      },
+      "initial": {
+        "statistic": "max",
+        "zone": "all"
+      },
+      "solution": {
+        "statistic": "mean",
+        "zone": "all"
+      },
+      "input": "previous",
+      "goal": {
+        "columns": [
+          "statistic",
+          "value"
+        ],
+        "rows": [
+          [
+            "mean",
+            26.0
+          ]
+        ]
+      }
+    }
+  ]
+}

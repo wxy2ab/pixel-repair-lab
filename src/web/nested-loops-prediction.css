@@ -1,0 +1,95 @@
+.nested-prediction, .nested-prediction .charge-prediction-body {
+  min-inline-size: 0;
+}
+
+.nested-prediction .charge-prediction-choices button {
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+}
+
+.nested-prediction-input {
+  padding: 10px;
+  border: 1px solid #455d78;
+  border-radius: 8px;
+  background: #17283d;
+}
+
+.nested-prediction-rows {
+  display: grid;
+  gap: 4px;
+  min-inline-size: 0;
+  color: #deebfa;
+}
+
+.nested-prediction-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  min-inline-size: 0;
+  padding: 4px 6px;
+  border: 1px solid #405976;
+  border-radius: 5px;
+  background: #1d3148;
+  text-align: start;
+}
+
+.nested-prediction-row-label {
+  min-inline-size: 3.25em;
+  font: 600 12px/1.4 system-ui, sans-serif;
+}
+
+.nested-prediction-batteries {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  min-inline-size: 0;
+}
+
+.nested-prediction-battery {
+  position: relative;
+  min-inline-size: 1.9em;
+  margin-inline-end: 3px;
+  padding: 2px 4px;
+  border: 1px solid #76b0a3;
+  border-radius: 4px;
+  background: #20413d;
+  color: #ddfff0;
+  font: 700 13px/1.25 var(--mono);
+  text-align: center;
+}
+
+.nested-prediction-battery::after {
+  position: absolute;
+  content: '';
+  inset: 30% -4px 30% auto;
+  inline-size: 3px;
+  border-radius: 0 2px 2px 0;
+  background: #76b0a3;
+}
+
+.nested-prediction-empty {
+  color: #c0d2e8;
+  font: 500 12px/1.4 system-ui, sans-serif;
+}
+
+.nested-prediction-fields { grid-template-columns: minmax(0, 1fr); }
+
+.nested-prediction-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 185px), 1fr));
+}
+
+.nested-prediction-options button {
+  display: grid;
+  align-content: start;
+  padding: 6px;
+}
+
+.nested-prediction-comparison {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 185px), 1fr));
+}
+
+.nested-prediction-comparison dd { margin-block-start: 3px; }

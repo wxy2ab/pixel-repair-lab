@@ -1,0 +1,498 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-three-phase-night-rescue",
+  "order": 1825,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    },
+    {
+      "unit": "python-intermediate",
+      "topic": "branches"
+    }
+  ],
+  "title": {
+    "zh": "三相夜巡回收",
+    "en": "Three-Phase Night Salvage"
+  },
+  "concept": {
+    "zh": "三台异步巡逻机 · 三件零件 · 最短安全路线",
+    "en": "Three patrol cycles · Three parts · Shortest safe route"
+  },
+  "brief": {
+    "zh": "收齐三件零件并停在东北出口。三台巡逻机分别每 8、10 和 6 回合重复一次。扫描数据列出了每台机器从第 0 回合开始的位置。移动和拾取各花 1 回合。在行动前或行动后与巡逻机同格都算失败。总共只有 43 回合。",
+    "en": "Salvage all three parts and reach the northeast exit. The patrol cycles repeat every 8, 10, and 6 turns respectively. The scan table lists each bot’s position starting at turn zero. Moving or picking up uses one turn. Sharing a tile with any patrol before or after an action ends the run. You have 43 turns."
+  },
+  "hints": [],
+  "tiles": [
+    "#############",
+    "#...........#",
+    "#.#.###.#.#.#",
+    "#...#...#...#",
+    "###...#...###",
+    "#.....#.....#",
+    "#.###...###.#",
+    "#...........#",
+    "#############"
+  ],
+  "start": {
+    "x": 1,
+    "y": 7
+  },
+  "items": [
+    {
+      "id": "lower-cache",
+      "x": 10,
+      "y": 7
+    },
+    {
+      "id": "upper-cache",
+      "x": 5,
+      "y": 3
+    },
+    {
+      "id": "phase-cell",
+      "x": 7,
+      "y": 1
+    }
+  ],
+  "enemies": [
+    {
+      "path": [
+        {
+          "x": 3,
+          "y": 7
+        },
+        {
+          "x": 4,
+          "y": 7
+        },
+        {
+          "x": 5,
+          "y": 7
+        },
+        {
+          "x": 6,
+          "y": 7
+        },
+        {
+          "x": 6,
+          "y": 6
+        },
+        {
+          "x": 6,
+          "y": 7
+        },
+        {
+          "x": 5,
+          "y": 7
+        },
+        {
+          "x": 4,
+          "y": 7
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 5,
+          "y": 3
+        },
+        {
+          "x": 6,
+          "y": 3
+        },
+        {
+          "x": 7,
+          "y": 3
+        },
+        {
+          "x": 7,
+          "y": 4
+        },
+        {
+          "x": 8,
+          "y": 4
+        },
+        {
+          "x": 9,
+          "y": 4
+        },
+        {
+          "x": 8,
+          "y": 4
+        },
+        {
+          "x": 7,
+          "y": 4
+        },
+        {
+          "x": 7,
+          "y": 3
+        },
+        {
+          "x": 6,
+          "y": 3
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 9,
+          "y": 1
+        },
+        {
+          "x": 10,
+          "y": 1
+        },
+        {
+          "x": 11,
+          "y": 1
+        },
+        {
+          "x": 11,
+          "y": 2
+        },
+        {
+          "x": 11,
+          "y": 1
+        },
+        {
+          "x": 10,
+          "y": 1
+        }
+      ]
+    }
+  ],
+  "input": {
+    "patrols": [
+      [
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          6,
+          6
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          4,
+          7
+        ]
+      ],
+      [
+        [
+          5,
+          3
+        ],
+        [
+          6,
+          3
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          8,
+          4
+        ],
+        [
+          9,
+          4
+        ],
+        [
+          8,
+          4
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          6,
+          3
+        ]
+      ],
+      [
+        [
+          9,
+          1
+        ],
+        [
+          10,
+          1
+        ],
+        [
+          11,
+          1
+        ],
+        [
+          11,
+          2
+        ],
+        [
+          11,
+          1
+        ],
+        [
+          10,
+          1
+        ]
+      ]
+    ]
+  },
+  "turnLimit": 43,
+  "allowedApi": [
+    "scan",
+    "move",
+    "pick"
+  ],
+  "objectives": [
+    {
+      "type": "collect",
+      "itemIds": [
+        "lower-cache",
+        "upper-cache",
+        "phase-cell"
+      ]
+    },
+    {
+      "type": "exit",
+      "x": 11,
+      "y": 1
+    }
+  ],
+  "cards": [
+    {
+      "id": "up",
+      "label": {
+        "zh": "向上",
+        "en": "Up"
+      },
+      "template": "move(\"up\")"
+    },
+    {
+      "id": "right",
+      "label": {
+        "zh": "向右",
+        "en": "Right"
+      },
+      "template": "move(\"right\")"
+    },
+    {
+      "id": "down",
+      "label": {
+        "zh": "向下",
+        "en": "Down"
+      },
+      "template": "move(\"down\")"
+    },
+    {
+      "id": "left",
+      "label": {
+        "zh": "向左",
+        "en": "Left"
+      },
+      "template": "move(\"left\")"
+    },
+    {
+      "id": "pick",
+      "label": {
+        "zh": "拾取零件",
+        "en": "Pick up the part"
+      },
+      "template": "pick()"
+    },
+    {
+      "id": "repeat-pair",
+      "label": {
+        "zh": "重复接下来两回合",
+        "en": "Repeat the next sequence twice"
+      },
+      "template": "for repetition in range(2):",
+      "block": true
+    },
+    {
+      "id": "read",
+      "label": {
+        "zh": "读取巡逻时刻表",
+        "en": "Read the patrol timetable"
+      },
+      "template": "patrols = scan()[\"patrols\"]"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "pick"
+    },
+    {
+      "cardId": "down"
+    },
+    {
+      "cardId": "down"
+    },
+    {
+      "cardId": "left"
+    },
+    {
+      "cardId": "left"
+    },
+    {
+      "cardId": "pick"
+    },
+    {
+      "cardId": "down"
+    },
+    {
+      "cardId": "down"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "down"
+    },
+    {
+      "cardId": "down"
+    },
+    {
+      "cardId": "down"
+    },
+    {
+      "cardId": "down"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "pick"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "left"
+    },
+    {
+      "cardId": "left"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "right"
+    },
+    {
+      "cardId": "up"
+    },
+    {
+      "cardId": "up"
+    }
+  ]
+}

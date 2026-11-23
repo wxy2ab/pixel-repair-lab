@@ -1,0 +1,250 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "crystal-echo",
+  "order": 2,
+  "unit": {
+    "id": "foundations",
+    "order": 10,
+    "title": {
+      "zh": "Python 基础",
+      "en": "Python Foundations"
+    }
+  },
+  "topic": {
+    "id": "sequence",
+    "order": 1,
+    "title": {
+      "zh": "指令与顺序",
+      "en": "Commands and Sequence"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "走廊里的晶石",
+    "en": "Crystal in the Corridor"
+  },
+  "concept": {
+    "zh": "读取与改变状态",
+    "en": "Reading and changing state"
+  },
+  "brief": {
+    "zh": "先到晶石所在的格子把它拾起来，然后带着晶石抵达出口。",
+    "en": "Reach the crystal, pick it up, and carry it to the exit."
+  },
+  "hints": [
+    {
+      "zh": "scan() 查看相邻四格。pick() 拾取机器人脚下的晶石。",
+      "en": "scan() checks the four neighboring tiles. pick() picks up a crystal on Sprout's tile."
+    },
+    {
+      "zh": "先数到晶石要走几格，再数晶石到出口有几格。",
+      "en": "Count the moves to the crystal first, then count the moves from the crystal to the exit."
+    }
+  ],
+  "tiles": [
+    "#########",
+    "#.......#",
+    "#.###.#.#",
+    "#.......#",
+    "#.#.###.#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 2,
+    "y": 3
+  },
+  "items": [
+    {
+      "id": "sun-crystal",
+      "x": 4,
+      "y": 3
+    }
+  ],
+  "allowedApi": [
+    "move",
+    "scan",
+    "pick",
+    "say"
+  ],
+  "objectives": [
+    {
+      "type": "collect",
+      "itemIds": [
+        "sun-crystal"
+      ]
+    },
+    {
+      "type": "exit",
+      "x": 6,
+      "y": 3
+    }
+  ],
+  "cards": [
+    {
+      "id": "scan",
+      "label": {
+        "zh": "扫描周围",
+        "en": "Scan nearby"
+      },
+      "template": "scan()"
+    },
+    {
+      "id": "move",
+      "label": {
+        "zh": "移动",
+        "en": "Move"
+      },
+      "template": "move({{direction}})",
+      "parameters": [
+        {
+          "name": "direction",
+          "label": {
+            "zh": "方向",
+            "en": "Direction"
+          },
+          "choices": [
+            {
+              "id": "right",
+              "label": {
+                "zh": "右",
+                "en": "Right"
+              },
+              "code": "\"right\""
+            },
+            {
+              "id": "up",
+              "label": {
+                "zh": "上",
+                "en": "Up"
+              },
+              "code": "\"up\""
+            },
+            {
+              "id": "left",
+              "label": {
+                "zh": "左",
+                "en": "Left"
+              },
+              "code": "\"left\""
+            },
+            {
+              "id": "down",
+              "label": {
+                "zh": "下",
+                "en": "Down"
+              },
+              "code": "\"down\""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pick",
+      "label": {
+        "zh": "拾起晶石",
+        "en": "Pick up a crystal"
+      },
+      "template": "pick()"
+    },
+    {
+      "id": "say",
+      "label": {
+        "zh": "显示一句话",
+        "en": "Say something"
+      },
+      "template": "say({{message}})",
+      "parameters": [
+        {
+          "name": "message",
+          "label": {
+            "zh": "消息",
+            "en": "Message"
+          },
+          "choices": [
+            {
+              "id": "hello-zh",
+              "label": {
+                "zh": "你好！",
+                "en": "Hello! (Chinese)"
+              },
+              "code": "\"你好！\""
+            },
+            {
+              "id": "hello-en",
+              "label": {
+                "zh": "你好！（英文）",
+                "en": "Hello!"
+              },
+              "code": "\"Hello!\""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "move",
+      "values": {
+        "direction": "right"
+      }
+    },
+    {
+      "cardId": "scan"
+    },
+    {
+      "cardId": "move",
+      "values": {
+        "direction": "right"
+      }
+    },
+    {
+      "cardId": "pick"
+    },
+    {
+      "cardId": "move",
+      "values": {
+        "direction": "right"
+      }
+    },
+    {
+      "cardId": "move",
+      "values": {
+        "direction": "right"
+      }
+    }
+  ],
+  "tutorial": [
+    {
+      "text": {
+        "zh": "找到晶石。它就在机器人和出口之间。",
+        "en": "Find the crystal. It is between Sprout and the exit."
+      },
+      "target": "board"
+    },
+    {
+      "text": {
+        "zh": "向右走到晶石旁边，再用「扫描周围」看看哪一格里有晶石。",
+        "en": "Move right until you are beside the crystal, then use Scan Nearby to see which neighboring tile holds it."
+      },
+      "target": "palette"
+    },
+    {
+      "text": {
+        "zh": "把「拾起晶石」放在机器人到达晶石之后，再添加到出口的移动。",
+        "en": "Put Pick Up a Crystal after the moves to the crystal, then add the moves to the exit."
+      },
+      "target": "program"
+    },
+    {
+      "text": {
+        "zh": "运行程序，观察哪一步让晶石进入背包。",
+        "en": "Run your program and watch which step adds the crystal to your collection."
+      },
+      "target": "run"
+    }
+  ]
+}

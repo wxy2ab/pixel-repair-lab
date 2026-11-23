@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "data-sql",
+  "order": 302,
+  "stage": "demo",
+  "unit": { "id": "database", "order": 130, "title": { "zh": "数据库", "en": "Databases" } },
+  "topic": { "id": "sql-rows", "order": 1, "title": { "zh": "SQL 筛选和排序", "en": "SQL filters and sorting" } },
+  "title": { "zh": "写一条温度查询", "en": "Build a Temperature Query" },
+  "brief": { "zh": "在 SQLite 中选择要看的列，指定区域和阈值，再换一种排序。", "en": "Choose columns, an area, and a threshold in SQLite, then try another order." },
+  "concept": { "zh": "SELECT 选择列，WHERE 决定哪些行留下，ORDER BY 改变行的顺序。", "en": "SELECT chooses columns, WHERE keeps matching rows, and ORDER BY changes their order." },
+  "hints": [{ "zh": "先切换要看的列，再试着只保留车间里温度至少为 28°C 的记录。", "en": "Change the displayed columns first. Then keep only workshop readings of at least 28°C." }],
+  "steps": [
+    {
+      "operation": "query",
+      "input": "clean",
+      "label": { "zh": "拼接 SQL 条件", "en": "Build the SQL clauses" },
+      "prompt": { "zh": "改一项参数再运行，观察 SQL 和结果表同时发生了什么变化。", "en": "Change a setting and run it. Compare how the SQL and its result table change." },
+      "initial": { "columns": "all", "zone": "all", "minimum": 18, "sort": "id" }
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "yolox-precision-portrait-box",
+  "order": 5561,
+  "stage": "exercise",
+  "unit": {
+    "id": "yolox",
+    "order": 150,
+    "title": { "zh": "YOLOX", "en": "YOLOX" }
+  },
+  "topic": {
+    "id": "bounding-boxes",
+    "order": 2,
+    "title": { "zh": "边界框与重叠", "en": "Bounding boxes and overlap" }
+  },
+  "mode": "boxes",
+  "title": { "zh": "把边界框贴准两种构图", "en": "Fit Boxes in Two Compositions" },
+  "brief": { "zh": "宽图里的狗和方图里的人占的范围不同，两次都要把框贴准。", "en": "The dog in the wide photo and the person in the square photo fill different areas. Fit a box in both." },
+  "concept": { "zh": "边界框坐标和图片边缘有关。换照片后要重新核对位置和宽高。", "en": "Box coordinates are relative to the image edges. Recheck the position, width, and height for the next photo." },
+  "hints": [
+    { "zh": "四边都对齐可提高交并比。拖完后也可微调左边、上边、宽和高。", "en": "Align all four edges for a higher IoU. After dragging, fine-tune the left, top, width, and height if needed." }
+  ],
+  "cases": [
+    {
+      "image": "labrador",
+      "label": { "zh": "宽图 · 狗", "en": "Wide photo · dog" },
+      "prompt": { "zh": "拖出贴合狗的参考框的矩形，交并比至少 90%。", "en": "Draw a close fit to the dog's reference box with at least 90% IoU." },
+      "initial": { "x": 30, "y": 16, "w": 45, "h": 57 },
+      "goal": { "minIou": 0.9 },
+      "solution": { "x": 7, "y": 6, "w": 84, "h": 90 }
+    },
+    {
+      "image": "astronaut",
+      "label": { "zh": "方图 · 人", "en": "Square photo · person" },
+      "prompt": { "zh": "为宇航员调整一个新框，交并比仍要达到 90%。", "en": "Fit a new box to the astronaut with at least 90% IoU." },
+      "initial": { "x": 21, "y": 21, "w": 52, "h": 57 },
+      "goal": { "minIou": 0.9 },
+      "solution": { "x": 2, "y": 4, "w": 70, "h": 94 }
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-interleaved-radio-tapes",
+  "order": 1871,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "python-advanced",
+      "topic": "nested-loops"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "dynamic-programming"
+    }
+  ],
+  "title": {
+    "zh": "双路电报码",
+    "en": "Interleaved Radio Tapes"
+  },
+  "concept": {
+    "zh": "保持两路顺序的合流计数",
+    "en": "Counting order-preserving interleavings"
+  },
+  "brief": {
+    "zh": "两台电台分别给出字符序列 a 和 b。每拍可取任一电台尚未发出的首个字符。要恰好发完两路并拼出 tape，有多少种选择电台的顺序？相同字符来自不同台也算不同选择。无法拼出返回 0，三串都为空返回 1。",
+    "en": "Stations A and B hold the strings a and b. At each beat, take the next character from either station. Count station-choice sequences that consume both entire strings and emit exactly tape. Matching characters from different stations still give different choices. Return 0 when impossible and 1 when all strings are empty."
+  },
+  "hints": [],
+  "functionName": "weave_count",
+  "starterCode": "def weave_count(a, b, tape):\n    pass\n",
+  "solutionCode": "def weave_count(a, b, tape):\n    if len(a) + len(b) != len(tape):\n        return 0\n    paths = []\n    for i in range(len(a) + 1):\n        row = []\n        for j in range(len(b) + 1):\n            row.append(0)\n        paths.append(row)\n    paths[0][0] = 1\n    for i in range(len(a) + 1):\n        for j in range(len(b) + 1):\n            k = i + j - 1\n            if i > 0 and a[i - 1] == tape[k]:\n                paths[i][j] += paths[i - 1][j]\n            if j > 0 and b[j - 1] == tape[k]:\n                paths[i][j] += paths[i][j - 1]\n    return paths[-1][-1]\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "核对 A 台上一拍",
+        "en": "Check the last character from A"
+      },
+      "code": "    for i in range(len(a) + 1):\n        for j in range(len(b) + 1):\n            k = i + j - 1\n            if i > 0 and a[i - 1] == tape[k]:\n                paths[i][j] += paths[i - 1][j]"
+    },
+    {
+      "label": {
+        "zh": "检查总长度并布置计数表",
+        "en": "Check lengths and prepare a count table"
+      },
+      "code": "    if len(a) + len(b) != len(tape):\n        return 0\n    paths = []\n    for i in range(len(a) + 1):\n        row = []\n        for j in range(len(b) + 1):\n            row.append(0)\n        paths.append(row)\n    paths[0][0] = 1"
+    },
+    {
+      "label": {
+        "zh": "汇总完整电报",
+        "en": "Count complete tapes"
+      },
+      "code": "    return paths[-1][-1]"
+    },
+    {
+      "label": {
+        "zh": "同拍两台均匹配时优先 A 台",
+        "en": "Prefer A when both channels match"
+      },
+      "code": "            if j > 0 and b[j - 1] == tape[k] and (i == 0 or a[i - 1] != tape[k]):\n                paths[i][j] += paths[i][j - 1]"
+    },
+    {
+      "label": {
+        "zh": "核对 B 台上一拍",
+        "en": "Check the last character from B"
+      },
+      "code": "            if j > 0 and b[j - 1] == tape[k]:\n                paths[i][j] += paths[i][j - 1]"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        "AA",
+        "AA",
+        "AAAA"
+      ],
+      "expected": 6
+    },
+    {
+      "args": [
+        "AB",
+        "CD",
+        "ACBD"
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        "AB",
+        "CD",
+        "ABDC"
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        "A",
+        "B",
+        "A"
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        "",
+        "",
+        ""
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        "BA",
+        "A",
+        "BAA"
+      ],
+      "expected": 2
+    }
+  ]
+}

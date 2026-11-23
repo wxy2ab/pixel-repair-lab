@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "database-grouped-query-lesson",
+  "order": 535,
+  "stage": "explain",
+  "unit": { "id": "database", "order": 130, "title": { "zh": "数据库", "en": "Databases" } },
+  "topic": { "id": "sql-groups", "order": 2, "title": { "zh": "SQL 分组汇总", "en": "Grouped SQL queries" } },
+  "title": { "zh": "用 SQL 写一张汇总表", "en": "Build a Summary Table with SQL" },
+  "brief": { "zh": "把温度记录按区域压成短表，再把优先检查的区域排在前面。", "en": "Condense temperature logs into an area summary, then sort to see where to check first." },
+  "concept": { "zh": "GROUP BY 把同一类放在一起，COUNT(reading) 和 AVG(reading) 各给一份汇总。", "en": "GROUP BY puts like rows together. COUNT(reading) and AVG(reading) summarize each group." },
+  "hints": [],
+  "sections": [
+    { "title": { "zh": "每个区域一行", "en": "One row per area" }, "body": { "zh": "先找出要汇总的记录，再用 GROUP BY zone 按区域分组。COUNT(reading) 数的是组内有读数的行，AVG(reading) 算的是这些读数的平均值。", "en": "Select the rows to summarize, then use GROUP BY zone to form area groups. COUNT(reading) counts rows with a reading, and AVG(reading) averages those readings." } },
+    { "title": { "zh": "筛选汇总行", "en": "Filter the summary rows" }, "body": { "zh": "WHERE 在分组前筛选单条读数。想在算出每组平均值后，留下均值至少 25°C 的区域，就用 HAVING AVG(reading) >= 25。", "en": "WHERE filters individual readings before grouping. To keep areas that average at least 25°C after grouping, use HAVING AVG(reading) >= 25." } },
+    { "title": { "zh": "给汇总值排序", "en": "Sort the summaries" }, "body": { "zh": "给平均值取名 mean，再用 ORDER BY mean DESC 把保留下来的区域按平均温度从高到低排。", "en": "Name the average mean, then use ORDER BY mean DESC to put the remaining areas in highest-to-lowest mean order." } }
+  ],
+  "animation": {
+    "layout": "pipeline",
+    "frames": [
+      { "caption": { "zh": "输入表有三条读数。机库占两条，车间占一条。", "en": "The input table has three readings. Two are from the hangar and one is from the workshop." }, "items": [
+        { "id": "a", "label": { "zh": "机库", "en": "Hangar" }, "value": { "zh": "18°C", "en": "18°C" } },
+        { "id": "b", "label": { "zh": "车间", "en": "Workshop" }, "value": { "zh": "27°C", "en": "27°C" } },
+        { "id": "c", "label": { "zh": "机库", "en": "Hangar" }, "value": { "zh": "24°C", "en": "24°C" } }
+      ] },
+      { "caption": { "zh": "GROUP BY zone 把机库的 18°C 和 24°C 放成一组。", "en": "GROUP BY zone puts the hangar's 18°C and 24°C readings together." }, "items": [
+        { "id": "a", "label": { "zh": "机库组", "en": "Hangar group" }, "value": { "zh": "18°C + 24°C", "en": "18°C + 24°C" }, "state": "active" },
+        { "id": "b", "label": { "zh": "车间组", "en": "Workshop group" }, "value": { "zh": "27°C", "en": "27°C" } }
+      ] },
+      { "caption": { "zh": "COUNT(reading) 和 AVG(reading) 给每组一份结果。按平均温度降序后，车间在前。", "en": "COUNT(reading) and AVG(reading) summarize each group. Sorting by average descending puts the workshop first." }, "items": [
+        { "id": "b", "label": { "zh": "车间 · 1 条", "en": "Workshop · 1 reading" }, "value": { "zh": "平均 27°C", "en": "Mean 27°C" }, "state": "done" },
+        { "id": "a", "label": { "zh": "机库 · 2 条", "en": "Hangar · 2 readings" }, "value": { "zh": "平均 21°C", "en": "Mean 21°C" }, "state": "done" }
+      ] },
+      { "caption": { "zh": "再设置 HAVING AVG(reading) >= 25，只有车间组通过门槛。", "en": "Add HAVING AVG(reading) >= 25. Only the workshop group meets the cutoff." }, "items": [
+        { "id": "b", "label": { "zh": "车间", "en": "Workshop" }, "value": { "zh": "27°C ≥ 25°C", "en": "27°C ≥ 25°C" }, "state": "done" },
+        { "id": "a", "label": { "zh": "机库", "en": "Hangar" }, "value": { "zh": "21°C < 25°C", "en": "21°C < 25°C" }, "state": "muted" }
+      ] }
+    ]
+  },
+  "question": {
+    "prompt": { "zh": "如果保留两个区域，再按样本数从多到少排，哪个区域在前？", "en": "If you keep both areas and sort by reading count from highest to lowest, which area comes first?" },
+    "options": [ { "zh": "车间", "en": "Workshop" }, { "zh": "机库", "en": "Hangar" }, { "zh": "两个区域会合成一行", "en": "Both areas merge into one row" } ],
+    "correct": 1,
+    "feedback": { "zh": "机库有两条，车间有一条。改变排序依据只改变汇总行的顺序。", "en": "The hangar has two readings and the workshop has one. Changing the sort key only changes the summary order." }
+  }
+}

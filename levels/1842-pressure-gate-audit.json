@@ -1,0 +1,255 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-pressure-gate-audit",
+  "order": 1842,
+  "difficulty": "intermediate",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "structures",
+      "topic": "stacks"
+    },
+    {
+      "unit": "python-intermediate",
+      "topic": "for-loops"
+    }
+  ],
+  "title": {
+    "zh": "气闸出入校验",
+    "en": "Pressure Gate Log Audit"
+  },
+  "concept": {
+    "zh": "栈 · 第一处断点 · 最深层数",
+    "en": "Stack · First error · Deepest nesting"
+  },
+  "brief": {
+    "zh": "events 记录穿过多层气闸的动作，每条为 [动作, 非空舱名]。enter 进入下一层，exit 必须退出最近进入且尚未退出的舱，允许同名舱嵌套。返回 [故障位置, 应退出的舱名, 故障前到过的最大层数]。编号从 0 开始。空栈退出时舱名填空字符串。日志结束仍有未退出的舱时，故障位置填日志长度，舱名填当前最内层。全部正确时交 [-1, \"\", 最大层数]。",
+    "en": "Each entry in events is [action, nonempty chamber name]. enter goes one level deeper and exit must leave the most recently entered chamber still open. Chamber names can repeat at different depths. Return [first bad event index, chamber that should be exited, greatest depth reached before the error]. Indices start at zero. For an exit from an empty stack, use the empty string for the chamber. If a chamber is left open at the end, use the log length as the error index and name the innermost chamber. If the log is valid, return [-1, \"\", greatest depth]."
+  },
+  "hints": [],
+  "functionName": "audit_pressure_gates",
+  "starterCode": "def audit_pressure_gates(events):\n    pass\n",
+  "solutionCode": "def audit_pressure_gates(events):\n    open_gates = []\n    deepest = 0\n    for index in range(len(events)):\n        event = events[index]\n        if event[0] == \"enter\":\n            open_gates.append(event[1])\n            if len(open_gates) > deepest:\n                deepest = len(open_gates)\n        else:\n            if len(open_gates) == 0:\n                return [index, \"\", deepest]\n            expected = open_gates[len(open_gates) - 1]\n            if event[1] != expected:\n                return [index, expected, deepest]\n            open_gates.pop()\n    if len(open_gates) > 0:\n        return [len(events), open_gates[len(open_gates) - 1], deepest]\n    return [-1, \"\", deepest]\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "查看最后进入的舱",
+        "en": "Read the innermost chamber"
+      },
+      "code": "    current = open_gates[len(open_gates) - 1]"
+    },
+    {
+      "label": {
+        "zh": "读取动作与舱名",
+        "en": "Read action and chamber"
+      },
+      "code": "    for event in events:\n        action = event[0]\n        name = event[1]"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          [
+            "enter",
+            "A"
+          ],
+          [
+            "enter",
+            "B"
+          ],
+          [
+            "exit",
+            "B"
+          ],
+          [
+            "exit",
+            "A"
+          ]
+        ]
+      ],
+      "expected": [
+        -1,
+        "",
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            "enter",
+            "A"
+          ],
+          [
+            "enter",
+            "B"
+          ],
+          [
+            "exit",
+            "A"
+          ],
+          [
+            "enter",
+            "C"
+          ]
+        ]
+      ],
+      "expected": [
+        2,
+        "B",
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            "exit",
+            "east"
+          ],
+          [
+            "enter",
+            "east"
+          ]
+        ]
+      ],
+      "expected": [
+        0,
+        "",
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            "enter",
+            "east"
+          ],
+          [
+            "enter",
+            "east"
+          ],
+          [
+            "exit",
+            "east"
+          ],
+          [
+            "exit",
+            "east"
+          ]
+        ]
+      ],
+      "expected": [
+        -1,
+        "",
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            "enter",
+            "east"
+          ],
+          [
+            "enter",
+            "west"
+          ],
+          [
+            "exit",
+            "west"
+          ],
+          [
+            "enter",
+            "north"
+          ]
+        ]
+      ],
+      "expected": [
+        4,
+        "north",
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            "enter",
+            "A"
+          ],
+          [
+            "exit",
+            "A"
+          ],
+          [
+            "exit",
+            "A"
+          ]
+        ]
+      ],
+      "expected": [
+        2,
+        "",
+        1
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": [
+        -1,
+        "",
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            "enter",
+            "A"
+          ],
+          [
+            "exit",
+            "A"
+          ],
+          [
+            "enter",
+            "C"
+          ],
+          [
+            "enter",
+            "B"
+          ],
+          [
+            "enter",
+            "D"
+          ],
+          [
+            "exit",
+            "Z"
+          ]
+        ]
+      ],
+      "expected": [
+        5,
+        "D",
+        3
+      ]
+    }
+  ]
+}

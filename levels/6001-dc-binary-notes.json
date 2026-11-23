@@ -1,0 +1,312 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "dc-binary-notes",
+  "order": 6001,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "binary-lamps",
+    "order": 1,
+    "title": {
+      "zh": "二进制与信号灯",
+      "en": "Binary Signals"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "三盏灯能报几个站台号？",
+    "en": "How Many Bays Can Three Lamps Name?"
+  },
+  "brief": {
+    "zh": "芽芽听不清广播。试着只用亮灯和灭灯告诉它在哪个站台停靠。",
+    "en": "Sprout cannot hear the announcement. Send a bay number using only lit and unlit lamps."
+  },
+  "concept": {
+    "zh": "一位、位权与十进制读数",
+    "en": "Bits, place values and decimal readings"
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "一次只传两种状态",
+        "en": "Two states on one wire"
+      },
+      "body": {
+        "zh": "维修台约定灯灭记作 0，灯亮记作 1。这两种状态占一位，英文叫 bit。",
+        "en": "The workshop records an unlit lamp as 0 and a lit lamp as 1. One position that can hold either state is a bit."
+      }
+    },
+    {
+      "title": {
+        "zh": "灯的位置也算数",
+        "en": "Position changes the number"
+      },
+      "body": {
+        "zh": "三盏灯从左到右分别值 4、2、1。只把亮着的灯的位权加起来。全灭是 0，全亮是 7，能表示从 0 到 7 的八个站台号。",
+        "en": "From left to right the three lamps are worth 4, 2 and 1. Add the weights of the lit lamps. All off gives 0 and all on gives 7, so the same three lamps can name eight bays."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "三盏灯依次是灭、亮、亮。芽芽收到几号？",
+      "en": "The lamps read off, on, on. Which bay does Sprout hear?"
+    },
+    "options": [
+      {
+        "zh": "2 号",
+        "en": "Bay 2"
+      },
+      {
+        "zh": "3 号",
+        "en": "Bay 3"
+      },
+      {
+        "zh": "6 号",
+        "en": "Bay 6"
+      }
+    ],
+    "correct": 1,
+    "feedback": {
+      "zh": "亮的是 2 和 1，合起来是 3。",
+      "en": "The lit places are worth 2 and 1. Together they make 3."
+    }
+  },
+  "animation": {
+    "layout": "row",
+    "frames": [
+      {
+        "caption": {
+          "zh": "三盏灯都灭，值为 0。",
+          "en": "All three lamps are off, giving 0."
+        },
+        "items": [
+          {
+            "id": "lamp-0",
+            "label": {
+              "zh": "灯 4",
+              "en": "Lamp 4"
+            },
+            "value": {
+              "zh": "灭 · 0",
+              "en": "Off · 0"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "lamp-1",
+            "label": {
+              "zh": "灯 2",
+              "en": "Lamp 2"
+            },
+            "value": {
+              "zh": "灭 · 0",
+              "en": "Off · 0"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "lamp-2",
+            "label": {
+              "zh": "灯 1",
+              "en": "Lamp 1"
+            },
+            "value": {
+              "zh": "灭 · 0",
+              "en": "Off · 0"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "number",
+            "label": {
+              "zh": "站台号",
+              "en": "Bay number"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "只点亮右灯，它的位权是 1。",
+          "en": "Turn on the right lamp. Its place is worth 1."
+        },
+        "items": [
+          {
+            "id": "lamp-0",
+            "label": {
+              "zh": "灯 4",
+              "en": "Lamp 4"
+            },
+            "value": {
+              "zh": "灭 · 0",
+              "en": "Off · 0"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "lamp-1",
+            "label": {
+              "zh": "灯 2",
+              "en": "Lamp 2"
+            },
+            "value": {
+              "zh": "灭 · 0",
+              "en": "Off · 0"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "lamp-2",
+            "label": {
+              "zh": "灯 1",
+              "en": "Lamp 1"
+            },
+            "value": {
+              "zh": "亮 · 1",
+              "en": "On · 1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "number",
+            "label": {
+              "zh": "站台号",
+              "en": "Bay number"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "左灯也亮了。现在是 4 加 1。",
+          "en": "Light the left lamp too. Now the total is 4 plus 1."
+        },
+        "items": [
+          {
+            "id": "lamp-0",
+            "label": {
+              "zh": "灯 4",
+              "en": "Lamp 4"
+            },
+            "value": {
+              "zh": "亮 · 1",
+              "en": "On · 1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "lamp-1",
+            "label": {
+              "zh": "灯 2",
+              "en": "Lamp 2"
+            },
+            "value": {
+              "zh": "灭 · 0",
+              "en": "Off · 0"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "lamp-2",
+            "label": {
+              "zh": "灯 1",
+              "en": "Lamp 1"
+            },
+            "value": {
+              "zh": "亮 · 1",
+              "en": "On · 1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "number",
+            "label": {
+              "zh": "站台号",
+              "en": "Bay number"
+            },
+            "value": {
+              "zh": "5",
+              "en": "5"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "右灯熄灭，左灯还代表 4。",
+          "en": "Switch the right lamp off. The left lamp still stands for 4."
+        },
+        "items": [
+          {
+            "id": "lamp-0",
+            "label": {
+              "zh": "灯 4",
+              "en": "Lamp 4"
+            },
+            "value": {
+              "zh": "亮 · 1",
+              "en": "On · 1"
+            },
+            "state": "active"
+          },
+          {
+            "id": "lamp-1",
+            "label": {
+              "zh": "灯 2",
+              "en": "Lamp 2"
+            },
+            "value": {
+              "zh": "灭 · 0",
+              "en": "Off · 0"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "lamp-2",
+            "label": {
+              "zh": "灯 1",
+              "en": "Lamp 1"
+            },
+            "value": {
+              "zh": "灭 · 0",
+              "en": "Off · 0"
+            },
+            "state": "muted"
+          },
+          {
+            "id": "number",
+            "label": {
+              "zh": "站台号",
+              "en": "Bay number"
+            },
+            "value": {
+              "zh": "4",
+              "en": "4"
+            },
+            "state": "done"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+.circuit-signals { min-width: 0; }
+.circuit-signals .teaching-model { margin-bottom: 0; }
+.circuit-signal-lines {
+  margin: 6px 0 12px; padding: 9px 12px; background: #233b3c;
+  border-inline-start: 3px solid #89c2aa; border-radius: 5px; color: #edf6eb;
+}
+.circuit-formula { display: flex; align-items: baseline; flex-wrap: wrap; gap: 3px 12px; }
+.circuit-formula + .circuit-formula { margin-top: 5px; }
+.circuit-formula > span { color: #b8d7cb; font-size: .83rem; }
+.circuit-formula code { font: 600 .91rem/1.6 var(--mono); overflow-wrap: anywhere; }
+.circuit-formula code b { font-weight: 600; white-space: nowrap; }
+.circuit-formula [data-focus] { border-bottom: 2px solid #eec477; color: #ffe4a7; }
+.circuit-deltas { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 4px; font-size: .84rem; color: #bdd1c8; }
+.circuit-deltas [data-changed] { color: #fbd390; font-weight: 700; }
+.circuit-lecture-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.circuit-lecture-controls button { min-height: 32px; }
+.circuit-lecture-controls button[aria-pressed=true] { background: #d2e9d8; color: #213c31; border-color: #679b83; }

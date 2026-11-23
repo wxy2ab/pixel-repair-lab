@@ -1,0 +1,176 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "total-parts-by-row",
+  "order": 922,
+  "unit": {
+    "id": "python-advanced",
+    "order": 30,
+    "title": {
+      "zh": "Python 高级",
+      "en": "Advanced Python"
+    }
+  },
+  "stage": "exercise",
+  "topic": { "id": "nested-loops", "order": 2, "title": { "zh": "嵌套循环", "en": "Nested Loops" } },
+  "title": {
+    "zh": "清点不同长度的零件架",
+    "en": "Count Parts on Uneven Shelves"
+  },
+  "concept": {
+    "zh": "两层循环与空输入",
+    "en": "Nested loops and empty inputs"
+  },
+  "brief": {
+    "zh": "每个货架有若干排，长度可能不同。按排提交零件数之和，空排也要提交 0。",
+    "en": "The shelves have rows of different lengths. Submit the sum for each row in order. Submit 0 for an empty row."
+  },
+  "hints": [
+    {
+      "zh": "在外层循环开始时给当前排归零，内层循环一项项累加，走出内层再提交。",
+      "en": "Reset the total at the start of each outer round. Add items in the inner loop and submit after that loop ends."
+    }
+  ],
+  "tiles": [
+    "#######",
+    "#.....#",
+    "#.....#",
+    "#.....#",
+    "#######"
+  ],
+  "start": {
+    "x": 2,
+    "y": 2
+  },
+  "allowedApi": [
+    "scan",
+    "submit"
+  ],
+  "objectives": [
+    {
+      "type": "submit",
+      "values": [
+        7,
+        4,
+        0
+      ]
+    }
+  ],
+  "input": [
+    [
+      2,
+      4,
+      1
+    ],
+    [
+      4
+    ],
+    []
+  ],
+  "cards": [
+    {
+      "id": "read",
+      "label": {
+        "zh": "扫描每一排",
+        "en": "Scan the rows"
+      },
+      "template": "rows = scan()"
+    },
+    {
+      "id": "row",
+      "label": {
+        "zh": "逐排处理",
+        "en": "For each row"
+      },
+      "template": "for row in rows:",
+      "block": true
+    },
+    {
+      "id": "reset",
+      "label": {
+        "zh": "把这一排的合计归零",
+        "en": "Reset the total for this row"
+      },
+      "template": "total = 0"
+    },
+    {
+      "id": "part",
+      "label": {
+        "zh": "逐个处理这一排的零件",
+        "en": "For each item in this row"
+      },
+      "template": "for part in row:",
+      "block": true
+    },
+    {
+      "id": "add",
+      "label": {
+        "zh": "累加一件零件",
+        "en": "Add one item to the total"
+      },
+      "template": "total = total + part"
+    },
+    {
+      "id": "submit-total",
+      "label": {
+        "zh": "提交这一排合计",
+        "en": "Submit this row's total"
+      },
+      "template": "submit(total)"
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "read"
+    },
+    {
+      "cardId": "row",
+      "children": [
+        {
+          "cardId": "reset"
+        },
+        {
+          "cardId": "part",
+          "children": [
+            {
+              "cardId": "add"
+            }
+          ]
+        },
+        {
+          "cardId": "submit-total"
+        }
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "input": [
+        [],
+        [
+          3,
+          1
+        ],
+        [
+          2,
+          2,
+          2
+        ],
+        [
+          5
+        ]
+      ],
+      "objectives": [
+        {
+          "type": "submit",
+          "values": [
+            0,
+            4,
+            6,
+            5
+          ]
+        }
+      ]
+    }
+  ]
+}

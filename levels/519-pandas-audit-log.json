@@ -1,0 +1,153 @@
+{
+  "version": 1,
+  "kind": "data",
+  "id": "pandas-audit-log",
+  "order": 519,
+  "stage": "exercise",
+  "unit": {
+    "id": "pandas",
+    "order": 110,
+    "title": {
+      "zh": "pandas",
+      "en": "pandas"
+    }
+  },
+  "topic": {
+    "id": "cleaning",
+    "order": 2,
+    "title": {
+      "zh": "数据清洗",
+      "en": "Data cleaning"
+    }
+  },
+  "title": {
+    "zh": "整理交给维修员的审核表",
+    "en": "Prepare the Technician’s Audit Table"
+  },
+  "brief": {
+    "zh": "审核员要一张只保留唯一编号的表。清理区域名，还要让审核员能看到哪些仪器没测到温度。",
+    "en": "The auditor needs one row per ID and consistent area names. They still need to see which sensors did not return a reading."
+  },
+  "concept": {
+    "zh": "处理重复和处理缺失可以分别做。",
+    "en": "Deduplication and missing-value handling are separate operations."
+  },
+  "hints": [
+    {
+      "zh": "两个第 9 号记录只留一个；第 6 号和第 11 号仍要显示。",
+      "en": "Keep only one record 9. Records 6 and 11 should still appear."
+    }
+  ],
+  "steps": [
+    {
+      "operation": "clean",
+      "input": "raw",
+      "label": {
+        "zh": "为审核清洗",
+        "en": "Clean for an audit"
+      },
+      "prompt": {
+        "zh": "规范区域名、按记录编号去重，但保留转成缺失的温度。",
+        "en": "Normalize area names and deduplicate by record ID while keeping missing readings."
+      },
+      "initial": {
+        "trim": false,
+        "dropMissing": true,
+        "deduplicate": false
+      },
+      "solution": {
+        "trim": true,
+        "dropMissing": false,
+        "deduplicate": true
+      },
+      "goal": {
+        "columns": [
+          "id",
+          "day",
+          "zone",
+          "reading"
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            "hangar",
+            18
+          ],
+          [
+            2,
+            1,
+            "workshop",
+            24
+          ],
+          [
+            3,
+            1,
+            "storage",
+            20
+          ],
+          [
+            4,
+            2,
+            "hangar",
+            22
+          ],
+          [
+            5,
+            2,
+            "workshop",
+            28
+          ],
+          [
+            6,
+            2,
+            "storage",
+            null
+          ],
+          [
+            7,
+            3,
+            "hangar",
+            26
+          ],
+          [
+            8,
+            3,
+            "workshop",
+            32
+          ],
+          [
+            9,
+            3,
+            "storage",
+            16
+          ],
+          [
+            10,
+            4,
+            "hangar",
+            30
+          ],
+          [
+            11,
+            4,
+            "workshop",
+            null
+          ],
+          [
+            12,
+            4,
+            "storage",
+            24
+          ],
+          [
+            13,
+            4,
+            "workshop",
+            36
+          ]
+        ]
+      }
+    }
+  ]
+}

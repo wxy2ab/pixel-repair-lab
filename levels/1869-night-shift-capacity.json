@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-night-shift-capacity",
+  "order": 1869,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "binary-search"
+    },
+    {
+      "unit": "python-intermediate",
+      "topic": "for-loops"
+    }
+  ],
+  "title": {
+    "zh": "夜班运输限载",
+    "en": "Night Shift Capacity"
+  },
+  "concept": {
+    "zh": "连续分车与最小限载",
+    "en": "Contiguous dispatch groups and peak capacity"
+  },
+  "brief": {
+    "zh": "按 loads 的顺序运完所有货箱。一班运一段连续的箱子，不能拆箱，最多用 shifts 班。返回能完成运输的最小单班容量。箱重为正整数；空货架返回 0，有货却没有班次时返回 -1。",
+    "en": "Ship the crates in their given order in loads. Each shift takes a continuous group and no crate can be split. Return the smallest per-shift capacity that ships everything within shifts shifts. Crates weigh positive integers. An empty shelf returns 0. Cargo with zero shifts returns -1."
+  },
+  "hints": [],
+  "functionName": "shift_capacity",
+  "starterCode": "def shift_capacity(loads, shifts):\n    pass\n",
+  "solutionCode": "def shift_capacity(loads, shifts):\n    if len(loads) == 0:\n        return 0\n    if shifts < 1:\n        return -1\n    low = 0\n    high = 0\n    for weight in loads:\n        high += weight\n        if weight > low:\n            low = weight\n    while low < high:\n        cap = (low + high) // 2\n        used = 1\n        carried = 0\n        for weight in loads:\n            if carried + weight > cap:\n                used += 1\n                carried = 0\n            carried += weight\n        if used > shifts:\n            low = cap + 1\n        else:\n            high = cap\n    return low\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "试排一次班表",
+        "en": "Try a capacity on a schedule"
+      },
+      "code": "    while low < high:\n        cap = (low + high) // 2\n        used = 1\n        carried = 0\n        for weight in loads:\n            if carried + weight > cap:\n                used += 1\n                carried = 0\n            carried += weight"
+    },
+    {
+      "label": {
+        "zh": "达到限额时就另开一班",
+        "en": "Start a new shift when the limit is reached"
+      },
+      "code": "    while low < high:\n        cap = (low + high) // 2\n        used = 1\n        carried = 0\n        for weight in loads:\n            if carried + weight >= cap:\n                used += 1\n                carried = 0\n            carried += weight"
+    },
+    {
+      "label": {
+        "zh": "找出容量上下界",
+        "en": "Find capacity bounds"
+      },
+      "code": "    if len(loads) == 0:\n        return 0\n    if shifts < 1:\n        return -1\n    low = 0\n    high = 0\n    for weight in loads:\n        high += weight\n        if weight > low:\n            low = weight"
+    },
+    {
+      "label": {
+        "zh": "返回限载",
+        "en": "Return the capacity"
+      },
+      "code": "    return low"
+    },
+    {
+      "label": {
+        "zh": "缩小可行容量范围",
+        "en": "Narrow the capacity range"
+      },
+      "code": "        if used > shifts:\n            low = cap + 1\n        else:\n            high = cap"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          7,
+          2,
+          5,
+          10,
+          8
+        ],
+        2
+      ],
+      "expected": 18
+    },
+    {
+      "args": [
+        [
+          1,
+          4,
+          1,
+          4
+        ],
+        3
+      ],
+      "expected": 5
+    },
+    {
+      "args": [
+        [
+          4,
+          2
+        ],
+        4
+      ],
+      "expected": 4
+    },
+    {
+      "args": [
+        [
+          6
+        ],
+        0
+      ],
+      "expected": -1
+    },
+    {
+      "args": [
+        [],
+        0
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          2,
+          2,
+          2
+        ],
+        1
+      ],
+      "expected": 6
+    }
+  ]
+}

@@ -1,0 +1,184 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-tide-gate-timetable",
+  "order": 1874,
+  "difficulty": "advanced",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "weighted-path"
+    }
+  ],
+  "title": {
+    "zh": "潮汐闸时刻表",
+    "en": "Tidal Gate Timetable"
+  },
+  "concept": {
+    "zh": "按时刻开启的有向闸门",
+    "en": "Directed gates that open on specific ticks"
+  },
+  "brief": {
+    "zh": "仓室编号为 0 到 rooms−1，每条单向闸道 [a,b,period,phase] 只在出发时刻除以 period 的余数等于 phase 时开放。过闸需 1 拍，在任意仓室可原地等候，起始时刻为 0。求从 start 到 finish 最早能在第几拍抵达，无法到达返回 -1。period 为正，phase 从 0 到 period−1。",
+    "en": "Rooms are numbered 0 through rooms−1. Each directed gate [a,b,period,phase] opens for departure only when the tick modulo period equals phase. Crossing costs one tick. Waiting in any room is allowed. Starting at tick 0, return the earliest arrival tick from start to finish, or -1 if unreachable. period is positive and phase lies from 0 through period−1."
+  },
+  "hints": [],
+  "functionName": "tide_time",
+  "starterCode": "def tide_time(rooms, links, start, finish):\n    pass\n",
+  "solutionCode": "def tide_time(rooms, links, start, finish):\n    times = []\n    settled = []\n    for room in range(rooms):\n        times.append(-1)\n        settled.append(False)\n    times[start] = 0\n    for step in range(rooms):\n        here = -1\n        for room in range(rooms):\n            if settled[room] == False and times[room] >= 0:\n                if here < 0 or times[room] < times[here]:\n                    here = room\n        if here < 0 or here == finish:\n            break\n        settled[here] = True\n        for gate in links:\n            if gate[0] == here:\n                dest = gate[1]\n                period = gate[2]\n                phase = gate[3]\n                wait = (phase - times[here]) % period\n                arrival = times[here] + wait + 1\n                if times[dest] < 0 or arrival < times[dest]:\n                    times[dest] = arrival\n    return times[finish]\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "选择当前最早仓室",
+        "en": "Choose the earliest pending room"
+      },
+      "code": "    for step in range(rooms):\n        here = -1\n        for room in range(rooms):\n            if settled[room] == False and times[room] >= 0:\n                if here < 0 or times[room] < times[here]:\n                    here = room\n        if here < 0 or here == finish:\n            break\n        settled[here] = True"
+    },
+    {
+      "label": {
+        "zh": "登记最早到达时刻",
+        "en": "Set up earliest arrival records"
+      },
+      "code": "    times = []\n    settled = []\n    for room in range(rooms):\n        times.append(-1)\n        settled.append(False)\n    times[start] = 0"
+    },
+    {
+      "label": {
+        "zh": "按抵达时刻匹配闸门相位",
+        "en": "Match the gate phase at arrival"
+      },
+      "code": "        for gate in links:\n            if gate[0] == here:\n                dest = gate[1]\n                period = gate[2]\n                phase = gate[3]\n                wait = (phase - times[here] - 1) % period\n                arrival = times[here] + wait + 1\n                if times[dest] < 0 or arrival < times[dest]:\n                    times[dest] = arrival"
+    },
+    {
+      "label": {
+        "zh": "交付抵达时间",
+        "en": "Report the arrival tick"
+      },
+      "code": "    return times[finish]"
+    },
+    {
+      "label": {
+        "zh": "核对闸门下一次开放",
+        "en": "Find each gate's next opening"
+      },
+      "code": "        for gate in links:\n            if gate[0] == here:\n                dest = gate[1]\n                period = gate[2]\n                phase = gate[3]\n                wait = (phase - times[here]) % period\n                arrival = times[here] + wait + 1\n                if times[dest] < 0 or arrival < times[dest]:\n                    times[dest] = arrival"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        3,
+        [
+          [
+            0,
+            2,
+            9,
+            7
+          ],
+          [
+            0,
+            1,
+            1,
+            0
+          ],
+          [
+            1,
+            2,
+            2,
+            1
+          ]
+        ],
+        0,
+        2
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        2,
+        [
+          [
+            0,
+            1,
+            3,
+            2
+          ]
+        ],
+        0,
+        1
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        2,
+        [
+          [
+            0,
+            1,
+            3,
+            0
+          ]
+        ],
+        1,
+        0
+      ],
+      "expected": -1
+    },
+    {
+      "args": [
+        1,
+        [],
+        0,
+        0
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        4,
+        [
+          [
+            0,
+            1,
+            2,
+            0
+          ],
+          [
+            1,
+            2,
+            3,
+            0
+          ],
+          [
+            2,
+            3,
+            4,
+            1
+          ],
+          [
+            2,
+            0,
+            1,
+            0
+          ]
+        ],
+        0,
+        3
+      ],
+      "expected": 6
+    }
+  ]
+}

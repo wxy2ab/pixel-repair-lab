@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "opencv-channel-viewer",
+  "order": 545,
+  "stage": "demo",
+  "unit": { "id": "opencv", "order": 140, "title": { "zh": "OpenCV", "en": "OpenCV" } },
+  "topic": { "id": "color", "order": 2, "title": { "zh": "颜色与通道", "en": "Color and channels" } },
+  "mode": "color",
+  "title": { "zh": "给彩色图片切换通道", "en": "Switch Channels on a Color Image" },
+  "brief": { "zh": "在同一个像素上切换 RGB、单色通道和灰度，观察整张图怎样变化。", "en": "Keep one pixel selected while switching between RGB, single channels, and grayscale. Watch the whole image change." },
+  "concept": { "zh": "每个通道保留一种颜色的强度。灰度融合了三种通道的读数。", "en": "Each channel keeps the intensity of one color. Grayscale combines values from all three channels." },
+  "hints": [{ "zh": "在 (0, 0) 的红色格子上比较红通道和蓝通道，它们的读数差很多。", "en": "Compare the red and blue channels at the red tile (0, 0). Their readings are far apart." }],
+  "cases": [{
+    "image": "calibration",
+    "label": { "zh": "比较三个通道和灰度", "en": "Compare channels and grayscale" },
+    "prompt": { "zh": "把目标固定在 (0, 0)，分别显示红、绿、蓝通道，再看灰度的读数。", "en": "Keep (0, 0) selected, view the red, green, and blue channels, then check the grayscale reading." },
+    "initial": { "x": 0, "y": 0, "channel": "rgb" }
+  }]
+}

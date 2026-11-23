@@ -1,0 +1,63 @@
+.command-desk :is(.data-panel, .vision-panel, .lab-control, .machine-program, .circuit-panel, .circuit-panel + .teaching-panel) {
+  --surface: #f7fafb;
+  --background: #fff;
+  --border: #aec1ca;
+  --text: var(--desk-text);
+  --muted: var(--desk-muted);
+  --mint: #176150;
+  --warm: #934922;
+  padding: 0;
+  color: var(--desk-text);
+  background: transparent;
+  border: 0;
+}
+
+.teaching-screen .machine-side > .panel,
+.teaching-screen .play-column > .circuit-panel,
+.teaching-screen .play-column > .circuit-panel + .teaching-panel,
+.teaching-screen :is(.lab-output, .ai-mission, .ai-result) {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.teaching-screen .ai-result { border-top: 1px solid var(--ai-border); padding-top: 12px; }
+.teaching-screen .circuit-workbench { margin: 12px 0 0; }
+.command-desk .circuit-panel { display: grid; gap: 12px; }
+.command-desk .circuit-cases { padding: 0; }
+.command-desk .bit-buttons { justify-content: start; }
+.command-desk .bit-switch[aria-pressed='true'] strong { background: #9ae6bf; }
+.command-desk .circuit-targets { color: var(--desk-text); }
+.command-desk .circuit-panel .editor-footer { padding: 10px 0 0; border-color: var(--border); background: transparent; }
+.command-desk .machine-scenarios, .command-desk .vision-switch { margin-block: 10px; }
+.command-desk .data-steps { margin-bottom: 12px; }
+.command-desk .data-steps button { white-space: normal; }
+.command-desk .data-steps [aria-current='step'] { color: #184e49; border-color: #50887d; background: #cfebe5; }
+.command-desk :is(.data-field select, .vision-field select, .machine-source) { color: var(--desk-text); background: #fff; }
+.command-desk .machine-instructions {
+  --mint: #9de3c4;
+  --muted: #b9c9d9;
+  --border: #364c5f;
+  --warm: #eec689;
+  color: #e4eef6;
+}
+.command-desk .lab-control button { margin-inline-end: 6px; }
+.command-desk :is(.data-panel, .vision-panel, .circuit-panel + .teaching-panel) .win-message { color: var(--mint); }
+.command-desk :is(.data-panel, .vision-panel, .circuit-panel + .teaching-panel) .error-message { color: var(--warm); }
+
+.ai-lesson .command-desk {
+  --ai-bg: #f1f6f8;
+  --ai-deeper: #fff;
+  --ai-text: var(--desk-text);
+  --ai-muted: var(--desk-muted);
+  --ai-border: #a6bac5;
+  --ai-mint: #1c6258;
+  --ai-warning: #8f411e;
+}
+.command-desk .ai-form { padding: 0; border: 0; background: transparent; }
+.ai-lesson .command-desk .ai-primary { color: #fff; }
+.command-desk .ai-form > .ai-primary { margin-top: 12px; }
+.command-desk .ai-flag { accent-color: #176150; }
+.classroom-workspace .board-panel:has(> .teaching-screen) { border: 0; background: none; }
+.classroom-workspace .board-panel > .command-desk { margin-top: 12px; }
+.command-desk__body:has(> .editor-panel) { display: grid; gap: 12px; }
+.command-desk .timed-arena-controls { --muted: var(--desk-muted); --mint: #176150; --warm: #934922; padding: 0; border: 0; }

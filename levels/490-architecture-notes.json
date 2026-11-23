@@ -1,0 +1,264 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "architecture-notes",
+  "order": 490,
+  "unit": {
+    "id": "architecture",
+    "order": 90,
+    "title": {
+      "zh": "计算机结构",
+      "en": "Computer Architecture"
+    }
+  },
+  "stage": "explain",
+  "title": {
+    "zh": "打开 CPU 的维修盖",
+    "en": "Open the CPU Service Panel"
+  },
+  "concept": {
+    "zh": "地址指向存放位置，LOAD 读值，STORE 改值。",
+    "en": "An address names a storage location. LOAD reads its value and STORE writes it."
+  },
+  "brief": {
+    "zh": "内存有一排带编号的格子。观察一次读取和一次写入怎样改变格子里的数。",
+    "en": "Memory is a row of numbered cells. Follow a read and a write to see what happens to their values."
+  },
+  "hints": [],
+  "sections": [
+    {
+      "title": {
+        "zh": "编号和数值是两件事",
+        "en": "Addresses and values are different"
+      },
+      "body": {
+        "zh": "把这一排内存想成杯架。地址 1 就像杯位上的 1 号牌。执行 LOAD 1 时，沿着编号找到格子，把里面的数读进累加器。",
+        "en": "Picture the row of memory cells as a cup rack. Address 1 is like the number under spot 1. LOAD 1 finds that spot and reads the number inside into the accumulator."
+      }
+    },
+    {
+      "title": {
+        "zh": "读取是复制，写入会替换",
+        "en": "A read copies, a write replaces"
+      },
+      "body": {
+        "zh": "LOAD 把内存里的数复制到累加器，原格子保留原值。STORE 把累加器当前的值写入目标地址，替换原先的值。",
+        "en": "LOAD copies a value into the accumulator and leaves the memory cell as it was. STORE copies the accumulator into the target cell, replacing its previous value."
+      }
+    }
+  ],
+  "question": {
+    "prompt": {
+      "zh": "地址 1 里是 3，地址 2 里是 9。先 LOAD 1，再 STORE 2，最后地址 2 里的值是什么？",
+      "en": "Address 1 holds 3 and address 2 holds 9. After LOAD 1 and then STORE 2, what does address 2 hold?"
+    },
+    "options": [
+      {
+        "zh": "1",
+        "en": "1"
+      },
+      {
+        "zh": "3",
+        "en": "3"
+      },
+      {
+        "zh": "9",
+        "en": "9"
+      }
+    ],
+    "correct": 1,
+    "feedback": {
+      "zh": "LOAD 1 把 3 复制到 ACC。STORE 2 把 ACC 的 3 写到地址 2。",
+      "en": "LOAD 1 copies 3 into ACC. STORE 2 copies that 3 into address 2."
+    }
+  },
+  "animation": {
+    "layout": "grid",
+    "hardware": {
+      "kind": "cpu",
+      "source": "LOAD 1\nSTORE 2\nHALT",
+      "memory": [4, 3, 9],
+      "checkpoints": [
+        { "pc": 0, "phase": "fetch" },
+        { "pc": 0, "phase": "execute" },
+        { "pc": 1, "phase": "execute" },
+        { "pc": 2, "phase": "execute" }
+      ]
+    },
+    "frames": [
+      {
+        "caption": {
+          "zh": "三个地址各有一个数，ACC 目前是 0。",
+          "en": "Each address holds a value. ACC starts at 0."
+        },
+        "items": [
+          {
+            "id": "mem-0",
+            "label": {
+              "zh": "地址 0",
+              "en": "Address 0"
+            },
+            "value": {
+              "zh": "4",
+              "en": "4"
+            }
+          },
+          {
+            "id": "mem-1",
+            "label": {
+              "zh": "地址 1",
+              "en": "Address 1"
+            },
+            "value": {
+              "zh": "3",
+              "en": "3"
+            }
+          },
+          {
+            "id": "mem-2",
+            "label": {
+              "zh": "地址 2",
+              "en": "Address 2"
+            },
+            "value": {
+              "zh": "9",
+              "en": "9"
+            }
+          },
+          {
+            "id": "acc",
+            "label": {
+              "zh": "累加器 ACC",
+              "en": "Accumulator ACC"
+            },
+            "value": {
+              "zh": "0",
+              "en": "0"
+            }
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "LOAD 1 读取地址 1。ACC 变为 3，地址 1 仍然是 3。",
+          "en": "LOAD 1 reads address 1. ACC becomes 3 and address 1 still holds 3."
+        },
+        "items": [
+          {
+            "id": "mem-0",
+            "label": {
+              "zh": "地址 0",
+              "en": "Address 0"
+            },
+            "value": {
+              "zh": "4",
+              "en": "4"
+            }
+          },
+          {
+            "id": "mem-1",
+            "label": {
+              "zh": "地址 1",
+              "en": "Address 1"
+            },
+            "value": {
+              "zh": "3",
+              "en": "3"
+            },
+            "state": "active"
+          },
+          {
+            "id": "mem-2",
+            "label": {
+              "zh": "地址 2",
+              "en": "Address 2"
+            },
+            "value": {
+              "zh": "9",
+              "en": "9"
+            }
+          },
+          {
+            "id": "acc",
+            "label": {
+              "zh": "累加器 ACC",
+              "en": "Accumulator ACC"
+            },
+            "value": {
+              "zh": "3",
+              "en": "3"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "STORE 2 把 ACC 的 3 写到地址 2，替换 9。",
+          "en": "STORE 2 writes the 3 in ACC to address 2, replacing 9."
+        },
+        "items": [
+          {
+            "id": "mem-0",
+            "label": {
+              "zh": "地址 0",
+              "en": "Address 0"
+            },
+            "value": {
+              "zh": "4",
+              "en": "4"
+            }
+          },
+          {
+            "id": "mem-1",
+            "label": {
+              "zh": "地址 1",
+              "en": "Address 1"
+            },
+            "value": {
+              "zh": "3",
+              "en": "3"
+            }
+          },
+          {
+            "id": "mem-2",
+            "label": {
+              "zh": "地址 2",
+              "en": "Address 2"
+            },
+            "value": {
+              "zh": "3",
+              "en": "3"
+            },
+            "state": "active"
+          },
+          {
+            "id": "acc",
+            "label": {
+              "zh": "累加器 ACC",
+              "en": "Accumulator ACC"
+            },
+            "value": {
+              "zh": "3",
+              "en": "3"
+            },
+            "state": "done"
+          }
+        ]
+      },
+      { "caption": { "zh": "HALT 让这次复制结束。点地址 1 和地址 2，看看这两个格子现在各存着什么。", "en": "HALT ends the copy. Inspect addresses 1 and 2 to see what each cell now holds." }, "items": [
+        { "id": "mem-1", "label": { "zh": "地址 1", "en": "Address 1" }, "value": { "zh": "3", "en": "3" } },
+        { "id": "mem-2", "label": { "zh": "地址 2", "en": "Address 2" }, "value": { "zh": "3", "en": "3" } },
+        { "id": "halt", "label": { "zh": "停机", "en": "Halted" }, "value": { "zh": "HALT", "en": "HALT" }, "state": "done" }
+      ] }
+    ]
+  },
+  "topic": {
+    "id": "memory",
+    "order": 1,
+    "title": {
+      "zh": "内存",
+      "en": "Memory"
+    }
+  }
+}

@@ -1,0 +1,209 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "first-steps",
+  "order": 1,
+  "unit": {
+    "id": "foundations",
+    "order": 10,
+    "title": {
+      "zh": "Python 基础",
+      "en": "Python Foundations"
+    }
+  },
+  "topic": {
+    "id": "sequence",
+    "order": 1,
+    "title": {
+      "zh": "指令与顺序",
+      "en": "Commands and Sequence"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "第一次出发",
+    "en": "First Steps"
+  },
+  "concept": {
+    "zh": "顺序执行",
+    "en": "Sequence"
+  },
+  "brief": {
+    "zh": "让机器人芽芽沿着走廊向右走，抵达亮着的出口。",
+    "en": "Guide Sprout to the right along the corridor and reach the glowing exit."
+  },
+  "hints": [
+    {
+      "zh": "一条 move 指令走一格。数一数机器人和出口之间相隔几格。",
+      "en": "One move command travels one tile. Count the tiles between Sprout and the exit."
+    }
+  ],
+  "tiles": [
+    "#########",
+    "#.......#",
+    "#.#####.#",
+    "#.......#",
+    "#.#####.#",
+    "#.......#",
+    "#########"
+  ],
+  "start": {
+    "x": 2,
+    "y": 3
+  },
+  "allowedApi": [
+    "move",
+    "say"
+  ],
+  "objectives": [
+    {
+      "type": "exit",
+      "x": 6,
+      "y": 3
+    }
+  ],
+  "cards": [
+    {
+      "id": "move",
+      "label": {
+        "zh": "移动",
+        "en": "Move"
+      },
+      "template": "move({{direction}})",
+      "parameters": [
+        {
+          "name": "direction",
+          "label": {
+            "zh": "方向",
+            "en": "Direction"
+          },
+          "choices": [
+            {
+              "id": "right",
+              "label": {
+                "zh": "右",
+                "en": "Right"
+              },
+              "code": "\"right\""
+            },
+            {
+              "id": "up",
+              "label": {
+                "zh": "上",
+                "en": "Up"
+              },
+              "code": "\"up\""
+            },
+            {
+              "id": "left",
+              "label": {
+                "zh": "左",
+                "en": "Left"
+              },
+              "code": "\"left\""
+            },
+            {
+              "id": "down",
+              "label": {
+                "zh": "下",
+                "en": "Down"
+              },
+              "code": "\"down\""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "say",
+      "label": {
+        "zh": "显示一句话",
+        "en": "Say something"
+      },
+      "template": "say({{message}})",
+      "parameters": [
+        {
+          "name": "message",
+          "label": {
+            "zh": "消息",
+            "en": "Message"
+          },
+          "choices": [
+            {
+              "id": "hello-zh",
+              "label": {
+                "zh": "你好！",
+                "en": "Hello! (Chinese)"
+              },
+              "code": "\"你好！\""
+            },
+            {
+              "id": "hello-en",
+              "label": {
+                "zh": "你好！（英文）",
+                "en": "Hello!"
+              },
+              "code": "\"Hello!\""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "solutionCards": [
+    {
+      "cardId": "move",
+      "values": {
+        "direction": "right"
+      }
+    },
+    {
+      "cardId": "move",
+      "values": {
+        "direction": "right"
+      }
+    },
+    {
+      "cardId": "move",
+      "values": {
+        "direction": "right"
+      }
+    },
+    {
+      "cardId": "move",
+      "values": {
+        "direction": "right"
+      }
+    }
+  ],
+  "tutorial": [
+    {
+      "text": {
+        "zh": "找到机器人和亮着的出口。数一数沿着走廊要向右几格。",
+        "en": "Find Sprout and the glowing exit. Count how many tiles Sprout needs to move right."
+      },
+      "target": "board"
+    },
+    {
+      "text": {
+        "zh": "点击「移动」卡片，把一条 Python 指令放进程序。",
+        "en": "Click the Move card to add a Python command to your program."
+      },
+      "target": "palette"
+    },
+    {
+      "text": {
+        "zh": "把方向选成「右」，再添加几张移动卡片。每张卡片走一格。",
+        "en": "Choose Right and add more Move cards. Each card moves Sprout one tile."
+      },
+      "target": "program"
+    },
+    {
+      "text": {
+        "zh": "点击「运行」，看看芽芽按哪条指令先走。",
+        "en": "Click Run and see which command Sprout follows first."
+      },
+      "target": "run"
+    }
+  ]
+}

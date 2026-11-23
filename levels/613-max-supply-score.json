@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "unit": {
+    "id": "algorithm-advanced",
+    "order": 70,
+    "title": {
+      "zh": "算法高级",
+      "en": "Advanced Algorithms"
+    }
+  },
+  "stage": "exercise",
+  "topic": { "id": "dynamic-programming", "order": 1, "title": { "zh": "动态规划", "en": "Dynamic Programming" } },
+  "id": "max-supply-score",
+  "order": 614,
+  "title": {
+    "zh": "相邻补给二选一",
+    "en": "Maximize the supply score"
+  },
+  "brief": {
+    "zh": "实现 max_supply_score(values)。可以跳过物品，不能连续拿相邻两件。返回可以拿到的最高分。",
+    "en": "Implement max_supply_score(values). You may skip parts and cannot take adjacent parts. Return the highest total."
+  },
+  "concept": {
+    "zh": "最大值状态",
+    "en": "Maximum-value states"
+  },
+  "hints": [
+    {
+      "zh": "用 earlier 计算拿当前格的得分。先保存旧 best，再比较。",
+      "en": "Use earlier to compute the take option. Save the previous best before comparing."
+    }
+  ],
+  "functionName": "max_supply_score",
+  "starterCode": "def max_supply_score(values):\n    earlier = 0\n    best = 0\n    return best",
+  "solutionCode": "def max_supply_score(values):\n    earlier = 0\n    best = 0\n    for points in values:\n        taking = earlier + points\n        earlier = best\n        if taking > best:\n            best = taking\n    return best",
+  "snippets": [
+    {
+      "label": {
+        "zh": "先计算收取方案",
+        "en": "Compute the taking option"
+      },
+      "code": "    for points in values:\n        taking = earlier + points\n        earlier = best"
+    },
+    {
+      "label": {
+        "zh": "保留更大分数",
+        "en": "Keep the bigger score"
+      },
+      "code": "        if taking > best:\n            best = taking"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          2,
+          7,
+          9,
+          3,
+          1
+        ]
+      ],
+      "expected": 12
+    },
+    {
+      "args": [
+        [
+          2,
+          1,
+          1,
+          2
+        ]
+      ],
+      "expected": 4
+    },
+    {
+      "args": [
+        [
+          8,
+          1,
+          1,
+          9
+        ]
+      ],
+      "expected": 17
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          -4,
+          -2,
+          0
+        ]
+      ],
+      "expected": 0
+    }
+  ]
+}

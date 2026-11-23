@@ -1,0 +1,66 @@
+.charging-challenge { min-width: 0; }
+.charging-inputs, .charging-editor, .charging-trace {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.charging-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.charging-actions button, .charging-helper-note button, .charging-editor .course-helper button {
+  min-height: 40px;
+  white-space: normal;
+}
+.charging-inputs > p, .charging-helper-note p, .charging-trace h3, .charging-trace p { margin: 0; }
+
+.charging-rack, .charging-batteries {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.charging-rack-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 9px;
+  align-items: center;
+  padding: 5px 6px;
+  border: 1px solid #48647e;
+  border-inline-start: 3px solid #5d7996;
+  border-radius: 6px;
+  color: #d8e6f8;
+  background: #1d3148;
+}
+.charging-rack-row[data-complete] { border-inline-start-color: #88cfaa; }
+.charging-rack-row[data-active] { border-color: #91dfc3; background: #203d3e; }
+.charging-batteries { display: flex; flex-wrap: wrap; min-width: 0; }
+.charging-batteries .for-battery { display: inline-block; text-align: center; }
+.charging-batteries [data-charged] .for-battery { border-color: #88cfaa; }
+.charging-batteries [data-charged] .for-battery::after { background: #88cfaa; }
+.charging-batteries [data-active] .for-battery { border-color: #cefff2; background: #2e6954; color: #f0fff9; }
+.charging-batteries [data-active] .for-battery::after { background: #cefff2; }
+
+.charging-comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; margin: 0; }
+.charging-comparison > div {
+  min-width: 0;
+  padding: 5px 7px;
+  border: 1px solid #48647e;
+  border-radius: 6px;
+  background: #20354a;
+  color: #d7e6f6;
+}
+.charging-comparison > div[data-match='true'] { border-color: #88cfaa; background: #21413e; }
+.charging-comparison > div[data-match='false'] { border-color: #e1a67e; background: #453831; }
+.charging-comparison dt { font-size: 12px; }
+.charging-comparison dd { margin: 3px 0 0; color: #e5f1ff; }
+.charging-comparison output { font-family: var(--mono); }
+
+.charging-editor label { font-weight: 700; }
+.charging-editor .python-input { min-height: 16.5em; min-width: 0; width: 100%; resize: vertical; }
+.charging-editor .course-helper { flex-wrap: wrap; }
+.charging-helper-note { display: grid; justify-items: start; gap: 6px; color: #d0e4e4; }
+.charging-trace { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+.charging-trace-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; }
+.charging-trace h3 { font-size: 14px; }
+.charging-trace .for-values div { max-width: 100%; }
+

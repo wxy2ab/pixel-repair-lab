@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "yolox-confidence-slider-demo",
+  "order": 558,
+  "stage": "demo",
+  "unit": {
+    "id": "yolox",
+    "order": 150,
+    "title": { "zh": "YOLOX", "en": "YOLOX" }
+  },
+  "topic": {
+    "id": "detection-confidence",
+    "order": 3,
+    "title": { "zh": "置信度门槛", "en": "Confidence thresholds" }
+  },
+  "mode": "detect",
+  "title": { "zh": "同一张照片，两种门槛", "en": "Two Thresholds on the Same Photo" },
+  "brief": { "zh": "照片和目标类别保持相同，只改变置信度门槛，观察框是否留下。", "en": "Keep the photo and class settings fixed. Change only the confidence threshold and see if the box stays." },
+  "concept": { "zh": "候选分数低于门槛时会被筛掉。", "en": "A candidate drops out when its score is below the threshold." },
+  "hints": [
+    { "zh": "先运行一次查看分数，再把门槛调得比它高。", "en": "Run once to read the score, then raise the threshold above it." }
+  ],
+  "cases": [
+    {
+      "image": "astronaut",
+      "label": { "zh": "保留还是隐藏", "en": "Keep or hide" },
+      "prompt": { "zh": "以 50% 运行，记下框的置信度。再用 95% 运行一次，比较两次的框。", "en": "Run at 50% and note the box's confidence. Run again at 95% and compare the results." },
+      "initial": { "confidence": 50, "target": "all" }
+    }
+  ]
+}

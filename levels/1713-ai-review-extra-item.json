@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "ai-review-extra-item",
+  "order": 1713,
+  "unit": {
+    "id": "ai-review",
+    "order": 170,
+    "title": {
+      "zh": "核对与修正",
+      "en": "Review and Revision"
+    }
+  },
+  "topic": {
+    "id": "review",
+    "order": 1,
+    "title": {
+      "zh": "核对清单",
+      "en": "Review the Manifest"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "找出多出来的指南针",
+    "en": "Find the Extra Compass"
+  },
+  "brief": {
+    "zh": "工具车需要两瓶水和一根线缆。库房已经有导航设备，这次的工具车不能装指南针。",
+    "en": "Pack two water bottles and one cable. The storeroom already has navigation equipment, so keep the compass off this cart."
+  },
+  "concept": {
+    "zh": "即使必需物品都齐，也要核对禁止的物品是否为 0。",
+    "en": "Check that excluded items have a count of zero, even when the required items are present."
+  },
+  "hints": [
+    {
+      "zh": "检查装进来的物品，也检查按要求应当留在外面的物品。",
+      "en": "Check the packed items and the items that should be left out."
+    }
+  ],
+  "inventory": [
+    {
+      "id": "water",
+      "label": {
+        "zh": "水",
+        "en": "Water bottle"
+      },
+      "aliases": [
+        "water bottles",
+        "瓶水",
+        "饮用水"
+      ]
+    },
+    {
+      "id": "cable",
+      "label": {
+        "zh": "线缆",
+        "en": "Cable"
+      },
+      "aliases": [
+        "cables",
+        "电缆"
+      ]
+    },
+    {
+      "id": "compass",
+      "label": {
+        "zh": "指南针",
+        "en": "Compass"
+      },
+      "aliases": [
+        "compasses",
+        "罗盘"
+      ]
+    }
+  ],
+  "required": {
+    "water": 2,
+    "cable": 1
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "compass",
+        "quantity": 1
+      }
+    ],
+    "cards": [
+      {
+        "zh": "准备 2 瓶水。",
+        "en": "Pack 2 water bottles."
+      },
+      {
+        "zh": "线缆改为 1 根。",
+        "en": "Set the cable count to 1."
+      },
+      {
+        "zh": "去掉指南针。",
+        "en": "Remove the compass."
+      }
+    ]
+  },
+  "examplePrompts": {
+    "zh": [
+      "请准备 2 瓶水和 1 根线缆。不要放指南针。",
+      "去掉指南针。把其他项目保持原样。"
+    ],
+    "en": [
+      "Pack 2 water bottles and 1 cable. Leave out the compass.",
+      "Remove the compass. Keep the other entries."
+    ]
+  }
+}

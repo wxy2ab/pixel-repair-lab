@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "challenge-four-channel-power-rewrite",
+  "order": 1819,
+  "difficulty": "intermediate",
+  "stage": "challenge",
+  "unit": { "id": "challenge-zone", "order": 90, "title": { "zh": "挑战场", "en": "Challenge Arena" } },
+  "prerequisites": [
+    { "unit": "architecture", "topic": "memory" },
+    { "unit": "architecture", "topic": "registers" },
+    { "unit": "architecture", "topic": "instructions" }
+  ],
+  "title": { "zh": "四路电量改写", "en": "Four-Channel Power Rewrite" },
+  "concept": { "zh": "四格内存 · 原地生成两份合计和两份差值", "en": "Four memory cells · Two totals and two differences in place" },
+  "brief": {
+    "zh": "地址 0、1、2、3 起初分别存着电池 A、B、C、D 的电量。维修终端只剩这四格内存，必须在原来的位置交出报告。停机时，地址 0 要存 A + B，地址 1 存 B − D，地址 2 存 C + D，地址 3 存 A − C，ACC 存四块电池的电量总和。公式中的字母都指改写前的电量。同一段指令要通过全部五组记录。",
+    "en": "Addresses 0, 1, 2, and 3 start with the readings from batteries A, B, C, and D. These four cells are all the terminal has for its report. At HALT, address 0 must contain A + B, address 1 B − D, address 2 C + D, and address 3 A − C. Leave the total charge of all four batteries in ACC. Each letter refers to its original reading. Use the same program for all five cases."
+  },
+  "hints": [],
+  "allowedOps": ["LOAD", "ADD", "SUB", "STORE", "HALT"],
+  "starterCode": "HALT\n",
+  "solutionCode": "LOAD 0\nADD 1\nSTORE 0\nLOAD 1\nSUB 3\nSTORE 1\nLOAD 2\nADD 3\nSTORE 2\nLOAD 0\nSUB 2\nSUB 1\nSTORE 3\nLOAD 0\nADD 2\nHALT\n",
+  "cases": [
+    {
+      "label": { "zh": "两组总量相同", "en": "Equal pair totals" },
+      "memory": [9, 4, 5, 8],
+      "accumulator": 21,
+      "goal": {
+        "accumulator": 26,
+        "memory": [{ "address": 0, "value": 13 }, { "address": 1, "value": -4 }, { "address": 2, "value": 13 }, { "address": 3, "value": 4 }]
+      }
+    },
+    {
+      "label": { "zh": "充电架换班", "en": "Charging rack handoff" },
+      "memory": [2, 8, 12, 3],
+      "accumulator": -9,
+      "goal": {
+        "accumulator": 25,
+        "memory": [{ "address": 0, "value": 10 }, { "address": 1, "value": 5 }, { "address": 2, "value": 15 }, { "address": 3, "value": -10 }]
+      }
+    },
+    {
+      "label": { "zh": "两端读数对齐", "en": "Matching readings across racks" },
+      "memory": [0, 7, 0, 7],
+      "goal": {
+        "accumulator": 14,
+        "memory": [{ "address": 0, "value": 7 }, { "address": 1, "value": 0 }, { "address": 2, "value": 7 }, { "address": 3, "value": 0 }]
+      }
+    },
+    {
+      "label": { "zh": "只开左侧电路", "en": "Left circuits only" },
+      "memory": [16, 0, 3, 0],
+      "accumulator": 2,
+      "goal": {
+        "accumulator": 19,
+        "memory": [{ "address": 0, "value": 16 }, { "address": 1, "value": 0 }, { "address": 2, "value": 3 }, { "address": 3, "value": 13 }]
+      }
+    },
+    {
+      "label": { "zh": "备用架接管", "en": "Reserve rack takeover" },
+      "memory": [1, 0, 0, 12],
+      "accumulator": 4,
+      "goal": {
+        "accumulator": 13,
+        "memory": [{ "address": 0, "value": 1 }, { "address": 1, "value": -12 }, { "address": 2, "value": 12 }, { "address": 3, "value": 1 }]
+      }
+    }
+  ]
+}

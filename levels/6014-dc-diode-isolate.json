@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "kind": "circuit",
+  "id": "dc-diode-isolate",
+  "order": 6014,
+  "unit": {
+    "id": "digital-circuits",
+    "order": 85,
+    "title": {
+      "zh": "数字电路",
+      "en": "Digital Circuits"
+    }
+  },
+  "topic": {
+    "id": "diode-loop",
+    "order": 2,
+    "title": {
+      "zh": "二极管与通路",
+      "en": "Diodes and Current Paths"
+    }
+  },
+  "stage": "exercise",
+  "title": {
+    "zh": "两份不同的熄灯工单",
+    "en": "Two Ways to Keep the Lamp Dark"
+  },
+  "brief": {
+    "zh": "第一份工单要求闭合开关也能让红灯熄灭。第二份要求二极管正向、灯仍熄灭。根据每份工单找出阻断电流的位置。",
+    "en": "The first order calls for a dark LED with the switch closed. The second calls for a dark LED with the diode forward. Find where to interrupt the current for each order."
+  },
+  "concept": {
+    "zh": "区分开关断路与反向截止",
+    "en": "Distinguish an open switch from a reverse-biased diode"
+  },
+  "hints": [],
+  "mode": "diode",
+  "cases": [
+    {
+      "label": {
+        "zh": "闭合开关，保留暗灯",
+        "en": "Dark LED, switch closed"
+      },
+      "bits": [
+        0,
+        1
+      ],
+      "goal": {
+        "output": 0,
+        "switchClosed": 1
+      },
+      "solution": {
+        "bits": [
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "label": {
+        "zh": "保留正向，切断回路",
+        "en": "Diode forward, loop interrupted"
+      },
+      "bits": [
+        1,
+        0
+      ],
+      "goal": {
+        "output": 0,
+        "diodeForward": 1
+      },
+      "solution": {
+        "bits": [
+          0,
+          1
+        ]
+      }
+    }
+  ]
+}

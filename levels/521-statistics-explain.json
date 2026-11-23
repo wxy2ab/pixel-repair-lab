@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "kind": "lecture",
+  "id": "statistics-mean-median-lesson",
+  "order": 521,
+  "stage": "explain",
+  "unit": { "id": "statistics", "order": 120, "title": { "zh": "统计分析", "en": "Statistics" } },
+  "topic": { "id": "center-spread", "order": 1, "title": { "zh": "平均值、中位数与极差", "en": "Mean, median, and range" } },
+  "title": { "zh": "读懂平均值和中位数", "en": "Read the Mean and Median" },
+  "brief": { "zh": "观察一个特别高的温度值会改变哪些统计量。", "en": "See which statistics change when one temperature rises sharply." },
+  "concept": { "zh": "平均值看总量，中位数看排序后的中间位置", "en": "The mean uses the total, the median uses the middle position" },
+  "hints": [],
+  "sections": [
+    { "title": { "zh": "平均值", "en": "Mean" }, "body": { "zh": "把温度读数加起来，再除以读数的个数，就得到平均值。每一个读数都会影响总和。", "en": "Add the temperatures and divide by the number of readings. Every reading contributes to the total." } },
+    { "title": { "zh": "中位数和极差", "en": "Median and range" }, "body": { "zh": "把读数从低到高排列。奇数个样本取正中间的值，偶数个取中间两个值的平均。最高值减最低值是极差。", "en": "Sort the readings. For an odd sample size, take the middle reading. For an even sample size, average the two middle readings. Subtract the lowest reading from the highest for the range." } }
+  ],
+  "animation": {
+    "layout": "bars",
+    "frames": [
+      { "caption": { "zh": "五个样本已经排序，平均值和中位数都是 22°C。", "en": "The five readings are sorted. Both the mean and median are 22°C." }, "items": [
+        { "id": "a", "label": { "zh": "第 1 个", "en": "1st" }, "value": { "zh": "18°C", "en": "18°C" }, "height": 36 },
+        { "id": "b", "label": { "zh": "第 2 个", "en": "2nd" }, "value": { "zh": "20°C", "en": "20°C" }, "height": 40 },
+        { "id": "c", "label": { "zh": "第 3 个", "en": "3rd" }, "value": { "zh": "22°C", "en": "22°C" }, "height": 44, "state": "active" },
+        { "id": "d", "label": { "zh": "第 4 个", "en": "4th" }, "value": { "zh": "24°C", "en": "24°C" }, "height": 48 },
+        { "id": "e", "label": { "zh": "第 5 个", "en": "5th" }, "value": { "zh": "26°C", "en": "26°C" }, "height": 52 }
+      ] },
+      { "caption": { "zh": "只把最高值从 26°C 换成 44°C。", "en": "Replace only the highest reading, from 26°C to 44°C." }, "items": [
+        { "id": "a", "label": { "zh": "第 1 个", "en": "1st" }, "value": { "zh": "18°C", "en": "18°C" }, "height": 36 },
+        { "id": "b", "label": { "zh": "第 2 个", "en": "2nd" }, "value": { "zh": "20°C", "en": "20°C" }, "height": 40 },
+        { "id": "c", "label": { "zh": "第 3 个", "en": "3rd" }, "value": { "zh": "22°C", "en": "22°C" }, "height": 44 },
+        { "id": "d", "label": { "zh": "第 4 个", "en": "4th" }, "value": { "zh": "24°C", "en": "24°C" }, "height": 48 },
+        { "id": "e", "label": { "zh": "第 5 个", "en": "5th" }, "value": { "zh": "44°C", "en": "44°C" }, "height": 88, "state": "active" }
+      ] },
+      { "caption": { "zh": "平均值变为 25.6°C，极差变为 26°C。中位数仍然是第 3 个读数。", "en": "The mean rises to 25.6°C and the range to 26°C. The median stays at the third reading." }, "items": [
+        { "id": "a", "label": { "zh": "第 1 个", "en": "1st" }, "value": { "zh": "18°C", "en": "18°C" }, "height": 36 },
+        { "id": "b", "label": { "zh": "第 2 个", "en": "2nd" }, "value": { "zh": "20°C", "en": "20°C" }, "height": 40 },
+        { "id": "c", "label": { "zh": "中位数", "en": "Median" }, "value": { "zh": "22°C", "en": "22°C" }, "height": 44, "state": "done" },
+        { "id": "d", "label": { "zh": "第 4 个", "en": "4th" }, "value": { "zh": "24°C", "en": "24°C" }, "height": 48 },
+        { "id": "e", "label": { "zh": "第 5 个", "en": "5th" }, "value": { "zh": "44°C", "en": "44°C" }, "height": 88, "state": "active" }
+      ] }
+    ]
+  },
+  "question": {
+    "prompt": { "zh": "只有第五个读数变高，中位数依然是几？", "en": "Only the fifth reading rose. What is the median still?" },
+    "options": [{ "zh": "22°C", "en": "22°C" }, { "zh": "25.6°C", "en": "25.6°C" }, { "zh": "44°C", "en": "44°C" }],
+    "correct": 0,
+    "feedback": { "zh": "第三个读数仍然排在中间，所以中位数还是 22°C。", "en": "The third reading still sits in the middle, so the median is still 22°C." }
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "dispatch-report",
+  "order": 1010,
+  "unit": {
+    "id": "structures",
+    "order": 40,
+    "title": { "zh": "数据结构", "en": "Data Structures" }
+  },
+  "stage": "challenge",
+  "title": { "zh": "维修站的电池交接单", "en": "The Repair Station Battery Handover" },
+  "concept": {
+    "zh": "按规则安排补电、取件和登记",
+    "en": "Organize charging, pickups, and records"
+  },
+  "brief": {
+    "zh": "先为四个工位选好结构。按到达顺序取电池补电，把补好的电池暂时叠放。每次有人取件，就从最上面拿一块，按名字更新电量，并把名字加到交接清单末尾。",
+    "en": "Choose a structure for each of the four stations. Charge batteries in arrival order and stack them in the holding area. For each pickup, take the top battery, update its charge by name, and add its name to the end of the handover list."
+  },
+  "hints": [
+    {
+      "zh": "补电等候区总是让最早到的电池先离开。暂放区则每次从最上面取件。",
+      "en": "The earliest arrival always leaves the charging line first. At pickup, take the battery on top of the holding pile."
+    },
+    {
+      "zh": "同一块电池靠名字认出来。取到它时，只更新这个名字对应的电量，把名字接在清单最后。",
+      "en": "A battery keeps its name throughout the workflow. At pickup, update the charge for that name and add the name at the end of the list."
+    }
+  ],
+  "functionName": "dispatch_report",
+  "helpers": ["charge_total"],
+  "starterCode": "from algorithms import charge_total\n\ndef dispatch_report(arrivals, records, increment, actions):\n    queue = []\n    temporary = []\n    taken = []\n    current = {}\n    for name in arrivals:\n        current[name] = records[name]\n    for name in arrivals:\n        queue.append(name)\n    for action in actions:\n        if action == \"stage\":\n            name = queue.pop(0)\n            temporary.append([name, charge_total(current[name], increment)])\n        else:\n            battery = temporary.pop()\n            current[battery[0]] = battery[1]\n            taken.append(battery[0])\n    return [taken, current]\n",
+  "solutionCode": "from algorithms import charge_total\n\ndef dispatch_report(arrivals, records, increment, actions):\n    queue = []\n    temporary = []\n    taken = []\n    current = {}\n    for name in arrivals:\n        current[name] = records[name]\n    for name in arrivals:\n        queue.append(name)\n    for action in actions:\n        if action == \"stage\":\n            name = queue.pop(0)\n            temporary.append([name, charge_total(current[name], increment)])\n        else:\n            battery = temporary.pop()\n            current[battery[0]] = battery[1]\n            taken.append(battery[0])\n    return [taken, current]\n",
+  "snippets": [
+    {
+      "label": { "zh": "按到达顺序排队", "en": "Queue batteries in arrival order" },
+      "code": "        queue.append(name)"
+    },
+    {
+      "label": { "zh": "给队头的电池补电并暂放", "en": "Charge the first battery in line and put it on the pile" },
+      "code": "            name = queue.pop(0)\n            temporary.append([name, charge_total(current[name], increment)])"
+    },
+    {
+      "label": { "zh": "取件，按名字写回电量，追加到清单", "en": "Pick up the top battery, update its charge by name, and log the pickup" },
+      "code": "            battery = temporary.pop()\n            current[battery[0]] = battery[1]\n            taken.append(battery[0])"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        ["A", "B", "C"],
+        { "A": 2, "B": 4, "C": 1 },
+        3,
+        ["stage", "stage", "retrieve", "stage", "retrieve", "retrieve"]
+      ],
+      "expected": [["B", "C", "A"], { "A": 5, "B": 7, "C": 4 }]
+    },
+    {
+      "args": [
+        ["P", "R", "Q", "S"],
+        { "P": 5, "R": 0, "Q": 4, "S": 2 },
+        2,
+        ["stage", "stage", "retrieve", "stage", "stage", "retrieve", "retrieve"]
+      ],
+      "expected": [["R", "S", "Q"], { "P": 5, "R": 2, "Q": 6, "S": 4 }]
+    },
+    {
+      "args": [
+        ["T", "U", "V"],
+        { "T": 1, "U": 3, "V": 5 },
+        1,
+        ["stage", "retrieve", "stage"]
+      ],
+      "expected": [["T"], { "T": 2, "U": 3, "V": 5 }]
+    }
+  ],
+  "batteryDispatch": {
+    "trialCase": 0,
+    "predictions": [
+      {
+        "caseIndex": 1,
+        "orders": [["P", "R", "Q"], ["R", "S", "Q"], ["S", "Q", "R"]],
+        "records": [
+          { "P": 7, "R": 2, "Q": 6, "S": 4 },
+          { "P": 5, "R": 2, "Q": 6, "S": 4 },
+          { "P": 5, "R": 0, "Q": 4, "S": 2 }
+        ]
+      }
+    ]
+  }
+}

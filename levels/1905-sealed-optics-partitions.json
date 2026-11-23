@@ -1,0 +1,239 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "challenge-sealed-optics-partitions",
+  "order": 1905,
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "title": {
+    "zh": "两站镜片封箱",
+    "en": "Separate the Lens Shipments"
+  },
+  "brief": {
+    "zh": "红站领 7 枚镜片，蓝站领 5 枚。两站不能混箱，每个标准托盘最多放 3 枚，必须用最少的托盘。每盘放 2 个缓冲垫并贴 1 道新封签；每个目的站共用 1 张地址卡。所有镜片装齐，超宽托盘和旧封签都不合规。审核 AI 每次发来的整单。",
+    "en": "Red Station needs 7 lenses and Blue Station needs 5. A standard tray holds at most 3 lenses, and destinations cannot share a tray. Use the fewest trays. Fit two cushions and one fresh seal to every tray. Each destination shares a single address card. Ship all lenses and leave out oversized trays and used seals. Audit every revised manifest."
+  },
+  "concept": {
+    "zh": "按目的地向上取整、按盘与按站计件",
+    "en": "Separate rounding by destination, per-tray and per-site counts"
+  },
+  "prerequisites": [
+    {
+      "unit": "ai",
+      "topic": "task"
+    },
+    {
+      "unit": "ai",
+      "topic": "constraints"
+    },
+    {
+      "unit": "ai-review",
+      "topic": "specific-correction"
+    },
+    {
+      "unit": "ai-review",
+      "topic": "multi-turn"
+    }
+  ],
+  "hints": [],
+  "inventory": [
+    {
+      "id": "lens",
+      "label": {
+        "zh": "镜片",
+        "en": "lens"
+      },
+      "aliases": [
+        "lenses"
+      ]
+    },
+    {
+      "id": "tray",
+      "label": {
+        "zh": "标准托盘",
+        "en": "standard tray"
+      },
+      "aliases": [
+        "standard trays"
+      ]
+    },
+    {
+      "id": "cushion",
+      "label": {
+        "zh": "缓冲垫",
+        "en": "cushion"
+      },
+      "aliases": [
+        "cushions"
+      ]
+    },
+    {
+      "id": "fresh-seal",
+      "label": {
+        "zh": "新封签",
+        "en": "fresh seal"
+      },
+      "aliases": [
+        "fresh seals"
+      ]
+    },
+    {
+      "id": "address-card",
+      "label": {
+        "zh": "地址卡",
+        "en": "address card"
+      },
+      "aliases": [
+        "address cards"
+      ]
+    },
+    {
+      "id": "oversize",
+      "label": {
+        "zh": "超宽托盘",
+        "en": "oversized tray"
+      },
+      "aliases": [
+        "oversized trays"
+      ]
+    },
+    {
+      "id": "used-seal",
+      "label": {
+        "zh": "旧封签",
+        "en": "used seal"
+      },
+      "aliases": [
+        "used seals"
+      ]
+    }
+  ],
+  "required": {
+    "lens": 12,
+    "tray": 5,
+    "cushion": 10,
+    "fresh-seal": 5,
+    "address-card": 2
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "tray",
+        "quantity": 4
+      },
+      {
+        "itemId": "cushion",
+        "quantity": 8
+      },
+      {
+        "itemId": "used-seal",
+        "quantity": 1
+      }
+    ],
+    "draft": {
+      "items": [
+        {
+          "id": "lens",
+          "quantity": 10
+        },
+        {
+          "id": "tray",
+          "quantity": 4
+        },
+        {
+          "id": "cushion",
+          "quantity": 8
+        },
+        {
+          "id": "address-card",
+          "quantity": 5
+        },
+        {
+          "id": "used-seal",
+          "quantity": 2
+        }
+      ]
+    },
+    "cards": [
+      {
+        "zh": "镜片改为 10。",
+        "en": "Pack 10 lenses."
+      },
+      {
+        "zh": "镜片改为 12。",
+        "en": "Pack 12 lenses."
+      },
+      {
+        "zh": "标准托盘改为 5。",
+        "en": "Pack 5 standard trays."
+      },
+      {
+        "zh": "标准托盘改为 4。",
+        "en": "Pack 4 standard trays."
+      },
+      {
+        "zh": "缓冲垫改为 10。",
+        "en": "Pack 10 cushions."
+      },
+      {
+        "zh": "缓冲垫改为 8。",
+        "en": "Pack 8 cushions."
+      },
+      {
+        "zh": "新封签改为 2。",
+        "en": "Pack 2 fresh seals."
+      },
+      {
+        "zh": "新封签改为 5。",
+        "en": "Pack 5 fresh seals."
+      },
+      {
+        "zh": "地址卡改为 2。",
+        "en": "Pack 2 address cards."
+      },
+      {
+        "zh": "地址卡改为 5。",
+        "en": "Pack 5 address cards."
+      },
+      {
+        "zh": "移除超宽托盘。",
+        "en": "Remove the oversized tray."
+      },
+      {
+        "zh": "超宽托盘改为 1。",
+        "en": "Pack 1 oversized tray."
+      },
+      {
+        "zh": "旧封签改为 1。",
+        "en": "Pack 1 used seal."
+      },
+      {
+        "zh": "移除旧封签。",
+        "en": "Remove the used seal."
+      }
+    ]
+  },
+  "examplePrompts": {
+    "zh": [
+      "镜片改为 12。 标准托盘改为 5。 缓冲垫改为 10。 新封签改为 5。 地址卡改为 2。 移除超宽托盘。 移除旧封签。",
+      "标准托盘改为 5。",
+      "缓冲垫改为 10。",
+      "移除旧封签。"
+    ],
+    "en": [
+      "Pack 12 lenses. Pack 5 standard trays. Pack 10 cushions. Pack 5 fresh seals. Pack 2 address cards. Remove the oversized tray. Remove the used seal.",
+      "Pack 5 standard trays.",
+      "Pack 10 cushions.",
+      "Remove the used seal."
+    ]
+  }
+}

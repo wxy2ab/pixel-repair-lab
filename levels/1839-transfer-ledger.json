@@ -1,0 +1,286 @@
+{
+  "version": 1,
+  "kind": "algorithm",
+  "id": "challenge-transfer-ledger",
+  "order": 1839,
+  "difficulty": "intermediate",
+  "stage": "challenge",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "prerequisites": [
+    {
+      "unit": "structures",
+      "topic": "dictionaries"
+    },
+    {
+      "unit": "python-intermediate",
+      "topic": "for-loops"
+    }
+  ],
+  "title": {
+    "zh": "转仓对账",
+    "en": "Warehouse Transfer Ledger"
+  },
+  "concept": {
+    "zh": "逐条提交 · 失败不扣货",
+    "en": "Sequential transfers · Reject without changing stock"
+  },
+  "brief": {
+    "zh": "stock 按仓名记录库存。transfers 每笔为 [出仓, 入仓, 件数]，两个仓名不同，件数大于 0。按原顺序处理。未登记的仓库存为 0。库存够就扣出仓并增加入仓，成功后即使库存降到 0 也保留仓记录。库存不够，整笔跳过，两个仓的记录都不得改变。返回 [最终库存字典, 被拒的转仓编号列表]，编号从 0 开始。",
+    "en": "stock maps warehouse names to stock counts. Each transfer is [source, destination, units], with different warehouse names and positive units. Process in input order. An unlisted warehouse has zero stock. If the source has enough, deduct and credit the stock, keeping a warehouse entry even when it reaches zero. If it lacks stock, skip the entire transfer and leave both entries untouched. Return [final stock dictionary, rejected transfer indices], with indices starting at zero."
+  },
+  "hints": [],
+  "functionName": "audit_transfers",
+  "starterCode": "def audit_transfers(stock, transfers):\n    pass\n",
+  "solutionCode": "def audit_transfers(stock, transfers):\n    current = {}\n    for warehouse in stock:\n        current[warehouse] = stock[warehouse]\n    rejected = []\n    for index in range(len(transfers)):\n        entry = transfers[index]\n        source = entry[0]\n        target = entry[1]\n        units = entry[2]\n        if source not in current or current[source] < units:\n            rejected.append(index)\n            continue\n        if target not in current:\n            current[target] = 0\n        current[source] -= units\n        current[target] += units\n    return [current, rejected]\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "读取一笔转仓",
+        "en": "Read one transfer"
+      },
+      "code": "    entry = transfers[0]\n    source = entry[0]"
+    },
+    {
+      "label": {
+        "zh": "建立拒绝清单",
+        "en": "Create a rejection list"
+      },
+      "code": "    rejected = []"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        {
+          "A": 5,
+          "B": 2
+        },
+        [
+          [
+            "A",
+            "B",
+            3
+          ],
+          [
+            "B",
+            "C",
+            5
+          ],
+          [
+            "A",
+            "C",
+            1
+          ]
+        ]
+      ],
+      "expected": [
+        {
+          "A": 1,
+          "B": 0,
+          "C": 6
+        },
+        []
+      ]
+    },
+    {
+      "args": [
+        {
+          "A": 1
+        },
+        [
+          [
+            "A",
+            "B",
+            2
+          ],
+          [
+            "C",
+            "B",
+            1
+          ],
+          [
+            "A",
+            "C",
+            1
+          ],
+          [
+            "C",
+            "B",
+            1
+          ]
+        ]
+      ],
+      "expected": [
+        {
+          "A": 0,
+          "C": 0,
+          "B": 1
+        },
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "args": [
+        {
+          "A": 0
+        },
+        [
+          [
+            "A",
+            "B",
+            1
+          ]
+        ]
+      ],
+      "expected": [
+        {
+          "A": 0
+        },
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "args": [
+        {
+          "A": 15
+        },
+        [
+          [
+            "A",
+            "B",
+            2
+          ],
+          [
+            "A",
+            "C",
+            3
+          ],
+          [
+            "B",
+            "C",
+            2
+          ],
+          [
+            "C",
+            "A",
+            5
+          ]
+        ]
+      ],
+      "expected": [
+        {
+          "A": 15,
+          "B": 0,
+          "C": 0
+        },
+        []
+      ]
+    },
+    {
+      "args": [
+        {
+          "A": 4,
+          "B": 4
+        },
+        [
+          [
+            "A",
+            "B",
+            4
+          ],
+          [
+            "A",
+            "B",
+            1
+          ],
+          [
+            "B",
+            "A",
+            8
+          ]
+        ]
+      ],
+      "expected": [
+        {
+          "A": 8,
+          "B": 0
+        },
+        [
+          1
+        ]
+      ]
+    },
+    {
+      "args": [
+        {},
+        []
+      ],
+      "expected": [
+        {},
+        []
+      ]
+    },
+    {
+      "args": [
+        {
+          "bay-2": 2,
+          "bay-3": 0
+        },
+        []
+      ],
+      "expected": [
+        {
+          "bay-2": 2,
+          "bay-3": 0
+        },
+        []
+      ]
+    },
+    {
+      "args": [
+        {
+          "North": 6
+        },
+        [
+          [
+            "North",
+            "south",
+            4
+          ],
+          [
+            "south",
+            "North",
+            6
+          ],
+          [
+            "North",
+            "east",
+            2
+          ]
+        ]
+      ],
+      "expected": [
+        {
+          "North": 0,
+          "south": 4,
+          "east": 2
+        },
+        [
+          1
+        ]
+      ]
+    }
+  ]
+}

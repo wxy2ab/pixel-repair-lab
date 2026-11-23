@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "kind": "vision",
+  "id": "opencv-calibration-challenge",
+  "order": 549,
+  "stage": "challenge",
+  "unit": { "id": "opencv", "order": 140, "title": { "zh": "OpenCV", "en": "OpenCV" } },
+  "mode": "filter",
+  "title": { "zh": "做出两份校准模板", "en": "Make Two Calibration Masks" },
+  "brief": { "zh": "从同一块校准板做出两张不同的黑白模板，校验每张图的白色区域数和面积。", "en": "Build two different masks from one calibration board. Check each mask’s region count and white area." },
+  "concept": { "zh": "阈值决定哪些亮度通过，模糊改变边缘亮度。看两项指标可以更精细地校准。", "en": "Thresholding controls which brightness values pass. Blur shifts values around edges. Use both measurements to tune each mask." },
+  "hints": [{ "zh": "不模糊时，从较暗圆点的亮度 78 开始试。孤立最亮圆点后，用模糊再微调像素数。", "en": "For the unblurred mask, try starting at the dimmest dot’s brightness of 78. Once you have isolated the brightest dot, tune its area with blur." }],
+  "cases": [
+    {
+      "image": "calibration",
+      "label": { "zh": "原边缘模板", "en": "Original-edge mask" },
+      "prompt": { "zh": "让最暗的圆点消失，留下 3 个白色区域，总共 11971 个白色像素。", "en": "Remove the dimmest dot. Keep three white regions with exactly 11,971 white pixels in total." },
+      "initial": { "blur": 3, "threshold": 50 },
+      "goal": { "regions": 3, "whitePixelRange": [11971, 11971] },
+      "solution": { "blur": 0, "threshold": 78 }
+    },
+    {
+      "image": "calibration",
+      "label": { "zh": "小面积聚焦模板", "en": "Small spotlight mask" },
+      "prompt": { "zh": "只保留最亮圆点。把白色像素数调到 5150 至 5200。", "en": "Keep only the brightest dot. Tune the white pixel count to 5,150–5,200." },
+      "initial": { "blur": 0, "threshold": 178 },
+      "goal": { "regions": 1, "whitePixelRange": [5150, 5200] },
+      "solution": { "blur": 7, "threshold": 200 }
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+.departure-prediction .charge-prediction-choices button { max-inline-size: 100%; overflow-wrap: anywhere; }
+.departure-prediction-conditions, .departure-prediction-checks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 135px), 1fr));
+  gap: 7px;
+  margin: 0;
+}
+.departure-prediction-conditions > div, .departure-prediction-checks > div {
+  min-inline-size: 0;
+  padding: 8px 10px;
+  border: 1px solid #4a627f;
+  border-radius: 7px;
+  background: #17283d;
+}
+.departure-prediction-conditions dt, .departure-prediction-checks dt { color: #bfd1e8; font-size: 13px; }
+.departure-prediction-conditions dd, .departure-prediction-checks dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: center;
+  margin: 3px 0 0;
+  color: #eaf3ff;
+  font-weight: 650;
+}
+.departure-prediction-conditions strong, .departure-prediction-checks code { font: 750 17px/1.35 var(--mono); }
+.departure-prediction-door {
+  position: relative;
+  flex: none;
+  inline-size: 15px;
+  block-size: 17px;
+  border: 2px solid #a6c4e9;
+  border-radius: 2px 2px 0 0;
+}
+.departure-prediction-door::after {
+  position: absolute;
+  inset-block: 1px 0;
+  inset-inline: 1px;
+  background: #a6c4e9;
+  content: '';
+}
+.departure-prediction-conditions [data-door-open='true'] .departure-prediction-door::after {
+  inset-inline-end: 60%;
+  background: #8ed7b4;
+  transform: skewY(-18deg);
+}
+.departure-prediction .charge-prediction-verification { justify-items: stretch; }
+.departure-prediction .charge-prediction-verification button { justify-self: start; }
+.departure-prediction-checks { margin-block-end: 8px; }
+.departure-prediction-checks [data-truth='true'] code { color: #b9f6dc; }
+.departure-prediction-checks [data-truth='false'] code { color: #ffd9ad; }

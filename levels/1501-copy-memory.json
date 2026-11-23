@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "kind": "machine",
+  "id": "copy-memory",
+  "order": 1501,
+  "unit": { "id": "architecture", "order": 90, "title": { "zh": "计算机结构", "en": "Computer Architecture" } },
+  "topic": { "id": "memory", "order": 1, "title": { "zh": "内存", "en": "Memory" } },
+  "stage": "exercise",
+  "title": { "zh": "把信号复制到另一个地址", "en": "Copy a Signal to Another Address" },
+  "brief": { "zh": "把地址 0 的信号复制到地址 2，保留其他内存值。给同一份程序换一组输入试试。", "en": "Copy the signal from address 0 to address 2 and preserve the other values. Try the same program with different input." },
+  "concept": { "zh": "LOAD 读源地址，STORE 写目标地址。", "en": "LOAD reads the source address and STORE writes the destination." },
+  "hints": [{ "zh": "选择地址 0，添加 LOAD。再选地址 2，添加 STORE。HALT 会让 CPU 结束工作。", "en": "Choose address 0 and add LOAD. Choose address 2 and add STORE. HALT ends the program." }],
+  "allowedOps": ["LOAD", "STORE", "HALT"],
+  "starterCode": "HALT\n",
+  "solutionCode": "LOAD 0\nSTORE 2\nHALT\n",
+  "cases": [
+    { "label": { "zh": "收到 13", "en": "Received 13" }, "memory": [13, 24, 0], "goal": { "memory": [{ "address": 0, "value": 13 }, { "address": 1, "value": 24 }, { "address": 2, "value": 13 }] } },
+    { "label": { "zh": "收到 4", "en": "Received 4" }, "memory": [4, 33, 81], "accumulator": 41, "goal": { "memory": [{ "address": 0, "value": 4 }, { "address": 1, "value": 33 }, { "address": 2, "value": 4 }] } }
+  ]
+}

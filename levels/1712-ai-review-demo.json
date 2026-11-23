@@ -1,0 +1,121 @@
+{
+  "version": 1,
+  "kind": "ai",
+  "id": "ai-review-demo",
+  "order": 1712,
+  "unit": {
+    "id": "ai-review",
+    "order": 170,
+    "title": {
+      "zh": "核对与修正",
+      "en": "Review and Revision"
+    }
+  },
+  "topic": {
+    "id": "review",
+    "order": 1,
+    "title": {
+      "zh": "核对清单",
+      "en": "Review the Manifest"
+    }
+  },
+  "stage": "demo",
+  "title": {
+    "zh": "试着找出漏装",
+    "en": "Try Spotting a Missing Entry"
+  },
+  "brief": {
+    "zh": "给夜班准备两副手套和一盏检修灯，把磁铁留在工具架上。发送提示后，标记清单中所有不符合要求的项目。",
+    "en": "Pack two gloves and one work lamp for the night shift. Leave the magnet on the shelf. Send a prompt, then mark every entry that differs from the task."
+  },
+  "concept": {
+    "zh": "缺少的物品可以在清单里按 0 件核对。",
+    "en": "Review a missing item as a quantity of zero."
+  },
+  "hints": [
+    {
+      "zh": "可以分别试试只写“准备用品”和直接写出数量，看看第一轮会有什么差别。",
+      "en": "Try a general request and a request with exact quantities to compare their first results."
+    }
+  ],
+  "inventory": [
+    {
+      "id": "glove",
+      "label": {
+        "zh": "手套",
+        "en": "Glove"
+      },
+      "aliases": [
+        "gloves",
+        "防护手套"
+      ]
+    },
+    {
+      "id": "lamp",
+      "label": {
+        "zh": "检修灯",
+        "en": "Work lamp"
+      },
+      "aliases": [
+        "work lamps",
+        "灯"
+      ]
+    },
+    {
+      "id": "magnet",
+      "label": {
+        "zh": "磁铁",
+        "en": "Magnet"
+      },
+      "aliases": [
+        "magnets",
+        "磁石"
+      ]
+    }
+  ],
+  "required": {
+    "glove": 2,
+    "lamp": 1
+  },
+  "workflow": {
+    "review": "manual",
+    "faults": [
+      {
+        "itemId": "lamp",
+        "quantity": 0
+      }
+    ],
+    "cards": [
+      {
+        "zh": "请帮我准备用品。",
+        "en": "Please pack the supplies."
+      },
+      {
+        "zh": "准备 2 件手套。",
+        "en": "Pack 2 gloves."
+      },
+      {
+        "zh": "准备 1 个检修灯。",
+        "en": "Pack 1 work lamp."
+      },
+      {
+        "zh": "不要放磁铁。",
+        "en": "Leave out the magnet."
+      },
+      {
+        "zh": "检修灯改为 1 盏。",
+        "en": "Set the work lamp to 1."
+      }
+    ]
+  },
+  "examplePrompts": {
+    "zh": [
+      "请准备 2 件手套和 1 个检修灯。不要放磁铁。",
+      "检修灯改为 1 盏。保留其他项目。"
+    ],
+    "en": [
+      "Pack 2 gloves and 1 work lamp. Leave out the magnet.",
+      "Set the work lamp to 1. Keep the other entries."
+    ]
+  }
+}

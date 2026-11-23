@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "kind": "replay",
+  "id": "python-modules-replay",
+  "order": 931,
+  "unit": { "id": "python-advanced", "order": 30, "title": { "zh": "Python 高级", "en": "Advanced Python" } },
+  "topic": { "id": "modules", "order": 3, "title": { "zh": "模块", "en": "Modules" } },
+  "stage": "demo",
+  "title": { "zh": "导入一个管找路的函数", "en": "Import a Route-Finding Function" },
+  "brief": { "zh": "机器人向最短路函数询问第一步，把返回的方向交给 move。", "en": "The robot asks the shortest-route function for its first step and passes the returned direction to move." },
+  "concept": { "zh": "调用者把返回值交给下一步操作", "en": "The caller passes a return value to the next operation" },
+  "hints": [{ "zh": "机器人右边有墙。看看库函数建议先往哪里走。", "en": "There is a wall to the robot’s right. Watch which direction the imported function suggests first." }],
+  "mode": "grid",
+  "examples": [
+    {
+      "title": { "zh": "让导入的函数计算起步方向", "en": "Ask the imported function for the first move" },
+      "source": "from algorithms import shortest_step\nplan = scan()\ndirection = shortest_step(plan[\"tiles\"], plan[\"start\"], plan[\"goal\"])\nsubmit(direction)\nmove(direction)",
+      "scenario": {
+        "tiles": ["#######", "#.#...#", "#.....#", "#######"],
+        "start": { "x": 1, "y": 1 },
+        "allowedApi": ["scan", "submit", "move"],
+        "input": { "tiles": ["#######", "#.#...#", "#.....#", "#######"], "start": [1, 1], "goal": [5, 1] },
+        "objectives": [{ "type": "submit", "values": ["down"] }, { "type": "exit", "x": 1, "y": 2 }]
+      }
+    }
+  ]
+}

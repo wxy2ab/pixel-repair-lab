@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "unit": {
+    "id": "routing",
+    "order": 60,
+    "title": {
+      "zh": "算法进阶",
+      "en": "Intermediate Algorithms"
+    }
+  },
+  "kind": "algorithm",
+  "id": "walkable-neighbors",
+  "order": 1212,
+  "stage": "exercise",
+  "topic": {
+    "id": "breadth-first",
+    "order": 2,
+    "title": {
+      "zh": "广度优先搜索",
+      "en": "Breadth-first search"
+    }
+  },
+  "title": {
+    "zh": "列出能走的邻格",
+    "en": "List the walkable neighbors"
+  },
+  "concept": {
+    "zh": "扩展搜索前沿",
+    "en": "Expand the search frontier"
+  },
+  "brief": {
+    "zh": "实现 walkable_neighbors(board, position)。坐标是 [x, y]。按上、右、下、左的顺序返回能直接走到的方向，跳过墙和棋盘外的位置。",
+    "en": "Implement walkable_neighbors(board, position). Coordinates use [x, y]. Return accessible directions in up, right, down, left order, skipping walls and out-of-bounds tiles."
+  },
+  "hints": [
+    {
+      "zh": "先算每个方向的新坐标，再检查边界。只有得到仍在地图内的坐标，才去读 board[y][x]。",
+      "en": "Calculate each neighbor’s coordinates and check the bounds before looking up board[y][x]."
+    }
+  ],
+  "functionName": "walkable_neighbors",
+  "starterCode": "def walkable_neighbors(board, position):\n    directions = [\"up\", \"right\", \"down\", \"left\"]\n    result = []\n    return result\n",
+  "solutionCode": "def walkable_neighbors(board, position):\n    directions = [\"up\", \"right\", \"down\", \"left\"]\n    offsets = {\"up\": [0, -1], \"right\": [1, 0], \"down\": [0, 1], \"left\": [-1, 0]}\n    result = []\n    for direction in directions:\n        offset = offsets[direction]\n        x = position[0] + offset[0]\n        y = position[1] + offset[1]\n        if x >= 0 and x < len(board[0]) and y >= 0 and y < len(board):\n            if board[y][x] == \".\":\n                result.append(direction)\n    return result\n",
+  "snippets": [
+    {
+      "label": {
+        "zh": "准备方向偏移表",
+        "en": "Define direction offsets"
+      },
+      "code": "    offsets = {\"up\": [0, -1], \"right\": [1, 0], \"down\": [0, 1], \"left\": [-1, 0]}"
+    },
+    {
+      "label": {
+        "zh": "求出邻格坐标",
+        "en": "Calculate neighbor coordinates"
+      },
+      "code": "    for direction in directions:\n        offset = offsets[direction]\n        x = position[0] + offset[0]\n        y = position[1] + offset[1]"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        [
+          "...",
+          "...",
+          "..."
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "expected": [
+        "up",
+        "right",
+        "down",
+        "left"
+      ]
+    },
+    {
+      "args": [
+        [
+          "#####",
+          "#...#",
+          "#.#.#",
+          "#####"
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "expected": [
+        "right",
+        "down"
+      ]
+    },
+    {
+      "args": [
+        [
+          "..",
+          ".#"
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "expected": [
+        "right",
+        "down"
+      ]
+    },
+    {
+      "args": [
+        [
+          "###",
+          "#.#",
+          "###"
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "expected": []
+    }
+  ]
+}
