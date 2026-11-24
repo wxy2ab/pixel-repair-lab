@@ -46,6 +46,8 @@ function ManualSearch({ demo, locale, onFound }: {
 
   return <section className="classroom-demonstration panel search-workbench" data-testid="battery-search-manual" aria-labelledby={heading}>
     <CodingDevice device="scanner" locale={locale} workbench controls={<>
+      <p className="search-manual-task">{t(`维修台需要一块 ${demo.target} 格电量的电池。点一块电池，看看它有几格电量。`,
+        `The repair bench needs a battery with ${demo.target} units of charge. Select a battery to reveal its charge.`)}</p>
       <ol className="search-battery-row" aria-label={t('待检查的电池', 'Batteries to inspect')}>
         {demo.manualOrder.map(name => {
           const battery = byName.get(name)
@@ -63,6 +65,12 @@ function ManualSearch({ demo, locale, onFound }: {
           </li>
         })}
       </ol>
+      {latest && <p role="status" className={found ? 'search-manual-feedback is-found' : 'search-manual-feedback'}>
+        {found ? t(`找到了！${latest.name} 号电池有 ${latest.charge} 格电量。你一共检查了 ${revealed.length} 块。`,
+          `Found it! Battery ${latest.name} has ${latest.charge} units of charge. You checked ${revealed.length}.`)
+          : t(`${latest.name} 号电池有 ${latest.charge} 格电量。再找找。`,
+            `Battery ${latest.name} has ${latest.charge} units of charge. Try another one.`)}
+      </p>}
     </>}>
       <div className="panel-heading">
         <h2 id={heading}>{t('先找一块电池', 'Find a battery by hand')}</h2>
@@ -76,14 +84,6 @@ function ManualSearch({ demo, locale, onFound }: {
             const battery = byName.get(demo.manualOrder[index])
             if (battery) inspect(battery.name, battery.charge)
           } : undefined} />
-        <p>{t(`维修台需要一块 ${demo.target} 格电量的电池。点一块电池，看看它有几格电量。`,
-          `The repair bench needs a battery with ${demo.target} units of charge. Select a battery to reveal its charge.`)}</p>
-        {latest && <p role="status" className={found ? 'search-manual-feedback is-found' : 'search-manual-feedback'}>
-          {found ? t(`找到了！${latest.name} 号电池有 ${latest.charge} 格电量。你一共检查了 ${revealed.length} 块。`,
-            `Found it! Battery ${latest.name} has ${latest.charge} units of charge. You checked ${revealed.length}.`)
-            : t(`${latest.name} 号电池有 ${latest.charge} 格电量。再找找。`,
-              `Battery ${latest.name} has ${latest.charge} units of charge. Try another one.`)}
-        </p>}
       </div>
     </CodingDevice>
   </section>
@@ -160,6 +160,13 @@ function SearchReplay({ method, source, sample, locale, onFinished }: {
       </div>
     </>}>
       <h3 id={heading}>{title}</h3>
+      <div className="search-step" data-testid="battery-search-step" data-kind={step?.kind ?? 'start'}
+        data-line={step?.line} data-index={step?.index} data-first={first} data-last={last}>
+        <p role="status">
+          {showRelation && <span className="search-relation" data-testid="battery-search-relation">{compared} {relation} {sample.target}</span>}
+          {explanation(method, sample, step, t)}
+        </p>
+      </div>
       <AlgorithmBatteryRack scene={'battery-search-' + method} label={title} locale={locale} batteries={sample.batteries}
         range={[first, last]} marked={step?.index === undefined ? [] : [step.index]}
         badges={step?.index === undefined ? undefined : { [step.index]: stopped && step.index >= 0 ? t('找到', 'Found')
@@ -193,13 +200,6 @@ function SearchReplay({ method, source, sample, locale, onFinished }: {
           </li>
         })}
       </ol>
-      <div className="search-step" data-testid="battery-search-step" data-kind={step?.kind ?? 'start'}
-        data-line={step?.line} data-index={step?.index} data-first={first} data-last={last}>
-        <p role="status">
-          {showRelation && <span className="search-relation" data-testid="battery-search-relation">{compared} {relation} {sample.target}</span>}
-          {explanation(method, sample, step, t)}
-        </p>
-      </div>
       {trial.issue && <p className="error-message" role="alert">{runIssueText(locale, trial.issue)}</p>}
     </CodingDevice>
   </section>

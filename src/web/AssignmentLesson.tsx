@@ -5,6 +5,7 @@ import { runProgramWalkthrough } from '../engine/programWalkthrough'
 import { programSourceLines, type ProgramWalkthrough, type ProgramWalkthroughFrame } from '../shared/programWalkthrough'
 import type { Json, Locale } from '../shared/types'
 import { runIssueText, tr } from './text'
+import { StepCount } from './LessonFrame'
 import './assignment-lesson.css'
 
 const stages = ['start', 'read', 'evaluate', 'store', 'output'] as const
@@ -163,6 +164,7 @@ export function AssignmentLesson({ execution, locale, onReady }: {
         <button type="button" className="primary-button" disabled={!left || !right || index === stages.length - 1} onClick={() => goTo(index + 1)}>
           {t('下一步', 'Next step')}
         </button>
+        <StepCount position={index} total={stages.length - 1} locale={locale} />
       </div>
     </>}>
       <div className="panel-heading assignment-heading">

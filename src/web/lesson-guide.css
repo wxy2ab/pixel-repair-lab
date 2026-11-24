@@ -103,3 +103,5 @@
 .lesson-next .primary-button, .lesson-next .subtle-button { min-height: 42px; padding-inline: 18px; font-size: 15px; }
 @keyframes lesson-next-in { from { opacity: 0; transform: translateY(8px); } }
 @media (prefers-reduced-motion: reduce) { .lesson-next { animation: none; } }
+.topic-steps[data-titled] .topic-steps__text b { display: block; max-width: 10em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.topic-steps[data-titled] li + li::before { width: 10px; margin-inline: 2px; }

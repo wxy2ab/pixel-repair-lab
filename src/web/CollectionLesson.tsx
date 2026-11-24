@@ -5,6 +5,7 @@ import { runCollectionLesson } from '../engine/programCollection'
 import type { CollectionBattery, ProgramWalkthrough } from '../shared/programWalkthrough'
 import type { Locale } from '../shared/types'
 import { tr } from './text'
+import { StepCount } from './LessonFrame'
 import './collection-lesson.css'
 
 type Run = NonNullable<ReturnType<typeof runCollectionLesson>>
@@ -116,6 +117,7 @@ export function CollectionLesson({ execution, locale, onReady }: {
         <button type="button" className="primary-button" disabled={!run || position >= run.steps.length} onClick={() => goTo(position + 1)}>
           {t('下一步', 'Next step')}
         </button>
+        <StepCount position={position} total={run?.steps.length ?? 0} locale={locale} />
       </div>
     </>}>
       <div className="panel-heading collection-heading">

@@ -5,6 +5,7 @@ import { runBooleanLesson } from '../engine/programBoolean'
 import type { ProgramWalkthrough } from '../shared/programWalkthrough'
 import type { Locale } from '../shared/types'
 import { tr } from './text'
+import { StepCount } from './LessonFrame'
 import './boolean-lesson.css'
 
 type Case = ProgramWalkthrough['cases'][number]
@@ -163,6 +164,7 @@ export function BooleanLesson({ execution, locale, onReady }: {
         <button type="button" className="primary-button" disabled={error || position === steps.length - 1} onClick={() => goTo(position + 1)}>
           {t('下一步', 'Next step')}
         </button>
+        <StepCount position={position} total={steps.length - 1} locale={locale} />
       </div>
     </>}>
       <div className="panel-heading boolean-heading">

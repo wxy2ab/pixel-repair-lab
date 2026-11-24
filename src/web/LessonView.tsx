@@ -60,7 +60,7 @@ export function LessonView(props: LessonProps) {
   </Classroom>
 }
 
-function LessonContent({ level, locale, onComplete, onMistake, preview = false, personal = {}, onSave, onOpenLevel, catalog = [], challenge,
+function LessonContent({ level, locale, onComplete, onMistake, preview = false, personal = {}, onSave, onOpenLevel, catalog = [], challenge, completed = [],
   initialArenaMode, replayAiMode, initialDraft, onDraftChange,
   initialTimedCheckpoint, onTimedCheckpointChange, initialReplayProgress, onReplayProgressChange }: LessonProps) {
   const reportMistake = !preview && isGradedPractice(level) ? onMistake : undefined
@@ -75,7 +75,7 @@ function LessonContent({ level, locale, onComplete, onMistake, preview = false, 
     case 'lecture':
     case 'replay':
       return <Suspense fallback={<p className="loading" role="status">{tr(locale, '正在加载讲解…', 'Loading the lesson…')}</p>}>
-        {level.kind === 'lecture' ? <Lecture level={level} locale={locale} onComplete={onComplete} preview={preview} />
+        {level.kind === 'lecture' ? <Lecture level={level} locale={locale} onComplete={onComplete} preview={preview} done={completed.includes(level.id)} />
           : <TeachingReplay level={level} locale={locale} onComplete={onComplete} />}
       </Suspense>
     case 'breadboard': {

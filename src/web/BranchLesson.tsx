@@ -6,6 +6,7 @@ import type { ProgramWalkthrough } from '../shared/programWalkthrough'
 import type { Locale } from '../shared/types'
 import { Robot } from './Board'
 import { tr } from './text'
+import { StepCount } from './LessonFrame'
 import './branch-lesson.css'
 
 type Lesson = NonNullable<ProgramWalkthrough['branchLesson']>
@@ -142,6 +143,7 @@ export function BranchLesson({ execution, locale, onReady }: {
         <button type="button" className="primary-button" disabled={error || atEnd} onClick={() => goTo(position + 1)}>
           {t('下一步', 'Next step')}
         </button>
+        <StepCount position={position} total={finalPosition} locale={locale} />
       </div>
     </>}>
       <div className="panel-heading branch-heading">

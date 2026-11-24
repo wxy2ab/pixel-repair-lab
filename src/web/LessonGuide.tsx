@@ -29,7 +29,10 @@ export function TopicSteps({ level, ordered, completed, locale, onOpen }: {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const position = steps.indexOf(level)
   const done = steps.filter(step => completed.includes(step.id)).length
-  return <nav className="topic-steps" data-testid="topic-steps" aria-label={t('本知识点的学习步骤', 'Steps for this topic')}>
+  // A run of lessons at one stage, such as a course overview, is told apart by its titles.
+  const titled = steps.every(step => levelStage(step) === levelStage(steps[0]))
+  return <nav className="topic-steps" data-testid="topic-steps" data-titled={titled || undefined}
+    aria-label={t('本知识点的学习步骤', 'Steps for this topic')}>
     <span className="topic-steps__summary">
       <strong>{t(`第 ${position + 1} 步`, `Step ${position + 1}`)}</strong>
       <span>{t(`共 ${steps.length} 步 · 已完成 ${done}`, `of ${steps.length} · ${done} done`)}</span>
@@ -38,7 +41,7 @@ export function TopicSteps({ level, ordered, completed, locale, onOpen }: {
       {steps.map((step, index) => {
         const stage = levelStage(step)
         const sameStage = steps.filter(candidate => levelStage(candidate) === stage)
-        const label = (isCourseFinal(step) ? stageLabel(step, locale) : stageVerbs[stage][locale])
+        const label = titled ? step.title[locale] : (isCourseFinal(step) ? stageLabel(step, locale) : stageVerbs[stage][locale])
           + (sameStage.length > 1 ? ' ' + (sameStage.indexOf(step) + 1) : '')
         const finished = completed.includes(step.id)
         const current = step.id === level.id

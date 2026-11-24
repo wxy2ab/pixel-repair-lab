@@ -7,6 +7,7 @@ import {
 } from '../shared/programWalkthrough'
 import type { Json, Locale } from '../shared/types'
 import { runIssueText, tr } from './text'
+import { StepCount } from './LessonFrame'
 import './guided-program.css'
 
 type Translate = (zh: string, en: string) => string
@@ -192,6 +193,7 @@ export function GuidedProgram({ execution, locale, onReady }: {
         <button className="primary-button" type="button" disabled={index >= frames.length - 1} onClick={() => stepTo(index + 1)}>
           {t('下一步', 'Next step')}
         </button>
+        <StepCount position={index} total={frames.length - 1} locale={locale} />
       </div>
     </>}>
       <div className="panel-heading guided-program-heading">

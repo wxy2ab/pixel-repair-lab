@@ -5,6 +5,7 @@ import { runWhileLesson } from '../engine/programWhile'
 import type { ProgramWalkthrough } from '../shared/programWalkthrough'
 import type { Locale } from '../shared/types'
 import { tr } from './text'
+import { StepCount } from './LessonFrame'
 import './while-lesson.css'
 
 type Run = NonNullable<ReturnType<typeof runWhileLesson>>
@@ -148,6 +149,7 @@ export function WhileLesson({ execution, locale, onReady }: {
         <button type="button" className="primary-button" disabled={!valid || position >= scenes.length - 1} onClick={() => goTo(position + 1)}>
           {t('下一步', 'Next step')}
         </button>
+        <StepCount position={position} total={scenes.length - 1} locale={locale} />
       </div>
     </>}>
       <div className="panel-heading while-heading">
