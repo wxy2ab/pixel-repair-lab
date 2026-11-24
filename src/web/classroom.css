@@ -79,7 +79,7 @@
 .classroom-control-icon i + i::after { top: 8px; }
 .command-desk__body { padding: clamp(12px, 1.3vw, 18px); min-width: 0; }
 .command-desk__body > .panel, .teaching-screen__body > .panel { margin: 0; }
-.command-desk .primary-button { background: #165c68; border-color: #124f5c; color: white; }
+.command-desk .primary-button { background: #165c68; border-color: #124f5c; color: white; box-shadow: none; }
 .command-desk .primary-button:not(:disabled):hover { background: #0e4550; }
 .command-desk .subtle-button { background: #f6fafb; border-color: #97aeba; color: #243e50; }
 .command-desk .subtle-button:not(:disabled):hover { background: #dcebf0; }
@@ -151,3 +151,7 @@
   .teaching-screen__ledge { margin-inline: -5px; margin-bottom: -4px; }
   .teaching-screen__body, .command-desk__body { padding: 11px; }
 }
+/* A desk with nothing on it yet stays out of the way. */
+.command-desk:has(> .command-desk__body:empty) { display: none; }
+/* Panels resting on a classroom surface are part of it, so they cast no shadow of their own. */
+.command-desk .panel, .teaching-screen .panel, .device-window .panel { box-shadow: none; }

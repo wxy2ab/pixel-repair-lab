@@ -19,6 +19,7 @@ import { CommandDesk } from './Classroom'
 import { DeviceWindow } from './DeviceWindow'
 import { tr } from './text'
 import { boardForArduino, initialBreadboardBuild, readBreadboardDraft, saveBreadboardDraft } from './breadboardDraft'
+import { HintSteps } from './HintSteps'
 import './arduino-lesson.css'
 import './breadboard-lesson.css'
 
@@ -429,7 +430,7 @@ function BreadboardWorkbench({ level, locale, sketch, onComplete, onMistake, sou
             : t('接线时点两个空接点插一根跳线。移动元件或改接导线后，要重新预测、通电。', 'In wiring mode, pick two free contacts to add a jumper. After moving a part or changing a wire, make a new prediction and power up again.')}</p>
           {level.hints.length > 0 && <details className="breadboard-help">
             <summary>{t('接线提示', 'Wiring hints')}</summary>
-            {level.hints.map((hint, index) => <p key={index}>{hint[locale]}</p>)}
+            <HintSteps hints={level.hints} locale={locale} />
           </details>}
           <details className="breadboard-wires" data-testid="bread-wire-list">
             <summary>{t('已接导线', 'Jumpers')} · {wires.length}</summary>

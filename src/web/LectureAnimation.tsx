@@ -72,6 +72,9 @@ export function LectureAnimation({ animation, execution, locale, title, notes, e
       {notes && <TeachingScreen locale={locale}>{notes}</TeachingScreen>}
     </div>
     <CommandDesk locale={locale}>
+      {exercise && count > 0 && cursor.step === 0 && !cursor.playing && <p className="lecture-nudge">
+        <span aria-hidden="true">▶</span>{t('先播放左边的动画，看清每一步，再来回答。', 'Play the animation first and follow each step, then answer.')}
+      </p>}
       {exercise}
     </CommandDesk>
   </section>

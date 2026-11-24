@@ -143,12 +143,16 @@ function ChallengeCard({ entry, locale, onOpen }: { entry: ChallengeEntry; local
 
   return <button type="button" className="challenge-card" data-challenge-level={level.id} data-completed={won || undefined}
     data-type={type} data-difficulty={difficulty} aria-labelledby={title} aria-describedby={description.join(' ')} onClick={onOpen}>
-    <ChallengeMap level={level} />
-    <span className="challenge-card-head">
-      <strong id={title}>{level.title[locale]}</strong>
-      {won && <span id={status} className="challenge-check" role="img" aria-label={t('已完成', 'Complete')}>✓</span>}
+    <span className="challenge-card-top">
+      <ChallengeMap level={level} />
+      <span className="challenge-card-title">
+        <span className="challenge-card-head">
+          <strong id={title}>{level.title[locale]}</strong>
+          {won && <span id={status} className="challenge-check" role="img" aria-label={t('已完成', 'Complete')}>✓</span>}
+        </span>
+        <span id={difficultyId} className="challenge-card-tags"><ChallengeDifficulty difficulty={difficulty} locale={locale} /></span>
+      </span>
     </span>
-    <span id={difficultyId} className="challenge-card-tags"><ChallengeDifficulty difficulty={difficulty} locale={locale} /></span>
     {courses.length > 0 && <span id={prerequisiteId} className="challenge-card-courses">
       <PreparationProgress preparation={preparation} locale={locale} />
       <strong>{t('建议先学', 'Recommended before playing')}</strong>

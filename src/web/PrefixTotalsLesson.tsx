@@ -163,6 +163,28 @@ export function PrefixTotalsLesson({ execution, locale, onReady }: {
         {next?.kind === 'return' && <button type="button" className="primary-button" onClick={() => goTo(position + 1)}>{t('核对结果', 'Compare the results')}</button>}
         {(anchor !== undefined || interval) && <button type="button" className="subtle-button" onClick={reset}>{t('重选区间', 'Choose another range')}</button>}
       </div>
+      {/* What to do next sits under the buttons, beside the batteries and totals the learner taps. */}
+      <div className="prefix-totals-step" data-testid="prefix-totals-step" data-kind={step?.kind ?? (interval ? 'start' : 'select')}
+        data-left={interval?.left} data-right={interval?.right} data-index={step?.index}>
+        <div className="prefix-totals-status" role="status">
+          {instruction && <p>{instruction}</p>}
+          {interval && <p>
+            {t('逐块相加', 'Direct total')} <strong data-testid="prefix-totals-direct">{step?.direct ?? 0}</strong>
+            {step?.kind === 'direct' && arithmetic && <code className="prefix-totals-math" data-testid="prefix-totals-arithmetic">{arithmetic}</code>}
+          </p>}
+          {step?.kind === 'prefix' && arithmetic && <p>
+            {t(`累计到 ${currentBattery?.name} 号`, `Total through battery ${currentBattery?.name}`)}
+            <code className="prefix-totals-math" data-testid="prefix-totals-arithmetic">{arithmetic}</code>
+          </p>}
+          {step?.kind === 'before' && <p>{interval?.left === 0
+            ? t('左端就是第一块，区间前没有电池。从右端累计里减去 0。', 'The range starts at the first battery. Subtract zero from the total through the right end.')
+            : t('右端累计包括左边的蓝色电池和所选的绿色电池。减去蓝色电池的累计值，就只剩所选区间。',
+              'The total through the right end covers the earlier blue batteries and the selected green ones. Subtract the blue batteries’ total to leave just your range.')}</p>}
+          {result && <p data-testid="prefix-totals-result">
+            {t(`${included} − ${before} = ${result.total} 格，和逐块相加的 ${result.direct} 格一样。`, `${included} − ${before} = ${result.total} units, the same as adding each battery (${result.direct}).`)}
+          </p>}
+        </div>
+      </div>
     </>}>
       <div className="panel-heading"><h2 id={heading}>{t('给一段电池算总电量', 'Find the charge of a battery range')}</h2></div>
       <div className="prefix-totals-body">
@@ -195,27 +217,6 @@ export function PrefixTotalsLesson({ execution, locale, onReady }: {
             <span className="prefix-totals-difference"><small>{t('所选区间', 'Selected range')}</small><strong>{difference}</strong></span>
           </>}
         </div>}
-        <div className="prefix-totals-step" data-testid="prefix-totals-step" data-kind={step?.kind ?? (interval ? 'start' : 'select')}
-          data-left={interval?.left} data-right={interval?.right} data-index={step?.index}>
-          <div className="prefix-totals-status" role="status">
-            {instruction && <p>{instruction}</p>}
-            {interval && <p>
-              {t('逐块相加', 'Direct total')} <strong data-testid="prefix-totals-direct">{step?.direct ?? 0}</strong>
-              {step?.kind === 'direct' && arithmetic && <code className="prefix-totals-math" data-testid="prefix-totals-arithmetic">{arithmetic}</code>}
-            </p>}
-            {step?.kind === 'prefix' && arithmetic && <p>
-              {t(`累计到 ${currentBattery?.name} 号`, `Total through battery ${currentBattery?.name}`)}
-              <code className="prefix-totals-math" data-testid="prefix-totals-arithmetic">{arithmetic}</code>
-            </p>}
-            {step?.kind === 'before' && <p>{interval?.left === 0
-              ? t('左端就是第一块，区间前没有电池。从右端累计里减去 0。', 'The range starts at the first battery. Subtract zero from the total through the right end.')
-              : t('右端累计包括左边的蓝色电池和所选的绿色电池。减去蓝色电池的累计值，就只剩所选区间。',
-                'The total through the right end covers the earlier blue batteries and the selected green ones. Subtract the blue batteries’ total to leave just your range.')}</p>}
-            {result && <p data-testid="prefix-totals-result">
-              {t(`${included} − ${before} = ${result.total} 格，和逐块相加的 ${result.direct} 格一样。`, `${included} − ${before} = ${result.total} units, the same as adding each battery (${result.direct}).`)}
-            </p>}
-          </div>
-        </div>
         {run?.issue && <p className="error-message" role="alert">{runIssueText(locale, run.issue)}</p>}
       </div>
     </CodingDevice>

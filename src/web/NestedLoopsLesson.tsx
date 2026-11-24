@@ -5,6 +5,7 @@ import { runNestedLoopsLesson, type NestedLoopsStep } from '../engine/programNes
 import type { ProgramWalkthrough } from '../shared/programWalkthrough'
 import type { Locale } from '../shared/types'
 import { tr } from './text'
+import { StepCount } from './LessonFrame'
 import './for-lesson.css'
 import './nested-loops-lesson.css'
 
@@ -122,6 +123,7 @@ export function NestedLoopsLesson({ execution, locale, onReady }: {
         <button type="button" className="primary-button" disabled={!run || position >= run.steps.length} onClick={() => goTo(position + 1)}>
           {t('下一步', 'Next step')}
         </button>
+        <StepCount position={position} total={run?.steps.length ?? 0} locale={locale} />
       </div>
     </>}>
       <div className="panel-heading nested-loop-heading">

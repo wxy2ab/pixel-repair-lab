@@ -5,6 +5,7 @@ import { repairDebuggingSource, runDebuggingLesson } from '../engine/programDebu
 import { programSourceLines, type ProgramWalkthrough } from '../shared/programWalkthrough'
 import type { Locale } from '../shared/types'
 import { tr } from './text'
+import { StepCount } from './LessonFrame'
 import './for-lesson.css'
 import './debugging-lesson.css'
 
@@ -121,6 +122,15 @@ export function DebuggingLesson({ execution, locale, onReady }: {
   if (movedSource) revealed.set(returnLine, programSourceLines(movedSource)[returnLine - 1])
   const code = Array.from(revealed).sort(([first], [second]) => first - second)
   const title = t('用电池测试补电程序', 'Test the battery charging program')
+  // The method this lesson teaches: start small, widen the test, locate the line, change it, test again.
+  const method = [
+    t('用一块电池试跑', 'Test one battery'),
+    t('换一排，对照预期和实际', 'Test a row and compare'),
+    t('找出提前结束的那一行', 'Find the line that exits early'),
+    t('把 return 移出循环', 'Move return out of the loop'),
+    t('重新试跑确认', 'Run again to confirm'),
+  ]
+  const methodStep = fixed ? method.length : moved ? 4 : editing ? 3 : choice ? 2 : phase === 'row' ? 1 : 0
 
   function advance() {
     if (trace) {
@@ -175,6 +185,12 @@ export function DebuggingLesson({ execution, locale, onReady }: {
   return <section className="classroom-demonstration panel debugging-lesson" aria-label={title} data-testid="debugging-lesson"
     data-debug-phase={phase} data-debug-stage={stage}>
     <CodingDevice device="debugger" locale={locale} controls={<>
+      <ol className="debug-method" data-testid="debug-method" aria-label={t('排查步骤', 'Debugging steps')}>
+        {method.map((label, index) => <li key={index} aria-current={index === methodStep ? 'step' : undefined}
+          data-state={index < methodStep ? 'done' : index === methodStep ? 'current' : 'upcoming'}>
+          <i aria-hidden="true">{index < methodStep ? '✓' : index + 1}</i>{label}
+        </li>)}
+      </ol>
       {!editing && <div className="debugging-navigation">
         {phase === 'single' && stage === 'start'
           ? <button type="button" className="primary-button" onClick={advance}>{t('试跑一块', 'Test one battery')}</button>
@@ -188,8 +204,13 @@ export function DebuggingLesson({ execution, locale, onReady }: {
               : <button type="button" className="primary-button" disabled={stage === 'output'} onClick={advance}>
                 {t('下一步', 'Next step')}
               </button>}
+            {trace && <StepCount position={position} total={trace.steps.length} locale={locale} />}
           </>}
       </div>}
+      {/* The caption stays above the code, because some steps ask the learner to pick a line in it. */}
+      {trace === null || repairRun === null ? <p className="error-message" role="alert">
+        {t('这次没能运行补电程序。再试一次。', 'The charging program did not run this time. Try again.')}
+      </p> : <p className="debug-description" role="status">{caption}</p>}
       {choice && <TraceSource code={code} active={editing ? returnLine : step?.line} chooseLine={chooseLine}
         selectedLine={selectedLine} loopLine={loopLine} returnLine={returnLine} moved={moved} editing={editing} t={t} />}
       {editing && <div className="debugging-navigation">
@@ -217,9 +238,6 @@ export function DebuggingLesson({ execution, locale, onReady }: {
             </div>
           </dl>
         </div>
-        {trace === null || repairRun === null ? <p className="error-message" role="alert">
-          {t('这次没能运行补电程序。再试一次。', 'The charging program did not run this time. Try again.')}
-        </p> : <p className="debug-description" role="status">{caption}</p>}
         {!choice && <TraceSource code={code} active={editing ? returnLine : step?.line}
           selectedLine={selectedLine} loopLine={loopLine} returnLine={returnLine} moved={moved} editing={editing} t={t} />}
       </div>

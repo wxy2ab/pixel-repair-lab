@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { LectureLevel, ReplayExample, ReplayLevel } from '../shared/advanced'
 import type { Candidate, GridLevel, Locale, RunIssue, RunResult } from '../shared/types'
 import { gradeCandidate, runPracticeTurn } from '../ai/core'
@@ -15,6 +15,8 @@ import { InlineExecutionSource } from './InlineExecutionSource'
 import { AlgorithmValueRack } from './AlgorithmValueRack'
 import { courseFor } from './LearningCourse'
 import { ExecutionSource } from './ExecutionSource'
+import { LessonFrame } from './LessonFrame'
+import { lessonFlow } from './lessonFlow'
 import './teaching-stages.css'
 import { runIssueText, tr } from './text'
 
@@ -77,43 +79,58 @@ const batteryLessons = [
   { key: 'breadthFirstLesson', Demonstration: BreadthFirstLesson, Prediction: BreadthFirstPrediction },
 ] as const
 
-export function Lecture({ level, locale, onComplete, preview }: LearningProps & { level: LectureLevel; preview?: boolean }) {
+export function Lecture({ level, locale, onComplete, preview, done = false }: LearningProps & {
+  level: LectureLevel; preview?: boolean
+  /** The learner passed this lesson on an earlier visit. */
+  done?: boolean
+}) {
   const [selected, setSelected] = useState<number>()
   const [runWithCode, setRunWithCode] = useState(false)
   const [readyForPractice, setReadyForPractice] = useState(false)
   const [repairedSource, setRepairedSource] = useState<string>()
+  const [activityPhase, setActivityPhase] = useState(0)
+  const [passed, setPassed] = useState(false)
   const correct = selected === level.question.correct
   const execution = level.execution
+  const flow = lessonFlow(execution)
+  const complete = useCallback(() => {
+    setPassed(true)
+    onComplete()
+  }, [onComplete])
+  // Interactive lectures share one frame: their phases on top, their key points once the lesson is passed.
+  const frame = (phase: number, activity: ReactNode) => flow
+    ? <LessonFrame level={level} locale={locale} flow={flow} phase={phase} finished={done || passed}>{activity}</LessonFrame>
+    : <div className="lecture-layout">{activity}</div>
   if (execution?.variableCups) {
     return <Suspense fallback={<p role="status" className="loading">{tr(locale, '正在摆放记忆杯…', 'Setting up the memory cups…')}</p>}>
-      <VariableCupsLesson execution={execution} locale={locale} onComplete={onComplete} />
+      {frame(activityPhase, <VariableCupsLesson execution={execution} locale={locale} onComplete={complete} onPhase={setActivityPhase} />)}
     </Suspense>
   }
   const batteryLesson = execution && batteryLessons.find(({ key }) => execution[key])
   if (execution && batteryLesson) {
     const { Demonstration, Prediction } = batteryLesson
     return <Suspense fallback={<p role="status" className="loading">{tr(locale, '正在加载电池演示…', 'Loading the battery demonstration…')}</p>}>
-      <div className="lecture-layout">
+      {frame(Number(readyForPractice), <>
         <Demonstration execution={execution} locale={locale} onReady={() => setReadyForPractice(true)} />
         {readyForPractice && <Suspense fallback={<p role="status" className="loading">{tr(locale, '正在加载预测练习…', 'Loading the prediction exercise…')}</p>}>
-          <CommandDesk locale={locale}><Prediction execution={execution} locale={locale} onComplete={onComplete} /></CommandDesk>
+          <CommandDesk locale={locale}><Prediction execution={execution} locale={locale} onComplete={complete} /></CommandDesk>
         </Suspense>}
-      </div>
+      </>)}
     </Suspense>
   }
   if (execution?.debugging) {
     return <Suspense fallback={<p role="status" className="loading">{tr(locale, '正在加载补电程序…', 'Loading the charging program…')}</p>}>
-      <div className="lecture-layout">
+      {frame(Number(repairedSource !== undefined), <>
         <DebuggingLesson execution={execution} locale={locale} onReady={setRepairedSource} />
         {repairedSource !== undefined && <Suspense fallback={<p role="status" className="loading">{tr(locale, '正在加载预测练习…', 'Loading the prediction exercise…')}</p>}>
-          <CommandDesk locale={locale}><DebuggingPrediction source={repairedSource} execution={execution} locale={locale} onComplete={onComplete} /></CommandDesk>
+          <CommandDesk locale={locale}><DebuggingPrediction source={repairedSource} execution={execution} locale={locale} onComplete={complete} /></CommandDesk>
         </Suspense>}
-      </div>
+      </>)}
     </Suspense>
   }
   if (execution?.sequence) {
     return <Suspense fallback={<p role="status" className="loading">{tr(locale, '正在加载指令卡…', 'Loading the command cards…')}</p>}>
-      <SequenceLesson execution={execution} locale={locale} onComplete={onComplete} />
+      {frame(activityPhase, <SequenceLesson execution={execution} locale={locale} onComplete={complete} onPhase={setActivityPhase} />)}
     </Suspense>
   }
   if (execution?.guided || execution?.assignment || execution?.boolean || execution?.branchLesson
@@ -134,12 +151,12 @@ export function Lecture({ level, locale, onComplete, preview }: LearningProps & 
       : execution.branchLesson || execution.boolean ? DeparturePrediction : execution.assignment ? VariablePrediction
       : execution.functionLesson ? FunctionPrediction : ChargePrediction
     return <Suspense fallback={<p role="status" className="loading">{tr(locale, '正在加载程序演示…', 'Loading the program demonstration…')}</p>}>
-      <div className="lecture-layout">
+      {frame(Number(readyForPractice), <>
         <Demonstration execution={execution} locale={locale} onReady={() => setReadyForPractice(true)} />
         {readyForPractice && <Suspense fallback={<p role="status" className="loading">{tr(locale, '正在加载预测练习…', 'Loading the prediction exercise…')}</p>}>
-          <CommandDesk locale={locale}><Prediction execution={execution} locale={locale} onComplete={onComplete} /></CommandDesk>
+          <CommandDesk locale={locale}><Prediction execution={execution} locale={locale} onComplete={complete} /></CommandDesk>
         </Suspense>}
-      </div>
+      </>)}
     </Suspense>
   }
   if (execution?.visual && !runWithCode) {
@@ -157,14 +174,14 @@ export function Lecture({ level, locale, onComplete, preview }: LearningProps & 
     <p>{level.question.prompt[locale]}</p>
     <div className="choices-column">
       {level.question.options.map((option, index) => <button type="button" key={index} className="subtle-button"
-        aria-pressed={selected === index} onClick={() => {
+        aria-pressed={selected === index} data-result={selected === index ? correct ? 'right' : 'wrong' : undefined} onClick={() => {
           setSelected(index)
           if (index === level.question.correct) onComplete()
         }}>
         {option[locale]}
       </button>)}
     </div>
-    {selected !== undefined && <p role="status" className={correct ? 'win-message' : 'error-message'}>
+    {selected !== undefined && <p role="status" className={(correct ? 'win-message' : 'error-message') + ' prediction-feedback'}>
       {correct ? tr(locale, '答对了！', 'That’s right! ') + level.question.feedback[locale]
         : interfaceLesson ? tr(locale, '再看看刚才回放的步骤，然后试一次。', 'Check the steps in the replay, then try again.')
           : tr(locale, '再试一次。想想刚才的例子。', 'Try again. Think about the example.')}

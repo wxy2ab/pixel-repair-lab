@@ -3,28 +3,48 @@
     position: sticky;
     top: 0;
     align-self: start;
-    height: calc(100dvh - 73px);
+    height: calc(100dvh - var(--topbar-height));
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: #405471 #141e2f;
+    scrollbar-color: #405471 transparent;
   }
+  /* A hidden mission panel leaves a slim rail, so a wide board or a long program gets the room. */
+  .app-main--rail-hidden { grid-template-columns: 46px minmax(0, 1fr); }
+  .app-main--rail-hidden > .sidebar { padding: 14px 7px; overflow: hidden; }
+  .app-main--rail-hidden > .sidebar > :not(.rail-toggle--show) { display: none; }
+  .app-main--rail-hidden .content > * { max-width: 1560px; }
 }
+.rail-toggle--show { display: none; }
+.app-main--rail-hidden .rail-toggle--show { display: inline-grid; }
+@media (max-width: 670px) { .rail-toggle, .app-main--rail-hidden .rail-toggle--show { display: none; } }
 
 .mission-groups { display: grid; gap: 17px; }
 .mission-group h3 { margin: 0 8px 4px; color: #a8b9d1; font-size: 13px; font-weight: 750; }
-.mission-group .mission-list button { min-height: 39px; padding: 5px 7px; gap: 7px; }
+.mission-group .mission-list button { min-height: 39px; padding: 5px 7px; gap: 8px; }
 .mission-stage {
+  --chip: #bdcfe8;
   flex: 0 0 auto;
   min-width: 43px;
   padding: 2px 5px;
-  border: 1px solid #3a506a;
-  border-radius: 5px;
-  color: #bdcfe8;
+  border: 1px solid color-mix(in srgb, var(--chip) 34%, #26364d);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--chip) 9%, transparent);
+  color: var(--chip);
   font-size: 12px;
   text-align: center;
   line-height: 1.4;
 }
-.mission-list .active .mission-stage { border-color: #4b8b71; color: #a0f9d6; }
+.mission-stage[data-stage='explain'] { --chip: var(--stage-explain); }
+.mission-stage[data-stage='demo'] { --chip: var(--stage-demo); }
+.mission-stage[data-stage='exercise'] { --chip: var(--stage-exercise); }
+.mission-stage[data-stage='challenge'], .mission-stage[data-stage='final'] { --chip: var(--stage-challenge); }
+.mission-stage[data-difficulty='starter'] { --chip: #8cecc9; }
+.mission-stage[data-difficulty='intermediate'] { --chip: #a9c3ff; }
+.mission-stage[data-difficulty='advanced'] { --chip: #ffc98a; }
+.mission-list button[data-done]:not(.active) .mission-name { color: #b4c3d8; }
+.mission-list .active .mission-stage { border-color: color-mix(in srgb, var(--chip) 62%, #26364d); }
+.course-topic-heading--count { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.course-topic-heading--count span { color: var(--dim); font: 650 11px var(--mono); }
 .teaching-panel { padding: 15px; }
 .teaching-panel h2 { margin-bottom: 8px; font-size: 16px; }
 .teaching-panel article + article { border-top: 1px solid var(--border); padding-top: 13px; margin-top: 13px; }
@@ -49,6 +69,22 @@
 .function-cases .sample-code { margin: 5px 0; max-height: 140px; white-space: pre-wrap; }
 .algorithm-entry { padding: 7px 0 9px; border-top: 1px solid var(--border); }
 .advanced-editor .python-input { min-height: 260px; }
+
+/* Challenge workspace: a taller editor, and the board or the cases stay beside it while the page scrolls. */
+.lesson-layout--code { grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr); }
+.challenge-stage :is(.advanced-editor, .timed-policy-panel, .editor-panel) .python-input { min-height: clamp(260px, 44vh, 500px); }
+@media (min-width: 1100px) and (min-height: 880px) {
+  .challenge-stage .lesson-layout > :first-child {
+    position: sticky;
+    top: 12px;
+    /* A column taller than the screen scrolls on its own, so its lower part stays reachable. */
+    max-height: calc(100dvh - 24px - var(--play-toolbar-height, 70px));
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  .mission-brief[data-pinned] ~ .challenge-stage .lesson-layout > :first-child { position: static; max-height: none; overflow: visible; }
+}
+@media (max-width: 880px) { .lesson-layout--code { grid-template-columns: minmax(0, 1fr); } }
 
 .replay-controls { padding: 10px 14px; background: #141e30; border-top: 1px solid var(--border); border-radius: 0 0 12px 12px; font-size: 13px; color: var(--muted); }
 .replay-controls .section-label { align-items: center; margin-bottom: 7px; }

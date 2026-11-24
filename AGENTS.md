@@ -37,9 +37,11 @@
 - 电池工单综合挑战用 `batteryPipeline.trialCase` 选小例子，用 `prediction.caseIndex` 引用不同的练习用例，并提供 `orders`、`pairs`、`totals`。用例参数依次为原始电量列表、配对目标、排好后区间的左端和右端。两端从 0 编号且都计入。程序调用 `sort_ascending`、`sorted_has_pair`、`prefix_totals`，返回 `[排序后的列表, 配对电量, 区间总量]`。参考 [维修站的电池工单](levels/1199-ranked-shipment.json)。
 - `lecture` 的 `sections` 说明知识点，`question` 给出一次预测及反馈，正确选项 `correct` 从 0 编号。为讲解提供 `animation`，在 2 到 10 帧中展示值、位置或状态的变化。每帧用双语 `caption` 说明当前动作，用相同的 `items[].id` 表示跨帧的同一对象。布局支持 `row`、`stack`、`grid`、`bars`、`pipeline`。`replay` 为网格示例提供独立的地图、数据、目标和可执行的 `source`，示例应与对应练习使用不同数据。AI 回放使用配有双语初始提示和修正提示的内嵌示例。
 - 讲解动画中的 `items[].swatch` 可用六位十六进制色值展示像素和颜色通道。
+- 带专用互动的讲解（`execution` 里有 `forLoop`、`stackLesson`、`batterySearch` 等配置）在通过后才显示 `sections` 和 `question`。`sections` 作为「本课要点」，按演示里实际发生的事来写，每条说一件事。`question` 作为选做的「再想一想」，换一组和演示、预测都不同的数据。新增一种互动讲解时，在 [lessonFlow.ts](src/web/lessonFlow.ts) 登记它各阶段的双语名称，课堂上方的「本课流程」会用到。
 - 从同类型的现有关卡开始。网格任务参考 [把路线装进口袋](levels/03-pocket-route.json)，带敌人的网格参考 [先来的先发货](levels/05-arrival-queue.json)，AI 协作参考 [AI 补给搭档](levels/11-ai-supply-box.json)。修改地形、实体、可用指令、目标或初始数据时，使用配置里的字段。
 - 所有本地化文字都提供 `zh` 和 `en`。网格任务应能通过鼠标组合指令卡过关，因此 `cards` 要覆盖参考解法。数据结构目标用 `origin` 检查实际操作来源，并用 `variants` 检查同一解法能适应的数据变化。
 - 独立闯关任务放在 `challenge-zone` 单元，单元排序为 90，双语标题为「挑战场」和「Challenge Arena」。用 `stage: "challenge"`，任务说明写目标和胜负规则。网格可用 `turnLimit` 限制回合，移动、拾取和 CPU 单步各耗一回合，扫描免费。最后一回合刚好完成有效。
+- 挑战场的 `brief` 会显示为任务简报：第一句作为目标，其余每句各占一行规则。每句只写一条规则，用句号结束。函数调用、下划线命名和形如 `[起点, 终点]` 的返回格式会显示为代码，中文说明里出现的起始代码参数名也是。网格关卡的 `objectives` 会生成棋盘下方的目标清单，按配置顺序逐项显示。
 - 挑战场关卡用 `prerequisites` 标注建议先学的课程，按推荐顺序填写 `{ "unit": "现有单元 ID", "topic": "该单元下的知识点 ID" }`。只推荐整个模块时省略 `topic`。标题从现有双语课程读取，课程校验会检查引用是否存在，玩家可以直接进入挑战。
 - 挑战场关卡填写 `difficulty`。`starter`（入门）适用于规则固定、可用少量操作或直接运用已学知识完成的关卡，`intermediate`（进阶）适用于需要组合知识或考虑对手行动的关卡，`advanced`（高难）适用于需要应对实时变化、多重限制，或设计更复杂算法的关卡。挑战场按关卡的 `kind` 分组，用配置中的难度排序和筛选。
 - 推荐会读取现有学习进度，选择前序课程必学关卡均已完成、且尚未通关的挑战，按难度从低到高最多推荐三关。按模块筛选会纳入该模块下被引用的知识点，也可选定单个知识点。

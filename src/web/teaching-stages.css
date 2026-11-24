@@ -17,3 +17,93 @@
 .lecture-animation .animation-caption { min-height: 0; padding: 8px 0; color: #e2efdc; background: transparent; }
 .lecture-animation .diagram-neutral { background: #31554b; color: #e6f0df; border-color: #77968a; }
 .lecture-animation .diagram-active { background: #396d59; color: #e6ffcd; border-color: #a6d991; }
+
+/* Notes read as numbered key points. */
+.lesson-annotations { counter-reset: key-point; }
+.lesson-annotations article { position: relative; padding-inline-start: 38px; counter-increment: key-point; }
+.lesson-annotations article::before {
+  content: counter(key-point);
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid #e6dba68c;
+  border-radius: 50%;
+  color: #f4ecc0;
+  font: 700 13px var(--mono);
+}
+.lesson-annotations article + article { margin-top: 16px; }
+.lesson-annotations h3 { color: #f6f1cf; font-size: 16px; }
+.lesson-annotations p { font-size: 15px; line-height: 1.72; text-wrap: pretty; }
+
+/* A prediction is a set of lettered choices with clear right and wrong states. */
+.lesson-prediction > h2 { display: flex; align-items: center; gap: 8px; }
+/* Icons here are drawn as images. Text in a pseudo-element would join the heading's or button's accessible name. */
+.lesson-prediction > h2::before {
+  content: '';
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #165c68 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M5.6 6.2a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2.9-1.2 1.7' fill='none' stroke='%23fff' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='12.6' r='1.1' fill='%23fff'/%3E%3C/svg%3E") center / 16px no-repeat;
+}
+.lesson-prediction > p:not([role='status']) { font-size: 16px; line-height: 1.6; }
+.lesson-prediction .choices-column { counter-reset: choice; gap: 8px; margin-block: 12px; }
+.lesson-prediction .choices-column button {
+  position: relative;
+  min-height: 46px;
+  padding: 8px 12px 8px 46px;
+  font-size: 15px;
+  line-height: 1.45;
+  counter-increment: choice;
+  transition: border-color .15s ease, background-color .15s ease, transform .15s ease;
+}
+.lesson-prediction .choices-column button::before {
+  content: counter(choice, upper-alpha);
+  position: absolute;
+  inset-inline-start: 10px;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: #dbe7ec;
+  color: #2c4a5c;
+  font: 750 13px var(--mono);
+  transform: translateY(-50%);
+}
+.lesson-prediction .choices-column button:not(:disabled):hover { transform: translateX(2px); }
+.command-desk .lesson-prediction .choices-column button[data-result='right'] { border-color: #2f8b6b; background: #d3f1e3; color: #12503c; }
+.command-desk .lesson-prediction .choices-column button[data-result='right']::before { content: ''; background: #1f7a5c url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.6 8.6l3 3 5.8-7' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 16px no-repeat; }
+.command-desk .lesson-prediction .choices-column button[data-result='wrong'] { border-color: #c98a6a; background: #fbe6da; color: #7c3a22; }
+.command-desk .lesson-prediction .choices-column button[data-result='wrong']::before { content: ''; background: #b9623f url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.4 4.4l7.2 7.2M11.6 4.4l-7.2 7.2' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E") center / 16px no-repeat; }
+.lesson-prediction .prediction-feedback { margin: 0; padding: 9px 12px; border-radius: 9px; font-size: 15px; line-height: 1.55; }
+.command-desk .lesson-prediction .prediction-feedback.win-message { background: #d3f1e3; }
+.command-desk .lesson-prediction .prediction-feedback.error-message { background: #fbe6da; }
+.lecture-nudge {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 8px 11px;
+  border: 1px dashed #7fa5b3;
+  border-radius: 9px;
+  background: #f3f8fa;
+  color: #2f5266;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.lecture-nudge span { color: #1f7a8a; font-size: 11px; }
+/* The first thing to do in an animated lecture is to play it. */
+.lecture-animation .replay-actions .subtle-button:nth-child(2) { border-color: var(--mint); background: var(--mint); color: #102e23; }
+.lecture-animation .replay-actions .subtle-button:nth-child(2):hover { border-color: #a3ffda; background: #a3ffda; }
+.lesson-prediction .choices-column button[data-result='right'] { border-color: #4fb893; }
+.lesson-prediction .choices-column button[data-result='right']::before { content: ''; background: #1f7a5c url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.6 8.6l3 3 5.8-7' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 16px no-repeat; }
+.lesson-prediction .choices-column button[data-result='wrong'] { border-color: #c98a6a; }
+.lesson-prediction .choices-column button[data-result='wrong']::before { content: ''; background: #b9623f url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.4 4.4l7.2 7.2M11.6 4.4l-7.2 7.2' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E") center / 16px no-repeat; }
+.command-desk__body:has(.prediction-feedback) > .lecture-nudge { display: none; }
+.teaching-screen__body > .lesson-annotations:first-child { margin-top: 0; padding-top: 0; border-top: 0; }

@@ -147,6 +147,12 @@ function SearchReplay({ sample, source, firstMatch, added, locale, onReady, onSw
   return <section className="classroom-demonstration panel first-search-lesson" aria-labelledby={heading} data-testid="first-battery-search-lesson"
     data-phase={firstMatch ? 'repeated' : 'unique'}>
     <CodingDevice device="scanner" locale={locale} workbench controls={<>
+      {/* The task, the buttons and what the last step did stay together, beside the row the learner taps. */}
+      <p className="first-search-task">{firstMatch
+        ? t(`加入 ${added.length} 块电量同为 ${sample.target} 格的电池（${added.join('、')}），整排仍然有序。这次要找最靠左的一块。`,
+          `We added ${added.length} batteries with ${sample.target} units of charge (${added.join(', ')}). The row is still sorted. Find the leftmost match.`)
+        : t(`电池已按电量从小到大排列。找一块有 ${sample.target} 格电量的电池。`,
+          `The batteries are sorted by charge. Find one with ${sample.target} units.`)}</p>
       <SearchRow sample={sample} locale={locale} first={first} last={last} middle={step?.index} found={found}
         saved={saved} stopped={stopped} added={added} onPick={picking ? pick : undefined} />
       <div className="search-step-controls first-search-controls">
@@ -158,6 +164,28 @@ function SearchReplay({ sample, source, firstMatch, added, locale, onReady, onSw
           {t('加入相同电量的电池', 'Add batteries with the same charge')}
         </button>}
         {firstMatch && <button type="button" className="subtle-button" onClick={onSwitch}>{t('回到第一排', 'Return to the first row')}</button>}
+      </div>
+      <div className="first-search-step" data-testid="first-battery-search-step" data-kind={step?.kind ?? 'start'}
+        data-line={step?.line} data-index={step?.index} data-first={first} data-last={last} data-saved={saved}>
+        <p role="status" data-testid={stopped ? 'first-battery-search-result' : undefined}>
+          {compared !== undefined && <span className="search-relation" data-testid="first-battery-search-relation">
+            {compared} {compared === sample.target ? '=' : compared < sample.target ? '<' : '>'} {sample.target}
+          </span>}
+          {describeStep(step, sample, firstMatch, found, t)}
+        </p>
+        {picking && step && <p className="first-search-hint">{t('点新的中点。', 'Tap the new midpoint.')}</p>}
+        {wrongTile && <p className="first-search-hint" role="status" data-testid="first-battery-search-hint">
+          {t('再找一下待查范围的中间。有两个中间位置时，选靠左的那格。',
+            'Try the middle of the search range. If there are two middle positions, pick the left one.')}
+        </p>}
+      </div>
+      <div className="first-search-metrics">
+        <span>{t('目标电量', 'Target charge')} <strong>{sample.target}</strong></span>
+        <span>{t('待查范围', 'Search range')} <strong data-testid="first-battery-search-range"
+          data-first={first} data-last={last}>{rangeText}</strong></span>
+        {firstMatch && <span>{t('记下的位置', 'Saved position')} <strong data-testid="first-battery-search-saved">
+          {saved === undefined ? t('还没有', 'None yet') : `${sample.batteries[saved].name} · ${saved}`}
+        </strong></span>}
       </div>
     </>}>
       <div className="panel-heading">
@@ -173,33 +201,6 @@ function SearchReplay({ sample, source, firstMatch, added, locale, onReady, onSw
           readout={compared === undefined ? undefined : compared + (compared === sample.target ? ' = ' : compared < sample.target ? ' < ' : ' > ') + sample.target}
           onCell={picking ? index => { if (index >= first && index <= last) pick(index) } : undefined}
           onAdvance={action ? () => goTo(position + 1) : undefined} />
-        <p className="first-search-task">{firstMatch
-          ? t(`加入 ${added.length} 块电量同为 ${sample.target} 格的电池（${added.join('、')}），整排仍然有序。这次要找最靠左的一块。`,
-            `We added ${added.length} batteries with ${sample.target} units of charge (${added.join(', ')}). The row is still sorted. Find the leftmost match.`)
-          : t(`电池已按电量从小到大排列。找一块有 ${sample.target} 格电量的电池。`,
-            `The batteries are sorted by charge. Find one with ${sample.target} units.`)}</p>
-        <div className="first-search-metrics">
-          <span>{t('目标电量', 'Target charge')} <strong>{sample.target}</strong></span>
-          <span>{t('待查范围', 'Search range')} <strong data-testid="first-battery-search-range"
-            data-first={first} data-last={last}>{rangeText}</strong></span>
-          {firstMatch && <span>{t('记下的位置', 'Saved position')} <strong data-testid="first-battery-search-saved">
-            {saved === undefined ? t('还没有', 'None yet') : `${sample.batteries[saved].name} · ${saved}`}
-          </strong></span>}
-        </div>
-        <div className="first-search-step" data-testid="first-battery-search-step" data-kind={step?.kind ?? 'start'}
-          data-line={step?.line} data-index={step?.index} data-first={first} data-last={last} data-saved={saved}>
-          <p role="status" data-testid={stopped ? 'first-battery-search-result' : undefined}>
-            {compared !== undefined && <span className="search-relation" data-testid="first-battery-search-relation">
-              {compared} {compared === sample.target ? '=' : compared < sample.target ? '<' : '>'} {sample.target}
-            </span>}
-            {describeStep(step, sample, firstMatch, found, t)}
-          </p>
-          {picking && step && <p className="first-search-hint">{t('点新的中点。', 'Tap the new midpoint.')}</p>}
-          {wrongTile && <p className="first-search-hint" role="status" data-testid="first-battery-search-hint">
-            {t('再找一下待查范围的中间。有两个中间位置时，选靠左的那格。',
-              'Try the middle of the search range. If there are two middle positions, pick the left one.')}
-          </p>}
-        </div>
         {trial.issue && <p className="error-message" role="alert">{runIssueText(locale, trial.issue)}</p>}
       </div>
     </CodingDevice>

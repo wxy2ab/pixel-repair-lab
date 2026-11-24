@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { runProgramWalkthrough } from '../engine/programWalkthrough'
 import { programSourceLines, type ProgramWalkthrough, type ProgramWalkthroughFrame, type ProgramWalkthroughResult } from '../shared/programWalkthrough'
 import type { Locale } from '../shared/types'
@@ -110,8 +110,10 @@ function CupPractice({ execution, config, locale, t, onTrial, onComplete }: {
   </CommandDesk>
 }
 
-export function VariableCupsLesson({ execution, locale, onComplete }: {
+export function VariableCupsLesson({ execution, locale, onComplete, onPhase }: {
   execution: ProgramWalkthrough; locale: Locale; onComplete: () => void
+  /** Reports 0 while the learner sets up the cups and 1 once the prediction opens. */
+  onPhase?: (phase: number) => void
 }) {
   const config = execution.variableCups
   const sample = execution.cases[0]
@@ -123,6 +125,8 @@ export function VariableCupsLesson({ execution, locale, onComplete }: {
   const [miss, setMiss] = useState<number>()
   const [readChoice, setReadChoice] = useState<'choose' | 'address'>()
   const [trial, setTrial] = useState<Trial>()
+  const practising = stages[step] === 'done'
+  useEffect(() => onPhase?.(Number(practising)), [onPhase, practising])
   const run = useMemo(() => sample && runProgramWalkthrough(execution.source, sample.input), [execution.source, sample])
   if (!config || !sample || !run) return null
   const { variable, snapshot } = config

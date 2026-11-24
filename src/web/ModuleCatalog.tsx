@@ -73,12 +73,6 @@ export function ModuleCatalog({ groups, levels, completed, lastLesson, locale, c
     {roadmap.tracks.length > 0
       ? <LearningRoadmap roadmap={roadmap} locale={locale} onOpenLevel={onOpenLevel} onOpenUnit={onOpen} review={review} />
       : review}
-    {challenges && challengeCatalog && <ChallengeCatalog title={challenges.unit.title} catalog={challengeCatalog} routes={routes} locale={locale}
-      onLearn={visitWorkbench} nextMatch={nextMatch?.level}
-      filters={challengeFilters} onFiltersChange={onChallengeFiltersChange} onStartPreparation={onStartPreparation}
-      selectedRoute={selectedRoute} skippedRouteIds={skippedRouteIds} onSelectRoute={onSelectRoute}
-      onSetRouteSkipped={onSetRouteSkipped} onOpenRouteLevel={onOpenRouteLevel}
-      onOpenLevel={onOpenLevel} onRecords={onChallengeRecords} onGoals={onChallengeGoals} onUnfinished={onUnfinishedMatches} />}
     <h2 id="free-choices" className="free-choices-heading">{t('自由选课', 'Browse courses')}</h2>
     <nav className="track-jumps" aria-label={t('学科分类', 'Subject areas')}>
       {sections.map(section => <a key={section.id} href={'#track-' + section.id}>{section.title[locale]}</a>)}
@@ -108,5 +102,11 @@ export function ModuleCatalog({ groups, levels, completed, lastLesson, locale, c
         </div>
       </section>
     })}
+    {challenges && challengeCatalog && <ChallengeCatalog title={challenges.unit.title} catalog={challengeCatalog} routes={routes} locale={locale}
+      onLearn={visitWorkbench} nextMatch={nextMatch?.level}
+      filters={challengeFilters} onFiltersChange={onChallengeFiltersChange} onStartPreparation={onStartPreparation}
+      selectedRoute={selectedRoute} skippedRouteIds={skippedRouteIds} onSelectRoute={onSelectRoute}
+      onSetRouteSkipped={onSetRouteSkipped} onOpenRouteLevel={onOpenRouteLevel}
+      onOpenLevel={onOpenLevel} onRecords={onChallengeRecords} onGoals={onChallengeGoals} onUnfinished={onUnfinishedMatches} />}
   </>
 }

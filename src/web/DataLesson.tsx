@@ -10,6 +10,7 @@ import { ChallengeFailureReview, type ChallengeReviewData } from './ChallengeFai
 import type { GoalReplayEvidence } from './challengeGoalReview'
 import type { ChallengeRunHandlers } from './challengeScore'
 import { tr } from './text'
+import { HintSteps } from './HintSteps'
 import './data-course.css'
 
 const loadArrayBench = () => import('./station3d/data-instrument').then(module => module.buildArrayInstrument)
@@ -359,7 +360,7 @@ export default function DataLesson({ level, locale, onComplete, onMistake, chall
             : t('这一步没有运行成功。检查参数后再试。', 'This step could not run. Check the settings and try again.')}</p>}
           {review && <ChallengeFailureReview review={review} onRetry={() => settings.current?.querySelector<HTMLElement>('[data-parameter]')?.focus()} />}
           {level.hints.length > 0 && <details className="data-details"><summary>{t('提示', 'Hints')}</summary>
-            <ul>{level.hints.map((hint, index) => <li key={index}>{hint[locale]}</li>)}</ul>
+            <HintSteps hints={level.hints} locale={locale} />
           </details>}
         </section>
       </CommandDesk>

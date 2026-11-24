@@ -57,3 +57,31 @@
   .debug-batteries, .debug-comparison { gap: 4px; }
   .debug-comparison > div { padding-inline: 5px; }
 }
+
+/* The debugging method as a checklist: where the learner is in finding and fixing the bug. */
+.debug-method { display: flex; flex-wrap: wrap; gap: 5px 6px; margin: 0; padding: 0; list-style: none; counter-reset: none; }
+.debug-method li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px 3px 4px;
+  border: 1px solid #45606b;
+  border-radius: 999px;
+  color: #a9bfc4;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+.debug-method li i {
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: #3a525c;
+  color: #dcebed;
+  font: 700 11px var(--mono);
+}
+.debug-method li[data-state='current'] { border-color: var(--warm); background: #3d3a2c; color: #fff1cf; font-weight: 650; }
+.debug-method li[data-state='current'] i { background: var(--warm); color: #33260f; }
+.debug-method li[data-state='done'] { border-color: #3f8a70; color: #bdf0dc; }
+.debug-method li[data-state='done'] i { background: #1f6b54; color: #e6fff5; }

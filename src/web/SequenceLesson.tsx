@@ -1,11 +1,12 @@
 import { CodingDevice } from './CodingDevice'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { runProgramSequence } from '../engine/programSequence'
 import type { ProgramWalkthrough } from '../shared/programWalkthrough'
 import type { Json, Locale } from '../shared/types'
 import { ProgramDiagram } from './ProgramDiagram'
 import { SequenceBench } from './ProgramFlowBenches'
 import { runIssueText, tr } from './text'
+import { StepCount } from './LessonFrame'
 import './sequence-lesson.css'
 
 type Phase = 'arrange' | 'debug' | 'repair'
@@ -21,8 +22,12 @@ function storedValue(value: Json) {
   return typeof value === 'string' ? value : JSON.stringify(value)
 }
 
-export function SequenceLesson({ execution, locale, onComplete }: {
+const phaseOrder: readonly Phase[] = ['arrange', 'debug', 'repair']
+
+export function SequenceLesson({ execution, locale, onComplete, onPhase }: {
   execution: ProgramWalkthrough; locale: Locale; onComplete: () => void;
+  /** Reports which of the three parts is open: ordering, watching the early display, or repairing. */
+  onPhase?: (phase: number) => void;
 }) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const { visual, sequence } = execution
@@ -31,6 +36,7 @@ export function SequenceLesson({ execution, locale, onComplete }: {
   const [attempt, setAttempt] = useState<Attempt>()
   const [step, setStep] = useState(0)
   const recorded = useRef(false)
+  useEffect(() => onPhase?.(phaseOrder.indexOf(phase)), [onPhase, phase])
   if (!visual || !sequence) return null
 
   const firstSample = execution.cases[0]
@@ -151,6 +157,7 @@ export function SequenceLesson({ execution, locale, onComplete }: {
           {finishedDebug && <button type="button" className="primary-button" onClick={() => startRepair(sequence.repair)}>
             {t('修复打乱的步骤', 'Fix the shuffled steps')}
           </button>}
+          <StepCount position={step} total={trace?.steps.length ?? 0} locale={locale} />
         </>}
         {phase === 'repair' && <button type="button" className="primary-button" onClick={verify}>
           {t('运行验证', 'Run to check')}

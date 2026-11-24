@@ -24,7 +24,8 @@
   border-radius: 15px 15px 0 0;
   background: linear-gradient(165deg, #263d45, #526763 65%, #263b3c);
 }
-.room-scene-surface { position: relative; height: clamp(192px, 18.5vw, 250px); }
+/* Kept low so the lesson itself starts within the first screen. */
+.room-scene-surface { position: relative; height: clamp(168px, 15vw, 204px); }
 .classroom-workspace .room-scene-surface canvas, .classroom-workspace .room-scene-surface img {
   width: 100%;
   height: 100%;
