@@ -6,6 +6,7 @@ import type { ProgramWalkthrough } from '../shared/programWalkthrough'
 import type { Locale } from '../shared/types'
 import { tr } from './text'
 import { StepCount } from './LessonFrame'
+import { StepExplanation } from './LessonNotes'
 import './while-lesson.css'
 
 type Run = NonNullable<ReturnType<typeof runWhileLesson>>
@@ -172,7 +173,7 @@ export function WhileLesson({ execution, locale, onReady }: {
           </div>}
         </dl>}
         {valid && run
-          ? <p className="while-description" role="status">{describe(step, previous, run, lesson.threshold, lesson.increment, scene.demoIndex, t)}</p>
+          ? <StepExplanation locale={locale} className="while-description">{describe(step, previous, run, lesson.threshold, lesson.increment, scene.demoIndex, t)}</StepExplanation>
           : <p className="error-message" role="alert">{t('这次没有得到可以展示的循环结果。', 'This program did not produce a loop trace to show.')}</p>}
         {code.size > 0 && <ol className="while-source" data-testid="while-code" aria-label={t('Python 代码', 'Python code')}>
           {Array.from(code, ([line, content]) => <li key={line} data-line={line}

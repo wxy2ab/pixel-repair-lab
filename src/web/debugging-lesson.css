@@ -10,6 +10,14 @@
 .debug-batteries li { min-height: 80px; }
 .debug-batteries li[data-charged] { border-color: #6caa92; background: #21413e; }
 .debug-batteries li[data-active] { border-color: #b3f4cc; }
+.debug-batteries li[data-skipped] { border-style: dashed; border-color: #cea67f; background: #3b3434; }
+.debug-batteries li[data-skipped] .debug-battery-status { color: #ffdaa9; }
+.debug-line-place { grid-column: 2; color: #ffe1b6; }
+.debug-source li[data-location='after'] .debug-line-place { color: #b9f3d8; }
+@media (prefers-reduced-motion: no-preference) {
+  .debug-batteries li[data-charged] .debug-battery-status { animation: debug-read-in .28s ease-out; }
+  @keyframes debug-read-in { from { opacity: .25; transform: translateY(-5px); } }
+}
 .debug-battery-status { color: #b5f0cb; font-size: 11px; line-height: 1.15; }
 
 .debug-comparison {

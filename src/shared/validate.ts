@@ -67,6 +67,22 @@ function scenarioIssues(scenario: Scenario, prefix: string, issues: Issue[]) {
   if (blockingGridDevice(scenario, undefined, scenario.start)) {
     report('/start', 'device-start', 'The starting tile must be open to the robot.')
   }
+  const warehouse = scenario.warehouse
+  if (warehouse) {
+    if (warehouse.boxes.length !== warehouse.targets.length) {
+      report('/warehouse/targets', 'warehouse-count', 'Each box needs one parking target.')
+    }
+    warehouse.boxes.forEach((box, index) => {
+      const path = '/warehouse/boxes/' + index
+      checkPosition(box, path)
+      if ((box.x === scenario.start.x && box.y === scenario.start.y)
+        || blockingGridDevice(scenario, undefined, box)
+        || scenario.enemies?.some(({ path }) => path[0].x === box.x && path[0].y === box.y)) {
+        report(path, 'warehouse-occupied', 'A box must start on a square free of robots and solid fixtures.')
+      }
+    })
+    warehouse.targets.forEach((target, index) => checkPosition(target, '/warehouse/targets/' + index))
+  }
   for (const [index, enemy] of (scenario.enemies ?? []).entries()) {
     for (const [point, position] of enemy.path.entries()) {
       checkPosition(position, '/enemies/' + index + '/path/' + point)
@@ -88,6 +104,7 @@ function scenarioIssues(scenario: Scenario, prefix: string, issues: Issue[]) {
   for (const [index, goal] of scenario.objectives.entries()) {
     const path = '/objectives/' + index
     if (goal.type === 'exit') checkPosition(goal, path)
+    if (goal.type === 'parkBoxes' && !warehouse) report(path, 'warehouse-missing', 'A parking objective needs boxes and targets.')
     if (goal.type === 'collect' && goal.itemIds.some(id => !itemIds.has(id))) {
       report(path + '/itemIds', 'unknown-item', 'The objective refers to an unknown item.')
     }
@@ -1409,6 +1426,13 @@ export function validateLevel(value: unknown): { level?: Level; issues: Issue[] 
         if (new Set(items.map(item => item.id)).size !== items.length) {
           issues.push({ path: '/animation/frames/' + index + '/items', code: 'duplicate-id', message: 'Animation item IDs must be unique within a frame.' })
         }
+        const plot = level.animation?.plot
+        items.forEach(({ box }, itemIndex) => {
+          if (box && (!plot || box[0] + box[2] > plot.columns || box[1] + box[3] > plot.rows)) {
+            issues.push({ path: '/animation/frames/' + index + '/items/' + itemIndex + '/box', code: 'animation-box',
+              message: 'Place the box within the configured plot.' })
+          }
+        })
       })
       if (level.question.correct >= level.question.options.length) {
         issues.push({ path: '/question/correct', code: 'question-answer', message: 'The answer index must point to one of the options.' })

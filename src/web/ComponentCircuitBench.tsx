@@ -2,6 +2,7 @@ import { useId } from 'react'
 import { componentReading } from '../engine/circuit'
 import type { Bit, ComponentCircuitMode } from '../shared/hardware'
 import type { Locale } from '../shared/types'
+import { StepExplanation } from './LessonNotes'
 import { tr } from './text'
 import './component-circuit.css'
 
@@ -27,11 +28,8 @@ export default function ComponentCircuitBench({ mode, bits, locale, onFlip }: {
       : t('基极是 LOW，三极管截止。灯支路的开关虽然闭合，LED 仍熄灭。', 'The base is LOW and the transistor is off. The lamp switch is closed, but the LED stays dark.'))
 
   return <section className="panel circuit-panel component-bench" data-testid="component-bench" data-mode={mode}>
-    <header className="component-bench-header"><h2>{title}</h2>
-      <strong className="component-output" data-testid="component-lamp" data-output={output}>
-        <span aria-hidden="true" />{lamp}
-      </strong>
-    </header>
+    <header className="component-bench-header"><h2>{title}</h2></header>
+    <div className="component-surface" role="group" aria-label={t('实验台控制', 'Bench controls')}>
     <svg className="component-schematic" viewBox="0 0 448 252" role="img"
       aria-labelledby={id + '-title ' + id + '-desc'} data-lit={output === 1}>
       <title id={id + '-title'}>{title}</title>
@@ -56,13 +54,13 @@ export default function ComponentCircuitBench({ mode, bits, locale, onFlip }: {
         <path d="M30 122H66 M38 138H58" />
         <text x="18" y="116">+</text><text x="18" y="148">−</text>
         <text x="73" y="135">5 V</text>
-        <text x="122" y="33" textAnchor="middle">S1</text>
         <path d={switchClosed ? 'M92 68H152' : 'M92 68L144 43'} />
         <circle cx="92" cy="68" r="4" /><circle cx="152" cy="68" r="4" />
+        {!switchClosed && <text className="component-stop" x="146" y="63" textAnchor="middle">×</text>}
         <text x="218" y="43" textAnchor="middle">330 Ω</text>
         <path className="component-resistor" d="M185 68L190 60L198 76L206 60L214 76L222 60L230 76L238 60L246 76L251 68" />
         <text x="218" y="101" textAnchor="middle">{t('限流电阻', 'Resistor')}</text>
-        <text x="305" y="101" textAnchor="middle">LED</text>
+        <text x="305" y="101" textAnchor="middle" data-testid="component-lamp" data-output={output}>{lamp}</text>
         <path className="component-led" d="M293 57L314 68L293 79Z" />
         <path d="M316 55V81" />
         <g className="component-rays"><path d="M299 51L308 39M302 41L308 39L308 45 M311 53L322 39M316 41L322 39L322 45" /></g>
@@ -72,7 +70,9 @@ export default function ComponentCircuitBench({ mode, bits, locale, onFlip }: {
         <rect x={diodeForward ? 187 : 230} y="182" width="7" height="20" rx="1" className="component-band" />
         <text x="167" y="170" textAnchor="middle">{diodeForward ? 'K' : 'A'}</text>
         <text x="256" y="170" textAnchor="middle">{diodeForward ? 'A' : 'K'}</text>
-        <text x="212" y="230" textAnchor="middle">{t('带环端是阴极 K', 'Band = cathode K')}</text>
+        {switchClosed === 1 && <text className={diodeForward ? 'component-pass' : 'component-stop'} x="212" y="171" textAnchor="middle">
+          {diodeForward ? '←' : '⊣'}
+        </text>}
       </g> : <g className="component-device">
         <path className="component-trace" d="M130 181V221 M155 167H182 M238 167H325" />
         <path className="component-resistor" d="M182 167L187 159L195 175L203 159L211 175L219 159L227 175L234 159L238 167" />
@@ -84,20 +84,23 @@ export default function ComponentCircuitBench({ mode, bits, locale, onFlip }: {
         {!!baseHigh && <path className="component-base-flow" d="M155 167H182 M238 167H327V177L366 200V221H130V181" />}
         <path d="M354 198L364 199L359 190" />
         <text x="383" y="132">C</text><text x="294" y="156">B</text><text x="383" y="207">E</text>
+        <text className={baseHigh ? 'component-pass' : 'component-stop'} x="393" y="174" textAnchor="middle">
+          {baseHigh ? t('↓ 导通', '↓ On') : t('× 截止', '× Off')}
+        </text>
         <circle cx="130" cy="221" r="3" /><path d="M130 221V229 M119 229H141 M123 234H137 M127 239H133" />
         <text x="147" y="242">GND</text>
       </g>}
     </svg>
-    <div className="component-controls" role="group" aria-label={t('实验台控制', 'Bench controls')}>
-      <button type="button" className="component-control" data-testid="component-switch"
-        aria-pressed={switchClosed === 1} onClick={() => onFlip(0)}>
-        <span>{loadName} S1</span><strong>{switchState}</strong>
+      <button type="button" className="component-target component-switch-target" data-testid="component-switch"
+        aria-label={loadName + ' S1 · ' + switchState} aria-pressed={switchClosed === 1} onClick={() => onFlip(0)}>
+        <span>S1 · {switchState}</span>
       </button>
-      <button type="button" className="component-control" data-testid="component-control"
+      <button type="button" className={'component-target ' + (diode ? 'component-diode-target' : 'component-base-target')}
+        data-testid="component-control" aria-label={(diode ? t('翻转二极管', 'Flip diode') : t('切换基极输入', 'Toggle base input')) + ' · ' + controlState}
         aria-pressed={bits[1] === 1} onClick={() => onFlip(1)}>
-        <span>{diode ? t('翻转二极管', 'Flip diode') : t('切换基极输入', 'Toggle base input')}</span><strong>{controlState}</strong>
+        <span>{diode ? '↻ ' : 'B · '}{controlState}</span>
       </button>
     </div>
-    <p className="component-reading" aria-live="polite" data-testid="component-current">{observation}</p>
+    <StepExplanation locale={locale}><p data-testid="component-current">{observation}</p></StepExplanation>
   </section>
 }

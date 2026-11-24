@@ -6,7 +6,7 @@ import type { TeachingModelTools } from './teaching-model-types'
 const steel = '#45646a', ink = '#263d46', brass = '#dcac69', mint = '#9edec0', red = '#ed947e'
 
 export type SequenceBenchState = {
-  cards: { id: string; label: string; icon: ProgramVisual['main'][number]['icon']; reading?: string }[]
+  cards: { id: string; label: string; icon: ProgramVisual['main'][number]['icon']; reading?: string; annotation?: string }[]
   input: number
   active?: string
   blocked?: string
@@ -40,6 +40,7 @@ export function buildSequenceBench(state: SequenceBenchState, kit: Kit, tools: T
       tools.label(stopped ? '? ' + state.blocked : state.output ?? '—', [x, .73, .002], .22)
     }
     tools.label(card.label, [x, .44, .56], .17)
+    if (card.annotation) tools.label(card.annotation, [x, 1.36, -.08], .18)
     if (state.move) {
       for (const direction of [-1, 1]) {
         if (i + direction < 0 || i + direction >= state.cards.length) continue
@@ -100,6 +101,7 @@ export type TraceRackState = {
   rowIndex?: number
   batteryIndex?: number
   current?: readonly number[]
+  cellNotes?: readonly (readonly (string | undefined)[])[]
   returned?: string
   helper?: string
   locale: Locale
@@ -124,6 +126,8 @@ export function buildTraceRack(state: TraceRackState, kit: Kit, tools: TeachingM
       kit.cylinder([x, .71 + lift, z], .242, .26, .44, value === undefined ? '#a2b9b5' : mint)
       kit.cylinder([x, .96 + lift, z], .125, .125, .07, brass)
       tools.label(String(value ?? start), [x, .74 + lift, z + .242], .22)
+      const note = state.cellNotes?.[r]?.[i]
+      if (note) tools.label(note, [x, 1.30 + lift, z], .17)
     })
   })
   const gateX = width / 2 - .73

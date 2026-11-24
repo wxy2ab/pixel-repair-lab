@@ -195,6 +195,15 @@ test('the final report processes the same data, rejects wrong parameters, and in
   for (let index = 1; index < final.steps.length; index++) {
     await next.click()
     previous = await completeStep(index, previous)
+    if (final.steps[index].operation === 'clean') {
+      const repeat = previous.removedRows?.find(row => row.reason === 'repeated-id')
+      if (!repeat || !previous.sourceRows) throw new Error('Expected the cleaning step to trace the duplicate')
+      const inspector = page.getByRole('region', { name: '逐行对照' })
+      await inspector.getByRole('button', { name: `查看输入第 ${repeat.index + 1} 行`, exact: true }).click()
+      await inspector.getByRole('button', { name: new RegExp('看保留的第 ' + (repeat.keptRow + 1) + ' 行') }).click()
+      await expect(inspector.locator('[data-source-row="' + repeat.keptRow + '"]'))
+        .toHaveAttribute('data-output-row', String(previous.sourceRows.indexOf(repeat.keptRow)))
+    }
   }
   expect(previous.engine).toMatch(/^SQLite /)
   expect(previous.code).toContain('FROM grouped_readings')

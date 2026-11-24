@@ -24,6 +24,48 @@ async function tapAt(canvas: Locator, x: number, y: number) {
   await canvas.click({ position: { x: box.width * x, y: box.height * y } })
 }
 
+test('workshop machines respond to direct picks and keyboard controls in both rooms', async ({ page }) => {
+  test.slow()
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/')
+  for (const room of ['learning', 'arena']) {
+    const home = page.getByTestId(`workshop-hub-${room}`)
+    const canvas = await readyScene(home)
+    const fan = home.getByRole('button', { name: '风扇加速' })
+    const crane = home.getByRole('button', { name: '转动吊臂' })
+    // Tap the fan hub and the crane's upper brass joint in the initial view.
+    const learning = room === 'learning'
+    await tapAt(canvas, learning ? .680 : .621, learning ? .165 : .147)
+    await expect(fan).toHaveAttribute('aria-pressed', 'true')
+    const beforeSwing = await canvas.screenshot()
+    await tapAt(canvas, learning ? .460 : .413, .144)
+    await expect(crane).toHaveAttribute('aria-pressed', 'true')
+    await expect.poll(async () => !(await canvas.screenshot()).equals(beforeSwing)).toBe(true)
+    await crane.focus()
+    await page.keyboard.press('Enter')
+    await expect(crane).toHaveAttribute('aria-pressed', 'false')
+    await fan.focus()
+    await page.keyboard.press('Space')
+    await expect(fan).toHaveAttribute('aria-pressed', 'false')
+    if (learning) await home.getByRole('button', { name: '进入挑战机库' }).click()
+  }
+})
+
+test.describe('touchscreen workshop', () => {
+  test.use({ viewport: { width: 390, height: 820 }, hasTouch: true, isMobile: true })
+  test('tapping the fan beside the charging column operates the visible fan', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.goto('/')
+    const home = page.getByTestId('workshop-hub-learning')
+    const canvas = await readyScene(home)
+    const box = await canvas.boundingBox()
+    if (!box) throw new Error('The workshop canvas must be visible')
+    await page.touchscreen.tap(box.x + box.width * .752, box.y + box.height * .20)
+    await expect(home.getByRole('button', { name: '风扇加速' })).toHaveAttribute('aria-pressed', 'true')
+    await expect(home).toBeInViewport()
+  })
+})
+
 test('Sprout and the hangar are pickable in the 3D workshop and the hangar opens its displayed match', async ({ page }) => {
   test.slow()
   await page.emulateMedia({ reducedMotion: 'reduce' })

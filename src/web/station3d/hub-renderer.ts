@@ -1,14 +1,15 @@
 import * as THREE from 'three'
 import { createStationModels } from './models'
-import { createWorkshopSet, workshopStations } from './workshop'
+import { createWorkshopSet, workshopStations, type HubMachine } from './workshop'
 
 export type WorkshopStop = 'learning' | 'arena'
 export type HubCharacter = 'sprout' | 'rival'
-type Landmark = WorkshopStop | HubCharacter
+type Landmark = WorkshopStop | HubCharacter | HubMachine
 type HubCallbacks = {
   onVisit: (stop: WorkshopStop) => void
   canVisit: (stop: WorkshopStop) => boolean
   onGreet: (who: HubCharacter) => void
+  onMachineChange: (machine: HubMachine, active: boolean) => void
   onReady: () => void
   onFailure: () => void
 }
@@ -81,7 +82,7 @@ export function createHubRenderer(canvas: HTMLCanvasElement, variant: WorkshopSt
     parent.add(box)
     return box
   }
-  const hits = [
+  const hits: THREE.Object3D[] = [
     addHitbox('sprout', hero, new THREE.Vector3(0, .53, 0), new THREE.Vector3(.79, 1.16, .6)),
     addHitbox('learning', scene, new THREE.Vector3(...workshopStations.learning), new THREE.Vector3(2.45, 1.7, 1.25)),
     addHitbox('arena', scene, new THREE.Vector3(...workshopStations.arena), new THREE.Vector3(2.0, 2.8, 1.18)),
@@ -90,11 +91,15 @@ export function createHubRenderer(canvas: HTMLCanvasElement, variant: WorkshopSt
     for (const actor of [rival, teammate]) hits.push(addHitbox('rival', actor,
       new THREE.Vector3(0, .53, 0), new THREE.Vector3(.79, 1.16, .6)))
   }
+  if (workshop.machines) hits.push(...workshop.machines.picks.keys())
   const media = window.matchMedia('(prefers-reduced-motion: reduce)')
   let visible = true
   let disposed = false
   let presented = false
   let raf = 0
+  let ambientTimer: ReturnType<typeof setTimeout> | undefined
+  let lastFrame: number | undefined
+  let ambientTime = 0
   let settle = performance.now() + 1250
   let wave: { start: number; who: HubCharacter } | undefined
   let journey: { stop?: WorkshopStop; start: number; duration: number; from: THREE.Vector3; to: THREE.Vector3 } | undefined
@@ -126,7 +131,10 @@ export function createHubRenderer(canvas: HTMLCanvasElement, variant: WorkshopSt
     raf = 0
     if (disposed || !visible || document.hidden) return
     const reduced = media.matches
-    let seconds = reduced ? 0 : Math.min(now, settle) / 1000
+    const dt = reduced || lastFrame === undefined ? 0 : Math.min((now - lastFrame) / 1000, .25)
+    lastFrame = now
+    ambientTime += dt
+    let seconds = reduced ? 0 : ambientTime
     if (wave && now - wave.start >= 1800) wave = undefined
     const waveSeconds = wave && (reduced ? .55 : (now - wave.start) / 1000)
     if (journey) {
@@ -145,14 +153,23 @@ export function createHubRenderer(canvas: HTMLCanvasElement, variant: WorkshopSt
       wave?.who === 'rival' ? waveSeconds ?? 0 : seconds + .4)
     if (teammate) models.pose(teammate, wave?.who === 'rival' ? 'wave' : 'idle',
       wave?.who === 'rival' ? (waveSeconds ?? 0) + .1 : seconds + .9)
-    workshop.update?.(seconds)
+    workshop.update(reduced ? 0 : ambientTime)
+    workshop.machines?.update(dt, reduced)
     try { gl.render(scene, camera) }
     catch { fail(); return }
     if (!presented) { presented = true; events.onReady() }
     if (!reduced && (journey || wave || now < settle)) redraw()
+    else if (!reduced) ambientTimer = setTimeout(redraw, 100)
   }
   function redraw() {
+    clearTimeout(ambientTimer)
     if (!disposed && visible && !document.hidden && !raf) raf = requestAnimationFrame(draw)
+  }
+  function operate(machine: HubMachine) {
+    if (disposed || !workshop.machines) return
+    events.onMachineChange(machine, workshop.machines.toggle(machine))
+    settle = performance.now() + 900
+    redraw()
   }
   function greet(who: HubCharacter = 'sprout') {
     clearTimeout(tripTimer)
@@ -199,8 +216,20 @@ export function createHubRenderer(canvas: HTMLCanvasElement, variant: WorkshopSt
     pointer.set((event.clientX - rect.left) / rect.width * 2 - 1, 1 - (event.clientY - rect.top) / rect.height * 2)
     scene.updateMatrixWorld()
     raycaster.setFromCamera(pointer, camera)
-    const hit = raycaster.intersectObjects(hits, false)[0]?.object.name as Landmark | undefined
-    return hit === 'sprout' || hit === 'rival' || (hit && events.canVisit(hit)) ? hit : undefined
+    const underPointer = raycaster.intersectObjects(hits, false)
+    const picks = workshop.machines?.picks
+    const landmark = underPointer.find(hit => !picks?.has(hit.object))?.object
+    if (landmark?.name === 'sprout' || landmark?.name === 'rival') return landmark.name
+    if (picks && underPointer.some(hit => picks.has(hit.object))) {
+      // A navigation hitbox has generous padding. A visible machine inside that
+      // padding still responds, while the actual casing of a station occludes it.
+      const surface = raycaster.intersectObject(workshop.group, true)[0]?.object
+      const machine = surface && picks.get(surface)
+      if (machine) return machine
+    }
+    if (!landmark) return
+    const hit = landmark.name as WorkshopStop
+    return events.canVisit(hit) ? hit : undefined
   }
   const floorBounds = new THREE.Box3(new THREE.Vector3(arena ? -1.52 : -3.14, -.01, arena ? 1.85 : .97),
     new THREE.Vector3(3.31, .09, 2.95))
@@ -247,6 +276,7 @@ export function createHubRenderer(canvas: HTMLCanvasElement, variant: WorkshopSt
     if (!tap) return
     const hit = hitAt(event)
     if (hit === 'sprout' || hit === 'rival') greet(hit)
+    else if (hit === 'fan' || hit === 'crane') operate(hit)
     else if (hit) visit(hit)
     else floorAtPointer()
   }
@@ -254,11 +284,13 @@ export function createHubRenderer(canvas: HTMLCanvasElement, variant: WorkshopSt
     if (event.pointerId === drag?.id) { drag = undefined; canvas.style.cursor = 'grab' }
   }
   function resetCamera() { yaw = startYaw; pitch = .33; adjustCamera(); redraw() }
-  function changeMotion() { settle = 0; redraw() }
+  function changeMotion() { settle = 0; lastFrame = undefined; redraw() }
   function changeVisibility() {
     if (!visible || document.hidden) {
       if (raf) cancelAnimationFrame(raf)
       raf = 0
+      clearTimeout(ambientTimer)
+      lastFrame = undefined
       finishJourney()
     } else redraw()
   }
@@ -277,6 +309,7 @@ export function createHubRenderer(canvas: HTMLCanvasElement, variant: WorkshopSt
     disposed = true
     clearTimeout(tripTimer)
     clearTimeout(poseTimer)
+    clearTimeout(ambientTimer)
     cancelAnimationFrame(raf)
     sizing.disconnect()
     visibility.disconnect()
@@ -314,5 +347,5 @@ export function createHubRenderer(canvas: HTMLCanvasElement, variant: WorkshopSt
     visibility.observe(canvas)
     resize()
   } catch (error) { dispose(); throw error }
-  return { dispose, visit, greet, resetCamera }
+  return { dispose, visit, greet, operate, resetCamera }
 }

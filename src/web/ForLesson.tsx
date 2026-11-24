@@ -6,6 +6,7 @@ import type { ProgramWalkthrough } from '../shared/programWalkthrough'
 import type { Locale } from '../shared/types'
 import { tr } from './text'
 import { StepCount } from './LessonFrame'
+import { StepExplanation } from './LessonNotes'
 import './for-lesson.css'
 
 type Run = NonNullable<ReturnType<typeof runForLesson>>
@@ -151,7 +152,7 @@ export function ForLesson({ execution, locale, onReady }: {
             <dd><output data-testid="for-output">{run.output}</output></dd>
           </div>}
         </dl>}
-        {run ? <p className="for-description" role="status">{describe(step, run, lesson.increment, t)}</p>
+        {run ? <StepExplanation locale={locale} className="for-description">{describe(step, run, lesson.increment, t)}</StepExplanation>
           : <p className="error-message" role="alert">{t('这次没有得到可以展示的循环结果。', 'This program did not produce a loop trace to show.')}</p>}
         {code.size > 0 && <ol className="for-source" data-testid="for-code" aria-label={t('Python 代码', 'Python code')}>
           {Array.from(code, ([line, content]) => <li key={line} data-line={line}

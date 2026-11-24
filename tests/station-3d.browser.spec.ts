@@ -120,6 +120,89 @@ test('the 3D arena camera and picking preserve the playable replay state', async
   expect(await tiles.innerHTML()).toBe(savedFrame)
 })
 
+test('warehouse background motion and character taps leave every crate in place', async ({ page }) => {
+  test.slow()
+  await page.setViewportSize({ width: 1366, height: 900 })
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') })
+  await page.goto('/#challenge-zone')
+  await page.locator('[data-challenge-route="warehouse"]').click()
+  await page.locator('[data-route-step="challenge-sokoban-lighthouse-ring"] .challenge-route-step-open').click()
+  const canvas = page.getByTestId('station-3d-canvas')
+  await expect(page.locator('.station-viewport')).toHaveAttribute('data-ready', 'true', { timeout: 20000 })
+  await canvas.scrollIntoViewIfNeeded()
+  const bounds = await canvas.boundingBox()
+  if (!bounds) throw new Error('Missing warehouse surface')
+
+  // Landmarks in the Lighthouse Ring overview, relative to its fixed vertical field of view.
+  const point = (horizontal: number, vertical: number) => ({
+    x: bounds.x + bounds.width / 2 + bounds.height * horizontal,
+    y: bounds.y + bounds.height * vertical,
+  })
+  async function tap(name: string, horizontal: number, vertical: number) {
+    const { x, y } = point(horizontal, vertical)
+    await page.mouse.move(x, y)
+    await expect(canvas).toHaveAttribute('data-touch-target', name)
+    await page.mouse.click(x, y)
+  }
+  const closeup = (horizontal: number, vertical: number, size = 10) => {
+    const { x, y } = point(horizontal, vertical)
+    return page.screenshot({ clip: { x: Math.round(x - size / 2), y: Math.round(y - size / 2), width: size, height: size } })
+  }
+  const inspections = page.getByTestId('station-cell-inspection')
+  const tiles = page.locator('.tilemap')
+  const initialBoard = await tiles.innerHTML()
+  const readout = page.getByTestId('warehouse-readout')
+  await expect(readout).toContainText('步数 0')
+  // Both crops exclude the fan blades, Sprout, and any landing effects.
+  const flowMeter = () => closeup(-.163, .219, 24)
+  const scannerLamp = () => closeup(.493, .543, 18)
+  // Hold each pose while sampling both machines, even on a slow software renderer.
+  await page.clock.pauseAt(new Date('2026-01-01T00:15:00Z'))
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await page.clock.runFor(160)
+  const movingMeter = await flowMeter(), movingLamp = await scannerLamp()
+  await page.clock.runFor(1400)
+  expect((await flowMeter()).equals(movingMeter)).toBe(false)
+  expect((await scannerLamp()).equals(movingLamp)).toBe(false)
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.clock.runFor(160)
+  const stillMeter = await flowMeter(), stillLamp = await scannerLamp()
+  await page.clock.runFor(1200)
+  expect((await flowMeter()).equals(stillMeter)).toBe(true)
+  expect((await scannerLamp()).equals(stillLamp)).toBe(true)
+  await page.clock.resume()
+  await tap('fan', -.092, .223)
+  // Sample the parcel itself at each end of the belt, away from focus outlines and the scanner.
+  const atStart = await closeup(.493, .612)
+  const atEnd = await closeup(.480, .516)
+  await tap('conveyor', .492, .546)
+  await expect.poll(async () => !(await closeup(.493, .612)).equals(atStart)).toBe(true)
+  await expect.poll(async () => !(await closeup(.480, .516)).equals(atEnd)).toBe(true)
+  await tap('conveyor', .492, .546)
+  await expect.poll(async () => (await closeup(.493, .612)).equals(atStart)).toBe(true)
+  await expect.poll(async () => (await closeup(.480, .516)).equals(atEnd)).toBe(true)
+  await expect(inspections).toHaveCount(0)
+  await tap('crate', -.070, .399)
+  await expect(inspections).toHaveText('(3, 2) 货箱')
+  // Keep the same selection outline while checking that the crate itself tilts and settles.
+  await page.clock.pauseAt(new Date('2026-01-01T01:00:00Z'))
+  await page.clock.runFor(64)
+  const crateLid = () => closeup(-.070, .383, 26)
+  const levelLid = await crateLid()
+  await canvas.press('Enter')
+  await page.clock.runFor(64)
+  expect((await crateLid()).equals(levelLid)).toBe(false)
+  await page.clock.runFor(1000)
+  expect((await crateLid()).equals(levelLid)).toBe(true)
+  await page.clock.resume()
+  await tap('robot', .017, .391)
+  await expect(inspections).toHaveText('(4, 2) 芽芽')
+  await expect(readout).toContainText('步数 0')
+  await expect(readout).toContainText('推箱 0')
+  expect(await tiles.innerHTML()).toBe(initialBoard)
+})
+
 test('a grid lesson still runs the learner program when WebGL is unavailable', async ({ page, request }) => {
   const { levels } = await (await request.get('/api/levels')).json() as Catalog
   const lesson = levels.find(level => level.id === 'first-steps')

@@ -8,6 +8,7 @@ import { StationActionCue } from '../StationActionCue'
 import { ArenaMapControlsContext, useArenaMapMode } from '../ArenaMapMode'
 import { useMapCameraControls } from './useMapCameraControls'
 import { StationMinimap } from './StationMinimap'
+import { cargoLabel } from '../WarehouseTiles'
 import './station-viewport.css'
 
 type View = '2d' | '3d'
@@ -34,6 +35,7 @@ function cellContents(frame: StationFrame, cell: Position, locale: Locale, batte
     ...new Set(frame.arenaShots?.filter(shot => shot.path?.some(here)).map(shot =>
       shot.actorId === 'player' ? t('芽芽的脉冲', 'Sprout’s pulse') : t('对手的脉冲', 'Rival pulse'))),
     ...(frame.devices ?? []).filter(here).map(device => describeDevice(device, locale)),
+    frame.warehouse && cargoLabel(frame.warehouse.boxes.some(here), frame.warehouse.targets.some(here), locale),
     ...new Set(frame.hazards?.filter(here).map(hazard => hazardName(hazard.kind, locale))),
     here(frame.exit) && (frame.ferryDock ? t('渡口', 'Ferry dock') : t('出口', 'Exit')),
     frame.gates?.some(here) && (frame.tiles[cell.y]?.[cell.x] === '#' ? t('通道已关', 'Gate closed') : t('通道已开', 'Gate open')),
@@ -64,7 +66,8 @@ export function StationViewport({ frame, locale, batteries = false, children }: 
   }, [])
   const mapCamera = useMapCameraControls(mapNavigation, view, canvas, engine, showOverview,
     frame.tiles[0].length, frame.tiles.length, updateFootprint)
-  const flatInteractive = view === '2d' && Boolean(mapNavigation || frame.devices?.length || frame.arenaBuffs)
+  const inspectFlat = Boolean(mapNavigation || frame.devices?.length || frame.arenaBuffs || frame.warehouse)
+  const flatInteractive = view === '2d' && inspectFlat
   const inspected = cell && frame.tiles[cell.y]?.[cell.x] !== undefined ? cell : undefined
   const selectionOnOpen = useRef<Position | undefined>(undefined)
   const flatContent = useMemo(() => children(flatInteractive ? inspected : undefined), [children, flatInteractive, inspected])
@@ -113,7 +116,7 @@ export function StationViewport({ frame, locale, batteries = false, children }: 
     setFailed(false)
     setFootprint([])
     setReady(false)
-    selectionOnOpen.current = mapNavigation || frame.devices?.length || frame.arenaBuffs ? inspected : undefined
+    selectionOnOpen.current = inspectFlat ? inspected : undefined
     setCell(selectionOnOpen.current)
     setCameraMode('overview')
     setView(next)
@@ -122,11 +125,16 @@ export function StationViewport({ frame, locale, batteries = false, children }: 
 
   function navigateGrid(event: KeyboardEvent<HTMLElement>) {
     if (event.defaultPrevented) return
+    const origin = inspected ?? frame.playerPosition
+    if (view === '3d' && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault()
+      if (!event.repeat) engine.current?.activateCell(origin)
+      return
+    }
     const directions: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }
     const offset = directions[event.key]
     if (!offset) return
     event.preventDefault()
-    const origin = inspected ?? frame.playerPosition
     const next = {
       x: Math.max(0, Math.min(frame.tiles[0].length - 1, origin.x + offset[0])),
       y: Math.max(0, Math.min(frame.tiles.length - 1, origin.y + offset[1])),
@@ -148,7 +156,7 @@ export function StationViewport({ frame, locale, batteries = false, children }: 
     setCameraMode(mode)
   }
 
-  return <div className="station-viewport" data-view={view} data-map-navigation={mapNavigation || undefined}
+  return <div className="station-viewport" data-view={view} data-map-navigation={mapNavigation || undefined} data-warehouse={frame.warehouse ? true : undefined}
     data-camera={view === '3d' ? cameraMode : undefined} data-ready={view === '3d' && ready}>
     <div className="station-tools">
       <div className="station-view-switch" role="group" aria-label={t('棋盘视图', 'Board view')}>
@@ -168,7 +176,7 @@ export function StationViewport({ frame, locale, batteries = false, children }: 
     {view === '3d' && <>
       <div className="station-stage">
         <canvas ref={canvas} tabIndex={0} data-testid="station-3d-canvas" aria-label={mapNavigation ? t('三维地图，W A S D 平移', '3D map. Pan with W A S D') : t('三维棋盘，方向键查看格子', '3D board. Use arrow keys to inspect cells')}
-          aria-describedby={hintId} onKeyDown={navigateGrid} />
+          aria-keyshortcuts="Enter Space" aria-describedby={hintId} onKeyDown={navigateGrid} />
         {!ready && <span className="station-loading" role="status">{t('正在打开三维棋盘…', 'Opening 3D board…')}</span>}
       </div>
     </>}
@@ -187,7 +195,7 @@ export function StationViewport({ frame, locale, batteries = false, children }: 
         if (focusMap) (view === '2d' ? mapCamera.flat.current : canvas.current)?.focus({ preventScroll: true })
       }} />}
     {(view === '3d' || flatInteractive) && <div className="station-caption">
-      <span id={hintId}>{mapNavigation ? t('拖动平移 · 滚轮缩放', 'Drag to pan · Scroll to zoom') : view === '3d' ? t('拖动旋转 · 点选格子', 'Drag to rotate · Tap a cell') : t('点格子查看机关', 'Tap a cell to inspect it')}</span>
+      <span id={hintId}>{mapNavigation ? t('拖动平移 · 滚轮缩放', 'Drag to pan · Scroll to zoom') : view === '3d' ? t('拖动旋转 · 点选格子', 'Drag to rotate · Tap a cell') : t(frame.warehouse ? '点选格子' : '点格子查看机关', 'Tap a cell to inspect it')}</span>
       {inspected && <span className="station-inspection" role="status" data-testid="station-cell-inspection">
         <b>({inspected.x}, {inspected.y})</b> {cellContents(frame, inspected, locale, batteries)}
       </span>}

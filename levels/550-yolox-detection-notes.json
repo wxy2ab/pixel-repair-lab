@@ -56,135 +56,102 @@
     }
   ],
   "animation": {
-    "layout": "pipeline",
+    "layout": "grid",
     "frames": [
       {
         "caption": {
-          "zh": "照相机把有狗和椅子的场景保存为像素。",
-          "en": "The camera records a scene with a dog and a chair as pixels."
+          "zh": "模拟镜头里有一只狗和一把椅子。",
+          "en": "The illustrated camera view contains a dog and a chair."
         },
         "items": [
           {
-            "id": "camera",
+            "id": "subject-dog",
             "label": {
-              "zh": "原图",
-              "en": "Photo"
-            },
-            "value": {
-              "zh": "狗和椅子",
-              "en": "Dog and chair"
-            },
-            "state": "active"
-          },
-          {
-            "id": "model",
-            "label": {
-              "zh": "检测模型",
-              "en": "Detector"
-            },
-            "value": {
-              "zh": "等待像素",
-              "en": "Waiting for pixels"
-            },
-            "state": "muted"
-          }
-        ]
-      },
-      {
-        "caption": {
-          "zh": "模型为每个候选区域分别猜测类别。",
-          "en": "The model guesses a class for each candidate region."
-        },
-        "items": [
-          {
-            "id": "camera",
-            "label": {
-              "zh": "原图",
-              "en": "Photo"
-            },
-            "value": {
-              "zh": "像素已送入",
-              "en": "Pixels sent"
-            },
-            "state": "done"
-          },
-          {
-            "id": "model",
-            "label": {
-              "zh": "检测模型",
-              "en": "Detector"
-            },
-            "value": {
-              "zh": "给候选区域分类",
-              "en": "Classify regions"
-            },
-            "state": "active"
-          },
-          {
-            "id": "dog",
-            "label": {
-              "zh": "左边的框",
-              "en": "Left box"
-            },
-            "value": {
               "zh": "狗",
               "en": "Dog"
-            }
+            },
+            "box": [
+              1,
+              1,
+              3,
+              3
+            ],
+            "symbol": "🐕"
           },
           {
-            "id": "chair",
+            "id": "subject-chair",
             "label": {
-              "zh": "右边的框",
-              "en": "Right box"
-            },
-            "value": {
               "zh": "椅子",
               "en": "Chair"
+            },
+            "box": [
+              6,
+              1,
+              3,
+              3
+            ],
+            "symbol": "🪑"
+          },
+          {
+            "id": "model",
+            "label": {
+              "zh": "模拟镜头",
+              "en": "Camera view"
+            },
+            "value": {
+              "zh": "原图",
+              "en": "Input"
             }
           }
         ]
       },
       {
         "caption": {
-          "zh": "换成一张椅子被遮住的照片。模型只返回狗，漏掉了椅子。",
-          "en": "Switch to a photo where the chair is partly hidden. The model returns only the dog and misses the chair."
+          "zh": "检测器分别框出左边的狗和右边的椅子。",
+          "en": "The detector marks the dog on the left and the chair on the right."
         },
         "items": [
           {
-            "id": "camera",
+            "id": "subject-dog",
             "label": {
-              "zh": "新照片",
-              "en": "New photo"
+              "zh": "狗",
+              "en": "Dog"
             },
-            "value": {
-              "zh": "椅子被遮住",
-              "en": "Chair partly hidden"
-            },
-            "state": "active"
+            "box": [
+              1,
+              1,
+              3,
+              3
+            ],
+            "symbol": "🐕"
           },
           {
-            "id": "model",
+            "id": "subject-chair",
             "label": {
-              "zh": "检测模型",
-              "en": "Detector"
+              "zh": "椅子",
+              "en": "Chair"
             },
-            "value": {
-              "zh": "返回一个预测",
-              "en": "One prediction"
-            },
-            "state": "done"
+            "box": [
+              6,
+              1,
+              3,
+              3
+            ],
+            "symbol": "🪑"
           },
           {
             "id": "dog",
             "label": {
-              "zh": "左边的框",
-              "en": "Left box"
-            },
-            "value": {
               "zh": "狗",
               "en": "Dog"
             },
-            "state": "done"
+            "box": [
+              1,
+              1,
+              3,
+              3
+            ],
+            "swatch": "#83dcbd"
           },
           {
             "id": "chair",
@@ -192,15 +159,118 @@
               "zh": "椅子",
               "en": "Chair"
             },
-            "value": {
-              "zh": "没有检测框",
-              "en": "No detection box"
+            "box": [
+              6,
+              1,
+              3,
+              3
+            ],
+            "swatch": "#f4bd74"
+          },
+          {
+            "id": "model",
+            "label": {
+              "zh": "预测框",
+              "en": "Detections"
             },
-            "state": "muted"
+            "value": {
+              "zh": "2",
+              "en": "2"
+            }
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "箱子挡住椅子的一部分。检测器仍框出狗，却漏掉了椅子。",
+          "en": "A box hides part of the chair. The detector still marks the dog but misses the chair."
+        },
+        "items": [
+          {
+            "id": "subject-dog",
+            "label": {
+              "zh": "狗",
+              "en": "Dog"
+            },
+            "box": [
+              1,
+              1,
+              3,
+              3
+            ],
+            "symbol": "🐕"
+          },
+          {
+            "id": "subject-chair",
+            "label": {
+              "zh": "椅子",
+              "en": "Chair"
+            },
+            "box": [
+              6,
+              1,
+              3,
+              3
+            ],
+            "symbol": "🪑"
+          },
+          {
+            "id": "crate",
+            "label": {
+              "zh": "挡住椅子的箱子",
+              "en": "Box hiding part of the chair"
+            },
+            "box": [
+              6,
+              2,
+              3,
+              2
+            ],
+            "symbol": "📦"
+          },
+          {
+            "id": "dog",
+            "label": {
+              "zh": "狗",
+              "en": "Dog"
+            },
+            "box": [
+              1,
+              1,
+              3,
+              3
+            ],
+            "swatch": "#83dcbd"
+          },
+          {
+            "id": "model",
+            "label": {
+              "zh": "预测框",
+              "en": "Detections"
+            },
+            "value": {
+              "zh": "1",
+              "en": "1"
+            }
+          },
+          {
+            "id": "missed",
+            "label": {
+              "zh": "椅子",
+              "en": "Chair"
+            },
+            "value": {
+              "zh": "漏检",
+              "en": "Missed"
+            }
           }
         ]
       }
-    ]
+    ],
+    "plot": {
+      "columns": 10,
+      "rows": 5
+    }
   },
   "question": {
     "prompt": {

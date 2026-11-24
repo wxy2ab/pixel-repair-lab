@@ -13,6 +13,7 @@ import { tr } from './text'
 import { HintSteps } from './HintSteps'
 import { TaskProgress } from './TaskProgress'
 import './data-course.css'
+import './data-row-inspector.css'
 
 const loadArrayBench = () => import('./station3d/data-instrument').then(module => module.buildArrayInstrument)
 const loadGroupBench = () => import('./station3d/data-instrument').then(module => module.buildGroupInstrument)
@@ -53,6 +54,53 @@ function ReadingTable({ table, locale, kind }: { table: DataTable; locale: Local
     </table>
     {table.rows.length === 0 && <p>{tr(locale, '没有符合条件的记录。', 'No records match these settings.')}</p>}
   </div>
+}
+
+function RowInspector({ run, sourceRows, locale }: { run: DataResult['steps'][number]; sourceRows: number[]; locale: Locale }) {
+  const { input, output } = run
+  const destinations = new Map(sourceRows.map((source, index) => [source, index]))
+  const [picked, setPicked] = useState<number>()
+  if (!input.rows.length) return null
+  const t = (zh: string, en: string) => tr(locale, zh, en)
+  const altered = (row: number) => {
+    const end = destinations.get(row)
+    return end === undefined || output.columns.some((col, i) => {
+      const start = input.columns.indexOf(col)
+      return start >= 0 && input.rows[row][start] !== output.rows[end][i]
+    })
+  }
+  const source = picked ?? Math.max(0, input.rows.findIndex((_, i) => altered(i)))
+  const end = destinations.get(source)
+  const kept = end !== undefined
+  const removed = run.removedRows?.find(row => row.index === source)
+  const fields = [...input.columns, ...output.columns.filter(column => !input.columns.includes(column))]
+  return <section className="data-row-inspector" aria-label={t('逐行对照', 'Follow a row')}>
+    <h3>{t('跟着一行数据走', 'Follow a row')}</h3>
+    <div className="data-row-inspector__picker" role="group" aria-label={t('选择输入行', 'Select an input row')}>
+      {input.rows.map((_, i) => <button type="button" key={i} aria-pressed={i === source}
+        aria-label={t(`查看输入第 ${i + 1} 行`, `Inspect input row ${i + 1}`)}
+        data-removed={!destinations.has(i) || undefined} onClick={() => setPicked(i)}>{i + 1}</button>)}
+    </div>
+    <div key={source} className="data-row-inspector__trace" data-source-row={source} data-output-row={end} aria-live="polite">
+      <div className="data-row-inspector__head"><span>{t(`输入 · 第 ${source + 1} 行`, `Input · Row ${source + 1}`)}</span>
+        <i aria-hidden="true">→</i><span>{kept ? t(`输出 · 第 ${end + 1} 行`, `Output · Row ${end + 1}`) : t('× 已移出', '× Filtered out')}</span></div>
+      {fields.map(col => {
+        const from = input.columns.indexOf(col), to = output.columns.indexOf(col)
+        const before = from < 0 ? undefined : input.rows[source][from]
+        const after = end === undefined || to < 0 ? undefined : output.rows[end][to]
+        return <div className="data-row-inspector__field" key={col} data-changed={kept && before !== after || undefined}>
+          <div><small>{term(col, locale)}</small>{before === undefined ? '—' : readingCell(before, col, locale)}</div>
+          <i aria-hidden="true">{after === undefined ? '×' : '→'}</i>
+          <div>{after === undefined ? '—' : readingCell(after, col, locale)}</div>
+        </div>
+      })}
+      {removed && <div className="data-row-inspector__reason">{removed.reason === 'invalid-reading'
+        ? t('× 温度缺失或无效', '× Missing or invalid temperature')
+        : <button type="button" onClick={() => setPicked(removed.keptRow)}>
+          {t(`编号重复 · 看保留的第 ${removed.keptRow + 1} 行`, `Duplicate ID · See kept input row ${removed.keptRow + 1}`)} →
+        </button>}</div>}
+    </div>
+  </section>
 }
 
 function DataControls({ step, params, locale, pending, update }: {
@@ -96,12 +144,12 @@ function ArrayResult({ run, operation, column, locale }: {
 }) {
   const index = run.input.columns.indexOf(column)
   if (index < 0 || !run.input.rows.length) return null
-  const selected = new Set<number>()
-  if (operation === 'array') {
+  const selected = new Set<number>(run.sourceRows)
+  if (!run.sourceRows && operation === 'array') {
     for (const [sourceIndex] of run.output.rows) {
       if (typeof sourceIndex === 'number') selected.add(sourceIndex)
     }
-  } else {
+  } else if (!run.sourceRows) {
     // A mask preserves input order, including duplicate records. Match the returned
     // rows instead of reimplementing NumPy's numeric conversion or predicate.
     let next = 0
@@ -310,8 +358,8 @@ export default function DataLesson({ level, locale, onComplete, onMistake, chall
             {inputSheet}
             <div className="experiment-inputs">{parameters}<div className="data-actions">{runButton}</div></div>
             {current && <p className="experiment-receipt">
-              {t(`送入 ${current.input.rows.length} 行，运行「${step.label[locale]}」，得到 ${current.output.rows.length} 行。`,
-                `Sent in ${current.input.rows.length} rows. “${step.label[locale]}” returned ${current.output.rows.length} rows.`)}
+              {t(`送入 ${current.input.rows.length} 行 → ${step.label[locale]} → 得到 ${current.output.rows.length} 行`,
+                `${current.input.rows.length} rows in → ${step.label[locale]} → ${current.output.rows.length} rows out`)}
             </p>}
           </>}
           <div className="data-result-heading"><h2>{t('实验结果', 'Experiment results')}</h2>{current && <span>{current.engine}</span>}</div>
@@ -320,6 +368,7 @@ export default function DataLesson({ level, locale, onComplete, onMistake, chall
           {current && <>
             {classroom && (step.operation === 'array' || step.operation === 'mask') &&
               <ArrayResult run={current} operation={step.operation} column={String(params[cursor].column)} locale={locale} />}
+            {classroom && current.sourceRows && <RowInspector key={cursor} run={current} sourceRows={current.sourceRows} locale={locale} />}
             <ReadingTable table={current.output} locale={locale} kind="output" />
             {(step.operation === 'group' || step.operation === 'sql-group' || step.operation === 'report') &&
               <GroupChart table={current.output} locale={locale} />}

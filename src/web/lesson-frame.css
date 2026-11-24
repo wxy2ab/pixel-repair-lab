@@ -67,7 +67,7 @@
 .lesson-step-count b { display: block; height: 100%; border-radius: inherit; background: var(--mint); transition: width .25s ease; }
 
 /* What the last step did. It sits right under the step buttons, where the eye already is. */
-.coding-device :is(.for-description, .while-description, .boolean-description, .branch-description, .assignment-description,
+.coding-device p:is(.for-description, .while-description, .boolean-description, .branch-description, .assignment-description,
   .collection-description, .nested-description, .module-description, .debug-description) {
   order: -1;
   padding: 10px 14px;

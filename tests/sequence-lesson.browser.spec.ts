@@ -75,6 +75,8 @@ test('sequence students sort pictures, see an early display fail at its real lin
   await expect(sequence).toHaveAttribute('data-blocked', 'true')
   await expect(code.locator('code')).toHaveCount(2)
   await expect(code.locator('[data-line="2"][data-card-id="display"][data-blocked] code')).toHaveText(instruction('display'))
+  await expect(step(sequence, 'display').locator('.program-tile-annotation')).toHaveText('缺少 result')
+  await expect(step(sequence, 'charge').locator('.program-tile-annotation')).toHaveText('未执行')
   await expect(code.locator('[data-card-id="charge"]')).toHaveCount(0)
   await expect(sequence.locator('[data-binding="result"]')).toHaveCount(0)
   await expect(feedback).toContainText('第 2 步')
@@ -88,6 +90,7 @@ test('sequence students sort pictures, see an early display fail at its real lin
   await previous.click()
   await expect(sequence).toHaveAttribute('data-step', '1')
   await expect(sequence).not.toHaveAttribute('data-blocked', 'true')
+  await expect(step(sequence, 'display').locator('.program-tile-annotation')).toHaveText('↓ 下一步')
   await expect(code.locator('code')).toHaveCount(1)
   await next.click()
 

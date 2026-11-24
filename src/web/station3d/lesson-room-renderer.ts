@@ -10,6 +10,9 @@ const dark = '#263d47'
 const brass = '#d89550'
 const cream = '#e3d9b7'
 const front: [number, number, number] = [Math.PI / 2, 0, 0]
+export type RoomProp = 'lamp' | 'fan'
+type HitTarget = RoomTarget | RoomProp
+type ScreenPoint = { x: number; y: number }
 const palette: Record<LessonRoomFamily, string> = {
   coding: '#9ce3c3', algorithms: '#8cd7c5', systems: '#a6c7e6', electronics: '#9ce59c',
   data: '#90d9e1', vision: '#8bdbef', ai: '#d7b3fb',
@@ -41,10 +44,6 @@ function workshopWindow() {
   kit.casing([0, 1.94, -1.46], [5.45, 2.22, .17], dark, .065)
   kit.sky([0, 1.96, -1.355], 5.21, 1.98, '#739fba', '#f6c99a')
   kit.cylinder([-.82, 2.18, -1.326], .207, .207, .018, '#ffe2a7', front, 'glow', 40)
-  for (const [x, y, w] of [[-.21, 2.23, .57], [1.73, 2.18, .39], [-1.65, 2.14, .36]] as const) {
-    kit.box([x, y, -1.32], [w, .026, .01], '#cfceba', undefined, 'glow')
-    kit.box([x + .06, y + .04, -1.32], [w * .52, .032, .01], '#dcd6bf', undefined, 'glow')
-  }
   const hills = new THREE.Shape()
   hills.moveTo(-2.60, 1.02)
   for (const [x, y] of [[-2.60, 1.74], [-2.38, 1.79], [-2.16, 1.95], [-1.77, 1.80], [-1.52, 1.89],
@@ -95,6 +94,39 @@ function toolWall() {
   return kit
 }
 
+function windowClouds() {
+  const kit = new Kit()
+  for (const [x, y, w] of [[-.21, 2.23, .57], [1.73, 2.18, .39], [-1.65, 2.14, .36]] as const) {
+    kit.box([x, y, -1.32], [w, .026, .01], '#cfceba', undefined, 'glow')
+    kit.box([x + .06, y + .04, -1.32], [w * .52, .032, .01], '#dcd6bf', undefined, 'glow')
+  }
+  return kit
+}
+
+function weatherBalloon() {
+  const kit = new Kit()
+  // Two curved fabric panels, cords and basket sit behind the window mullions.
+  const envelope = new THREE.Shape()
+  envelope.moveTo(0, .24)
+  envelope.bezierCurveTo(-.29, .24, -.28, -.015, -.137, -.127)
+  envelope.quadraticCurveTo(-.076, -.183, -.06, -.221)
+  envelope.lineTo(.06, -.221)
+  envelope.bezierCurveTo(.12, -.117, .234, -.09, .234, .05)
+  envelope.quadraticCurveTo(.234, .24, 0, .24)
+  const stripe = new THREE.Shape()
+  stripe.moveTo(-.019, .24)
+  stripe.bezierCurveTo(-.147, .18, -.148, .032, -.027, -.218)
+  stripe.lineTo(.022, -.218)
+  stripe.bezierCurveTo(.134, .014, .16, .188, .017, .24)
+  stripe.closePath()
+  kit.geometry(new THREE.ShapeGeometry(envelope), [0, 0, 0], '#b87d65', undefined, 'glow')
+  kit.geometry(new THREE.ShapeGeometry(stripe), [0, 0, .002], '#ebc99c', undefined, 'glow')
+  for (const side of [-1, 1]) kit.rod([side * .058, -.21, 0], [side * .042, -.286, 0], .009, '#746959', 'glow')
+  kit.box([0, -.305, 0], [.10, .056, .018], '#94745e', undefined, 'glow')
+  kit.box([0, -.281, .011], [.112, .019, .008], '#c69b72', undefined, 'glow')
+  return kit
+}
+
 function anglepoise() {
   const kit = new Kit()
   kit.cylinder([0, .056, 0], .25, .30, .112, dark)
@@ -106,7 +138,7 @@ function anglepoise() {
   for (const [x, y] of [[0, .22], [-.18, .92], [.39, 1.36]])
     kit.cylinder([x, y, .037], .094, .094, .117, brass, front)
   kit.cylinder([.48, 1.28, .04], .115, .286, .26, '#d38c4d', [0, 0, .34])
-  kit.cylinder([.53, 1.15, .04], .267, .27, .019, '#fff0bb', [0, 0, .34], 'glow')
+  kit.cylinder([.53, 1.15, .04], .267, .27, .019, '#796e5b', [0, 0, .34])
   return kit
 }
 
@@ -119,14 +151,20 @@ function servicePillar() {
   // A caged extractor and its trunking hang on the outside edge of the room.
   kit.casing([-.55, 2.05, -1.35], [.84, .84, .14], '#77938b', .07)
   kit.cylinder([-.55, 2.05, -1.24], .36, .36, .13, dark, front)
-  for (let i = 0; i < 6; i++) {
-    const angle = i * Math.PI / 3
-    kit.box([-.55 - .156 * Math.sin(angle), 2.05 + .156 * Math.cos(angle), -1.15],
-      [.114, .234, .041], '#9db4a8', [.22, 0, angle - .26])
-  }
   kit.cylinder([-.55, 2.05, -1.105], .105, .105, .073, brass, front)
+  kit.cylinder([-.23, 2.38, -1.24], .045, .045, .032, dark, front)
   kit.rod([-.50, 1.62, -1.28], [-.50, 1.28, -1.28], .038, steel)
   kit.rod([-.50, 1.28, -1.28], [.04, 1.28, -1.28], .038, steel)
+  return kit
+}
+
+function extractorBlades() {
+  const kit = new Kit()
+  for (let i = 0; i < 6; i++) {
+    const angle = i * Math.PI / 3
+    kit.box([-.156 * Math.sin(angle), .156 * Math.cos(angle), 0],
+      [.114, .234, .041], '#b4c3ae', [.22, 0, angle - .26])
+  }
   return kit
 }
 
@@ -136,7 +174,8 @@ export function createLessonRoomRenderer(canvas: HTMLCanvasElement, family: Less
     ready: () => void
     failed: () => void
     onPick: (target: RoomTarget) => void
-    onProject: (centres: Record<RoomTarget, { x: number; y: number }>) => void
+    onToggle: (prop: RoomProp, on: boolean) => void
+    onProject: (centres: Record<HitTarget, ScreenPoint>) => void
   }) {
   const gl = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'low-power' })
   gl.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
@@ -144,6 +183,7 @@ export function createLessonRoomRenderer(canvas: HTMLCanvasElement, family: Less
   gl.toneMapping = THREE.ACESFilmicToneMapping
   gl.shadowMap.enabled = true
   gl.shadowMap.type = THREE.PCFSoftShadowMap
+  gl.shadowMap.autoUpdate = false
 
   const scene = new THREE.Scene()
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, .1, 35)
@@ -176,6 +216,29 @@ export function createLessonRoomRenderer(canvas: HTMLCanvasElement, family: Less
   const pegboard = build(toolWall())
   const lamp = build(anglepoise())
   const pillar = build(servicePillar())
+  const clouds = build(windowClouds())
+  const balloon = build(weatherBalloon())
+  balloon.position.set(1.75, 2.14, -1.314)
+  windowFrame.add(clouds, balloon)
+  const rotor = build(extractorBlades())
+  rotor.position.set(-.55, 2.05, -1.15)
+  rotor.traverse(object => { object.castShadow = false })
+  pillar.add(rotor)
+  const pilotKit = new Kit()
+  pilotKit.cylinder([-.23, 2.38, -1.215], .034, .034, .020, '#92e8bf', front, 'glow')
+  pilotKit.cylinder([-.55, 2.05, -1.088], .138, .138, .016, '#92e8bf', front, 'glow')
+  // Keep the extractor's breathing light independent of the instrument readouts.
+  const pilotLight = materials.glow.clone()
+  const pilot = pilotKit.finish({ ...materials, glow: pilotLight }, geometries)
+  pillar.add(pilot)
+  const bulbKit = new Kit()
+  bulbKit.cylinder([.53, 1.15, .04], .284, .292, .036, '#fff0bb', [0, 0, .34], 'glow')
+  const bulb = build(bulbKit)
+  const light = new THREE.SpotLight(0xffcf85, 6, 2.8, .65, .74)
+  light.position.set(.55, 1.12, .04)
+  light.target.position.set(.98, 0, .37)
+  lamp.add(bulb, light, light.target)
+  const propOn = { lamp: true, fan: true }
   const accent = palette[family]
   const rig = createRoomControlRig(family, accent, materials)
   const { groups } = rig
@@ -185,8 +248,12 @@ export function createLessonRoomRenderer(canvas: HTMLCanvasElement, family: Less
   hero.rotation.y = .39
   scene.add(hero)
   const targets: RoomTarget[] = ['sample', 'setting', 'run']
-  const anchors = { sample: new THREE.Vector3(0, .45, .10), setting: new THREE.Vector3(0, .49, .28), run: new THREE.Vector3(0, .67, .10) }
-  const hitBoxes = { sample: new THREE.Box3(), setting: new THREE.Box3(), run: new THREE.Box3() }
+  const props: RoomProp[] = ['lamp', 'fan']
+  const pickable = [...targets, ...props]
+  const objects = { ...groups, lamp, fan: pillar }
+  const anchors = { sample: new THREE.Vector3(0, .45, .10), setting: new THREE.Vector3(0, .49, .28), run: new THREE.Vector3(0, .67, .10),
+    lamp: new THREE.Vector3(.48, 1.28, .04), fan: rotor.position.clone() }
+  const hitBoxes = { sample: new THREE.Box3(), setting: new THREE.Box3(), run: new THREE.Box3(), lamp: new THREE.Box3(), fan: new THREE.Box3() }
   const raycaster = new THREE.Raycaster(), hitPoint = new THREE.Vector3(), pointerPosition = new THREE.Vector2()
   const dragPlane = new THREE.Plane(), dragOffset = new THREE.Vector3()
   const ghostMaterial = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: .80, depthWrite: false, toneMapped: false })
@@ -197,37 +264,70 @@ export function createLessonRoomRenderer(canvas: HTMLCanvasElement, family: Less
   halo.scale.set(1.28, .69, 1)
   halo.visible = false
   scene.add(halo)
-  let pressed: { id: number; target: RoomTarget; x: number; y: number; canDrag: boolean } | undefined
-  let ghost: THREE.Object3D | undefined, hover: RoomTarget | undefined
+  let pressed: { id: number; target: HitTarget; x: number; y: number; canDrag: boolean } | undefined
+  let ghost: THREE.Object3D | undefined, hover: HitTarget | undefined
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
   let disposed = false, first = true, done = completed, frame = 0
+  let visible = false, idleTimer = 0
+  let lastDraw: number | undefined, elapsed = 0
   let operationStart: number | undefined
   let lastTarget: RoomTarget | undefined
   let renderedActivity: RoomActivityState | undefined
   function draw(now: number) {
     frame = 0
-    if (disposed) return
+    if (disposed || !visible || document.hidden) return
+    if (!reduced.matches && lastDraw !== undefined) {
+      const dt = Math.min(.25, (now - lastDraw) / 1000)
+      elapsed += dt
+      clouds.position.x = .36 * Math.sin(elapsed * .19)
+      balloon.position.y = 2.14 + .082 * Math.sin(elapsed * .70)
+      pilotLight.color.setScalar(.74 + .26 * Math.cos(elapsed * .96))
+      if (propOn.fan) rotor.rotation.z -= dt * 1.35
+    }
+    lastDraw = now
     const progress = operationStart === undefined || reduced.matches ? 1 : Math.min(1, (now - operationStart) / 780)
     rig.animate(lastTarget, progress)
     if (lastTarget && progress < 1) {
       models.gesture(hero, lastTarget === 'sample' ? 'pick' : lastTarget === 'setting' ? 'step' : 'scan', progress)
     } else models.pose(hero, done ? 'wave' : 'work', .39)
     const marked = ghost ? 'run' : hover
-    halo.visible = Boolean(marked)
-    if (marked) {
+    halo.visible = false
+    if (marked && marked !== 'fan' && marked !== 'lamp') {
+      halo.visible = true
       halo.position.copy(groups[marked].position)
       halo.position.y += .025
       halo.scale.set(marked === 'setting' ? .93 : 1.49, .83, 1)
       haloMaterial.color.set(ghost && hover === 'run' ? '#affeac' : '#ffc37e')
     }
+    if (operationStart !== undefined) gl.shadowMap.needsUpdate = true
     try { gl.render(scene, camera) } catch { fail(); return }
     if (first) { first = false; events.ready() }
     if (progress < 1) redraw()
-    else operationStart = undefined
+    else {
+      operationStart = undefined
+      if (!reduced.matches) idleTimer = window.setTimeout(redraw, 100)
+    }
   }
   function redraw() {
-    if (!disposed && !frame) frame = requestAnimationFrame(draw)
+    window.clearTimeout(idleTimer)
+    if (!disposed && visible && !document.hidden && !frame) frame = requestAnimationFrame(draw)
+  }
+  function visibilityChanged() {
+    lastDraw = undefined
+    window.clearTimeout(idleTimer)
+    cancelAnimationFrame(frame)
+    frame = 0
+    redraw()
+  }
+  function toggleProp(prop: RoomProp) {
+    if (disposed) return
+    propOn[prop] = !propOn[prop]
+    bulb.visible = propOn.lamp
+    light.intensity = propOn.lamp ? 6 : 0
+    pilot.visible = propOn.fan
+    events.onToggle(prop, propOn[prop])
+    redraw()
   }
   function resize() {
     const width = canvas.clientWidth, height = canvas.clientHeight
@@ -255,13 +355,16 @@ export function createLessonRoomRenderer(canvas: HTMLCanvasElement, family: Less
     pegboard.position.x = hero.position.x + .18
     windowFrame.scale.x = Math.max(.62, viewWidth * .096)
     scene.updateMatrixWorld(true)
-    const projected = {} as Record<RoomTarget, { x: number; y: number }>
-    for (const target of targets) {
-      const p = groups[target].localToWorld(anchors[target].clone()).project(camera)
+    const projected = {} as Record<HitTarget, ScreenPoint>
+    for (const target of pickable) {
+      const p = objects[target].localToWorld(anchors[target].clone()).project(camera)
       projected[target] = { x: (p.x + 1) / 2, y: (1 - p.y) / 2 }
     }
     events.onProject(projected)
+    hitBoxes.lamp.setFromCenterAndSize(anchors.lamp, new THREE.Vector3(.70, .49, .62)).applyMatrix4(lamp.matrixWorld)
+    hitBoxes.fan.setFromCenterAndSize(anchors.fan, new THREE.Vector3(.83, .83, .24)).applyMatrix4(pillar.matrixWorld)
     refreshBounds()
+    gl.shadowMap.needsUpdate = true
     redraw()
   }
   function refreshBounds() {
@@ -276,6 +379,7 @@ export function createLessonRoomRenderer(canvas: HTMLCanvasElement, family: Less
     lastTarget = action
     operationStart = action && !reduced.matches ? performance.now() : undefined
     refreshBounds()
+    gl.shadowMap.needsUpdate = true
     redraw()
   }
   function targetAt(e: PointerEvent) {
@@ -283,8 +387,8 @@ export function createLessonRoomRenderer(canvas: HTMLCanvasElement, family: Less
     if (!rect.width || !rect.height) return
     pointerPosition.set((e.clientX - rect.left) / rect.width * 2 - 1, 1 - (e.clientY - rect.top) / rect.height * 2)
     raycaster.setFromCamera(pointerPosition, camera)
-    let nearest = Infinity, picked: RoomTarget | undefined
-    for (const target of targets) {
+    let nearest = Infinity, picked: HitTarget | undefined
+    for (const target of pickable) {
       if (raycaster.ray.intersectBox(hitBoxes[target], hitPoint)) {
         const distance = hitPoint.distanceToSquared(raycaster.ray.origin)
         if (distance < nearest) {
@@ -295,7 +399,7 @@ export function createLessonRoomRenderer(canvas: HTMLCanvasElement, family: Less
     }
     return picked
   }
-  function setHover(target?: RoomTarget) {
+  function setHover(target?: HitTarget) {
     if (target === hover && !ghost) return
     hover = target
     canvas.style.cursor = ghost ? 'grabbing' : target === 'sample' ? 'grab' : target ? 'pointer' : ''
@@ -348,19 +452,22 @@ export function createLessonRoomRenderer(canvas: HTMLCanvasElement, family: Less
   function up(e: PointerEvent) {
     if (e.pointerId !== pressed?.id) return
     const target = targetAt(e)
-    let picked: RoomTarget | undefined
+    let picked: HitTarget | undefined
     if (ghost) {
       if (target === 'run') picked = target
     } else if (target === pressed.target && Math.hypot(e.clientX - pressed.x, e.clientY - pressed.y) <= 8) {
       picked = target
     }
     clearDrag()
-    if (picked) events.onPick(picked)
+    if (picked === 'lamp' || picked === 'fan') toggleProp(picked)
+    else if (picked) events.onPick(picked)
   }
   function leave() { if (!ghost) setHover(undefined) }
   function cancel(e: PointerEvent) { if (pressed?.id === e.pointerId) clearDrag() }
   function motionChanged() {
     operationStart = undefined
+    lastDraw = undefined
+    gl.shadowMap.needsUpdate = true
     redraw()
   }
   function fail(event?: Event) {
@@ -370,10 +477,13 @@ export function createLessonRoomRenderer(canvas: HTMLCanvasElement, family: Less
     events.failed()
   }
   const observer = new ResizeObserver(resize)
+  const visibility = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; visibilityChanged() })
   function dispose() {
     if (disposed) return
     disposed = true
     observer.disconnect()
+    visibility.disconnect()
+    document.removeEventListener('visibilitychange', visibilityChanged)
     clearDrag()
     cancelAnimationFrame(frame)
     canvas.removeEventListener('pointerdown', down)
@@ -386,6 +496,7 @@ export function createLessonRoomRenderer(canvas: HTMLCanvasElement, family: Less
     reduced.removeEventListener('change', motionChanged)
     rig.dispose()
     ghostMaterial.dispose()
+    pilotLight.dispose()
     haloMaterial.dispose()
     haloGeometry.dispose()
     for (const geometry of geometries) geometry.dispose()
@@ -405,15 +516,18 @@ export function createLessonRoomRenderer(canvas: HTMLCanvasElement, family: Less
     canvas.addEventListener('pointercancel', cancel)
     canvas.addEventListener('lostpointercapture', cancel)
     reduced.addEventListener('change', motionChanged)
+    document.addEventListener('visibilitychange', visibilityChanged)
     setActivity(events.initialActivity ?? initialRoomActivity())
     observer.observe(canvas)
+    visibility.observe(canvas)
     resize()
   } catch (error) { dispose(); throw error }
   return {
-    dispose, setActivity,
+    dispose, setActivity, toggleProp,
     setCompleted(value: boolean) {
       if (done === value) return
       done = value
+      gl.shadowMap.needsUpdate = true
       redraw()
     },
   }

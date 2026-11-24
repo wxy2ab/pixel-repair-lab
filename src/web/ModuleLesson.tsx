@@ -5,6 +5,7 @@ import type { ProgramWalkthrough } from '../shared/programWalkthrough'
 import type { Locale } from '../shared/types'
 import { tr } from './text'
 import { StepCount } from './LessonFrame'
+import { StepExplanation } from './LessonNotes'
 import './for-lesson.css'
 import './module-lesson.css'
 import { TeachingModel } from './station3d/TeachingModel'
@@ -164,7 +165,7 @@ export function ModuleLesson({ execution, locale, onReady }: {
             </dl>
           </FileCard>
         </div>
-        {run ? <p className="module-description" role="status">{describe(step, lesson, t)}</p>
+        {run ? <StepExplanation locale={locale} className="module-description">{describe(step, lesson, t)}</StepExplanation>
           : <p className="error-message" role="alert">{t('这次没有得到可以展示的补电过程。', 'The program did not produce a charging trace to show.')}</p>}
       </div>
     </CodingDevice>

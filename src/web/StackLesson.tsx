@@ -1,4 +1,6 @@
 import { BatteryMemory } from './BatteryMemory'
+import { useBatteryMotion } from './useBatteryMotion'
+import { StepExplanation } from './LessonNotes'
 import { CodingDevice } from './CodingDevice'
 import { useId, useMemo, useRef, useState } from 'react'
 import { runStackLesson } from '../engine/programStackLesson'
@@ -41,11 +43,12 @@ function BatteryFace({ battery, top, t }: { battery: CollectionBattery; top: boo
   </>
 }
 
-function BatteryGroup({ names, batteries, part, promptId, onChoose, t }: {
+function BatteryGroup({ names, batteries, part, promptId, nextBattery, onChoose, t }: {
   names: string[]
   batteries: Map<string, CollectionBattery>
   part: 'waiting' | 'pile' | 'taken'
   promptId: string
+  nextBattery?: string
   onChoose?: (name: string) => void
   t: Translate
 }) {
@@ -74,6 +77,9 @@ function BatteryGroup({ names, batteries, part, promptId, onChoose, t }: {
               : t(`拿出 ${name} 号电池`, `Pop battery ${name}`)}
             aria-describedby={promptId} onClick={() => onChoose(name)}>
             <BatteryFace battery={battery} top={top} t={t} />
+            {name === nextBattery && <small className="battery-action-tag" aria-hidden="true">{
+              part === 'waiting' ? t('↓ 入栈', '↓ Push') : t('↑ 出栈', '↑ Pop')
+            }</small>}
           </button> : <div className="stack-lesson-battery"><BatteryFace battery={battery} top={top} t={t} /></div>}
         </li>
       })}
@@ -90,6 +96,7 @@ export function StackLesson({ execution, locale, onReady }: {
   const t: Translate = (zh, en) => tr(locale, zh, en)
   const promptId = useId()
   const [position, setPosition] = useState(-1)
+  const motion = useBatteryMotion(position)
   const [mistake, setMistake] = useState(false)
   const ready = useRef(false)
   const sample = execution.stackLesson?.cases[0]
@@ -120,6 +127,7 @@ export function StackLesson({ execution, locale, onReady }: {
     : t('再试一次。', 'Try again. ')
 
   function goTo(index: number) {
+    motion.capture()
     setMistake(false)
     setPosition(index)
     if (run?.steps[index]?.kind === 'show-remaining' && !ready.current) {
@@ -136,14 +144,13 @@ export function StackLesson({ execution, locale, onReady }: {
 
   return <section className="classroom-demonstration panel stack-lesson" data-testid="stack-lesson" data-stack-stage={stage} aria-label={title}>
     <CodingDevice device="sorter" locale={locale} workbench controls={<>
-      {run ? <p className="stack-lesson-status" role="status" id={promptId}>
-        {caption && <span>{caption}</span>}
-        {prompt && <span>{mistake && feedback}{(!mistake || next?.kind === 'push') && prompt}</span>}
+      {run ? <p className={mistake ? 'stack-lesson-status' : 'sr-only'} role="status" id={promptId}>
+        {mistake ? feedback : prompt ?? caption}
       </p> : <p className="error-message" id={promptId} role="alert">{t('现在无法运行电池栈的程序。', 'The battery stack program could not run.')}</p>}
-      <div className="stack-lesson-board">
-        <BatteryGroup names={waiting} batteries={batteries} part="waiting" promptId={promptId}
+      <div className="stack-lesson-board" ref={motion.board}>
+        <BatteryGroup names={waiting} batteries={batteries} part="waiting" promptId={promptId} nextBattery={next?.battery}
           onChoose={next?.kind === 'push' ? name => choose('push', name) : undefined} t={t} />
-        <BatteryGroup names={stack.toReversed()} batteries={batteries} part="pile" promptId={promptId}
+        <BatteryGroup names={stack.toReversed()} batteries={batteries} part="pile" promptId={promptId} nextBattery={next?.battery}
           onChoose={next?.kind === 'pop' ? name => choose('pop', name) : undefined} t={t} />
         <BatteryGroup names={taken} batteries={batteries} part="taken" promptId={promptId} t={t} />
       </div>
@@ -153,6 +160,7 @@ export function StackLesson({ execution, locale, onReady }: {
         </button>
         {hasNextOutput && <button type="button" className="primary-button" onClick={() => goTo(nextPosition)}>{t('下一步', 'Next step')}</button>}
       </div>}
+      {caption && <StepExplanation locale={locale}>{caption}</StepExplanation>}
     </>}>
       <div className="panel-heading"><h2>{title}</h2></div>
       <div className="stack-lesson-content">

@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import type { ProgramInterface, ProgramWalkthrough } from '../shared/programWalkthrough'
 import type { Locale } from '../shared/types'
 import { tr } from './text'
+import { ChargeChange } from './ChargeChange'
 
 export type DevicePhase = 'idle' | 'command' | 'input' | 'submit' | 'request' | 'process' | 'response' | 'output' | 'error'
 
@@ -93,7 +94,8 @@ export function ProgramDevice({ mode, locale, cases, selected, command, rule, ph
           <div><dt>{t('收到', 'Received')}</dt><dd data-testid="processor-input">{calculated ? reply?.input : '—'}</dd></div>
           <div><dt>{t('算出', 'Calculated')}</dt><dd data-testid="processor-result">{calculated ? reply?.output : '—'}</dd></div>
         </dl>
-        <p className="device-rule">{rule}</p>
+        <div className="device-rule">{calculated && reply
+          ? <ChargeChange input={reply.input} output={reply.output} locale={locale} /> : rule}</div>
         {web && preview && <small>{t('试玩使用模拟服务器', 'Preview uses a simulated server')}</small>}
       </section>
     </div>

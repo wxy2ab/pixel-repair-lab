@@ -38,7 +38,7 @@ def project_array(frame, params):
     column, start, stop = params['column'], params['start'], params['stop']
     values = np.asarray(frame[column])
     part = slice(start, stop)
-    output = pd.DataFrame({'index': np.arange(values.size)[part], column: values[part]})
+    output = pd.DataFrame({'index': np.arange(values.size)[part], column: values[part]}, index=frame.index[part])
     code = f'values = np.asarray(frame[{column!r}])\nindices = np.arange(values.size)[{start}:{stop}]\nselected = values[{start}:{stop}]'
     return output, NUMPY, code
 
@@ -61,17 +61,24 @@ def project_table(frame, params):
 
 def clean_readings(frame, params):
     cleaned = frame.copy()
+    removed = []
     cleaned['reading'] = pd.to_numeric(cleaned['reading'], errors='coerce')
     code = ['cleaned = frame.copy()', "cleaned['reading'] = pd.to_numeric(cleaned['reading'], errors='coerce')"]
     if params['trim']:
         cleaned['zone'] = cleaned['zone'].str.strip().str.lower()
         code.append("cleaned['zone'] = cleaned['zone'].str.strip().str.lower()")
     if params['dropMissing']:
+        removed.extend({'index': int(i), 'reason': 'invalid-reading'} for i in cleaned.index[cleaned['reading'].isna()])
         cleaned = cleaned.dropna(subset=['reading'])
         code.append("cleaned = cleaned.dropna(subset=['reading'])")
     if params['deduplicate']:
-        cleaned = cleaned.drop_duplicates(subset=['id'], keep='first')
+        duplicates = cleaned.duplicated(subset=['id'], keep='first')
+        first_rows = cleaned[~duplicates].reset_index().set_index('id')['index']
+        removed.extend({'index': int(i), 'reason': 'repeated-id', 'keptRow': int(first_rows[record_id])}
+                       for i, record_id in cleaned.loc[duplicates, 'id'].items())
+        cleaned = cleaned[~duplicates]
         code.append("cleaned = cleaned.drop_duplicates(subset=['id'], keep='first')")
+    cleaned.attrs['removedRows'] = removed
     return cleaned, PANDAS, '\n'.join(code)
 
 
@@ -101,13 +108,18 @@ def group_readings(frame, params):
     return output, PANDAS, code
 
 
-def execute_sql(frame, table, query, parameters):
+def execute_sql(frame, table, query, parameters, track_rows=False):
     with closing(sqlite3.connect(':memory:')) as connection:
         frame.to_sql(table, connection, index=False)
-        cursor = connection.execute(query, parameters)
+        # SQLite rowids start at 1 in this freshly created table. Keep the source
+        # position through projections and ORDER BY, even for identical records.
+        traced = query.replace('SELECT ', 'SELECT rowid - 1 AS _source_row, ', 1) if track_rows else query
+        cursor = connection.execute(traced, parameters)
         columns = [field[0] for field in cursor.description]
         output = pd.DataFrame(cursor.fetchall(), columns=columns)
     code = f"-- Parameters: {json.dumps(parameters)}\n{query}"
+    if track_rows:
+        output = output.set_index('_source_row')
     return output, SQLITE, code
 
 
@@ -122,7 +134,7 @@ def query_readings(frame, params):
         parameters.append(zone)
     query += f'\nORDER BY {sort_columns[sort]};'
     readings = frame.assign(reading=pd.to_numeric(frame['reading'], errors='coerce'))
-    return execute_sql(readings, 'readings', query, parameters)
+    return execute_sql(readings, 'readings', query, parameters, track_rows=True)
 
 
 def grouped_order(key, statistic, sort):
@@ -155,7 +167,7 @@ def query_report(frame, params):
 FROM grouped_readings
 WHERE {statistic} >= ?
 ORDER BY {order};'''
-    return execute_sql(frame, 'grouped_readings', query, [params['minimum']])
+    return execute_sql(frame, 'grouped_readings', query, [params['minimum']], track_rows=True)
 
 
 OPERATIONS = {
@@ -172,8 +184,15 @@ def run_course(request, tables):
         frame = output if step['input'] == 'previous' else tables[step['input']]
         if frame is None:
             raise ValueError('This step needs the preceding result')
-        output, engine, code = OPERATIONS[step['operation']](frame, step['params'])
-        steps.append({'input': data_table(frame), 'output': data_table(output), 'engine': engine, 'code': code})
+        frame = frame.reset_index(drop=True)
+        operation = step['operation']
+        output, engine, code = OPERATIONS[operation](frame, step['params'])
+        result = {'input': data_table(frame), 'output': data_table(output), 'engine': engine, 'code': code}
+        if operation in ('array', 'mask', 'table', 'clean', 'query', 'report'):
+            result['sourceRows'] = output.index.tolist()
+        if operation == 'clean':
+            result['removedRows'] = output.attrs['removedRows']
+        steps.append(result)
     return {'steps': steps}
 
 

@@ -109,7 +109,11 @@
               "zh": "setup()",
               "en": "setup()"
             },
-            "state": "active"
+            "state": "active",
+            "annotation": {
+              "zh": "只运行一次",
+              "en": "Runs once"
+            }
           },
           {
             "id": "code",
@@ -133,7 +137,8 @@
               "zh": "灭 · LOW",
               "en": "Off · LOW"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "lamp-off"
           }
         ]
       },
@@ -177,7 +182,12 @@
               "zh": "亮 · HIGH",
               "en": "On · HIGH"
             },
-            "state": "done"
+            "state": "done",
+            "glyph": "lamp-on",
+            "annotation": {
+              "zh": "HIGH → 亮",
+              "en": "HIGH → on"
+            }
           }
         ]
       },
@@ -221,7 +231,12 @@
               "zh": "亮 · HIGH",
               "en": "On · HIGH"
             },
-            "state": "done"
+            "state": "done",
+            "glyph": "lamp-on",
+            "annotation": {
+              "zh": "保持亮 500 ms",
+              "en": "Stays on · 500 ms"
+            }
           }
         ]
       },
@@ -265,7 +280,12 @@
               "zh": "灭 · LOW",
               "en": "Off · LOW"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "lamp-off",
+            "annotation": {
+              "zh": "LOW → 灭",
+              "en": "LOW → off"
+            }
           }
         ]
       },
@@ -309,7 +329,12 @@
               "zh": "灭 · LOW",
               "en": "Off · LOW"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "lamp-off",
+            "annotation": {
+              "zh": "保持灭 500 ms",
+              "en": "Stays off · 500 ms"
+            }
           }
         ]
       },
@@ -329,7 +354,11 @@
               "zh": "loop()",
               "en": "loop()"
             },
-            "state": "active"
+            "state": "active",
+            "annotation": {
+              "zh": "↺ loop()",
+              "en": "↺ loop()"
+            }
           },
           {
             "id": "code",
@@ -353,7 +382,8 @@
               "zh": "亮 · HIGH",
               "en": "On · HIGH"
             },
-            "state": "done"
+            "state": "done",
+            "glyph": "lamp-on"
           }
         ]
       }

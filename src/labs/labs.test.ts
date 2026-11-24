@@ -113,6 +113,12 @@ test('the data-course pipeline passes real results between NumPy, pandas, and SQ
   assert.equal(masked.output.rows.length, 11)
   assert.match(masked.engine, /NumPy/u)
   assert.deepEqual(cleaned.input, masked.output)
+  assert.deepEqual(masked.sourceRows, [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
+  assert.deepEqual(cleaned.sourceRows, [0, 1, 3, 4, 5, 7, 9, 10])
+  assert.deepEqual(cleaned.removedRows, [
+    { index: 2, reason: 'invalid-reading' }, { index: 8, reason: 'invalid-reading' },
+    { index: 6, reason: 'repeated-id', keptRow: 5 },
+  ])
   assert.deepEqual(cleaned.output.rows.map(row => row[0]), [4, 5, 7, 8, 9, 10, 12, 13])
   assert.deepEqual(cleaned.output.rows[3], [8, 3, 'workshop', 32])
   assert.match(cleaned.code, /to_numeric[\s\S]*str\.strip\(\)[\s\S]*dropna[\s\S]*drop_duplicates/u)
@@ -121,6 +127,7 @@ test('the data-course pipeline passes real results between NumPy, pandas, and SQ
   assert.deepEqual(report.input, grouped.output)
   assert.equal(report.output.rows.length, 2)
   assert.deepEqual(report.output.rows, [['workshop', 32], ['hangar', 26]])
+  assert.deepEqual(report.sourceRows, [2, 0])
   assert.match(report.engine, /SQLite/u)
   assert.match(report.code, /WHERE mean >= \?[\s\S]*ORDER BY mean DESC/u)
 })

@@ -291,11 +291,7 @@ function Session({ level, locale, onComplete, onMistake, challenge, initialDraft
           {classroom && <>
             <CpuDatapath key={scenario} state={state} previous={previous} instruction={frame?.instruction} line={frame?.line}
               locale={locale} onStep={next ? step : undefined} onAddress={setAddressChoice} />
-            {!frame && <p className="experiment-receipt">
-              {next ? t(`点时钟或「单步执行」，CPU 会执行第 ${next.line} 行的 ${next.instruction.op}。`,
-                `Click the clock or Step to execute ${next.instruction.op} on line ${next.line}.`)
-                : t('等待可以执行的指令。', 'Waiting for an instruction to execute.')}
-            </p>}
+            {!frame && !next && <p className="experiment-receipt">{t('等待可执行的指令。', 'Waiting for an instruction.')}</p>}
             {controls}
           </>}
           <StateView state={state} previous={previous} frame={frame} locale={locale} />

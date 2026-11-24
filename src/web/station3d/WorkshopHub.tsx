@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { Locale } from '../../shared/types'
 import { tr } from '../text'
 import type { createHubRenderer, HubCharacter, WorkshopStop } from './hub-renderer'
+import type { HubMachine } from './workshop'
 import benchPoster from './workshop-learning.webp'
 import arenaPoster from './workshop-arena.webp'
 import './workshop-hub.css'
@@ -20,6 +21,7 @@ export function WorkshopHub({ locale, variant, onLearn, onChallenge, children }:
   const navigation = useRef({ onLearn, onChallenge })
   const messageTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const [greeting, setGreeting] = useState<HubCharacter>()
+  const [machines, setMachines] = useState<Record<HubMachine, boolean>>({ crane: false, fan: false })
   const [status, setStatus] = useState<'poster' | 'ready' | 'unavailable'>('poster')
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const arena = variant === 'arena'
@@ -39,6 +41,7 @@ export function WorkshopHub({ locale, variant, onLearn, onChallenge, children }:
     const surface = canvas.current
     let active = true
     setStatus('poster')
+    setMachines({ crane: false, fan: false })
     function failed() {
       if (!active) return
       engine.current = undefined
@@ -51,6 +54,7 @@ export function WorkshopHub({ locale, variant, onLearn, onChallenge, children }:
         if (!active) return
         engine.current = createHubRenderer(surface, variant, {
           onVisit: open, canVisit: stop => stop === 'learning' || Boolean(navigation.current.onChallenge),
+          onMachineChange: (machine, pressed) => setMachines(previous => ({ ...previous, [machine]: pressed })),
           onGreet: greet, onReady: () => { if (active) setStatus('ready') }, onFailure: failed,
         })
       }).catch(failed)
@@ -86,6 +90,18 @@ export function WorkshopHub({ locale, variant, onLearn, onChallenge, children }:
       <canvas ref={canvas} role="img" tabIndex={status === 'ready' ? 0 : undefined}
         aria-label={(arena ? t('三维挑战机库', '3D challenge hangar') : t('三维维修站', '3D repair station')) +
           (status === 'ready' ? t('，方向键让芽芽走动', '. Use arrow keys to walk with Sprout') : '')} />
+      {status === 'ready' && <div className="workshop-machine-tools">
+        <button type="button" aria-label={t('转动吊臂', 'Turn the crane')} title={t('转动吊臂', 'Turn the crane')}
+          aria-pressed={machines.crane} onClick={() => engine.current?.operate('crane')}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h9m-5 0V11l4-7 9 4v5m0 0a2 2 0 1 1-2 2M7 11l5-4 8 1" /></svg>
+        </button>
+        <button type="button" aria-label={t('风扇加速', 'Boost the fan')} title={t('风扇加速', 'Boost the fan')}
+          aria-pressed={machines.fan} onClick={() => engine.current?.operate('fan')}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2" />
+            {[0, 120, 240].map(angle => <path key={angle} transform={`rotate(${angle} 12 12)`} d="M10.5 10.5C6 6 9 2 13.6 3.4c1.8.6.8 4.2-.8 6.8" />)}
+          </svg>
+        </button>
+      </div>}
       <div className="workshop-scene-tools">
         <button type="button" className="workshop-hello-button" onClick={() => engine.current ? engine.current.greet() : greet()}>
           <span className="workshop-signal" aria-hidden="true" />{t('向芽芽打招呼', 'Greet Sprout')}

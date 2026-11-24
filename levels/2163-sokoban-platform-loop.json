@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-sokoban-platform-loop",
+  "order": 2163,
+  "difficulty": "starter",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "stage": "challenge",
+  "prerequisites": [{"unit": "foundations", "topic": "sequence"}],
+  "title": {"zh": "月台小回廊", "en": "Platform Loop"},
+  "concept": {"zh": "推箱子 · 1 箱 · 最少推 2 次", "en": "Sokoban · 1 crate · 2 pushes minimum"},
+  "brief": {
+    "zh": "把月台上的备用灯泡推到装车货位。一次只能推一箱。箱子不能拉动。",
+    "en": "Push the crate of spare bulbs onto the marked loading bay. Push one crate at a time. Crates cannot be pulled."
+  },
+  "hints": [],
+  "tiles": [
+    "#######",
+    "#....##",
+    "#.....#",
+    "#######"
+  ],
+  "start": {"x": 4, "y": 2},
+  "warehouse": {
+    "boxes": [{"x": 3, "y": 2}],
+    "targets": [{"x": 5, "y": 2}]
+  },
+  "allowedApi": ["move", "read_map"],
+  "objectives": [{"type": "parkBoxes"}],
+  "cards": [
+    {"id": "up", "label": {"zh": "向上", "en": "Move up"}, "template": "move(\"up\")"},
+    {"id": "right", "label": {"zh": "向右", "en": "Move right"}, "template": "move(\"right\")"},
+    {"id": "down", "label": {"zh": "向下", "en": "Move down"}, "template": "move(\"down\")"},
+    {"id": "left", "label": {"zh": "向左", "en": "Move left"}, "template": "move(\"left\")"}
+  ],
+  "solutionCards": [
+    {"cardId": "up"}, {"cardId": "left"}, {"cardId": "left"}, {"cardId": "down"},
+    {"cardId": "right"}, {"cardId": "right"}
+  ]
+}

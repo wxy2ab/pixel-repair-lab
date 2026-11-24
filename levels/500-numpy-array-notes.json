@@ -18,22 +18,31 @@
   "animation": {
     "layout": "grid",
     "frames": [
-      { "caption": { "zh": "四个读数排成两行两列。", "en": "Four readings fill two rows and two columns." }, "items": [
-        { "id": "r0c0", "label": { "zh": "[0, 0]", "en": "[0, 0]" }, "value": { "zh": "18", "en": "18" } },
-        { "id": "r0c1", "label": { "zh": "[0, 1]", "en": "[0, 1]" }, "value": { "zh": "24", "en": "24" } },
-        { "id": "r1c0", "label": { "zh": "[1, 0]", "en": "[1, 0]" }, "value": { "zh": "21", "en": "21" } },
-        { "id": "r1c1", "label": { "zh": "[1, 1]", "en": "[1, 1]" }, "value": { "zh": "27", "en": "27" } }
-      ] },
-      { "caption": { "zh": "先定位第 0 号列，再沿着这一列读两行。", "en": "Find column 0, then read down both rows." }, "items": [
-        { "id": "r0c0", "label": { "zh": "[0, 0]", "en": "[0, 0]" }, "value": { "zh": "18", "en": "18" }, "state": "active" },
-        { "id": "r0c1", "label": { "zh": "[0, 1]", "en": "[0, 1]" }, "value": { "zh": "24", "en": "24" }, "state": "muted" },
-        { "id": "r1c0", "label": { "zh": "[1, 0]", "en": "[1, 0]" }, "value": { "zh": "21", "en": "21" }, "state": "active" },
-        { "id": "r1c1", "label": { "zh": "[1, 1]", "en": "[1, 1]" }, "value": { "zh": "27", "en": "27" }, "state": "muted" }
-      ] },
-      { "caption": { "zh": "取出的列按原有顺序排列，得到 [18, 21]。", "en": "The output keeps the original order, giving [18, 21]." }, "items": [
-        { "id": "r0c0", "label": { "zh": "结果位置 0", "en": "Output position 0" }, "value": { "zh": "18", "en": "18" }, "state": "done" },
-        { "id": "r1c0", "label": { "zh": "结果位置 1", "en": "Output position 1" }, "value": { "zh": "21", "en": "21" }, "state": "done" }
-      ] }
+      {
+        "caption": {"zh": "四个读数排成两行两列。", "en": "Four readings fill two rows and two columns."},
+        "items": [
+          {"id": "r0c0", "label": {"zh": "[0, 0]", "en": "[0, 0]"}, "value": {"zh": "18", "en": "18"}, "annotation": {"zh": "0 行 · 0 列", "en": "row 0 · col 0"}},
+          {"id": "r0c1", "label": {"zh": "[0, 1]", "en": "[0, 1]"}, "value": {"zh": "24", "en": "24"}},
+          {"id": "r1c0", "label": {"zh": "[1, 0]", "en": "[1, 0]"}, "value": {"zh": "21", "en": "21"}},
+          {"id": "r1c1", "label": {"zh": "[1, 1]", "en": "[1, 1]"}, "value": {"zh": "27", "en": "27"}}
+        ]
+      },
+      {
+        "caption": {"zh": "先定位第 0 号列，再沿着这一列读两行。", "en": "Find column 0, then read down both rows."},
+        "items": [
+          {"id": "r0c0", "label": {"zh": "[0, 0]", "en": "[0, 0]"}, "value": {"zh": "18", "en": "18"}, "state": "active", "annotation": {"zh": "[:, 0] ↓", "en": "[:, 0] ↓"}},
+          {"id": "r0c1", "label": {"zh": "[0, 1]", "en": "[0, 1]"}, "value": {"zh": "24", "en": "24"}, "state": "muted"},
+          {"id": "r1c0", "label": {"zh": "[1, 0]", "en": "[1, 0]"}, "value": {"zh": "21", "en": "21"}, "state": "active", "annotation": {"zh": "↓", "en": "↓"}},
+          {"id": "r1c1", "label": {"zh": "[1, 1]", "en": "[1, 1]"}, "value": {"zh": "27", "en": "27"}, "state": "muted"}
+        ]
+      },
+      {
+        "caption": {"zh": "取出的列按原有顺序排列，得到 [18, 21]。", "en": "The output keeps the original order, giving [18, 21]."},
+        "items": [
+          {"id": "r0c0", "label": {"zh": "结果位置 0", "en": "Output position 0"}, "value": {"zh": "18", "en": "18"}, "state": "done", "annotation": {"zh": "[0]", "en": "[0]"}},
+          {"id": "r1c0", "label": {"zh": "结果位置 1", "en": "Output position 1"}, "value": {"zh": "21", "en": "21"}, "state": "done", "annotation": {"zh": "[1]", "en": "[1]"}}
+        ]
+      }
     ]
   },
   "question": {

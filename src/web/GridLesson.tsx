@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { compileCards } from '../shared/cards'
 import { mapScenarioAt } from '../shared/mapScenarios'
 import type { PersonalAlgorithms } from '../shared/advanced'
@@ -35,6 +35,9 @@ import { FerryPulseClock, ferryCrossingResult } from './FerryCrossing'
 import { carriedCrossingProgram, saveCrossingProgram } from './shortChallengeProgram'
 import { shortCrossing } from '../shared/shortChallenges'
 import { LaserStatus, laserCrossingResult } from './LaserCrossing'
+import { useWarehouseArrival, warehouseDeliveryText, WarehousePads, WarehouseReceipt } from './WarehouseFeedback'
+import { warehouseRunPushes } from '../shared/warehouse'
+import { soundWarehouseCue } from './warehouseSound'
 
 type Phase = 'idle' | 'running' | 'replaying' | 'paused' | 'done'
 type GridPlayback = RunResult & { inspected?: { index: number; run: GridMapRun } }
@@ -44,9 +47,10 @@ function currentRun(result: GridPlayback | undefined, index: number) {
   return result.mapRuns?.[index] ?? (index === 0 ? result : result.inspected?.index === index ? result.inspected.run : undefined)
 }
 
-export function GridLesson({ level, locale, onWin, onMistake, personal = {}, course = {}, challenge, initialDraft, onDraftChange }: {
+export function GridLesson({ level, locale, onWin, onMistake, personal = {}, course = {}, challenge, initialDraft, onDraftChange, mapModeControl }: {
   level: GridLevel; locale: Locale; onWin: () => void; onMistake?: () => void; personal?: PersonalAlgorithms; course?: PersonalAlgorithms;
   challenge?: ChallengeRunHandlers;
+  mapModeControl?: ReactNode
   initialDraft?: GridChallengeDraft; onDraftChange?: (draft: GridChallengeDraft) => void;
 }) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
@@ -91,6 +95,12 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
   const frame = mapRun?.frames[shownFrame]
   const runSnapshot = phase === 'done' ? mapRun?.final : frame?.state
   const snapshot = (observation.active ? observation.frame : runSnapshot) ?? initialSnapshot(scenario)
+  const { arrival: warehouseArrival, clear: clearArrival } = useWarehouseArrival(observation.active ? undefined : scenario.warehouse, snapshot)
+  const shipment = useMemo(() => {
+    if (phase !== 'done' || !result?.won || !scenario.warehouse || !mapRun || mapCount !== 1) return
+    if (!scenario.objectives.some(goal => goal.type === 'parkBoxes')) return
+    return { crates: scenario.warehouse.targets.length, moves: mapRun.final.turn, pushes: warehouseRunPushes(initialSnapshot(scenario), mapRun.frames) }
+  }, [phase, result, scenario, mapRun, mapCount])
   const bench = classroom && gridBenchKind(level.unit?.id, scenario)
   const displayedAction = currentStep?.action
   const observedHazard = observation.active && snapshot.devices?.hazards.find(cell => cell.x === snapshot.player.x && cell.y === snapshot.player.y)
@@ -126,6 +136,7 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
 
   function selectMap(index: number) {
     if (index === mapIndex) return
+    clearArrival()
     if (phase === 'running' || phase === 'replaying' || phase === 'paused') reset()
     setMapIndex(index)
     setFrameIndex(-1)
@@ -133,11 +144,13 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
 
   function finishReplay() {
     if (!result) return
+    clearArrival()
     setPhase('done')
   }
 
   const reset = useCallback(() => {
     challenge?.onStart()
+    clearArrival()
     exitObservation()
     worker.current?.terminate()
     worker.current = null
@@ -145,7 +158,7 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
     setResult(undefined)
     setFrameIndex(-1)
     setPhase('idle')
-  }, [challenge, exitObservation])
+  }, [challenge, exitObservation, clearArrival])
 
   const retry = useCallback(() => {
     reset()
@@ -159,12 +172,14 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
     if (result.won) {
       if (crossing && challenge) saveCrossingProgram(level, draft)
       onWin()
-      challenge?.onWin(score, retry, gridGoalReplayEvidence(level, result))
+      if (shipment) soundWarehouseCue('complete')
+      challenge?.onWin(score, retry, gridGoalReplayEvidence(level, result),
+        shipment && warehouseDeliveryText(shipment.crates, shipment.moves, shipment.pushes))
     } else if (result.issue?.code !== 'internal') {
       onMistake?.()
       challenge?.onFailure(score, gridGoalReplayEvidence(level, result))
     }
-  }, [challenge, crossing, draft, level, onWin, onMistake, phase, result, retry])
+  }, [challenge, crossing, draft, level, onWin, onMistake, phase, result, retry, shipment])
 
   function run(singleStep: boolean, clock = false) {
     if (!hasCommands || disabled) return
@@ -238,7 +253,7 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
       before={displayedAction ? mapRun?.frames[shownFrame - 1]?.state ?? initialSnapshot(scenario) : snapshot} frame={displayedAction}
       submitted={mapRun?.frames.slice(0, shownFrame + 1).findLast(item => item.action === 'submit')?.value}
       onStep={hasCommands && !observation.active && phase !== 'running' && phase !== 'done' ? pulseClock : undefined} />}
-    <Board level={scenario} locale={locale} snapshot={snapshot} activity={gridStepActivity(currentStep)} showHardware={!bench}
+    <Board level={scenario} locale={locale} snapshot={snapshot} activity={gridStepActivity(currentStep)} showHardware={!bench} warehouseArrival={warehouseArrival}
       exitLabel={ferry ? t('登船点', 'Ferry dock') : undefined}
       trail={trail.visible && !observation.active ? gridTrailAt(scenario, mapRun, shownFrame) : undefined} />
     {crossingResult && <p role="status" className="grid-map-outcome" data-testid={ferry ? 'ferry-crossing-result' : 'laser-crossing-result'}>{crossingResult}</p>}
@@ -335,7 +350,11 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
       </span>}
     </div> : undefined
   const observeOnly = !hasCommands && canObserve
-  const toolbar = <PlayToolbar locale={locale} guided={tutorialStep?.target === 'run'} trail={trail} status={stepStatus}>
+  const toolbar = <PlayToolbar locale={locale} guided={tutorialStep?.target === 'run'} trail={trail}
+    result={shipment && <WarehouseReceipt {...shipment} locale={locale} hasSummary={!!challenge} />}
+    status={scenario.warehouse && !observation.active && !shipment ? <>
+      <WarehousePads targets={scenario.warehouse.targets} boxes={snapshot.boxes ?? []} arrival={warehouseArrival} locale={locale} />
+      {stepStatus}</> : stepStatus}>
     {observation.active ? <button type="button" className="primary-button" onClick={exitObservation}>{t('返回程序', 'Back to program')}</button> : <>
       {observeOnly ? <button type="button" className="primary-button play-toolbar__run" data-testid="map-observe-start"
         onClick={() => observation.start(mapIndex)}>{t('观察地图', 'Observe map')}</button> :
@@ -348,7 +367,7 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
         disabled={!hasCommands || phase === 'running'} onClick={singleStep}
         title={t('每次看一步程序怎样执行', 'Follow one program step at a time')}>{t('单步执行', 'Step once')}</button>
       {mapRun && <button type="button" className="subtle-button" disabled={playbackIndex < 0 || phase === 'running'}
-        onClick={() => { setFrameIndex(playbackIndex - 1); setPhase('paused') }}>{t('回看上一步', 'Review previous step')}</button>}
+        onClick={() => { clearArrival(); setFrameIndex(playbackIndex - 1); setPhase('paused') }}>{t('回看上一步', 'Review previous step')}</button>}
       {active ? <button type="button" className="subtle-button" onClick={finishReplay}>{t('查看结果', 'Show result')}</button> :
         canObserve && !observeOnly && <button type="button" className="subtle-button" data-testid="map-observe-start"
           disabled={phase === 'running'} onClick={() => observation.start(mapIndex)}>{t('观察地图', 'Observe map')}</button>}
@@ -392,9 +411,9 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
     </DeviceWindow>
     {toolbar}
   </div>
-  return <ArenaMapWorkspace locale={locale} title={level.title[locale]} consoleControl={consoleControl} dockedConsole={crossing}
+  return <ArenaMapWorkspace locale={locale} title={level.title[locale]} consoleControl={consoleControl} dockedConsole={crossing} modeControl={mapModeControl}
     shortcutHelp={<MapShortcutGuide locale={locale} />}>
-    <ArenaMapOutcome won={phase === 'done' && result?.won} text={observation.active ? undefined : crossingResult ?? errorText ?? (phase === 'done' && result?.won
+    <ArenaMapOutcome won={phase === 'done' && result?.won} text={observation.active || shipment ? undefined : crossingResult ?? errorText ?? (phase === 'done' && result?.won
       ? t('任务完成！', 'Mission complete!') : undefined)} />
     <div className="play-column">{board}</div>
     <ArenaConsolePanel control={consoleControl} locale={locale}>

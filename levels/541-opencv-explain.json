@@ -18,24 +18,33 @@
   "animation": {
     "layout": "grid",
     "frames": [
-      { "caption": { "zh": "这张小图有四个像素。", "en": "This tiny image has four pixels." }, "items": [
-        { "id": "a", "swatch": "#2a2a2a", "label": { "zh": "左上", "en": "Top left" }, "value": { "zh": "42", "en": "42" } },
-        { "id": "b", "swatch": "#5c5c5c", "label": { "zh": "右上", "en": "Top right" }, "value": { "zh": "92", "en": "92" } },
-        { "id": "c", "swatch": "#939393", "label": { "zh": "左下", "en": "Bottom left" }, "value": { "zh": "147", "en": "147" } },
-        { "id": "d", "swatch": "#d3d3d3", "label": { "zh": "右下", "en": "Bottom right" }, "value": { "zh": "211", "en": "211" } }
-      ] },
-      { "caption": { "zh": "阈值是 100，只有下方两个像素超过它。", "en": "At a threshold of 100, only the bottom two pixels pass." }, "items": [
-        { "id": "a", "swatch": "#2a2a2a", "label": { "zh": "左上", "en": "Top left" }, "value": { "zh": "42 ≤ 100", "en": "42 ≤ 100" }, "state": "muted" },
-        { "id": "b", "swatch": "#5c5c5c", "label": { "zh": "右上", "en": "Top right" }, "value": { "zh": "92 ≤ 100", "en": "92 ≤ 100" }, "state": "muted" },
-        { "id": "c", "swatch": "#939393", "label": { "zh": "左下", "en": "Bottom left" }, "value": { "zh": "147 > 100", "en": "147 > 100" }, "state": "active" },
-        { "id": "d", "swatch": "#d3d3d3", "label": { "zh": "右下", "en": "Bottom right" }, "value": { "zh": "211 > 100", "en": "211 > 100" }, "state": "active" }
-      ] },
-      { "caption": { "zh": "下方两个像素变白。它们相邻，所以只算一个区域。", "en": "The bottom pixels turn white. They touch, so they make a single region." }, "items": [
-        { "id": "a", "swatch": "#000000", "label": { "zh": "左上", "en": "Top left" }, "value": { "zh": "黑色 0", "en": "Black 0" }, "state": "muted" },
-        { "id": "b", "swatch": "#000000", "label": { "zh": "右上", "en": "Top right" }, "value": { "zh": "黑色 0", "en": "Black 0" }, "state": "muted" },
-        { "id": "c", "swatch": "#ffffff", "label": { "zh": "左下", "en": "Bottom left" }, "value": { "zh": "白色 255", "en": "White 255" }, "state": "done" },
-        { "id": "d", "swatch": "#ffffff", "label": { "zh": "右下", "en": "Bottom right" }, "value": { "zh": "白色 255", "en": "White 255" }, "state": "done" }
-      ] }
+      {
+        "caption": {"zh": "这张小图有四个像素。", "en": "This tiny image has four pixels."},
+        "items": [
+          {"id": "a", "swatch": "#2a2a2a", "label": {"zh": "左上", "en": "Top left"}, "value": {"zh": "42", "en": "42"}},
+          {"id": "b", "swatch": "#5c5c5c", "label": {"zh": "右上", "en": "Top right"}, "value": {"zh": "92", "en": "92"}},
+          {"id": "c", "swatch": "#939393", "label": {"zh": "左下", "en": "Bottom left"}, "value": {"zh": "147", "en": "147"}},
+          {"id": "d", "swatch": "#d3d3d3", "label": {"zh": "右下", "en": "Bottom right"}, "value": {"zh": "211", "en": "211"}}
+        ]
+      },
+      {
+        "caption": {"zh": "阈值是 100，只有下方两个像素超过它。", "en": "At a threshold of 100, only the bottom two pixels pass."},
+        "items": [
+          {"id": "a", "swatch": "#2a2a2a", "label": {"zh": "左上", "en": "Top left"}, "value": {"zh": "42 ≤ 100", "en": "42 ≤ 100"}, "state": "muted"},
+          {"id": "b", "swatch": "#5c5c5c", "label": {"zh": "右上", "en": "Top right"}, "value": {"zh": "92 ≤ 100", "en": "92 ≤ 100"}, "state": "muted"},
+          {"id": "c", "swatch": "#939393", "label": {"zh": "左下", "en": "Bottom left"}, "value": {"zh": "147 > 100", "en": "147 > 100"}, "state": "active", "annotation": {"zh": "→ 255", "en": "→ 255"}},
+          {"id": "d", "swatch": "#d3d3d3", "label": {"zh": "右下", "en": "Bottom right"}, "value": {"zh": "211 > 100", "en": "211 > 100"}, "state": "active", "annotation": {"zh": "→ 255", "en": "→ 255"}}
+        ]
+      },
+      {
+        "caption": {"zh": "下方两个像素变白。它们相邻，所以只算一个区域。", "en": "The bottom pixels turn white. They touch, so they make a single region."},
+        "items": [
+          {"id": "a", "swatch": "#000000", "label": {"zh": "左上", "en": "Top left"}, "value": {"zh": "黑色 0", "en": "Black 0"}, "state": "muted"},
+          {"id": "b", "swatch": "#000000", "label": {"zh": "右上", "en": "Top right"}, "value": {"zh": "黑色 0", "en": "Black 0"}, "state": "muted"},
+          {"id": "c", "swatch": "#ffffff", "label": {"zh": "左下", "en": "Bottom left"}, "value": {"zh": "白色 255", "en": "White 255"}, "state": "done", "annotation": {"zh": "← 同一区域 →", "en": "← One region →"}},
+          {"id": "d", "swatch": "#ffffff", "label": {"zh": "右下", "en": "Bottom right"}, "value": {"zh": "白色 255", "en": "White 255"}, "state": "done"}
+        ]
+      }
     ]
   },
   "question": {

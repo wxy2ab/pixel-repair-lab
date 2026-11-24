@@ -3,6 +3,7 @@ import { binaryValue, gateOutput } from '../engine/circuit'
 import type { CircuitInput, CircuitLectureConfig, Gate } from '../shared/hardware'
 import type { Locale } from '../shared/types'
 import { CircuitSignalBench, flipCircuitBit } from './CircuitSignalBench'
+import { FrameCaption } from './FrameCaption'
 import { tr } from './text'
 
 type Edits = { base: string; history: CircuitInput[]; lastStep?: number }
@@ -59,6 +60,6 @@ export function CircuitLectureScene({ bench, step, locale, caption, onInteract }
         setEdits({ base, history: history.slice(0, -1), lastStep: step })
       }}>{t('撤销上次操作', 'Undo last change')}</button>}
     </div>
-    <p className="animation-caption" aria-live="polite">{explanation}</p>
+    <FrameCaption caption={explanation} locale={locale} />
   </section>
 }

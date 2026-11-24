@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-sokoban-first-nut-crate",
+  "order": 2161,
+  "difficulty": "starter",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "stage": "challenge",
+  "prerequisites": [{"unit": "foundations", "topic": "sequence"}],
+  "title": {"zh": "第一箱螺母", "en": "The First Nut Crate"},
+  "concept": {"zh": "推箱子 · 1 箱 · 最少推 1 次", "en": "Sokoban · 1 crate · 1 push minimum"},
+  "brief": {
+    "zh": "把维修站收到的第一箱螺母推到标记货位。一次只能推一箱。箱子不能拉动。",
+    "en": "Push the station’s first crate of nuts onto the marked bay. Push one crate at a time. Crates cannot be pulled."
+  },
+  "hints": [],
+  "tiles": [
+    "#####",
+    "#...#",
+    "#####"
+  ],
+  "start": {"x": 1, "y": 1},
+  "warehouse": {
+    "boxes": [{"x": 2, "y": 1}],
+    "targets": [{"x": 3, "y": 1}]
+  },
+  "allowedApi": ["move", "read_map"],
+  "objectives": [{"type": "parkBoxes"}],
+  "cards": [
+    {"id": "up", "label": {"zh": "向上", "en": "Move up"}, "template": "move(\"up\")"},
+    {"id": "right", "label": {"zh": "向右", "en": "Move right"}, "template": "move(\"right\")"},
+    {"id": "down", "label": {"zh": "向下", "en": "Move down"}, "template": "move(\"down\")"},
+    {"id": "left", "label": {"zh": "向左", "en": "Move left"}, "template": "move(\"left\")"}
+  ],
+  "solutionCards": [
+    {"cardId": "right"}
+  ]
+}

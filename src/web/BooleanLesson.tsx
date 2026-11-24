@@ -6,6 +6,7 @@ import type { ProgramWalkthrough } from '../shared/programWalkthrough'
 import type { Locale } from '../shared/types'
 import { tr } from './text'
 import { StepCount } from './LessonFrame'
+import { StepExplanation } from './LessonNotes'
 import './boolean-lesson.css'
 
 type Case = ProgramWalkthrough['cases'][number]
@@ -182,11 +183,11 @@ export function BooleanLesson({ execution, locale, onReady }: {
         {onAxis && <ChargeAxis examples={compare} threshold={threshold} through={step.stage === 'compare' ? step.index : -1} t={t} />}
         {example?.run && !onAxis && <ConditionFlow example={{ ...example, run: example.run }} stage={step.stage} t={t} />}
         {error ? <p className="error-message" role="alert">{t('这次没有得到可以展示的比较结果。', 'These examples did not produce results to compare.')}</p>
-          : <p className="boolean-description" role="status">
+          : <StepExplanation className="boolean-description" locale={locale}>
             {explain(step, compare, combine, threshold, t)}
             {position === steps.length - 1 && t('在下面换一组电量和门的状态，试试预测芽芽能不能出发。',
               ' Try predicting whether Sprout can leave with a different charge and door state below.')}
-          </p>}
+          </StepExplanation>}
         {lines.length > 0 && <ol className="boolean-source" data-testid="boolean-code" aria-label={t('Python 代码', 'Python code')}>
           {lines.map((line, index) => line && <li key={line.line} data-line={line.line}
             aria-current={index === lines.length - 1 ? 'step' : undefined}>

@@ -1,5 +1,7 @@
 import { BatteryMemory } from './BatteryMemory'
 import { CodingDevice } from './CodingDevice'
+import { StepExplanation } from './LessonNotes'
+import { useBatteryMotion } from './useBatteryMotion'
 import { Fragment, useId, useMemo, useRef, useState } from 'react'
 import { runListPositionsLesson } from '../engine/programListPositions'
 import type { CollectionBattery, ListPositionCase, ProgramWalkthrough } from '../shared/programWalkthrough'
@@ -61,13 +63,13 @@ function InsertionPoint({ index, onInsert, t }: { index: number; onInsert: (inde
   </li>
 }
 
-function BatteryRow({ order, sample, previousOrder, active, onPick, onInsert, promptId, t }: {
-  order: string[]; sample: ListPositionCase; previousOrder?: string[]; active?: string;
+function BatteryRow({ order, sample, previousOrder, step, onPick, onInsert, promptId, t }: {
+  order: string[]; sample: ListPositionCase; previousOrder?: string[]; step?: Step;
   onPick?: (index: number) => void; onInsert?: (index: number) => void; promptId: string; t: Translate;
 }) {
   const batteryByName = new Map([sample.spare, ...sample.batteries].map(battery => [battery.name, battery]))
   return <div className="list-position-board">
-    {onInsert && <p className="list-position-spare">
+    {onInsert && <p className="list-position-spare" data-battery-name={sample.spare.name}>
       {t('待插入', 'Ready to insert')} <b>{sample.spare.name}</b>
       <span className="for-battery" aria-label={t(`${sample.spare.charge} 格`, `${sample.spare.charge} units`)}>{sample.spare.charge}</span>
     </p>}
@@ -78,11 +80,15 @@ function BatteryRow({ order, sample, previousOrder, active, onPick, onInsert, pr
           if (!battery) return null
           const previousIndex = previousOrder?.indexOf(name) ?? -1
           const moved = previousIndex >= 0 && previousIndex !== index
-          const card = <BatteryCard battery={battery} index={index} previousIndex={moved ? previousIndex : undefined} t={t} />
+          const active = step?.battery === name
+          const card = <><BatteryCard battery={battery} index={index} previousIndex={moved ? previousIndex : undefined} t={t} />
+            {active && <span className="list-position-shift">
+              {step.kind === 'insert' ? t('已插入', 'Inserted') : step.kind === 'output' ? t('输出', 'Output') : t('已读取', 'Read')}
+            </span>}</>
           return <Fragment key={name}>
             {onInsert && <InsertionPoint index={index} onInsert={onInsert} t={t} />}
             <li className="list-position-slot" data-battery-name={name} data-battery-index={index} data-charge={battery.charge}
-              data-active={active === name || undefined} data-shift={moved ? (index > previousIndex ? 'back' : 'forward') : undefined}
+              data-active={active || undefined} data-shift={moved ? (index > previousIndex ? 'back' : 'forward') : undefined}
               data-previous-index={moved ? previousIndex : undefined}>
               {onPick ? <button type="button" className="subtle-button list-position-battery" aria-describedby={promptId}
                 onClick={() => onPick(index)}>{card}</button>
@@ -93,6 +99,11 @@ function BatteryRow({ order, sample, previousOrder, active, onPick, onInsert, pr
         {onInsert && <InsertionPoint index={order.length} onInsert={onInsert} t={t} />}
       </ol>
     </div>
+    {step?.kind === 'remove' && step.battery && <div className="list-position-spare">
+      <span>{t('移出', 'Removed')}</span>
+      <b data-battery-name={step.battery}>{step.battery}</b>
+      <span>{t(`原位置 ${sample.removeIndex}`, `From index ${sample.removeIndex}`)}</span>
+    </div>}
   </div>
 }
 
@@ -112,6 +123,7 @@ export function ListPositionsLesson({ execution, locale, onReady }: {
   const t: Translate = (zh, en) => tr(locale, zh, en)
   const promptId = useId()
   const [position, setPosition] = useState(-1)
+  const motion = useBatteryMotion(position)
   const [mistake, setMistake] = useState(false)
   const ready = useRef(false)
   const sample = execution.listPositions?.cases[0]
@@ -130,6 +142,7 @@ export function ListPositionsLesson({ execution, locale, onReady }: {
   const visibleCode = run?.steps.slice(0, position + 1) ?? []
 
   function goTo(next: number) {
+    motion.capture()
     setMistake(false)
     setPosition(next)
     if (run?.steps[next]?.kind === 'output' && !ready.current) {
@@ -157,17 +170,17 @@ export function ListPositionsLesson({ execution, locale, onReady }: {
   const canPick = stage === 'start' || stage === 'load' || editing
   return <section className="classroom-demonstration panel list-positions-lesson" aria-label={title} data-testid="list-positions-lesson" data-list-stage={stage}>
     <CodingDevice device="sorter" locale={locale} workbench controls={<>
-      {run ? <p className="list-position-description" role="status" id={promptId}>
-        {caption && <span>{caption}</span>}
-        {prompt && <span>{mistake && t('再试一次。', 'Try again. ')}{prompt}</span>}
+      {run ? prompt && <p className="list-position-description" role="status" id={promptId}>
+        {mistake && t('再试一次。', 'Try again. ')}{prompt}
       </p> : <p className="error-message" id={promptId} role="alert">{t('这次没能读出电池。', 'The program could not read the batteries.')}</p>}
-      <BatteryRow order={order} sample={sample} previousOrder={previousOrder} active={step?.battery}
+      <div ref={motion.board}><BatteryRow order={order} sample={sample} previousOrder={previousOrder} step={step}
         onPick={run && canPick ? pick : undefined} onInsert={run && stage === 'read' ? index => choose(index, insertIndex, position + 1) : undefined}
-        promptId={promptId} t={t} />
+        promptId={promptId} t={t} /></div>
       {step && <div className="list-position-navigation">
         <button type="button" className="subtle-button" onClick={() => goTo(position <= 1 ? -1 : position - 1)}>{t('上一步', 'Previous step')}</button>
         {stage === 'select' && <button type="button" className="primary-button" onClick={() => goTo(position + 1)}>{t('下一步', 'Next step')}</button>}
       </div>}
+      {run && caption && <StepExplanation locale={locale}>{caption}</StepExplanation>}
     </>}>
       <div className="panel-heading"><h2>{title}</h2></div>
       <div className="list-position-content">

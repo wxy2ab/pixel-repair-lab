@@ -12,6 +12,7 @@ type DiagramProps = {
   active?: string
   revealed?: ReadonlySet<string>
   values?: Readonly<Record<string, string>>
+  annotations?: Readonly<Record<string, string>>
   onPick?: (block: ProgramGraphic) => void
   onMove?: (id: string, offset: -1 | 1) => void
   showFunctions?: boolean
@@ -25,7 +26,7 @@ function GraphicSymbol({ icon }: { icon: ProgramGraphic['icon'] }) {
   return <span className="program-symbol" data-symbol={icon} aria-hidden="true">{interior}</span>
 }
 
-export function ProgramDiagram({ visual, locale, source, order, active, revealed, values, onPick, onMove,
+export function ProgramDiagram({ visual, locale, source, order, active, revealed, values, annotations, onPick, onMove,
   showFunctions = true, compact = false }: DiagramProps) {
   const titleId = useId()
   const tiles = useRef(new Map<string, HTMLLIElement>())
@@ -74,6 +75,7 @@ export function ProgramDiagram({ visual, locale, source, order, active, revealed
         <span className="program-tile-label">{label}</span>
       </>}
       {value !== undefined && <span className="program-tile-value">{value}</span>}
+      {annotations?.[block.id] && <small className="program-tile-annotation">{annotations[block.id]}</small>}
     </>
 
     return <li className="program-graphic-tile" key={block.id} data-visual-block={block.id} data-graphic-icon={block.icon}

@@ -86,6 +86,8 @@ export function createTeachingRenderer<State>(canvas: HTMLCanvasElement, notes: 
       build(state, kit, {
         label(text, position, size = .22, onlyIn) {
           const element = document.createElement('span')
+          // A label becomes visible when draw() projects its position on the tray.
+          element.hidden = true
           element.textContent = text
           fragment.append(element)
           labels.push({ element, point: new THREE.Vector3(...position), size, onlyIn })

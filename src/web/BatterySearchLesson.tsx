@@ -1,5 +1,6 @@
 import { CodingDevice } from './CodingDevice'
 import { AlgorithmBatteryRack } from './AlgorithmBatteryRack'
+import { StepExplanation } from './LessonNotes'
 import { useId, useMemo, useRef, useState } from 'react'
 import { runBatterySearch, type BatterySearchStep } from '../engine/programBatterySearch'
 import type { BatterySearchCase, BatterySearchMethod, ProgramWalkthrough } from '../shared/programWalkthrough'
@@ -46,8 +47,7 @@ function ManualSearch({ demo, locale, onFound }: {
 
   return <section className="classroom-demonstration panel search-workbench" data-testid="battery-search-manual" aria-labelledby={heading}>
     <CodingDevice device="scanner" locale={locale} workbench controls={<>
-      <p className="search-manual-task">{t(`维修台需要一块 ${demo.target} 格电量的电池。点一块电池，看看它有几格电量。`,
-        `The repair bench needs a battery with ${demo.target} units of charge. Select a battery to reveal its charge.`)}</p>
+      <p className="search-manual-task">{t(`点电池，找 ${demo.target} 格`, `Tap a battery to find ${demo.target} units`)}</p>
       <ol className="search-battery-row" aria-label={t('待检查的电池', 'Batteries to inspect')}>
         {demo.manualOrder.map(name => {
           const battery = byName.get(name)
@@ -61,16 +61,14 @@ function ManualSearch({ demo, locale, onFound }: {
                 : t(`${name} 号电池，${charge} 格电量`, `Battery ${name}, ${charge} units of charge`)}
               onClick={() => inspect(name, battery.charge)}>
               <SearchBatteryFace name={name} charge={charge} locale={locale} />
+              {charge !== undefined && <small className="search-tile-note">{charge} {charge === demo.target ? '=' : '≠'} {demo.target}</small>}
             </button>
           </li>
         })}
       </ol>
       {latest && <p role="status" data-task-success={found || undefined} data-task-pop={found || undefined}
         className={found ? 'search-manual-feedback is-found' : 'search-manual-feedback'}>
-        {found ? t(`找到了！${latest.name} 号电池有 ${latest.charge} 格电量。你一共检查了 ${revealed.length} 块。`,
-          `Found it! Battery ${latest.name} has ${latest.charge} units of charge. You checked ${revealed.length}.`)
-          : t(`${latest.name} 号电池有 ${latest.charge} 格电量。再找找。`,
-            `Battery ${latest.name} has ${latest.charge} units of charge. Try another one.`)}
+        {t(`已检查 ${revealed.length} 块`, `Checked ${revealed.length}`)} · {found ? t('找到', 'Found') : t('再选一块', 'Pick another')}
       </p>}
     </>}>
       <div className="panel-heading">
@@ -81,6 +79,7 @@ function ManualSearch({ demo, locale, onFound }: {
           label={t('点电池测电量', 'Tap a battery to test its charge')}
           batteries={demo.manualOrder.map(name => ({ name, charge: revealed.includes(name) ? byName.get(name)?.charge : undefined }))}
           marked={latest ? [demo.manualOrder.indexOf(latest.name)] : undefined}
+          badges={latest ? { [demo.manualOrder.indexOf(latest.name)]: latest.charge + (found ? ' = ' : ' ≠ ') + demo.target } : undefined}
           onCell={!found ? index => {
             const battery = byName.get(demo.manualOrder[index])
             if (battery) inspect(battery.name, battery.charge)
@@ -143,6 +142,11 @@ function SearchReplay({ method, source, sample, locale, onFinished }: {
   const compared = step?.charge
   const showRelation = (step?.kind === 'compare' || step?.kind === 'narrow') && compared !== undefined
   const relation = compared === sample.target ? '=' : compared !== undefined && compared < sample.target ? '<' : '>'
+  const reading = showRelation ? compared + ' ' + relation + ' ' + sample.target : undefined
+  const prior = trial.steps[position - 1]
+  const narrowed = step?.kind === 'narrow' && prior
+  const direction = narrowed ? first > prior.first ? '→' : '←' : undefined
+  const marker = reading ?? (stopped ? t('✓ 找到', '✓ Found') : method === 'binary' ? t('中点', 'Middle') : t('检查', 'Check'))
 
   function goTo(next: number) {
     setPosition(next)
@@ -161,31 +165,26 @@ function SearchReplay({ method, source, sample, locale, onFinished }: {
       </div>
     </>}>
       <h3 id={heading}>{title}</h3>
-      <div className="search-step" data-testid="battery-search-step" data-kind={step?.kind ?? 'start'}
-        data-line={step?.line} data-index={step?.index} data-first={first} data-last={last}>
-        <p role="status">
-          {showRelation && <span className="search-relation" data-testid="battery-search-relation">{compared} {relation} {sample.target}</span>}
-          {explanation(method, sample, step, t)}
-        </p>
-      </div>
       <AlgorithmBatteryRack scene={'battery-search-' + method} label={title} locale={locale} batteries={sample.batteries}
         range={[first, last]} marked={step?.index === undefined ? [] : [step.index]}
-        badges={step?.index === undefined ? undefined : { [step.index]: stopped && step.index >= 0 ? t('找到', 'Found')
-          : !stopped && step.kind !== 'narrow' ? t('检查', 'Check') : undefined }}
-        readout={showRelation ? compared + ' ' + relation + ' ' + sample.target : undefined}
+        badges={step?.index === undefined ? undefined : { [step.index]: direction ? marker + ' ' + direction : marker }}
+        readout={narrowed ? `[${prior.first}, ${prior.last}] → [${first}, ${last}]` : undefined}
         step={step} codeId="battery-search-code"
         onCell={position < lastStep ? index => {
           const next = trial.steps[position + 1]
           if (next.index === index) goTo(position + 1)
         } : undefined} onAdvance={position < lastStep ? () => goTo(position + 1) : undefined} />
       <div className="search-method-metrics">
-        <span>{t('待查范围', 'Search range')} <strong data-testid="battery-search-range" data-first={first} data-last={last}>{range}</strong></span>
+        <span>{t('待查范围', 'Search range')} <strong data-testid="battery-search-range" data-first={first} data-last={last}>
+          {narrowed && <s>{prior.first}–{prior.last}</s>} {range}
+        </strong></span>
         <span>{t('比较次数', 'Comparisons')} <strong className="search-compare-count" data-testid="battery-search-compare-count">{step?.comparisons ?? 0}</strong></span>
       </div>
       <ol className="search-battery-row" data-testid="battery-search-row" aria-label={t('按电量排序的电池', 'Batteries in charge order')}>
         {sample.batteries.map(({ name, charge }, index) => {
           const active = step !== undefined && step.index === index
           const outside = index < first || index > last
+          const justExcluded = narrowed && outside && index >= prior.first && index <= prior.last
           const state = active
             ? step.match === true || step.kind === 'return' ? 'found'
               : outside || step.match === false ? 'rejected' : 'checking'
@@ -194,13 +193,21 @@ function SearchReplay({ method, source, sample, locale, onFinished }: {
             : state === 'excluded' || state === 'rejected' ? t('已排除', 'Ruled out')
               : state === 'unvisited' ? t('无需检查', 'No check needed') : t('待检查', 'In the search range')
           return <li key={name} className="search-battery-tile" data-battery-name={name}
-            data-charge={charge} data-state={state}
+            data-charge={charge} data-state={state} data-just-excluded={justExcluded || undefined}
             aria-label={t(`${name} 号电池，${charge} 格，位置 ${index}，${status}`,
               `Battery ${name}, ${charge} units, index ${index}, ${status}`)}>
             <SearchBatteryFace name={name} charge={charge} index={index} locale={locale} />
+            {active ? <small className="search-tile-note" data-testid={reading ? 'battery-search-relation' : undefined}>{marker}</small>
+              : justExcluded && <small className="search-tile-note" aria-hidden="true">×</small>}
+            {active && direction && <b className="search-range-direction" aria-label={direction === '→' ? t('查右边', 'Search right') : t('查左边', 'Search left')}>{direction}</b>}
           </li>
         })}
       </ol>
+      <div data-testid="battery-search-step" data-kind={step?.kind ?? 'start'}
+        data-line={step?.line} data-index={step?.index} data-first={first} data-last={last}>
+        <span className="sr-only" role="status">{step && explanation(method, sample, step, t)}</span>
+        <StepExplanation locale={locale}>{explanation(method, sample, step, t)}</StepExplanation>
+      </div>
       {trial.issue && <p className="error-message" role="alert">{runIssueText(locale, trial.issue)}</p>}
     </CodingDevice>
   </section>
@@ -227,8 +234,7 @@ export function BatterySearchLesson({ execution, locale, onReady }: {
     {manualComplete && <section className="panel search-workbench" aria-labelledby={heading}>
       <div className="panel-heading"><h2 id={heading}>{t('比较两种找法', 'Compare two ways to search')}</h2></div>
       <div className="search-panel-body">
-        <p>{t(`把同一批电池按电量从小到大排好。两种找法都找 ${settings.demo.target} 格的电池，每检查一块就记一次比较。`,
-          `The same batteries are now sorted by charge. Both methods look for ${settings.demo.target} units. Checking one battery counts as one comparison.`)}</p>
+        <p>{t(`同一排，电量从小到大 → 目标 ${settings.demo.target} 格`, `Same row, low to high → Target ${settings.demo.target}`)}</p>
         <div className="search-methods">
           <SearchReplay method="linear" source={execution.source} sample={settings.demo} locale={locale} onFinished={() => finish('linear')} />
           <SearchReplay method="binary" source={settings.binarySource} sample={settings.demo} locale={locale} onFinished={() => finish('binary')} />

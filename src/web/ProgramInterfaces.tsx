@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useEffectEvent, useRef, useState, type ReactNode } from 'react'
 import { runProgramWalkthrough } from '../engine/programWalkthrough'
 import type { ProgramInterface, ProgramWalkthrough } from '../shared/programWalkthrough'
 import type { Locale } from '../shared/types'
 import { tr } from './text'
 import { CommandDesk, TeachingScreen } from './Classroom'
 import { ProgramDevice, type DevicePhase } from './ProgramDevice'
+import { StepExplanation } from './LessonNotes'
 import { TeachingModel } from './station3d/TeachingModel'
 import './program-interfaces.css'
 
@@ -95,6 +96,7 @@ export function ProgramInterfaces({ execution, levelId, locale, onReady, preview
   const [previousCommand, setPreviousCommand] = useState<ProgramReply>()
   const [cursor, setCursor] = useState<number>()
   const [playing, setPlaying] = useState<number>()
+  const [replayPlaying, setReplayPlaying] = useState(false)
   const [busy, setBusy] = useState(false)
   const [failed, setFailed] = useState(false)
   const notified = useRef(false)
@@ -129,6 +131,14 @@ export function ProgramInterfaces({ execution, levelId, locale, onReady, preview
     }, 580)
     return () => window.clearTimeout(timer)
   }, [playing, steps.length])
+  const advanceReplay = useEffectEvent(() => {
+    if (cursor !== undefined && !lastStep) moveReplay(cursor + 1)
+  })
+  useEffect(() => {
+    if (!replayPlaying) return
+    const timer = window.setTimeout(() => advanceReplay(), 1500)
+    return () => window.clearTimeout(timer)
+  }, [cursor, replayPlaying])
 
   function choose(index: number) {
     if (selected === index) return
@@ -137,6 +147,7 @@ export function ProgramInterfaces({ execution, levelId, locale, onReady, preview
     setReply(undefined)
     setCursor(undefined)
     setPlaying(undefined)
+    setReplayPlaying(false)
     setFailed(false)
   }
 
@@ -145,6 +156,7 @@ export function ProgramInterfaces({ execution, levelId, locale, onReady, preview
     setReply(undefined)
     setCursor(undefined)
     setPlaying(undefined)
+    setReplayPlaying(false)
     setFailed(false)
     const { input } = sample
     if (mode !== 'web' || preview) {
@@ -176,6 +188,7 @@ export function ProgramInterfaces({ execution, levelId, locale, onReady, preview
 
   function moveReplay(next: number) {
     setCursor(next)
+    if (next === steps.length - 1) setReplayPlaying(false)
     if (next === steps.length - 1 && !notified.current) {
       notified.current = true
       onReady()
@@ -197,14 +210,18 @@ export function ProgramInterfaces({ execution, levelId, locale, onReady, preview
             mode === 'cli' ? t('命令怎样交给程序', 'How a command reaches the program') : t('窗口怎样调用补电程序', 'How the window calls the charger')}
           state={{ mode, phase, input: sample.input, output: reply?.output, command, locale, replaying }} locale={locale} load={loadInterface}
           onPick={busy || playing !== undefined || (replaying && lastStep) ? undefined : id => {
-            if (cursor !== undefined) moveReplay(cursor + 1)
+            if (cursor !== undefined) { setReplayPlaying(false); moveReplay(cursor + 1) }
             else if (id === 'client') void run()
           }} />
         {failed && <p className="error-message" role="alert">{t('这次没有算出结果。再试一次。', 'The program could not finish this time. Try again.')}</p>}
         {showExercise && notes}
       </TeachingScreen>
       <CommandDesk locale={locale}>
-        {!replaying && <p className="program-interface-instruction" role="status">{description}</p>}
+        {!replaying && <StepExplanation locale={locale} className="program-interface-instruction">{description}</StepExplanation>}
+        {playing !== undefined && <button type="button" className="subtle-button" onClick={() => {
+          moveReplay(playing)
+          setPlaying(undefined)
+        }}>{t('暂停', 'Pause')}</button>}
         {reply && playing === undefined && !replaying && <button type="button" className="subtle-button" onClick={() => setCursor(0)}>
           {t('回放这次运行', 'Replay this run')}
         </button>}
@@ -220,15 +237,18 @@ export function ProgramInterfaces({ execution, levelId, locale, onReady, preview
                   {current.actors[1] && <> <b aria-hidden="true">→</b> <span>{current.actors[1]}</span></>}
                   <code>{current.value}</code>
                 </div>
-                <p>{current.detail}</p>
+                <StepExplanation locale={locale}>{current.detail}</StepExplanation>
               </div>}
             </li>)}
           </ol>
         </section>}
         {current && cursor !== undefined && <div className="program-replay-actions">
-          <button type="button" className="subtle-button" disabled={cursor === 0} onClick={() => moveReplay(cursor - 1)}>{t('上一步', 'Previous step')}</button>
-          <button type="button" className="primary-button" disabled={lastStep} onClick={() => moveReplay(cursor + 1)}>{t('下一步', 'Next step')}</button>
-          {lastStep && <span>{t('回放完了。试试下面的小练习。', 'Replay finished. Try the short exercise below.')}</span>}
+          <button type="button" className="subtle-button" disabled={cursor === 0} onClick={() => { setReplayPlaying(false); moveReplay(cursor - 1) }}>{t('上一步', 'Previous step')}</button>
+          <button type="button" className="primary-button" disabled={lastStep} onClick={() => { setReplayPlaying(false); moveReplay(cursor + 1) }}>{t('下一步', 'Next step')}</button>
+          <button type="button" className="subtle-button" aria-pressed={replayPlaying} onClick={() => {
+            if (lastStep) moveReplay(0)
+            setReplayPlaying(!replayPlaying)
+          }}>{replayPlaying ? t('暂停', 'Pause') : t('自动播放', 'Auto-play')}</button>
         </div>}
         {showExercise && exercise}
       </CommandDesk>

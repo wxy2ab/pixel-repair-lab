@@ -32,6 +32,10 @@
 .dictionary-lesson-records tbody th { border-inline-start: 1px solid #55718e; border-radius: 6px 0 0 6px; }
 .dictionary-lesson-records td { border-inline-end: 1px solid #55718e; border-radius: 0 6px 6px 0; }
 .dictionary-lesson-records td strong { font-family: var(--mono); }
+.dictionary-before { color: #bbd4cb; font: 500 12px/1.4 var(--mono); }
+.dictionary-row-action { display: inline-block; margin-inline-start: 5px; padding: 1px 5px; border-radius: 4px;
+  font-size: 11px; font-weight: 650; color: #d0f5dd; background: #31574d; }
+.dictionary-lesson-records tr:not([data-updated]):not([data-added]) .dictionary-row-action { color: #fff1cd; background: #614b26; }
 .dictionary-lesson-records td small { color: #c1d7ec; }
 .dictionary-lesson-records tr[data-active] th, .dictionary-lesson-records tr[data-active] td {
   border-color: #9de3b9;

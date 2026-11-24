@@ -72,6 +72,9 @@ test('a mouse-drawn annotation matches a native YOLOX box and records the overla
   await page.mouse.move(...point(x, y))
   await page.mouse.down()
   await page.mouse.move(...point(x + width, y + height), { steps: 6 })
+  await expect(picture.locator('.vision-box-overlap')).toBeVisible()
+  await expect(picture.locator('.vision-box-note')).toContainText('待验证')
+  await expect(page.getByTestId('vision-iou')).toHaveCount(0)
   await page.mouse.up()
 
   const improved = await runExperiment(page)
@@ -79,6 +82,7 @@ test('a mouse-drawn annotation matches a native YOLOX box and records the overla
   expect(improved.result.frames[0].iou).toBeGreaterThan(0.90)
   await expect(picture.locator('.vision-drawn-box')).toBeVisible()
   await expect(page.getByTestId('vision-iou')).toContainText('%')
+  await expect(picture.getByTestId('vision-iou')).toHaveText(`IoU ${Math.round(improved.result.frames[0].iou! * 100)}%`)
   await expect(page.getByTestId('vision-feedback')).toHaveText('当前图像通过。')
   await expect(mission(page, name).locator('.mission-check')).toBeVisible()
 })

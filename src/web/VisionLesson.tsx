@@ -114,6 +114,13 @@ function percentBox([x, y, width, height]: VisionBox, frame: VisionFrame): Visio
   return [x / frame.width * 100, y / frame.height * 100, width / frame.width * 100, height / frame.height * 100]
 }
 
+function sharedArea(a: VisionBox, b: VisionBox): VisionBox | undefined {
+  const x = Math.max(a[0], b[0]), y = Math.max(a[1], b[1])
+  const w = Math.min(a[0] + a[2], b[0] + b[2]) - x
+  const h = Math.min(a[1] + a[3], b[1] + b[3]) - y
+  return w > 0 && h > 0 ? [x, y, w, h] : undefined
+}
+
 type Point = { x: number; y: number }
 
 function pointOnImage(event: PointerEvent<HTMLDivElement>): Point {
@@ -126,12 +133,19 @@ function drawnBox(start: Point, end: Point): VisionBox {
   return [Math.min(start.x, end.x, 99), Math.min(start.y, end.y, 99), Math.max(1, Math.abs(start.x - end.x)), Math.max(1, Math.abs(start.y - end.y))]
 }
 
-function DetectionPicture({ frame, locale, draw, pending, onDraw }: {
-  frame: VisionFrame; locale: Locale; draw?: VisionBox; pending: boolean; onDraw: (box: VisionBox) => void;
+function DetectionPicture({ frame, locale, draw, pending, onDraw, current }: {
+  frame: VisionFrame; locale: Locale; draw?: VisionBox; pending: boolean; onDraw: (box: VisionBox) => void; current: boolean;
 }) {
+  const classroom = useClassroom()
   const start = useRef<Point | undefined>(undefined)
   const [draft, setDraft] = useState<VisionBox>()
   const canDraw = !!draw && !pending
+  const measured = current && !draft
+  const drawn = draft ?? (current && draw && frame.annotation ? percentBox(frame.annotation, frame) : draw)
+  // The lab scores against the highest-confidence detection. Other detections remain visible.
+  const reference = classroom && draw ? frame.detections.reduce<VisionFrame['detections'][number] | undefined>(
+    (best, box) => !best || box.score > best.score ? box : best, undefined) : undefined
+  const overlap = reference && drawn && sharedArea(drawn, percentBox(reference.box, frame))
   return <div className={'vision-image' + (draw ? ' vision-draw' : '')} style={{ aspectRatio: frame.width / frame.height }}
     data-testid="vision-processed"
     onPointerDown={event => {
@@ -151,7 +165,15 @@ function DetectionPicture({ frame, locale, draw, pending, onDraw }: {
     <img src={frame.processed} alt={word(locale, frame.id)} draggable={false} />
     {frame.detections.map(({ box, label, score }, index) => <div key={index} className="vision-detection-box" aria-hidden="true"
       style={squareStyle(percentBox(box, frame))}><span>{word(locale, label)} {(score * 100).toFixed(1)}%</span></div>)}
-    {draw && <div className="vision-drawn-box" aria-hidden="true" style={squareStyle(draft ?? draw)} />}
+    {overlap && <div className="vision-box-overlap" aria-hidden="true" style={squareStyle(overlap)} />}
+    {drawn && <div className="vision-drawn-box" aria-hidden="true" style={squareStyle(drawn)}>
+      {classroom && <span>{tr(locale, '我的框', 'My box')}</span>}
+    </div>}
+    {drawn && classroom && <div className="vision-box-note">
+      <i aria-hidden="true" />{tr(locale, '重叠', 'Overlap')}
+      {measured && frame.iou !== undefined ? <strong data-testid="vision-iou">IoU {Math.round(frame.iou * 100)}%</strong>
+        : <span>{tr(locale, '待验证', 'Preview')}</span>}
+    </div>}
   </div>
 }
 
@@ -166,6 +188,7 @@ function VisionOutput({ result, selected, mode, params, locale, pending, preview
   result: VisionResult; selected: number; mode: VisionMode; params: VisionParameters; locale: Locale; pending: boolean; preview: boolean; current: boolean;
   onDraw: (box: VisionBox) => void; selectPixel: (x: number, y: number) => void;
 }) {
+  const classroom = useClassroom()
   const frame = result.frames[selected] ?? result.frames[0]
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const annotated = mode === 'boxes' ? [Number(params.x), Number(params.y), Number(params.w), Number(params.h)] as VisionBox : undefined
@@ -179,14 +202,14 @@ function VisionOutput({ result, selected, mode, params, locale, pending, preview
         </figure>}
         <figure>
           <figcaption>{mode === 'project' || mode === 'filter' || mode === 'color' ? t('处理结果', 'Processed image') : t('检测框', 'Detection boxes')} · {frame.width}×{frame.height}</figcaption>
-          <DetectionPicture key={frame.id} frame={frame} locale={locale} draw={annotated} pending={pending} onDraw={onDraw} />
+          <DetectionPicture key={frame.id} frame={frame} locale={locale} draw={annotated} pending={pending} current={current} onDraw={onDraw} />
         </figure>
       </div>
       {frame.intermediate && <details className="vision-details"><summary>{t('查看阈值处理前的灰度图', 'View grayscale before thresholding')}</summary>
         <img className="vision-intermediate" src={frame.intermediate} alt={t('灰度与平滑的中间图', 'Grayscale and smoothing intermediate image')} />
       </details>}
-      {mode === 'boxes' && <p className="vision-draw-note">{t('拖出黄色框，绿色框显示模型的参考位置。', 'Drag a yellow box. The green box is the model’s reference.')}</p>}
-      {frame.iou !== undefined && current && <p className="vision-iou" data-testid="vision-iou">{t('框的重叠率 IoU', 'Box overlap IoU')} <strong>{Math.round(frame.iou * 100)}%</strong></p>}
+      {mode === 'boxes' && <p className="vision-draw-note">{t('在照片上拖出你的框', 'Drag on the photo to draw your box')}</p>}
+      {!classroom && frame.iou !== undefined && current && <p className="vision-iou" data-testid="vision-iou">{t('框的重叠率 IoU', 'Box overlap IoU')} <strong>{Math.round(frame.iou * 100)}%</strong></p>}
       {(mode === 'detect' || mode === 'boxes' || (mode === 'project' && !preview)) && (frame.detections.length ? <div className="vision-detections" data-testid="vision-detection">
         <table><thead><tr><th scope="col">{t('类别', 'Class')}</th><th scope="col">{t('置信度', 'Confidence')}</th><th scope="col">x, y · w×h</th></tr></thead>
           <tbody>{frame.detections.map(({ label, score, box: [x, y, width, height] }, index) => <tr key={index}>

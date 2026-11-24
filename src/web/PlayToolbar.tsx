@@ -37,8 +37,8 @@ export function useTrailPreference() {
   return { visible, toggle: toggleTrail }
 }
 
-export function PlayToolbar({ locale, children, trail, status, guided, quickActions }: {
-  locale: Locale; children: ReactNode; trail?: ReturnType<typeof useTrailPreference>; status?: ReactNode; guided?: boolean; quickActions?: ReactNode
+export function PlayToolbar({ locale, children, trail, status, guided, quickActions, result }: {
+  locale: Locale; children: ReactNode; trail?: ReturnType<typeof useTrailPreference>; status?: ReactNode; guided?: boolean; quickActions?: ReactNode; result?: ReactNode
 }) {
   const toolbar = useRef<HTMLDivElement>(null)
   const mapMode = useArenaMapMode()
@@ -67,6 +67,7 @@ export function PlayToolbar({ locale, children, trail, status, guided, quickActi
       event.preventDefault()
       buttons[(index + buttons.length + (event.key === 'ArrowRight' ? 1 : -1)) % buttons.length].focus()
     }}>
+    {result}
     {!folded && quickActions}
     {!folded && status && <div className="play-toolbar__status" role="status">{status}</div>}
     <div className="play-toolbar__actions" id={actionsId}>{children}

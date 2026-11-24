@@ -104,7 +104,7 @@ test('winning then skipping advances the home recommendation without counting th
   const second = levels.find(level => level.id === secondGridId)
   const third = levels.find(level => level.id === thirdGridId)
   if (first?.kind !== 'grid' || !second || !third) throw new Error('Missing the first three grid challenges')
-  const total = levels.filter(level => level.kind === 'grid').length
+  const total = levels.filter(level => level.kind === 'grid' && !level.warehouse).length
 
   await page.goto('/')
   const card = continueCard(page)

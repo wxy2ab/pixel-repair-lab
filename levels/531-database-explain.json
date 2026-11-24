@@ -17,20 +17,29 @@
   "animation": {
     "layout": "row",
     "frames": [
-      { "caption": { "zh": "库存表目前有三行，顺序还没有变。", "en": "The inventory starts with three rows in their original order." }, "items": [
-        { "id": "cable", "label": { "zh": "线缆", "en": "Cable" }, "value": { "zh": "5", "en": "5" } },
-        { "id": "water", "label": { "zh": "水", "en": "Water" }, "value": { "zh": "2", "en": "2" } },
-        { "id": "battery", "label": { "zh": "电池", "en": "Battery" }, "value": { "zh": "8", "en": "8" } }
-      ] },
-      { "caption": { "zh": "WHERE stock >= 4 留下线缆和电池。", "en": "WHERE stock >= 4 keeps the cable and battery rows." }, "items": [
-        { "id": "cable", "label": { "zh": "线缆", "en": "Cable" }, "value": { "zh": "5", "en": "5" }, "state": "active" },
-        { "id": "water", "label": { "zh": "水", "en": "Water" }, "value": { "zh": "2", "en": "2" }, "state": "muted" },
-        { "id": "battery", "label": { "zh": "电池", "en": "Battery" }, "value": { "zh": "8", "en": "8" }, "state": "active" }
-      ] },
-      { "caption": { "zh": "ORDER BY stock DESC 把库存更多的电池排到前面。", "en": "ORDER BY stock DESC puts batteries first because they have more stock." }, "items": [
-        { "id": "battery", "label": { "zh": "电池", "en": "Battery" }, "value": { "zh": "8", "en": "8" }, "state": "done" },
-        { "id": "cable", "label": { "zh": "线缆", "en": "Cable" }, "value": { "zh": "5", "en": "5" }, "state": "done" }
-      ] }
+      {
+        "caption": {"zh": "库存表目前有三行，顺序还没有变。", "en": "The inventory starts with three rows in their original order."},
+        "items": [
+          {"id": "cable", "label": {"zh": "线缆", "en": "Cable"}, "value": {"zh": "5", "en": "5"}},
+          {"id": "water", "label": {"zh": "水", "en": "Water"}, "value": {"zh": "2", "en": "2"}},
+          {"id": "battery", "label": {"zh": "电池", "en": "Battery"}, "value": {"zh": "8", "en": "8"}}
+        ]
+      },
+      {
+        "caption": {"zh": "WHERE stock >= 4 留下线缆和电池。", "en": "WHERE stock >= 4 keeps the cable and battery rows."},
+        "items": [
+          {"id": "cable", "label": {"zh": "线缆", "en": "Cable"}, "value": {"zh": "5", "en": "5"}, "state": "active", "annotation": {"zh": "5 ≥ 4", "en": "5 ≥ 4"}},
+          {"id": "water", "label": {"zh": "水", "en": "Water"}, "value": {"zh": "2", "en": "2"}, "state": "muted", "annotation": {"zh": "2 < 4", "en": "2 < 4"}},
+          {"id": "battery", "label": {"zh": "电池", "en": "Battery"}, "value": {"zh": "8", "en": "8"}, "state": "active", "annotation": {"zh": "8 ≥ 4", "en": "8 ≥ 4"}}
+        ]
+      },
+      {
+        "caption": {"zh": "ORDER BY stock DESC 把库存更多的电池排到前面。", "en": "ORDER BY stock DESC puts batteries first because they have more stock."},
+        "items": [
+          {"id": "battery", "label": {"zh": "电池", "en": "Battery"}, "value": {"zh": "8", "en": "8"}, "state": "done", "annotation": {"zh": "① 最多", "en": "① Highest"}},
+          {"id": "cable", "label": {"zh": "线缆", "en": "Cable"}, "value": {"zh": "5", "en": "5"}, "state": "done", "annotation": {"zh": "②", "en": "②"}}
+        ]
+      }
     ]
   },
   "question": {

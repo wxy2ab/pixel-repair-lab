@@ -1,0 +1,44 @@
+.lesson-notes, .step-explanation {
+  min-width: 0;
+  text-align: start;
+}
+.lesson-notes { color: #e9f2e9; }
+.lesson-notes > summary, .step-explanation > summary {
+  width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 7px 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+.lesson-notes > summary:focus-visible, .step-explanation > summary:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+.lesson-notes .lesson-annotations { margin: 0; }
+.lesson-notes .lesson-annotations > p:first-child { margin: 0 0 12px; }
+.coding-device .step-explanation {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: #c4d5da;
+  font-size: 14px;
+  border: 0;
+}
+.step-explanation[open] > div {
+  margin-bottom: 6px;
+  padding-inline-start: 12px;
+  border-inline-start: 2px solid #769d91;
+  line-height: 1.55;
+}
+.battery-action-tag {
+  grid-column: 1 / -1;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: #f1d28f;
+  color: #302711;
+  font-size: 11px;
+  font-weight: 700;
+}

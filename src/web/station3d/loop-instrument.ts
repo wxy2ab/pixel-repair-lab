@@ -75,7 +75,9 @@ function rowReader(state: RowState & { locale: Locale }, kit: Kit, tools: Teachi
     const x = cellX(step.index, count)
     kit.casing([x, 1.60, rail], [.64, .25, .30], brass, .05)
     kit.box([x, 1.57, rail + .19], [.18, .10, .13], amber, undefined, 'glow')
-    if (step.kind === 'add') tools.label(String(step.calculated), [x, 1.96, rail], .27)
+    const value = step.kind === 'add' ? step.charge + ' + ' + state.increment + ' = ' + step.calculated
+      : step.kind === 'take' ? '→ ' + step.charge : step.kind === 'record' ? '↓ ' + step.calculated : undefined
+    if (value) tools.label(value, [x, 1.98, rail], .23)
   }
   tools.label(state.locale === 'zh' ? '记录' : 'Results', [0, .13, 1.34], .20)
 }
@@ -103,6 +105,9 @@ function nestedRack(state: RackState & { locale: Locale }, kit: Kit, tools: Teac
     row.forEach((input, i) => {
       const x = cellX(i, slots) + .12
       battery(kit, tools, x, base, z, current?.[i] ?? input, capacity, active && i === step?.batteryIndex, current?.[i] !== undefined)
+      if (active && step?.batteryIndex === i && step.kind === 'charge') {
+        tools.label(step.charge + ' + ' + state.increment + ' = ' + step.charged, [x, base + 1.56, z], .21)
+      }
       if (next?.kind === 'take' && next.rowIndex === r && next.batteryIndex === i) tools.pick('take', [x, base + .63, z], [.89, 1.43, .81])
     })
   })
@@ -133,7 +138,8 @@ function thresholdGauge(state: MeterState & { locale: Locale }, kit: Kit, tools:
     const indicator = i === 0 ? amber : mint
     kit.cylinder([x, .445, .46], .083, .106, .068, decided && live ? indicator : '#52716f', undefined, 'glow')
   }
-  if (decided) tools.label(condition ? 'True' : 'False', [condition ? -.18 : 1.08, .60, .58], .17)
+  if (decided) tools.label(current + ' < ' + target + ' → ' + (condition ? 'True' : 'False'),
+    [.53, 1.84, -.13], .22)
 }
 
 export function buildLoopInstrument(state: LoopInstrumentState, kit: Kit, tools: TeachingModelTools) {

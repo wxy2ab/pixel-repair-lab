@@ -12,12 +12,17 @@ export type LectureAnimationItem = {
   id: string
   label: Localized
   value?: Localized
+  annotation?: Localized
+  symbol?: string
+  glyph?: 'lamp-on' | 'lamp-off' | 'switch-open' | 'switch-closed' | 'diode-forward' | 'diode-reverse' | 'transistor-on' | 'transistor-off'
+  box?: [x: number, y: number, width: number, height: number]
   state?: 'active' | 'done' | 'muted'
   height?: number
   swatch?: string
 }
 export type LectureAnimation = {
   layout: 'row' | 'stack' | 'grid' | 'bars' | 'pipeline'
+  plot?: { columns: number; rows: number }
   hardware?: CircuitLectureConfig | CpuLectureConfig
   workstation?: {
     kind: 'depth-first' | 'weighted-path' | 'dynamic-programming' | 'rival-detour' | 'supply-race'

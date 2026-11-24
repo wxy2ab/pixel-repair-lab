@@ -9,7 +9,7 @@ const secondGridId = 'challenge-two-lane-dispatch'
 const thirdGridId = 'challenge-six-step-detour'
 const tiers = { starter: 0, intermediate: 1, advanced: 2 }
 const routeKinds = [
-  ['grid', 'grid'], ['arena', 'arena'], ['algorithm', 'algorithm'],
+  ['grid', 'grid'], ['warehouse', 'grid'], ['arena', 'arena'], ['algorithm', 'algorithm'],
   ['systems', 'machine'], ['data', 'data'], ['vision', 'vision'], ['ai', 'ai'],
 ] as const
 
@@ -43,7 +43,8 @@ test('all gameplay routes include every challenge in difficulty order and fit a 
     const select = routes.locator(`[data-challenge-route="${type}"]`)
     await select.click()
     await expect(select).toHaveAttribute('aria-pressed', 'true')
-    const expected = challenges.filter(level => level.kind === kind)
+    const expected = challenges.filter(level => level.kind === kind
+      && (level.kind !== 'grid' || Boolean(level.warehouse) === (type === 'warehouse')))
       .sort((left, right) => tiers[left.difficulty ?? 'intermediate'] - tiers[right.difficulty ?? 'intermediate']
         || left.order - right.order || left.id.localeCompare(right.id, 'en'))
       .map(level => level.id)

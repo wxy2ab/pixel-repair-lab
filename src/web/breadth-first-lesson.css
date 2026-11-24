@@ -19,6 +19,14 @@
 
 .bfs-map-panel, .bfs-queue-panel { min-width: 0; }
 .bfs-body .bfs-map-key { margin-top: 6px; font-size: .76rem; }
+.bfs-order-key, .bfs-legend, .bfs-legend span { display: flex; align-items: center; flex-wrap: wrap; gap: .45rem; }
+.bfs-order-key { color: #c1d2e6; font-size: .82rem; }
+.bfs-order-key b { font: 700 1rem/1 var(--mono); color: #ffda92; letter-spacing: .16em; }
+.bfs-legend { margin-top: .45rem; gap: .25rem .8rem; color: #b6ccdc; font-size: .76rem; }
+.bfs-legend i { width: .83rem; height: .83rem; border-radius: 2px; }
+.bfs-key-wall { border: 1px solid #566879; background: repeating-linear-gradient(135deg, #101b2c 0 3px, #35475b 3px 5px); }
+.bfs-key-pending { border: 1px dashed #8bd6d0; background: #264e54; }
+.bfs-legend b { color: #eaf1f9; font-family: var(--mono); }
 
 .bfs-map {
   display: grid;
@@ -63,6 +71,15 @@ button.bfs-cell:focus-visible { outline: 2px solid var(--warm); outline-offset: 
 .bfs-cell[data-neighbor] { box-shadow: inset 0 0 0 1px #99c7ed; }
 .bfs-cell[data-current] { border-color: var(--warm); box-shadow: inset 0 0 0 1px var(--warm); }
 .bfs-cell[data-on-path] { background: #254d3e; border: 1px solid var(--mint); box-shadow: inset 0 0 0 1px #497a69; }
+.bfs-cell-action { position: absolute; left: 2px; bottom: 2px; max-width: calc(100% - 3px); z-index: 1;
+  padding: 1px 3px; border-radius: 4px; background: #ffe0a0; color: #233133; line-height: 1.1; font-size: clamp(.52rem, 1.5cqi, .72rem); }
+.bfs-cell:has(.bfs-cell-action) .bfs-cell-depth { bottom: auto; top: 2px; }
+.bfs-edge-arrow { position: absolute; z-index: 2; width: 1.1em; height: 1.1em; display: grid; place-items: center;
+  border-radius: 50%; background: #6d4f24; color: #fff5c9; font: 800 1rem/1 var(--mono); pointer-events: none; }
+.bfs-edge-arrow[data-direction="↑"] { top: -.48em; }
+.bfs-edge-arrow[data-direction="↓"] { bottom: -.48em; }
+.bfs-edge-arrow[data-direction="←"] { left: -.48em; }
+.bfs-edge-arrow[data-direction="→"] { right: -.48em; }
 
 .bfs-cell-position, .bfs-cell-depth {
   position: absolute;
@@ -136,6 +153,11 @@ button.bfs-cell:focus-visible { outline: 2px solid var(--warm); outline-offset: 
 .bfs-queue li[data-head] { border-color: var(--warm); }
 .bfs-queue li small { min-height: 1em; color: var(--muted); font-size: .69rem; line-height: 1; }
 .bfs-queue li[data-head] small { color: var(--warm); }
+.bfs-queue li[data-added] { background: #295249; outline: 1px solid #80cbb3; }
+@media (prefers-reduced-motion: no-preference) {
+  .bfs-queue li[data-added], .bfs-cell-action { animation: bfs-mark-appear .22s ease-out; }
+  @keyframes bfs-mark-appear { from { opacity: .4; transform: translateY(3px); } }
+}
 .bfs-queue li span { display: flex; align-items: center; gap: 4px; }
 .bfs-queue li code { font-size: .72rem; }
 .bfs-queue li strong { padding: 2px 3px; border-radius: 3px; background: #14283d; font: 750 .72rem/1 var(--mono); }

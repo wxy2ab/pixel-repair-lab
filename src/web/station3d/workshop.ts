@@ -5,6 +5,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 type XYZ = [number, number, number]
 type Surface = 'metal' | 'glow'
 type WorkshopOptions = { kind: 'lobby' | 'field'; columns?: number; rows?: number; variant?: 'workshop' | 'arena' }
+export type HubMachine = 'fan' | 'crane'
 
 export const workshopStations: Record<'learning' | 'arena', XYZ> = {
   learning: [-2.7, 1.55, 0],
@@ -131,13 +132,13 @@ function bench(kit: Kit) {
   kit.cylinder([.65, 1.78, -.12], .179, .181, .02, '#fff2b8', [0, 0, -.24], 'glow')
 }
 
-function reactor(kit: Kit, accent: string) {
+function reactor(kit: Kit, accent: string, cellLamps = kit) {
   // Tall caged charging column with a luminous energy cell and a control pedestal.
   kit.cylinder([0, .10, 0], 1.02, 1.10, .20, ink, origin, 'metal', 8)
   kit.cylinder([0, .26, 0], .88, 1.0, .19, slate, origin, 'metal', 8)
   kit.cylinder([0, .49, 0], .72, .85, .33, ochre, origin, 'metal', 8)
   kit.cylinder([0, 1.35, 0], .41, .41, 1.65, '#764b38')
-  kit.cylinder([0, 1.37, 0], .47, .47, 1.63, accent, origin, 'glow')
+  cellLamps.cylinder([0, 1.37, 0], .47, .47, 1.63, accent, origin, 'glow')
   for (let i = 0; i < 8; i++) {
     const a = i * Math.PI / 4
     const x = .68 * Math.cos(a), z = .68 * Math.sin(a)
@@ -150,7 +151,7 @@ function reactor(kit: Kit, accent: string) {
   kit.cylinder([0, 2.30, 0], .87, .78, .23, ochre, origin, 'metal', 8)
   kit.cylinder([0, 2.49, 0], .62, .81, .18, ivory, origin, 'metal', 8)
   kit.cylinder([0, 2.64, 0], .45, .61, .14, steel, origin, 'metal', 8)
-  kit.cylinder([0, 2.75, 0], .24, .40, .11, accent, origin, 'glow')
+  cellLamps.cylinder([0, 2.75, 0], .24, .40, .11, accent, origin, 'glow')
   kit.box([.52, .44, .91], [.28, .85, .27], steel)
   kit.casing([.52, .89, 1.0], [.67, .18, .47], ink, .045, [.19, 0, 0])
   kit.box([.52, .98, 1.0], [.49, .028, .29], '#76d7d1', [.19, 0, 0], 'glow')
@@ -351,9 +352,6 @@ function fieldShell(kit: Kit, columns: number, rows: number, isArena: boolean) {
   for (let i = left + 1; i < right - 1; i += .9) {
     kit.box([i, floor + 1.59, far + .58], [.37, .041, .029], '#abd2c8', origin, 'glow')
   }
-  kit.box([x + .45, floor + 1.50, far + .46], [.78, .3, .51], '#c58749')
-  for (const dx of [-.19,.19]) kit.rod([x+.45+dx, floor+1.38, far+.49], [x+.45+dx, floor+.73, far+.49], .021, ink)
-  kit.box([x+.45, floor+.69, far+.49], [.57,.13,.25], ivory)
   // The actual booths on the gantry identify the bay from across the track.
   const boothX = x - Math.min(2.2, width*.18)
   kit.casing([boothX,floor+1.23,far+.54], [1.55,.55,.235], ink, .06)
@@ -373,6 +371,82 @@ function fieldShell(kit: Kit, columns: number, rows: number, isArena: boolean) {
   crates(kit, right - 1.36, floor + .03, near - 1.00, 2)
   crates(kit, right - 2.37, floor + .03, near - 1.00, 1)
   crates(kit, left + 1.27, floor + .03, far + 1.03, 2)
+}
+
+function railHoist(columns: number, rows: number, railZ: number,
+  section: (build: (kit: Kit) => void, at?: XYZ, scale?: number) => THREE.Group) {
+  const floor = -1.28, railTop = floor + 1.76
+  const size = THREE.MathUtils.clamp(.85 + Math.max(columns, rows) * .022, .95, 1.40)
+  const centre = (columns - 1) / 2, reach = .38 * columns + .72
+  const reelZ = .89
+  for (const end of [centre - reach, centre + reach]) {
+    section(kit => {
+      kit.casing([0, .074, 0], [1.66, .148, .95], slate, .045)
+      for (const side of [-1, 1]) {
+        kit.box([side * .54, .161, 0], [.18, .064, .67], ink)
+        kit.box([side * .68, .157, .30], [.19, .020, .15], ivory)
+      }
+    }, [end, floor + .03, railZ + reelZ * size], size)
+  }
+  const trolley = section(kit => {
+    for (const axle of [-.66, .66]) {
+      kit.cylinder([axle, .116, 0], .12, .12, .50, ink, [Math.PI / 2, 0, 0])
+      kit.cylinder([axle, .116, .252], .062, .062, .025, ivory, [Math.PI / 2, 0, 0])
+    }
+    kit.casing([0, .32, .08], [1.90, .40, .58], '#e3a64f', .06)
+    kit.casing([-.25, .56, .04], [.92, .18, .48], steel, .035)
+    for (const dx of [-.55, .55]) {
+      kit.rod([dx, .30, .20], [dx, .30, reelZ], .071, steel)
+      kit.rod([dx, .47, .24], [dx, .30, reelZ], .040, ochre)
+    }
+    kit.casing([0, .30, reelZ], [1.43, .27, .29], '#efaa51', .038)
+    for (const x of [-.49, -.16, .17, .50]) {
+      kit.box([x, .30, reelZ + .149], [.10, .22, .017], ink, [0, 0, -.40])
+    }
+    kit.box([.54, .42, .385], [.43, .12, .027], '#fff0b3', origin, 'glow')
+  }, [centre, railTop, railZ], size)
+  const cables = section(kit => {
+    for (const dx of [-.48, .48]) kit.rod([dx, 0, 0], [dx, -1, 0], .022, steel)
+  })
+  cables.position.set(0, .23, reelZ)
+  const carrier = section(kit => {
+    kit.casing([0, 0, 0], [1.36, .16, .24], ivory, .028)
+    for (const side of [-1, 1]) {
+      kit.rod([side * .58, -.02, 0], [side * .65, -.34, 0], .054, ochre)
+      kit.cylinder([side * .54, -.34, 0], .30, .30, .095, '#578d95', [0, 0, Math.PI / 2])
+    }
+    kit.cylinder([0, -.34, 0], .222, .222, 1.04, '#bc7153', [0, 0, Math.PI / 2])
+    for (let i = -2; i <= 2; i++) {
+      kit.cylinder([i * .184, -.34, 0], .243, .243, .085, '#ecc087', [0, 0, Math.PI / 2])
+    }
+  })
+  carrier.position.z = reelZ
+  trolley.add(cables, carrier)
+  trolley.name = 'Cable reel trolley'
+  // Idle frames reuse the shadow map for the fixed gantry and the playable board.
+  trolley.traverse(part => { part.castShadow = false })
+  const travel = THREE.MathUtils.clamp(2 * reach / (1.18 + .042 * columns), 3.4, 13)
+  const leg = travel + 2.8
+  const raised = -.11
+  // The axle hangs .34 below the yoke. Its .30-radius flanges rest on the .193-high saddles.
+  const lowered = (floor + .03 - railTop) / size + .193 + .30 + .34
+  function update(seconds: number) {
+    const cycle = (seconds + travel * .39) % (2 * leg)
+    const t = cycle % leg
+    const across = THREE.MathUtils.smoothstep(t, 0, travel)
+    trolley.position.x = centre + reach * (2 * across - 1) * (cycle < leg ? 1 : -1)
+    const dock = THREE.MathUtils.smoothstep(t, travel, travel + 1.0)
+      * (1 - THREE.MathUtils.smoothstep(t, travel + 1.8, leg))
+    carrier.position.y = THREE.MathUtils.lerp(raised, lowered, dock)
+    cables.scale.y = cables.position.y - carrier.position.y
+  }
+  update(0)
+  const bounds = new THREE.Box3().setFromObject(trolley)
+  const halfWidth = (bounds.max.x - bounds.min.x) / 2
+  bounds.min.x = centre - reach - halfWidth
+  bounds.max.x = centre + reach + halfWidth
+  bounds.min.y -= (raised - lowered) * size
+  return { update, bounds }
 }
 
 // A cutaway wall has an inner rail, window reveals and actual three-dimensional
@@ -436,6 +510,56 @@ function hangarWall(kit: Kit, span: number, height: number, isArena: boolean) {
   }
 }
 
+function lobbyMachines(section: (build: (kit: Kit) => void, at: XYZ, scale?: number) => THREE.Group, accent: string) {
+  const arm = section(crane, [-1.1, 0, -1.96], .98)
+  const fanCenter: XYZ = [1.12, 2.52, -2.66]
+  const face: XYZ = [Math.PI / 2, 0, 0]
+  const housing = section(kit => {
+    kit.casing([0, 0, -.06], [1.23, 1.23, .21], steel, .09)
+    kit.cylinder([0, 0, .07], .55, .55, .08, ink, face, 'metal', 32)
+    for (const x of [-.51, .51]) for (const y of [-.51, .51]) {
+      kit.cylinder([x, y, .065], .027, .027, .025, ivory, face)
+    }
+    for (let i = 0; i < 3; i++) kit.box([.23 + .102 * i, -.54, .07], [.07, .041, .025], i ? ink : accent)
+  }, fanCenter)
+  const blades = section(kit => {
+    for (let i = 0; i < 4; i++) {
+      const angle = i * Math.PI / 2
+      kit.casing([-.27 * Math.sin(angle), .27 * Math.cos(angle), .143],
+        [.19, .43, .07], i % 2 ? enamel : ivory, .056, [0, .14, angle - .30])
+    }
+    kit.cylinder([0, 0, .20], .125, .125, .09, ochre, face)
+  }, fanCenter)
+  const boostLights = section(kit => {
+    for (const x of [.332, .434]) kit.box([x, -.54, .09], [.07, .041, .025], accent, origin, 'glow')
+  }, fanCenter)
+  boostLights.visible = false
+  const picks = new Map<THREE.Object3D, HubMachine>()
+  for (const mesh of arm.children) picks.set(mesh, 'crane')
+  for (const mesh of [...housing.children, ...blades.children, ...boostLights.children]) picks.set(mesh, 'fan')
+  const active = { crane: false, fan: false }
+  let speed = .78
+  return {
+    picks,
+    toggle(machine: HubMachine) {
+      active[machine] = !active[machine]
+      boostLights.visible = active.fan
+      return active[machine]
+    },
+    update(dt: number, reduced: boolean) {
+      const target = active.crane ? -1.45 : 0
+      if (reduced) {
+        arm.rotation.y = target
+        blades.rotation.z = active.fan ? .59 : .13
+      } else {
+        arm.rotation.y = THREE.MathUtils.damp(arm.rotation.y, target, 5, dt)
+        speed = THREE.MathUtils.damp(speed, active.fan ? 5.2 : .78, 4, dt)
+        blades.rotation.z += dt * speed
+      }
+    },
+  }
+}
+
 export function createWorkshopSet({ kind, columns = 8, rows = 8, variant = 'workshop' }: WorkshopOptions) {
   const group = new THREE.Group()
   group.name = kind === 'lobby' ? 'Workshop interior' : 'Service hangar'
@@ -454,6 +578,9 @@ export function createWorkshopSet({ kind, columns = 8, rows = 8, variant = 'work
     return unit
   }
   let rotor: THREE.Group | undefined
+  let chargingGlow: THREE.MeshBasicMaterial | undefined
+  let hoist: ReturnType<typeof railHoist> | undefined
+  let machines: ReturnType<typeof lobbyMachines> | undefined
   const walls: { unit: THREE.Group; normal: THREE.Vector3 }[] = []
   const cameraDirection = new THREE.Vector3()
   if (kind === 'lobby') {
@@ -461,11 +588,13 @@ export function createWorkshopSet({ kind, columns = 8, rows = 8, variant = 'work
     section(kit => lobbyShell(kit, variant === 'arena'))
     const diagnostics = section(bench, [-2.72, 0, -.12])
     diagnostics.userData.station = 'learning'
-    const core = section(kit => reactor(kit, coreColor), [2.55, 0, -1.52])
+    const cellLamps = new Kit()
+    const core = section(kit => reactor(kit, coreColor, cellLamps), [2.55, 0, -1.52])
+    chargingGlow = materials.glow.clone()
+    core.add(cellLamps.finish({ ...materials, glow: chargingGlow }, resources))
     core.userData.station = 'arena'
-    section(crane, [-1.1, 0, -1.96], .98)
-    // The rotor is the only moving machine. Its concentric coils orbit without
-    // rotating the feet, cage, or cap of the charging column.
+    machines = lobbyMachines(section, variant === 'arena' ? amber : mint)
+    // Segmented charge bands travel inside the stationary cage.
     rotor = section(kit => {
       for (let i = 0; i < 3; i++) {
         kit.ring([0, i * .31, 0], .575, .025, '#ffe5a4', 'glow', 1.89, i * 1.37)
@@ -477,6 +606,7 @@ export function createWorkshopSet({ kind, columns = 8, rows = 8, variant = 'work
     section(kit => fieldShell(kit, columns, rows, isArena))
     const cx = (columns - 1) / 2, cz = (rows - 1) / 2
     const width = columns + 6.8, depth = rows + 6.6
+    hoist = railHoist(columns, rows, cz - depth / 2 + .42, section)
     const h = Math.min(3.9, 2.48 + Math.min(rows, columns) * .10)
     for (const [dx, dz, angle, span] of [[0,-1,0,width], [-1,0,Math.PI/2,depth], [0,1,Math.PI,width], [1,0,-Math.PI/2,depth]]) {
       const at: XYZ = [cx + dx*width/2, -1.26, cz + dz*depth/2]
@@ -493,7 +623,15 @@ export function createWorkshopSet({ kind, columns = 8, rows = 8, variant = 'work
   }
   return {
     group,
-    update(seconds: number) { if (rotor) rotor.rotation.y = seconds * .46 },
+    machines,
+    fieldMotionBounds: hoist ? [hoist.bounds] : [],
+    update(seconds: number) {
+      hoist?.update(seconds)
+      if (!rotor || !chargingGlow) return
+      rotor.rotation.y = seconds * .46
+      rotor.position.y = 1.09 + .12 * Math.sin(seconds * 2 * Math.PI / 7)
+      chargingGlow.color.setScalar(.77 + .21 * Math.sin(seconds * 2 * Math.PI / 5.8))
+    },
     updateView(camera: THREE.Camera) {
       if (!walls.length) return
       camera.getWorldDirection(cameraDirection)
@@ -503,6 +641,7 @@ export function createWorkshopSet({ kind, columns = 8, rows = 8, variant = 'work
       group.removeFromParent()
       group.clear()
       for (const geometry of resources) geometry.dispose()
+      chargingGlow?.dispose()
       materials.metal.dispose()
       materials.glow.dispose()
     },

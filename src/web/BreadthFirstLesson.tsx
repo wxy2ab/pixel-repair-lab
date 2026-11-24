@@ -5,7 +5,8 @@ import { sameBreadthCell as sameCell, type BreadthCell, type BreadthFirstMap } f
 import type { ProgramWalkthrough } from '../shared/programWalkthrough'
 import type { Locale } from '../shared/types'
 import { Robot } from './Board'
-import { BreadthFirstInstrument } from './BreadthFirstInstrument'
+import { BreadthFirstInstrument, type SearchMark } from './BreadthFirstInstrument'
+import { StepExplanation } from './LessonNotes'
 import { runIssueText, tr } from './text'
 import './breadth-first-lesson.css'
 
@@ -14,11 +15,32 @@ type Visited = BreadthFirstStep['visited']
 
 const at = ([x, y]: BreadthCell) => `(${x}, ${y})`
 
-export function BreadthFirstBoard({ map, locale, path = [], order = [], visited = [], queue = [], current, neighbor, onCellClick,
+function searchMark(step: BreadthFirstStep | undefined, map: BreadthFirstMap, t: Translate): SearchMark {
+  if (!step) return { cell: map.start, label: t('起点', 'Start') }
+  if (step.kind === 'return') return { cell: step.path.length ? map.goal : map.start,
+    label: step.path.length ? t(`${step.path.length - 1} 步`, `${step.path.length - 1} moves`) : t('无路', 'No route') }
+  const here = step.current ?? map.start
+  if (step.kind === 'start') return { cell: map.start, label: t('入队', 'Enqueue') }
+  if (step.kind === 'visit') return { cell: here, label: t('出队', 'Dequeue') }
+  if (step.kind === 'goal') return { cell: here, label: t('找到', 'Found') }
+  const from = step.kind === 'path' ? step.path[1] : here
+  const to = step.kind === 'path' ? step.path[0] : step.neighbor
+  if (!from || !to) return { cell: here, label: t('检查', 'Check') }
+  const arrow = to[0] > from[0] ? '→' : to[0] < from[0] ? '←' : to[1] > from[1] ? '↓' : '↑'
+  switch (step.kind) {
+    case 'path': return { from, cell: to, arrow, label: t('回溯', 'Trace back') }
+    case 'enqueue': return { from, cell: to, arrow, label: t('入队', 'Enqueue') }
+    case 'skip':
+      if (step.reason === 'edge') return { from, cell: here, arrow, label: t('越界', 'Edge') }
+      return { from, cell: to, arrow, label: step.reason === 'wall' ? t('墙', 'Wall') : t('已标记', 'Seen') }
+  }
+}
+
+export function BreadthFirstBoard({ map, locale, path = [], order = [], visited = [], queue = [], current, neighbor, mark, onCellClick,
   testId = 'breadth-first-map' }: {
   map: BreadthFirstMap; locale: Locale; path?: readonly BreadthCell[]; order?: readonly BreadthCell[];
   visited?: readonly Visited[number][]; queue?: readonly BreadthCell[]; current?: BreadthCell; neighbor?: BreadthCell;
-  onCellClick?: (cell: BreadthCell) => void; testId?: string;
+  mark?: SearchMark; onCellClick?: (cell: BreadthCell) => void; testId?: string;
 }) {
   const t: Translate = (zh, en) => tr(locale, zh, en)
   return <div className="bfs-map" data-testid={testId} aria-label={t('维修站地图', 'Repair station map')}
@@ -34,6 +56,8 @@ export function BreadthFirstBoard({ map, locale, path = [], order = [], visited 
       const isQueued = queue.some(queued => sameCell(cell, queued))
       const pathIndex = path.findIndex(item => sameCell(cell, item))
       const searchIndex = order.findIndex(item => sameCell(cell, item))
+      const action = sameCell(cell, mark?.cell) ? mark?.label : undefined
+      const arrow = sameCell(cell, mark?.from) ? mark?.arrow : undefined
       const label = [t(`格子 ${at(cell)}`, `Cell ${at(cell)}`)]
       if (isStart) label.push(t('芽芽的起点', 'Sprout’s start'))
       if (isGoal) label.push(t('电池', 'Battery'))
@@ -43,6 +67,7 @@ export function BreadthFirstBoard({ map, locale, path = [], order = [], visited 
       if (isQueued) label.push(t('在队列中', 'In the queue'))
       if (searchIndex >= 0) label.push(t(`搜索顺序第 ${searchIndex + 1} 格`, `Search order ${searchIndex + 1}`))
       if (pathIndex >= 0) label.push(t('在路线中', 'On the route'))
+      if (action) label.push(action)
 
       const attributes = {
         className: 'bfs-cell',
@@ -65,6 +90,8 @@ export function BreadthFirstBoard({ map, locale, path = [], order = [], visited 
         {isGoal && <span className="bfs-battery" aria-hidden="true">+</span>}
         {depth !== undefined && <strong className="bfs-cell-depth" aria-hidden="true">{depth}</strong>}
         {searchIndex >= 0 && visited.length === 0 && <strong className="bfs-cell-depth" aria-hidden="true">{searchIndex + 1}</strong>}
+        {action && <b className="bfs-cell-action" aria-hidden="true">{action}</b>}
+        {arrow && <i className="bfs-edge-arrow" key={arrow} data-direction={arrow} aria-hidden="true">{arrow}</i>}
       </>
       return onCellClick
         ? <button key={key} type="button" {...attributes} onClick={() => onCellClick(cell)}>{face}</button>
@@ -124,13 +151,12 @@ function stepDescription(step: BreadthFirstStep | undefined, depth: number | und
 function Queue({ step, t }: { step: BreadthFirstStep | undefined; t: Translate }) {
   return <div className="bfs-queue-panel">
     <h3>{t('待处理队列', 'Queue to process')}</h3>
-    <p>{t('先入队的格子先处理。数字是离起点的步数。', 'First in, first out. Each number is the distance from the start.')}</p>
     <ol className="bfs-queue" aria-label={t('待处理队列', 'Queue to process')} data-testid="breadth-first-queue">
       {(step?.queue ?? []).map((cell, index, queue) => {
         const depth = step?.visited.find(entry => sameCell(cell, entry.cell))?.depth
         const isHead = index === 0
         return <li key={at(cell)} data-x={cell[0]} data-y={cell[1]} data-depth={depth} data-head={isHead || undefined}
-          data-tail={index === queue.length - 1 || undefined}>
+          data-tail={index === queue.length - 1 || undefined} data-added={((step?.kind === 'start' || step?.kind === 'enqueue') && index === queue.length - 1) || undefined}>
           <small>{isHead ? t('队头', 'Front') : index === queue.length - 1 ? t('队尾', 'Back') : ' '}</small>
           <span><code>{at(cell)}</code><strong aria-label={t(`离起点 ${depth} 步`, `${depth} moves from start`)}>{depth}</strong></span>
         </li>
@@ -152,6 +178,7 @@ export function BreadthFirstLesson({ execution, locale, onReady }: {
   if (!map || !trial) return null
 
   const step = trial.steps[position]
+  const mark = searchMark(step, map, t)
   const next = trial.steps[position + 1]
   const target = next?.kind === 'enqueue' ? next.neighbor : undefined
   const depth = step?.visited.find(entry => sameCell(entry.cell, step.current))?.depth
@@ -179,8 +206,7 @@ export function BreadthFirstLesson({ execution, locale, onReady }: {
 
   return <section className="classroom-demonstration panel bfs-lesson" aria-labelledby={heading} data-testid="breadth-first-lesson">
     <CodingDevice device="navigator" locale={locale} controls={<>
-      {target && <p className="bfs-pick">{t('点下一个能走、还没访问过的邻格，把它加入队尾。',
-        'Select the next open, unvisited neighbor to add it to the back of the queue.')}</p>}
+      {target && <p className="bfs-pick">{t('点一个新邻格入队', 'Pick the next unvisited neighbor')}</p>}
       {hint && <p className="bfs-hint" role="status" data-testid="breadth-first-hint">{
         hint === 'wall' ? t('这格是墙，试试能走的邻格。', 'That tile is a wall. Try an open neighbor.')
           : hint === 'visited' ? t('这格已经访问过了，找一格新邻格。', 'That tile was already visited. Look for a new neighbor.')
@@ -199,27 +225,29 @@ export function BreadthFirstLesson({ execution, locale, onReady }: {
     </>}>
       <div className="panel-heading"><h2 id={heading}>{t('帮芽芽找到电池', 'Help Sprout find the battery')}</h2></div>
       <div className="bfs-body">
-        <p className="bfs-instructions">
-          {t('按 ↑ 上、→ 右、↓ 下、← 左的顺序检查邻格。不能穿过墙，每走一格算一步。',
-            'Check neighbors in order: ↑ up, → right, ↓ down, ← left. Walls block movement. Every move costs one step.')}
-        </p>
-        <BreadthFirstInstrument map={map} locale={locale} step={step} onCell={cell => {
+        <div className="bfs-order-key">{t('检查顺序', 'Check order')}
+          <b aria-label={t('上、右、下、左', 'Up, right, down, left')}>↑ → ↓ ←</b>
+        </div>
+        <BreadthFirstInstrument map={map} locale={locale} step={step} mark={mark} onCell={cell => {
           if (target) pick(cell)
           else if (next && sameCell(cell, nextTile)) goTo(position + 1)
         }} />
-        {next && nextTile && <p className="bfs-model-action">{target ? t('点沙盘上能入队的下一格。', 'Select the next neighbor to enqueue on the table.')
-          : t('点沙盘上的 ' + at(nextTile) + '，' + action + '。', 'Select ' + at(nextTile) + ' on the table · ' + action + '.')}</p>}
         <div className="bfs-step" data-testid="breadth-first-step" data-kind={step?.kind ?? 'ready'}
           data-line={step?.line} data-depth={depth} data-reason={step?.reason} data-next-kind={next?.kind}
           data-x={step?.neighbor?.[0] ?? step?.current?.[0]} data-y={step?.neighbor?.[1] ?? step?.current?.[1]}>
-          <p role="status" data-testid={step?.kind === 'return' ? 'breadth-first-result' : undefined}>{stepDescription(step, depth, t)}</p>
           {step && <pre data-testid="breadth-first-code" aria-label={t('正在执行的 Python', 'Current Python code')}><code>{step.code}</code></pre>}
+          {step?.kind === 'return' ? <p role="status" data-testid="breadth-first-result">{stepDescription(step, depth, t)}</p>
+            : <StepExplanation locale={locale}>{stepDescription(step, depth, t)}</StepExplanation>}
         </div>
         <div className="bfs-workspace">
           <div className="bfs-map-panel">
             <BreadthFirstBoard map={map} locale={locale} queue={step?.queue} visited={step?.visited} current={step?.current}
-              neighbor={step?.neighbor} path={step?.path} onCellClick={target ? pick : undefined} />
-            <p className="bfs-map-key">{t('深色是墙，格角的数字表示到起点的步数。', 'Dark tiles are walls. The corner number is the distance from the start.')}</p>
+              neighbor={step?.neighbor} path={step?.path} mark={mark} onCellClick={target ? pick : undefined} />
+            <div className="bfs-legend">
+              <span><i className="bfs-key-wall" />{t('墙', 'Wall')}</span>
+              <span><i className="bfs-key-pending" />{t('在队列中', 'Queued')}</span>
+              <span><b>0, 1…</b>{t('距起点的步数', 'Moves from start')}</span>
+            </div>
           </div>
           <Queue step={step} t={t} />
         </div>

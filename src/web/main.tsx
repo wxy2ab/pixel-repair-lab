@@ -9,6 +9,7 @@ import { challengeZoneId } from '../shared/coursePrerequisites'
 import { ChallengePrerequisites } from './ChallengeCatalog'
 import { ChallengeBrief } from './ChallengeBrief'
 import { ChallengeCompletion } from './ChallengeCompletion'
+import { FullscreenVictoryContext } from './FullscreenVictory'
 import { CompletionFeedback } from './CompletionFeedback'
 import { completionMilestone, type CompletionMilestone } from './completionMilestone'
 import { readArenaMatch, readArenaReload, saveArenaMatch, saveArenaReload, type ArenaReload } from './arenaMatchProgress'
@@ -334,9 +335,13 @@ function App() {
   const nextMission = seriesNextId ? levels.find(candidate => candidate.id === seriesNextId) : ordered[levelIndex + 1]
   const currentReplayFocus = isChallenge && replayFocusResult?.levelId === level.id ? replayFocusResult : undefined
   const challengeEntries = currentSummary && challenges && buildChallengeCatalog(challenges.levels, groups, completed).entries
-  const recommended = currentSummary && challengeEntries && (challengeEntries.find(entry => entry.level.id === seriesNextId) ?? (isRouteAttempt
-    ? buildChallengeRoutes(challengeEntries, skippedRouteIds).find(route => route.type === challengeType(level))?.next
-    : nextChallenge(challengeEntries, currentSummary.levelId)))
+  const currentRoute = challengeEntries && buildChallengeRoutes(challengeEntries, skippedRouteIds).find(route => route.type === challengeType(level))
+  const linkedChallenge = challengeEntries?.find(entry => entry.level.id === seriesNextId)
+  const nextOnMap = linkedChallenge ?? currentRoute?.entries
+    .slice(currentRoute.entries.findIndex(entry => entry.level.id === level.id) + 1)
+    .find(entry => !entry.won && !skippedRouteIds.includes(entry.level.id))
+  const recommended = currentSummary && challengeEntries && (linkedChallenge ?? (isRouteAttempt ? currentRoute?.next : nextChallenge(challengeEntries, currentSummary.levelId)))
+  const openNextChallenge = isRouteAttempt ? openRouteLevel : openLevel
   const scorePanel = section === 'challenge-records' || section === 'challenge-goals'
   const challengePanel = scorePanel || section === 'unfinished-matches'
   const scoreHistory = scorePanel ? currentChallengeScores(scoreCache.current, readStorage(challengeScoresKey)) : undefined
@@ -615,7 +620,7 @@ function App() {
     goTo('record')
   }
 
-  function openChallenges(targetId: typeof challengeZoneId | 'challenge-browse' | 'challenge-routes' = challengeZoneId) {
+  function openCatalogSection(targetId: typeof challengeZoneId | 'challenge-browse' | 'challenge-routes' | 'free-choices' = challengeZoneId) {
     goTo('modules')
     if (window.location.hash !== '#' + targetId) window.location.hash = targetId
     window.requestAnimationFrame(() => {
@@ -627,7 +632,7 @@ function App() {
 
   function chooseChallengeRoute(type?: ChallengeType) {
     if (type) setSelectedChallengeRoute(type)
-    openChallenges('challenge-routes')
+    openCatalogSection('challenge-routes')
   }
 
   function openChallengeRecords(levelId?: string, arenaMode?: ArenaMode) {
@@ -749,6 +754,16 @@ function App() {
     && !reviewSource && !(studyChallenge && studyPlan)
   const showCompletionTag = isWon && (!guidedLesson || railMode !== 'pinned')
   const adjacent = course ? adjacentCoreLessons(courseOrder, level) : { previous: ordered[levelIndex - 1], next: ordered[levelIndex + 1] }
+  const courseMap = section === 'campaign' && !inChallengeZone && !review && !studyPlan
+  const nextCourseLesson = adjacent.next
+  const victoryNavigation = currentSummary ? {
+    next: nextOnMap && { title: nextOnMap.level.title, open: () => openNextChallenge(nextOnMap.level.id) },
+    browse: () => openCatalogSection('challenge-browse'),
+  } : courseMap ? {
+    requireMapWin: true,
+    next: nextCourseLesson && { title: nextCourseLesson.title, open: () => openLevel(nextCourseLesson.id) },
+    browse: () => openCatalogSection('free-choices'),
+  } : null
   function railLink(target: Level | undefined) {
     if (!target) return
     if (!isRouteAttempt) return () => openLevel(target.id)
@@ -768,7 +783,7 @@ function App() {
           <span aria-hidden="true"><Icon name="modules" /></span>{t('学习模块', 'Learning modules')}
         </button>
         {hasChallenges && <button type="button" className={'challenge-jump' + (isChallenge || challengePanel ? ' active' : '')}
-          aria-current={isChallenge || challengePanel ? 'page' : undefined} onClick={() => openChallenges()}>
+          aria-current={isChallenge || challengePanel ? 'page' : undefined} onClick={() => openCatalogSection()}>
           <span aria-hidden="true"><Icon name="challenge" /></span>{t('挑战场', 'Challenge Arena')}
         </button>}
         <button type="button" className={section === 'record' || review ? 'active' : ''} aria-current={section === 'record' ? 'page' : undefined} onClick={() => openRecord('history')}>
@@ -789,7 +804,7 @@ function App() {
 
     <div className={outline ? 'app-main app-main--missions' : 'app-main app-main--solo'} data-rail-mode={outline ? railMode : undefined}>
       {outline && activeGroup && <MissionRail locale={locale} mode={railMode} onModeChange={changeRailMode} levelId={level.id}
-        classroom={Boolean(guidedLesson)} isChallenge={inChallengeZone} onHome={() => inChallengeZone ? openChallenges() : goTo('modules')}
+        classroom={Boolean(guidedLesson)} isChallenge={inChallengeZone} onHome={() => inChallengeZone ? openCatalogSection() : goTo('modules')}
         onPrevious={railLink(adjacent.previous)} onNext={railLink(adjacent.next)}>
         {guidedLesson && <CourseNavigation course={course} level={level} ordered={courseOrder} locale={locale} completed={completed}
           onOpen={openLevel} onHome={() => goTo('modules')} />}
@@ -840,7 +855,7 @@ function App() {
         </div>
       </MissionRail>}
 
-      <main className="content">
+      <main className="content" data-map-stage={courseMap || undefined}>
         {!outline && <div className="content-progress">{progress}</div>}
         {section === 'preview' ? <LevelPreview locale={locale} catalog={levels} /> : section === 'algorithms' ?
           <AlgorithmLibrary locale={locale} algorithms={personal} remove={removeAlgorithm} storageFailed={storageFailed}
@@ -854,8 +869,8 @@ function App() {
             lastChallenge={challengeToContinue} selectedRoute={selectedChallengeRoute} skippedRouteIds={skippedRouteIds} onSelectRoute={setSelectedChallengeRoute}
             onSetRouteSkipped={setRouteSkipped} onOpenRouteLevel={openRouteLevel}
             readDraft={readChallengeDraft} onRestartChallenge={id => openRouteLevel(id, true)}
-            onChooseChallengeRoute={chooseChallengeRoute} onBrowseChallenges={() => openChallenges('challenge-browse')}
-            onEnterArena={() => openChallenges()}
+            onChooseChallengeRoute={chooseChallengeRoute} onBrowseChallenges={() => openCatalogSection('challenge-browse')}
+            onEnterArena={() => openCatalogSection()}
             onOpen={openModule} onOpenLevel={openLevel} onChallengeRecords={() => openChallengeRecords()} onChallengeGoals={openChallengeGoals}
             onUnfinishedMatches={openUnfinishedMatches} onOpenUnfinishedMatch={openUnfinishedMatch} review={<Suspense fallback={null}>
               <ReviewSuggestions record={record} locale={locale} onNotebook={() => openRecord('mistakes')} onReview={openReview} />
@@ -865,7 +880,7 @@ function App() {
           }>
             <ChallengeRecords levels={challenges?.levels ?? []} history={scoreHistory} goals={challengeGoals} locale={locale}
               levelId={challengeRecordsRoute?.levelId} arenaMode={challengeRecordsRoute?.arenaMode}
-              onSelection={selectChallengeRecord} onReplay={replayChallengeRecord} onBack={() => openChallenges()}
+              onSelection={selectChallengeRecord} onReplay={replayChallengeRecord} onBack={() => openCatalogSection()}
               onSaveGoal={updateGoal} onRemoveGoal={updateGoal} />
           </Suspense>}
           {section === 'unfinished-matches' && catalog && <Suspense fallback={
@@ -874,7 +889,7 @@ function App() {
             <UnfinishedArenaMatches levels={catalog.levels} locale={locale} onContinue={openUnfinishedMatch}
               onRestart={(id, mode) => openUnfinishedMatch(id, mode, true)}
               onAbandon={abandonUnfinishedMatch}
-              onBack={() => openChallenges()} onBrowse={() => openChallenges('challenge-browse')} />
+              onBack={() => openCatalogSection()} onBrowse={() => openCatalogSection('challenge-browse')} />
           </Suspense>}
           {section === 'challenge-goals' && catalog && scoreHistory && challengeGoalStore && <Suspense fallback={
             <p className="loading" role="status">{t('正在加载小目标…', 'Loading challenge goals…')}</p>
@@ -888,7 +903,7 @@ function App() {
               focusHistory={challengeGoalTab === 'focus-history' ? replayFocusHistoryEntries(
                 currentReplayFocusHistory(replayFocusHistoryCache.current, readStorage(replayFocusHistoryKey)), challenges?.levels ?? [],
               ) : []} onRetryFocus={retryFocusHistory}
-              onReplay={replayChallengeGoal} onBrowse={() => openChallenges('challenge-browse')} onRecords={() => openChallengeRecords()} />
+              onReplay={replayChallengeGoal} onBrowse={() => openCatalogSection('challenge-browse')} onRecords={() => openChallengeRecords()} />
           </Suspense>}
           {section === 'record' && catalog && <Suspense fallback={<p className="loading" role="status">{t('正在加载学习记录…', 'Loading study history…')}</p>}>
             <LearningRecord record={record} locale={locale} tab={recordTab} onTab={setRecordTab} onReview={openReview} />
@@ -898,16 +913,16 @@ function App() {
               <div>
                 <div className="mission-meta">{activeGroup && <span>{activeGroup.unit.title[locale]} · {stageLabel(level, locale)}</span>}<span className="concept-tag">{level.topic?.title[locale] ?? level.concept[locale]}</span></div>
                 <h1>{level.title[locale]}</h1>
-                {level.kind !== 'ai' && !isChallenge && <p>{level.brief[locale]}</p>}
+                {level.kind !== 'ai' && level.kind !== 'lecture' && !isChallenge && <p>{level.brief[locale]}</p>}
               </div>
               {(showCompletionTag || isRouteAttempt || canRestartChallenge) && <div className="mission-finish">
                 {showCompletionTag && <span className="complete-tag">{t('已完成', 'Complete')}</span>}
                 {isWon && (!isRouteAttempt || seriesNextId) && !course && !reviewSource && !currentSummary && nextMission && <button type="button" className="subtle-button"
                   onClick={() => isRouteAttempt ? openRouteLevel(nextMission.id) : openLevel(nextMission.id)}>{t('下一关', 'Next mission')}</button>}
                 {isRouteAttempt && !currentSummary && <>
-                  <button type="button" className="subtle-button" onClick={() => openChallenges('challenge-routes')}>{t('返回闯关路线', 'Back to challenge routes')}</button>
+                  <button type="button" className="subtle-button" onClick={() => openCatalogSection('challenge-routes')}>{t('返回闯关路线', 'Back to challenge routes')}</button>
                   {!isWon && !skippedRouteIds.includes(level.id) && <button type="button" className="subtle-button"
-                    onClick={() => { setRouteSkipped(level.id, true); openChallenges('challenge-routes') }}>{t('跳过这关', 'Skip this challenge')}</button>}
+                    onClick={() => { setRouteSkipped(level.id, true); openCatalogSection('challenge-routes') }}>{t('跳过这关', 'Skip this challenge')}</button>}
                 </>}
                 {canRestartChallenge && <button type="button" className="subtle-button" onClick={restartOpenChallenge}>
                   {t('重新开始', 'Start over')}
@@ -918,13 +933,14 @@ function App() {
             {isChallenge && level.kind !== 'ai' && <ChallengeBrief key={level.id} level={level} locale={locale} />}
             {guidedLesson && <TopicSteps level={level} ordered={ordered} completed={completed} locale={locale} onOpen={openLevel} />}
             {currentSummary && <ChallengeCompletion missionTitle={level.title[locale]} comparison={currentSummary.comparison} goalResult={currentSummary.goalResult} locale={locale} next={recommended}
+              keepBoardInView={level.kind === 'grid' && !!level.warehouse && !level.variants?.length && level.objectives.some(goal => goal.type === 'parkBoxes')}
               outcome={currentSummary.outcome?.[locale]}
               seriesNext={seriesNextId && recommended?.level.id === seriesNextId ? series : undefined}
               replayFocusResult={currentReplayFocus && <ChallengeReplayFocusResult result={currentReplayFocus.result}
                 reference={currentReplayFocus.reference} locale={locale} inSummary />}
               onReplay={() => { clearChallengeSummary(); currentSummary.replay() }}
-              onBrowse={() => openChallenges('challenge-browse')} onNext={isRouteAttempt ? openRouteLevel : openLevel}
-              onRoutes={isRouteAttempt ? () => openChallenges('challenge-routes') : undefined}
+              onBrowse={() => openCatalogSection('challenge-browse')} onNext={openNextChallenge}
+              onRoutes={isRouteAttempt ? () => openCatalogSection('challenge-routes') : undefined}
               onRecords={() => openChallengeRecords(currentSummary.levelId,
                 currentSummary.comparison.current.kind === 'arena' ? currentSummary.comparison.current.mode : undefined)} />}
             {!currentSummary && currentReplayFocus && <ChallengeReplayFocusResult result={currentReplayFocus.result}
@@ -939,22 +955,24 @@ function App() {
                 ? <ChallengeStudyRoute challenge={studyChallenge} preparation={studyPlan} locale={locale} lessonComplete={isWon}
                   review={studyRoute?.mode === 'review'} onNext={openLevel} onReturn={() => openLevel(studyChallenge.id)} />
                 : null}
-            {retainedChallenge && <RetainedChallenge visible={retainedChallenge.id === level.id}>
-              <LessonView catalog={levels} key={JSON.stringify(retainedChallenge) + ':' + challengeRestart} level={retainedChallenge} locale={locale} completed={completed}
-                onComplete={markChallengeWin} onMistake={markChallengeMistake} personal={personal} onOpenLevel={openLevel}
-                challenge={{ onWin: recordChallengeScore, onFailure: recordChallengeFailure, onStart: clearChallengeSummary }}
-                initialArenaMode={challengeReplay?.kind === 'arena' ? challengeReplay.mode : undefined}
-                replayAiMode={challengeReplay?.kind === 'ai' ? challengeReplay.mode : undefined}
-                initialDraft={initialDraft} onDraftChange={draft => updateChallengeDraft(retainedChallenge, draft)}
-                initialTimedCheckpoint={arena && freshMode !== 'timed' ? readArenaMatch(arena, 'timed') : undefined}
-                onTimedCheckpointChange={arena && (checkpoint => trackArenaMatch(arena, 'timed', checkpoint))}
-                initialReplayProgress={arena && freshMode !== 'relaxed' ? readArenaMatch(arena, 'relaxed') : undefined}
-                onReplayProgressChange={arena && (progress => trackArenaMatch(arena, 'relaxed', progress))}
-                onReviewLesson={(challengeId, lessonId) => startPreparation(challengeId, lessonId, 'review')} />
-            </RetainedChallenge>}
-            {retainedChallenge?.id !== level.id &&
-              <LessonView catalog={levels} key={`${review?.visit ?? 0}:${JSON.stringify(level)}`} level={level} locale={locale} completed={completed}
-                onComplete={markWin} onMistake={markMistake} personal={personal} onSave={saveAlgorithm} onOpenLevel={openLevel} />}
+            <FullscreenVictoryContext.Provider value={victoryNavigation}>
+              {retainedChallenge && <RetainedChallenge visible={retainedChallenge.id === level.id}>
+                <LessonView catalog={levels} key={JSON.stringify(retainedChallenge) + ':' + challengeRestart} level={retainedChallenge} locale={locale} completed={completed}
+                  onComplete={markChallengeWin} onMistake={markChallengeMistake} personal={personal} onOpenLevel={openLevel}
+                  challenge={{ onWin: recordChallengeScore, onFailure: recordChallengeFailure, onStart: clearChallengeSummary }}
+                  initialArenaMode={challengeReplay?.kind === 'arena' ? challengeReplay.mode : undefined}
+                  replayAiMode={challengeReplay?.kind === 'ai' ? challengeReplay.mode : undefined}
+                  initialDraft={initialDraft} onDraftChange={draft => updateChallengeDraft(retainedChallenge, draft)}
+                  initialTimedCheckpoint={arena && freshMode !== 'timed' ? readArenaMatch(arena, 'timed') : undefined}
+                  onTimedCheckpointChange={arena && (checkpoint => trackArenaMatch(arena, 'timed', checkpoint))}
+                  initialReplayProgress={arena && freshMode !== 'relaxed' ? readArenaMatch(arena, 'relaxed') : undefined}
+                  onReplayProgressChange={arena && (progress => trackArenaMatch(arena, 'relaxed', progress))}
+                  onReviewLesson={(challengeId, lessonId) => startPreparation(challengeId, lessonId, 'review')} />
+              </RetainedChallenge>}
+              {retainedChallenge?.id !== level.id &&
+                <LessonView catalog={levels} key={`${review?.visit ?? 0}:${JSON.stringify(level)}`} level={level} locale={locale} completed={completed}
+                  onComplete={markWin} onMistake={markMistake} personal={personal} onSave={saveAlgorithm} onOpenLevel={openLevel} />}
+            </FullscreenVictoryContext.Provider>
             {guidedLesson && isWon && <LessonNext level={level} ordered={courseOrder} locale={locale} onOpen={openLevel} onHome={() => goTo('modules')} />}
             {!reviewSource && level.kind === 'lecture' && level.overview && !level.execution?.intro &&
               <OverviewTopics ordered={ordered} completed={completed} locale={locale} onOpen={openLevel} />}

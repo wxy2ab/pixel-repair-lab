@@ -74,7 +74,12 @@
               "zh": "AI 5 · 目标 4",
               "en": "AI 5 · Target 4"
             },
-            "state": "active"
+            "state": "active",
+            "annotation": {
+              "zh": "多 1",
+              "en": "1 extra"
+            },
+            "symbol": "🔋"
           },
           {
             "id": "cloth",
@@ -96,7 +101,8 @@
             "value": {
               "zh": "待写",
               "en": "Ready to draft"
-            }
+            },
+            "symbol": "💬"
           }
         ]
       },
@@ -115,7 +121,8 @@
             "value": {
               "zh": "目标 4",
               "en": "Target 4"
-            }
+            },
+            "symbol": "🔋"
           },
           {
             "id": "cloth",
@@ -126,6 +133,10 @@
             "value": {
               "zh": "保留 1",
               "en": "Keep 1"
+            },
+            "annotation": {
+              "zh": "数量锁定",
+              "en": "Keep count"
             }
           },
           {
@@ -138,7 +149,12 @@
               "zh": "电池改为 4，其他物品保持原样",
               "en": "Set batteries to 4. Keep everything else."
             },
-            "state": "active"
+            "state": "active",
+            "annotation": {
+              "zh": "只改电池",
+              "en": "Batteries only"
+            },
+            "symbol": "💬"
           }
         ]
       },
@@ -157,7 +173,12 @@
             "value": {
               "zh": "AI 4 · 目标 4",
               "en": "AI 4 · Target 4"
-            }
+            },
+            "annotation": {
+              "zh": "✓ 4 / 4",
+              "en": "✓ 4 / 4"
+            },
+            "symbol": "🔋"
           },
           {
             "id": "cloth",
@@ -169,7 +190,11 @@
               "zh": "AI 1 · 目标 1",
               "en": "AI 1 · Target 1"
             },
-            "state": "active"
+            "state": "active",
+            "annotation": {
+              "zh": "✓ 1 / 1",
+              "en": "✓ 1 / 1"
+            }
           },
           {
             "id": "feedback",
@@ -180,7 +205,8 @@
             "value": {
               "zh": "复查通过",
               "en": "Review passed"
-            }
+            },
+            "symbol": "💬"
           }
         ]
       }

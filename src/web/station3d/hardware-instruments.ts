@@ -31,7 +31,7 @@ function trace(kit: Kit, points: Point[], active: boolean, lit = mint) {
 
 export type CpuModelState = {
   state: MachineState; previous: MachineState; instruction?: MachineInstruction; phase: 'fetch' | 'decode' | 'execute'
-  locale: 'zh' | 'en'; pinned?: number; canStep: boolean
+  locale: 'zh' | 'en'; pinned?: number; equation?: string; canStep: boolean
 }
 
 function direction(kit: Kit, x: number, z: number, dx: number, dz: number, tint: string) {
@@ -41,7 +41,7 @@ function direction(kit: Kit, x: number, z: number, dx: number, dz: number, tint:
   }
 }
 
-export function buildCpuModel({ state, previous, instruction, phase, pinned, locale, canStep }: CpuModelState, kit: Kit, tools: TeachingModelTools) {
+export function buildCpuModel({ state, previous, instruction, phase, pinned, locale, equation, canStep }: CpuModelState, kit: Kit, tools: TeachingModelTools) {
   const columns = Math.min(4, Math.max(1, state.memory.length))
   const rows = Math.max(1, Math.ceil(state.memory.length / columns))
   const x0 = 1.42, z0 = -.96
@@ -87,7 +87,8 @@ export function buildCpuModel({ state, previous, instruction, phase, pinned, loc
 
   const accChanged = previous.accumulator !== state.accumulator
   chip(-2.35,.02,1.46,.78, execute && op !== 'HALT' ? writing ? read : write : undefined)
-  tools.label('ACC ' + state.accumulator, [-2.35,.77,.01], .24)
+  const accWrite = access && !writing
+  tools.label('ACC ' + (accWrite ? previous.accumulator + '→' : '') + state.accumulator, [-2.35,.77,.01], .24)
   if (accChanged) kit.box([-2.35,.664,-.29], [.90,.020,.055], write, undefined, 'glow')
 
   // The ALU takes two operands on its north side and sends the result back on a separate rail.
@@ -101,7 +102,8 @@ export function buildCpuModel({ state, previous, instruction, phase, pinned, loc
   }
   chip(-.15,.89,1.16,.75, math ? compute : undefined)
   kit.box([-.15,.653,.67], [.63,.020,.070], math ? compute : track, undefined, math ? 'glow' : 'metal')
-  tools.label(math ? 'ALU ' + (op === 'ADD' ? '+' : '−') : 'ALU', [-.15,.80,.88], .23)
+  tools.label('ALU', [-.15,.80,.83], .23)
+  if (math && equation) tools.label(equation, [-.15,.54,1.37], .205)
 
   // LOAD and STORE bypass the ALU, with opposite directions along the upper rail.
   const direct = execute && (op === 'STORE' || op === 'LOAD')
@@ -128,7 +130,8 @@ export function buildCpuModel({ state, previous, instruction, phase, pinned, loc
     for (const dx of [-.44,.44]) for (const dz of [-.21,0,.21]) kit.box([x+dx,.37,z+dz], [.09,.065,.062], steel)
     kit.box([x,.62,z-.23], [.46,.038,.075], tint ?? track, undefined, tint ? 'glow' : 'metal')
     if (pinned === i) kit.ring([x,.29,z],.54,.029,selected,'glow')
-    tools.label(String(value),[x,.82,z-.13],.225)
+    const reading = execute && addressed ? writing ? previous.memory[i] + '→' + value : '↑ ' + value : String(value)
+    tools.label(reading,[x,.82,z-.13],.225)
     tools.label('['+i+']',[x,.54,z+.36],.17)
     tools.pick('ram:'+i,[x,.55,z],[1.04,.74,1.04])
   }
@@ -137,6 +140,7 @@ export function buildCpuModel({ state, previous, instruction, phase, pinned, loc
   kit.cylinder([-2.53,.345,1.02], .32,.35,.17,graphite)
   kit.cylinder([-2.53,.475,1.02], .255,.28,.15,canStep ? gold : idle,undefined,canStep ? 'glow' : 'metal')
   tools.label(locale === 'zh' ? '时钟' : 'Clock', [-2.53,.715,1.02], .19)
+  if (execute && state.halted) tools.label('■ HALT', [-2.53,.47,1.46], .19)
   if (canStep) tools.pick('clock',[-2.53,.52,1.02],[.83,.61,.83])
 }
 

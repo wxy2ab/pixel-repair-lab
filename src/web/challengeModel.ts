@@ -3,12 +3,13 @@ import type { ChallengeDifficulty, Level, Localized } from '../shared/types'
 import { isOptionalChallenge } from './lessonTools'
 import type { LearningGroup } from './roadmapModel'
 
-export const challengeTypes = ['grid', 'arena', 'algorithm', 'systems', 'data', 'vision', 'ai', 'other'] as const
+export const challengeTypes = ['grid', 'warehouse', 'arena', 'algorithm', 'systems', 'data', 'vision', 'ai', 'other'] as const
 export type ChallengeType = typeof challengeTypes[number]
 export const challengeDifficulties = ['starter', 'intermediate', 'advanced'] as const satisfies readonly ChallengeDifficulty[]
 
 export const challengeTypeLabels: Record<ChallengeType, Localized> = {
   grid: { zh: '网格解谜', en: 'Grid puzzles' },
+  warehouse: { zh: '推箱子', en: 'Sokoban' },
   arena: { zh: '机器人对抗', en: 'Robot battles' },
   algorithm: { zh: '算法编程', en: 'Python algorithms' },
   systems: { zh: '计算机系统', en: 'Computer systems' },
@@ -52,7 +53,7 @@ export type ChallengeEntry = {
 
 export function challengeType(level: Level): ChallengeType {
   switch (level.kind) {
-    case 'grid':
+    case 'grid': return level.warehouse ? 'warehouse' : 'grid'
     case 'arena':
     case 'algorithm':
     case 'data':

@@ -51,6 +51,8 @@ test('four battery operations show real reads and removals, and each new request
     await expect(guide).toHaveAttribute('data-interaction', 'picked')
     await expect(guide.getByTestId('structures-kind-name')).toHaveText(structureLabels[kind].zh)
     await expect(selected).toHaveText(picked)
+    await expect(guide.locator('.structures-ticket strong')).toHaveText(picked)
+    await expect(batteries.locator('[data-selected] .structures-object-label')).toHaveCount(removes ? 0 : 1)
     await expect(code).toHaveCount(0)
     expect(await onBoard()).toEqual(leftover)
 

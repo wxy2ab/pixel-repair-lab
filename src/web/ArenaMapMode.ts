@@ -1,7 +1,26 @@
 import { createContext, useContext, type ReactNode } from 'react'
+import { flushSync } from 'react-dom'
 
 export const ArenaMapModeContext = createContext(false)
 export const ArenaMapControlsContext = createContext<ReactNode>(null)
+export const mapStageSelector = '.challenge-stage, [data-map-stage]'
+
+// Only the workspace mounted by this navigation can inherit the fullscreen stage.
+export const advancingMapStages = new WeakSet<Element>()
+
+export function advanceFullscreenMap(button: HTMLElement, openNext: () => void) {
+  const stage = button.closest(mapStageSelector)
+  if (!stage) return openNext()
+  advancingMapStages.add(stage)
+  try {
+    flushSync(openNext)
+  } finally {
+    // A challenge without a map has no workspace to claim fullscreen.
+    if (advancingMapStages.delete(stage) && document.fullscreenElement === stage) {
+      void document.exitFullscreen().catch(() => {})
+    }
+  }
+}
 
 export function useArenaMapMode() {
   return useContext(ArenaMapModeContext)

@@ -68,6 +68,20 @@ test('the live workshop surrounds a working charger and survives context loss mi
   await expect(control(room, 'setting')).toHaveAccessibleName('调整补电量')
   await expect(control(room, 'run')).toHaveAccessibleName('给电池补电')
   await expect(room.locator('[data-room-reset]')).toBeHidden()
+  for (const prop of ['lamp', 'fan']) {
+    const toggle = room.locator('[data-room-prop="' + prop + '"]')
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+    const box = await toggle.boundingBox()
+    if (!box) throw new Error('The projected room prop must be visible')
+    const before = await canvas.screenshot()
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
+    await expect(toggle).toHaveAttribute('aria-pressed', 'false')
+    await expect.poll(async () => !(await canvas.screenshot()).equals(before)).toBe(true)
+    await toggle.press('Space')
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+  }
+  await expect(room.locator('[data-room-reset]')).toBeHidden()
+  await expect(status).toBeEmpty()
   await clickEquipment(page, room, 'run')
   await expect(status).toContainText('2 + 3 = 5')
   await expect(status).toHaveAttribute('aria-live', 'polite')
@@ -107,6 +121,7 @@ test('the live workshop surrounds a working charger and survives context loss mi
     extension.loseContext()
   })
   await expectPoster(room)
+  await expect(room.locator('[data-room-prop]')).toHaveCount(0)
   await expect(status).toHaveText(reading)
   await control(room, 'setting').press('Enter')
   await expect(room).toHaveAttribute('data-ran', 'false')
@@ -156,6 +171,43 @@ test('a phone without WebGL can operate the charger and read its log in English'
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390)
 })
 
+test('workshop scenery keeps moving only while visible and motion is enabled', async ({ page }) => {
+  test.slow()
+  await page.addInitScript(() => {
+    const clear = WebGL2RenderingContext.prototype.clear
+    WebGL2RenderingContext.prototype.clear = function (mask) {
+      const canvas = this.canvas
+      if (canvas instanceof HTMLCanvasElement && canvas.closest('.lesson-room-layer')) {
+        canvas.dataset.clearCount = String(Number(canvas.dataset.clearCount || 0) + 1)
+      }
+      return clear.call(this, mask)
+    }
+  })
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await page.goto('/')
+  await page.getByRole('button', { name: '开始 Python 课程', exact: true }).click()
+  const room = page.locator('.lesson-room-layer'), canvas = room.locator('canvas')
+  await room.scrollIntoViewIfNeeded()
+  await expect(room).toHaveAttribute('data-renderer', 'webgl', { timeout: 20000 })
+  const frames = async () => Number(await canvas.getAttribute('data-clear-count'))
+  async function expectRest() {
+    // Let the visibility/media event and its last paint settle, then check several idle ticks.
+    await page.waitForTimeout(300)
+    const stopped = await frames()
+    await page.waitForTimeout(450)
+    expect(await frames()).toBe(stopped)
+  }
+  const first = await frames()
+  await expect.poll(frames).toBeGreaterThan(first)
+  await room.evaluate(element => { element.style.transform = 'translateY(-200vh)' })
+  await expectRest()
+  const stopped = await frames()
+  await room.evaluate(element => { element.style.transform = '' })
+  await expect.poll(frames).toBeGreaterThan(stopped)
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await expectRest()
+})
+
 test('a child can tap the LED, polarity selector and switch directly on a phone', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.emulateMedia({ reducedMotion: 'reduce' })
@@ -170,6 +222,11 @@ test('a child can tap the LED, polarity selector and switch directly on a phone'
   }
   await room.locator('canvas').scrollIntoViewIfNeeded()
   await expect(room).toHaveAttribute('data-renderer', 'webgl', { timeout: 20000 })
+  const fan = room.locator('[data-room-prop="fan"]')
+  const fanBox = await fan.boundingBox()
+  if (!fanBox) throw new Error('The extractor must be visible on a phone')
+  await page.touchscreen.tap(fanBox.x + fanBox.width / 2, fanBox.y + fanBox.height / 2)
+  await expect(fan).toHaveAttribute('aria-pressed', 'false')
   await tapModel('run')
   await expect(control(room, 'run')).toHaveAccessibleDescription('亮')
   await tapModel('setting')

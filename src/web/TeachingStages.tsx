@@ -2,6 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useState, type ReactNo
 import type { LectureLevel, ReplayExample, ReplayLevel } from '../shared/advanced'
 import type { Candidate, GridLevel, Locale, RunIssue, RunResult } from '../shared/types'
 import { gradeCandidate, runPracticeTurn } from '../ai/core'
+import { PackingBench } from '../ai/PackingBench'
 import { initialSnapshot } from '../engine/snapshot'
 import { Board } from './Board'
 import { useLessonWorker, useReplayCursor } from './lessonTools'
@@ -16,6 +17,7 @@ import { AlgorithmValueRack } from './AlgorithmValueRack'
 import { courseFor } from './LearningCourse'
 import { ExecutionSource } from './ExecutionSource'
 import { LessonFrame } from './LessonFrame'
+import { LessonNotes } from './LessonNotes'
 import { lessonFlow } from './lessonFlow'
 import './teaching-stages.css'
 import { runIssueText, tr } from './text'
@@ -167,8 +169,7 @@ export function Lecture({ level, locale, onComplete, preview, done = false }: Le
   const intro = execution?.intro
   const interfaceLesson = intro?.mode === 'interfaces'
   const showPractice = !intro || readyForPractice
-  const notes = showPractice && <div className="lesson-annotations">{level.sections.map((section, index) =>
-    <article key={index}><h3>{section.title[locale]}</h3><p>{section.body[locale]}</p></article>)}</div>
+  const notes = showPractice && <LessonNotes level={level} locale={locale} />
   const exercise = showPractice && <section className="teaching-panel lesson-prediction">
     <h2>{interfaceLesson ? tr(locale, '小练习', 'Quick practice') : tr(locale, '猜一猜', 'Make a prediction')}</h2>
     <p>{level.question.prompt[locale]}</p>
@@ -297,8 +298,10 @@ function AiReplay({ level, locale, onComplete }: LearningProps & { level: Extrac
   const [turn, setTurn] = useState(0)
   const prompts = level.example.examplePrompts[locale]
   let candidate: Candidate | undefined
+  let previous: Candidate | undefined
   let injected = false
   for (const [index, prompt] of prompts.slice(0, turn).entries()) {
+    previous = candidate ?? level.example.workflow?.draft
     const result = runPracticeTurn(level.example, prompt, candidate, index)
     candidate = result.candidate
     injected = Boolean(result.fault)
@@ -313,14 +316,12 @@ function AiReplay({ level, locale, onComplete }: LearningProps & { level: Extrac
       <h3>{tr(locale, '已发送的提示词', 'Sent prompt')}</h3>
       <p>{prompts[turn - 1]}</p>
     </div>}
-    {checks ? <>
+    <PackingBench level={level.example} locale={locale} candidate={candidate ?? level.example.workflow?.draft}
+      previous={previous} graded={!!checks} />
+    {checks && <>
       <p role="status">{injected ? tr(locale, '这里加入了一次模拟错误。', 'This round includes a simulated mistake.') :
         checks.every(check => check.actual === check.expected) ? tr(locale, '清单正确。', 'The manifest is correct.') : tr(locale, '继续检查数量。', 'Keep checking the quantities.')}</p>
-      <table className="lesson-table"><thead><tr><th>{tr(locale, '物品', 'Item')}</th><th>{tr(locale, '目标', 'Expected')}</th><th>{tr(locale, '清单', 'Actual')}</th></tr></thead>
-        <tbody>{checks.map(check => <tr key={check.id}><th scope="row">{level.example.inventory.find(item => item.id === check.id)?.label[locale]}</th>
-          <td>{check.expected}</td><td className={check.expected === check.actual ? 'win-message' : 'error-message'}>{check.actual}</td></tr>)}</tbody>
-      </table>
-    </> : <p>{tr(locale, '发送示例后核对每件物品的数量。', 'Send the example, then compare the quantities.')}</p>}
+    </>}
     <div className="packing-chat-compose">
       {turn < prompts.length && <div className="replay-dispatch">
         <h3>{turn === 0 ? tr(locale, '示例提示词', 'Example prompt') : tr(locale, '下一条提示词', 'Next prompt')}</h3>

@@ -1,5 +1,7 @@
 import { BatteryMemory } from './BatteryMemory'
 import { CodingDevice } from './CodingDevice'
+import { StepExplanation } from './LessonNotes'
+import { useBatteryMotion } from './useBatteryMotion'
 import { useId, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { runStructureLesson } from '../engine/programStructures'
 import {
@@ -73,12 +75,15 @@ function BatteryBoard({ kind, batch, remaining, selected, onPick, t, promptId }:
 }) {
   const ordered = kind === 'stack' ? remaining.toReversed() : remaining
   const columns = { '--structures-count': Math.min(4, batch.batteries.length) } as CSSProperties
+  const takes = kind === 'stack' || kind === 'queue'
+  const request = kind === 'list' ? t(`读位置 [${batch.index}]`, `Read index [${batch.index}]`)
+    : kind === 'dictionary' ? t(`查名字 "${batch.key}"`, `Find key "${batch.key}"`)
+      : kind === 'stack' ? t('↑ 取栈顶', '↑ Take the top') : t('← 取队头', '← Take the front')
   return <div className="structures-board">
-    {kind === 'stack' && <p className="structures-edges"><span>{t('最顶上', 'Top')}</span></p>}
-    {kind === 'queue' && <p className="structures-edges">
-      <span>{t('先到的在前', 'Earliest at the front')}</span>
-      <span>{t('后来者在后', 'New arrivals at the back')}</span>
-    </p>}
+    <div className="structures-ticket" aria-label={t('取件单', 'Work order')}><b>{request}</b>
+      {selected && <span>{takes ? t('→ 取出', '→ Take out') : t('→ 读到', '→ Read')} <strong
+        data-battery-name={takes ? selected.name : undefined}>{selected.name}</strong></span>}
+    </div>
     <ol className="structures-batteries" style={columns} data-testid="structures-batteries"
       aria-label={t('这一批电池', 'This batch of batteries')}>
       {ordered.map(({ name, charge }) => {
@@ -88,6 +93,11 @@ function BatteryBoard({ kind, batch, remaining, selected, onPick, t, promptId }:
             : kind === 'dictionary' ? t('名字', 'Name') : t(`第 ${position + 1} 个到达`, `Arrival ${position + 1}`)}</span>
           <strong className="structures-battery-name">{name}</strong>
           <span className="for-battery" aria-label={t(`${charge} 格`, `${charge} units of charge`)}>{charge}</span>
+          {kind === 'stack' && name === ordered[0].name && <small className="structures-object-label">{t('栈顶', 'Top')}</small>}
+          {kind === 'queue' && (name === ordered[0].name || name === ordered.at(-1)?.name) && <small className="structures-object-label">
+            {ordered.length === 1 ? t('队头和队尾', 'Front and back') : name === ordered[0].name ? t('队头', 'Front') : t('队尾', 'Back')}
+          </small>}
+          {!takes && name === selected?.name && <small className="structures-object-label">{t('✓ 已读', '✓ Read')}</small>}
         </>
         return <li key={name} data-battery-name={name} data-charge={charge} data-battery-index={position}
           data-selected={selected?.name === name || undefined}>
@@ -108,6 +118,7 @@ export function StructuresLesson({ execution, locale, onReady }: {
   const [modeIndex, setModeIndex] = useState(0)
   const [position, setPosition] = useState(-1)
   const [picked, setPicked] = useState(false)
+  const motion = useBatteryMotion(position + Number(picked))
   const [mistake, setMistake] = useState(false)
   const finished = useRef(false)
   const kind = structureKinds[modeIndex]
@@ -121,8 +132,6 @@ export function StructuresLesson({ execution, locale, onReady }: {
   const title = actionTitle(kind, t)
   const lastKind = modeIndex === structureKinds.length - 1
   const output = step?.kind === 'output'
-  const practicePrompt = output && lastKind ? t(' 换一批电池，试试先选结构，再猜会取到哪一块。',
-    ' Try a new batch. First choose a structure, then predict which battery it will give you.') : ''
   const caption = step && run ? describeStep(kind, step, run.selected, batch, t)
     : picked && run ? describeSelection(kind, run.selected, t) : prompt(kind, batch, t)
 
@@ -133,12 +142,14 @@ export function StructuresLesson({ execution, locale, onReady }: {
       return
     }
     setMistake(false)
+    motion.capture()
     setPicked(true)
   }
 
   function advance() {
     if (!run) return
     const next = position + 1
+    motion.capture()
     setPosition(next)
     if (lastKind && run.steps[next]?.kind === 'output' && !finished.current) {
       finished.current = true
@@ -156,13 +167,13 @@ export function StructuresLesson({ execution, locale, onReady }: {
   return <section className="classroom-demonstration panel structures-lesson" data-testid="structures-lesson" data-structure-kind={kind}
     data-structure-stage={step?.kind ?? 'start'} data-interaction={picked ? 'picked' : undefined} aria-label={title}>
     <CodingDevice device="sorter" locale={locale} workbench controls={<>
-      {run ? <p className="structures-prompt" id={promptId} role="status">
-        {mistake && t('再试一次。', 'Try again. ')}{caption}{practicePrompt}
+      {run ? <p className={mistake ? 'structures-prompt' : 'sr-only'} id={promptId} role="status">
+        {mistake && t('再试一次。', 'Try again. ')}{caption}
       </p> : <p className="error-message" id={promptId} role="alert">{t('这次没能读出电池。', 'The program could not read the batteries.')}</p>}
-      <BatteryBoard kind={kind} batch={batch} remaining={remaining} selected={selected} onPick={run && !picked ? pick : undefined}
-        t={t} promptId={promptId} />
+      <div ref={motion.board}><BatteryBoard kind={kind} batch={batch} remaining={remaining} selected={selected} onPick={run && !picked ? pick : undefined}
+        t={t} promptId={promptId} /></div>
       {picked && <div className="structures-navigation">
-        <button type="button" className="subtle-button" disabled={position < 0} onClick={() => setPosition(position - 1)}>
+        <button type="button" className="subtle-button" disabled={position < 0} onClick={() => { motion.capture(); setPosition(position - 1) }}>
           {t('上一步', 'Previous step')}
         </button>
         {output && !lastKind ? <button type="button" className="primary-button" onClick={switchMethod}>
@@ -171,11 +182,13 @@ export function StructuresLesson({ execution, locale, onReady }: {
           {t('下一步', 'Next step')}
         </button>}
       </div>}
+      {run && <StepExplanation locale={locale}>{caption}</StepExplanation>}
     </>}>
       <div className="panel-heading"><h2>{title}</h2></div>
       <div className="structures-content">
         <BatteryMemory kind={kind} names={remaining.map(battery => battery.name)} active={selected?.name} locale={locale}
           capacity={batch.batteries.length} onPick={!picked && run ? pick : undefined}
+          taken={selected && (kind === 'stack' || kind === 'queue') ? [selected.name] : undefined}
           values={kind === 'dictionary' ? Object.fromEntries(remaining.map(({ name, charge }) => [name, charge])) : undefined}
           title={t('维修站的电池', 'Batteries at the station')} />
         {(picked || selected) && <dl className="for-values structures-values">

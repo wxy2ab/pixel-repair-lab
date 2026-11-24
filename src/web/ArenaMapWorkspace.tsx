@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useContext, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import type { Locale } from '../shared/types'
 import { ArenaConsoleToggle, type ArenaConsoleControl } from './ArenaConsole'
-import { ArenaMapControlsContext, ArenaMapModeContext } from './ArenaMapMode'
+import { advancingMapStages, ArenaMapControlsContext, ArenaMapModeContext, mapStageSelector } from './ArenaMapMode'
+import { FullscreenVictoryActions, FullscreenVictoryContext, MapVictoryReporter } from './FullscreenVictory'
 import { Icon } from './icons'
 import { tr } from './text'
 import './arena-map-workspace.css'
@@ -13,6 +14,7 @@ type Props = {
   modeControl?: ReactNode
   shortcutHelp?: ReactNode
   dockedConsole?: boolean
+  hasConsole?: boolean
   className?: string
   children: ReactNode
 }
@@ -38,23 +40,26 @@ function anchorConsole(controls: HTMLDivElement | null) {
   return () => observer.disconnect()
 }
 
-export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, shortcutHelp, dockedConsole, className = '', children }: Props) {
+export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, shortcutHelp, dockedConsole, hasConsole = true, className = '', children }: Props) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const { mapMode, open, setMapConsoleOpen } = consoleControl
+  const navigation = useContext(FullscreenVictoryContext)
+  const [mapWon, setMapWon] = useState(false)
   const [drawer, setDrawer] = useState<'report' | 'keys'>()
   const host = useRef<HTMLDivElement>(null)
   const bar = useRef<HTMLDivElement>(null)
   const toggle = useRef<HTMLButtonElement>(null)
-  const didEnter = useRef(false)
+  const fullscreenSurface = useRef<HTMLElement | null>(null)
   const savedScroll = useRef(0)
   const keysId = useId()
 
   const leave = useCallback((restoreFocus = true) => {
-    if (!didEnter.current) return
-    didEnter.current = false
+    const surface = fullscreenSurface.current
+    if (!surface) return
+    fullscreenSurface.current = null
     setMapConsoleOpen(null)
     setDrawer(undefined)
-    if (document.fullscreenElement === host.current && document.fullscreenElement) {
+    if (document.fullscreenElement === surface) {
       void document.exitFullscreen().catch(() => {})
     }
     if (restoreFocus) requestAnimationFrame(() => {
@@ -67,23 +72,47 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
   function enter() {
     const element = host.current
     if (!element) return
-    didEnter.current = true
+    // The stage stays mounted when a cleared challenge is replaced by the next one.
+    const surface = element.closest<HTMLElement>(mapStageSelector) ?? element
+    fullscreenSurface.current = surface
     savedScroll.current = window.scrollY
     setMapConsoleOpen(false)
     setDrawer(undefined)
     // The same surface fills the application window when the embed disallows native fullscreen.
-    if (document.fullscreenEnabled && element.requestFullscreen) {
-      void element.requestFullscreen().then(() => {
-        if (!didEnter.current && document.fullscreenElement === element) void document.exitFullscreen().catch(() => {})
+    if (document.fullscreenEnabled && surface.requestFullscreen) {
+      void surface.requestFullscreen().then(() => {
+        if (!fullscreenSurface.current && document.fullscreenElement === surface && !surface.querySelector('[data-map-fullscreen]')) {
+          void document.exitFullscreen().catch(() => {})
+        }
       }).catch(() => {})
     }
     element.focus({ preventScroll: true })
   }
 
+  useLayoutEffect(() => {
+    const element = host.current
+    const stage = element?.closest<HTMLElement>(mapStageSelector)
+    if (element && stage && advancingMapStages.delete(stage)) {
+      fullscreenSurface.current = stage
+      savedScroll.current = window.scrollY
+      setMapConsoleOpen(false)
+      element.focus({ preventScroll: true })
+    }
+    return () => {
+      const surface = fullscreenSurface.current
+      if (!surface) return
+      fullscreenSurface.current = null
+      if (!advancingMapStages.has(surface) && document.fullscreenElement === surface) {
+        void document.exitFullscreen().catch(() => {})
+      }
+      setMapConsoleOpen(null)
+    }
+  }, [setMapConsoleOpen])
+
   useEffect(() => {
-    let native = false
+    let native = !!fullscreenSurface.current && document.fullscreenElement === fullscreenSurface.current
     function observeFullscreen() {
-      if (document.fullscreenElement === host.current && host.current) native = true
+      if (fullscreenSurface.current && document.fullscreenElement === fullscreenSurface.current) native = true
       else if (native) {
         native = false
         leave()
@@ -97,12 +126,8 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
       document.removeEventListener('fullscreenchange', observeFullscreen)
       window.removeEventListener('popstate', onNavigate)
       window.removeEventListener('hashchange', onNavigate)
-      if (didEnter.current) {
-        didEnter.current = false
-        setMapConsoleOpen(null)
-      }
     }
-  }, [leave, setMapConsoleOpen])
+  }, [leave])
 
   useEffect(() => {
     if (mapMode && open) setDrawer(undefined)
@@ -116,7 +141,7 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
     sizeHeader()
     const observer = new ResizeObserver(sizeHeader)
     observer.observe(header)
-    const challengeStage = element.closest('.challenge-stage')
+    const challengeStage = element.closest(mapStageSelector)
     const detach = new MutationObserver(() => {
       if (!element.isConnected) leave(false)
     })
@@ -167,20 +192,23 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
     onClick={() => mapMode ? leave() : enter()}>
     <Icon name={mapMode ? 'close' : 'fullscreen'} /><span>{sizeLabel}</span>
   </button>
-  const inlineControls = !mapMode && <div className="arena-map-controls" ref={dockedConsole ? undefined : anchorConsole}
+  const inlineControls = !mapMode && <div className="arena-map-controls" ref={dockedConsole || !hasConsole ? undefined : anchorConsole}
     role="group" aria-label={t('地图显示', 'Map display')}>
     {fullscreenButton}
-    <ArenaConsoleToggle control={consoleControl} locale={locale} />
+    {hasConsole && <ArenaConsoleToggle control={consoleControl} locale={locale} />}
   </div>
 
   return <ArenaMapModeContext.Provider value={mapMode}>
     <div ref={host} className={'lesson-layout arena-layout arena-map-workspace ' + (dockedConsole ? 'arena-map-docked ' : 'arena-map-floating ') + className}
-      data-testid="arena-map-workspace" data-console={open ? 'open' : 'closed'} data-map-fullscreen={mapMode || undefined}
+      data-testid="arena-map-workspace" data-console={hasConsole && open ? 'open' : 'closed'} data-map-fullscreen={mapMode || undefined}
       data-map-drawer={mapMode ? drawer : undefined} role={mapMode ? 'dialog' : undefined}
       aria-modal={mapMode || undefined} aria-label={mapMode ? title : undefined} tabIndex={-1}>
-      <ArenaMapControlsContext.Provider value={inlineControls}>{children}</ArenaMapControlsContext.Provider>
+      <MapVictoryReporter.Provider value={navigation?.requireMapWin ? setMapWon : null}>
+        <ArenaMapControlsContext.Provider value={inlineControls}>{children}</ArenaMapControlsContext.Provider>
+      </MapVictoryReporter.Provider>
       {mapMode && <div ref={bar} className="arena-map-bar">
         <strong className="arena-map-title">{title}</strong>
+        <FullscreenVictoryActions locale={locale} mapWon={mapWon} />
         {modeControl}
         <button type="button" className="subtle-button" data-testid="arena-map-report-toggle"
           aria-expanded={drawer === 'report'} onClick={() => showDrawer('report')}>

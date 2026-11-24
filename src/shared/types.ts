@@ -28,6 +28,7 @@ export type RackBinding = { name: string; value: Json }
 export type RackStep = { line: number; sourceName: string; bindings?: RackBinding[]; boardActions?: number }
 export type Direction = 'up' | 'down' | 'left' | 'right'
 export type Position = { x: number; y: number }
+export type Warehouse = { boxes: Position[]; targets: Position[] }
 export type FerryRaceLayout = { batteries: [Position, Position]; wall: Position }
 export type FerryCommand = Direction | 'pick' | 'wait'
 export type ChallengeCrossing = { kind: 'crossing'; next?: string; carryFrom?: string }
@@ -76,6 +77,7 @@ export type Instruction = { op: 'LOAD' | 'ADD' | 'STORE'; address: number } | { 
 
 export type Objective =
   | ({ type: 'exit' } & Position)
+  | { type: 'parkBoxes' }
   | { type: 'collect'; itemIds: string[] }
   | { type: 'moves'; origin: Origin }
   | { type: 'submit'; values: Json[]; origin?: Origin; sameContainer?: boolean }
@@ -85,6 +87,7 @@ export type Objective =
 export type Scenario = {
   tiles: string[]
   start: Position
+  warehouse?: Warehouse
   turnLimit?: number
   enemies?: Enemy[]
   devices?: GridDevice[]
@@ -145,6 +148,7 @@ export type Catalog = { levels: Level[]; issues: Issue[] }
 
 export type GridSnapshot = {
   devices?: GridDeviceState
+  boxes?: Position[]
   player: Position
   enemies: Position[]
   items: Item[]
@@ -176,6 +180,7 @@ export type RunIssue = {
 
 export type GridGoalGap =
   | { type: 'collect'; remaining: number }
+  | { type: 'parkBoxes'; remaining: number }
   | { type: 'submit'; remaining: number; origin?: Origin }
   | { type: 'moves'; origin: Origin }
   | { type: 'memory'; address: number }

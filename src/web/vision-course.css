@@ -42,6 +42,14 @@
 .vision-detection-box { border: 2px solid #6dffd4; }
 .vision-detection-box span { position: absolute; top: 0; left: 0; padding: 1px 4px; background: #102f2c; color: #e1fff5; font: 700 clamp(9px, 1.6vw, 13px) var(--mono); white-space: nowrap; }
 .vision-drawn-box { border: 2px dashed #ffd47a; background: #ffc15820; }
+.vision-drawn-box > span { position: absolute; bottom: 0; right: 0; padding: 1px 4px; background: #382e19; color: #ffe5a1; font-size: .72rem; white-space: nowrap; }
+.vision-box-overlap, .vision-box-note i {
+  background: repeating-linear-gradient(135deg, #fff5cfbb 0 2px, #172d3390 2px 7px);
+}
+.vision-box-overlap { position: absolute; pointer-events: none; }
+.vision-box-note { position: absolute; bottom: 3px; left: 3px; display: flex; align-items: center; gap: 5px; padding: 3px 6px; border-radius: 4px;
+  background: #132529ec; color: #fff7da; font-size: .75rem; pointer-events: none; }
+.vision-box-note i { width: 13px; height: 13px; border: 1px solid #f6ecce; }
 .vision-detections { overflow-x: auto; margin-block: 9px 6px; }
 .vision-detections table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
 .vision-detections :is(th, td) { padding: 4px 6px; border-bottom: 1px solid var(--border); white-space: nowrap; }

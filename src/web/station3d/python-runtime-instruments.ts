@@ -12,15 +12,20 @@ function base(kit: Kit, width: number, depth: number) {
   kit.casing([0, .24, 0], [width - .04, .10, depth - .04], '#789697', .04)
 }
 
-type CupState = { cups: { address: number; name?: string; value?: number }[]; selected?: number }
+type CupState = {
+  cups: { address: number; name?: string; value?: number; note?: string }[]
+  selected?: number
+  copy?: { from: number; to: number; label: string }
+}
 
-export const buildCupShelf: ModelBuilder<CupState> = ({ cups, selected }, kit, tools) => {
+export const buildCupShelf: ModelBuilder<CupState> = ({ cups, selected, copy }, kit, tools) => {
   const columns = Math.min(4, Math.max(1, cups.length))
   const rows = Math.max(1, Math.ceil(cups.length / columns))
+  const xAt = (index: number) => (index % columns - (columns - 1) / 2) * 1.55
+  const zAt = (index: number) => (Math.floor(index / columns) - (rows - 1) / 2) * 1.55
   base(kit, columns * 1.55 + .30, rows * 1.55 + .18)
-  cups.forEach(({ address, name, value }, index) => {
-    const x = (index % columns - (columns - 1) / 2) * 1.55
-    const z = (Math.floor(index / columns) - (rows - 1) / 2) * 1.55
+  cups.forEach(({ address, name, value, note }, index) => {
+    const x = xAt(index), z = zAt(index)
     const rim = selected === address ? amber : enamel
     kit.cylinder([x, .34, z], .49, .52, .09, ink)
     kit.cylinder([x, .42, z], .38, .33, .09, '#507577')
@@ -35,9 +40,18 @@ export const buildCupShelf: ModelBuilder<CupState> = ({ cups, selected }, kit, t
       tools.label(String(value), [x, .85, z + .06], .24)
     }
     if (name) tools.label(name, [x, 1.24, z - .21], .19)
+    if (note) tools.label(note, [x, 1.65, z - .21], .18)
     tools.label('@' + address, [x, .35, z + .60], .19)
     tools.pick(String(address), [x, .69, z], [1.12, .85, 1.34])
   })
+  if (copy) {
+    const sx = xAt(copy.from), sz = zAt(copy.from), tx = xAt(copy.to), tz = zAt(copy.to)
+    kit.rod([sx, 1.37, sz], [sx, 1.64, sz], .025, mint)
+    kit.rod([sx, 1.64, sz], [tx, 1.64, tz], .025, mint)
+    kit.rod([tx, 1.64, tz], [tx, 1.41, tz], .025, mint)
+    kit.cylinder([tx, 1.40, tz], .09, .012, .12, mint)
+    tools.label(copy.label, [(sx + tx) / 2, 1.85, (sz + tz) / 2], .18)
+  }
 }
 
 type StackState = { frame?: ProgramWalkthroughFrame; input: number; locale: Locale }

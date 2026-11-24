@@ -1,5 +1,7 @@
 import { CodingDevice } from './CodingDevice'
 import { AlgorithmBatteryRack } from './AlgorithmBatteryRack'
+import { StepExplanation } from './LessonNotes'
+import { useBatteryMotion } from './useBatteryMotion'
 import { useId, useMemo, useRef, useState } from 'react'
 import { runSelectionSort, type SelectionSortStep } from '../engine/programSelectionSort'
 import type { CollectionBattery, ProgramWalkthrough } from '../shared/programWalkthrough'
@@ -84,6 +86,7 @@ export function SelectionSortLesson({ execution, locale, onReady }: {
   const heading = useId()
   const prompt = useId()
   const [position, setPosition] = useState(-1)
+  const motion = useBatteryMotion(position)
   const [swapIndex, setSwapIndex] = useState<number>()
   const [mistake, setMistake] = useState<number>()
   const ready = useRef(false)
@@ -109,6 +112,7 @@ export function SelectionSortLesson({ execution, locale, onReady }: {
   const firstComparison = step?.kind === 'compare' && run.steps[position - 1]?.kind === 'candidate' && step.start === 0
 
   function goTo(nextPosition: number) {
+    motion.capture()
     setSwapIndex(undefined)
     setMistake(undefined)
     setPosition(nextPosition)
@@ -137,6 +141,10 @@ export function SelectionSortLesson({ execution, locale, onReady }: {
     const face = <>
       <SearchBatteryFace name={name} charge={charge} index={index} locale={locale} />
       {state === 'minimum' && <small className="selection-card-marker">{t('最小', 'Min')}</small>}
+      {state === 'checking' && compare && <small className="selection-card-marker" data-testid="selection-sort-relation">
+        {compare} {step?.smaller ? '✓' : '✕'}
+      </small>}
+      {state === 'swapped' && <small className="selection-card-marker">{t('⇄ 交换', '⇄ Swap')}</small>}
     </>
     return <li key={index}>
       {fixed || tile === undefined
@@ -196,7 +204,7 @@ export function SelectionSortLesson({ execution, locale, onReady }: {
             <button type="button" className="subtle-button" onClick={() => setSwapIndex(undefined)}>{t('返回本轮', 'Return to this round')}</button>
           </>}
         </div>}
-        <div className="selection-sort-board">
+        <div className="selection-sort-board" ref={motion.board}>
           <section className="selection-sort-lane is-fixed">
             <h3>{t('已排好', 'Sorted')} <strong>{sorted}</strong></h3>
             {sorted === 0 && <p>{t('还没有固定位置', 'No positions fixed yet')}</p>}
@@ -215,18 +223,15 @@ export function SelectionSortLesson({ execution, locale, onReady }: {
         <div className="selection-sort-step" data-testid="selection-sort-step" data-kind={step?.kind ?? 'start'}
           data-sorted={sorted} data-start={step?.start} data-candidate={step?.candidate} data-index={step?.index} data-line={step?.line}
           data-next-kind={next?.kind}>
-          <p role="status">
-            {compare && <span className="selection-sort-relation" data-testid="selection-sort-relation">
-              <code>{compare}</code> {step?.smaller ? t('成立', 'true') : t('不成立', 'false')}
-            </span>}
+          <StepExplanation locale={locale}>
             {exchange && swapIndex === 0 ? t('先将待排序区第一格的电池记在 held 里。', 'Save the first unsorted battery in held.')
               : exchange && swapIndex === 1 ? t('把选中的电池写入第一格。原来那块还记在 held 里。', 'Write the selected battery into the first slot. The original battery is still saved in held.')
               : caption(step, t)}
-          </p>
           {firstComparison && <p className="selection-sort-code-note">
             {t('每块电池存成 [名字, 电量]。row[index][1] 取这块电池的电量。',
               'Each battery is stored as [name, charge]. row[index][1] reads that battery’s charge.')}
           </p>}
+          </StepExplanation>
         </div>
         {run.issue && <p className="error-message" role="alert">{runIssueText(locale, run.issue)}</p>}
       </div>

@@ -109,7 +109,12 @@
               "zh": "断开",
               "en": "Open"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "switch-open",
+            "annotation": {
+              "zh": "回路断开",
+              "en": "Gap in the loop"
+            }
           },
           {
             "id": "d",
@@ -118,10 +123,11 @@
               "en": "Diode"
             },
             "value": {
-              "zh": "色环端朝向负极一侧",
-              "en": "Band toward −"
+              "zh": "色环在 − 端",
+              "en": "Band at −"
             },
-            "state": "done"
+            "state": "done",
+            "glyph": "diode-forward"
           },
           {
             "id": "led",
@@ -133,7 +139,8 @@
               "zh": "灭",
               "en": "Off"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "lamp-off"
           }
         ]
       },
@@ -153,7 +160,8 @@
               "zh": "闭合",
               "en": "Closed"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "switch-closed"
           },
           {
             "id": "d",
@@ -162,10 +170,11 @@
               "en": "Diode"
             },
             "value": {
-              "zh": "色环端朝向负极一侧",
-              "en": "Band toward −"
+              "zh": "色环在 − 端",
+              "en": "Band at −"
             },
-            "state": "done"
+            "state": "done",
+            "glyph": "diode-forward"
           },
           {
             "id": "led",
@@ -177,7 +186,12 @@
               "zh": "亮",
               "en": "On"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "lamp-on",
+            "annotation": {
+              "zh": "电流通过",
+              "en": "Current flows"
+            }
           }
         ]
       },
@@ -197,7 +211,8 @@
               "zh": "闭合",
               "en": "Closed"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "switch-closed"
           },
           {
             "id": "d",
@@ -206,10 +221,15 @@
               "en": "Diode"
             },
             "value": {
-              "zh": "色环端朝向正极一侧",
-              "en": "Band toward +"
+              "zh": "色环在 + 端",
+              "en": "Band at +"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "diode-reverse",
+            "annotation": {
+              "zh": "电流受阻",
+              "en": "Current blocked"
+            }
           },
           {
             "id": "led",
@@ -221,7 +241,8 @@
               "zh": "灭",
               "en": "Off"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "lamp-off"
           }
         ]
       },
@@ -241,7 +262,8 @@
               "zh": "闭合",
               "en": "Closed"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "switch-closed"
           },
           {
             "id": "d",
@@ -250,10 +272,15 @@
               "en": "Diode"
             },
             "value": {
-              "zh": "色环端朝向负极一侧",
-              "en": "Band toward −"
+              "zh": "色环在 − 端",
+              "en": "Band at −"
             },
-            "state": "done"
+            "state": "done",
+            "glyph": "diode-forward",
+            "annotation": {
+              "zh": "色环转回 −",
+              "en": "Band back to −"
+            }
           },
           {
             "id": "led",
@@ -265,7 +292,8 @@
               "zh": "亮",
               "en": "On"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "lamp-on"
           }
         ]
       }

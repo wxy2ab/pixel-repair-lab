@@ -19,7 +19,7 @@
 .prefix-totals-row {
   display: flex;
   flex-wrap: wrap;
-  align-items: end;
+  align-items: start;
   gap: 4px;
   margin: 0;
   padding: 5px;
@@ -89,37 +89,20 @@ button.prefix-totals-value { cursor: pointer; }
 button.prefix-totals-value:hover { border-color: var(--warm); }
 .prefix-totals-value small { font: clamp(.52rem, 2.25cqi, .68rem)/1 var(--mono); }
 .prefix-totals-value strong { font: 700 .88rem/1 var(--mono); }
-.prefix-totals-offset { color: var(--muted); font-size: .85rem; }
-
-.prefix-totals-operands {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 5px;
-  color: #e0edf6;
+.prefix-row-action { margin: 0; font-weight: 650; }
+.prefix-cell-math { color: var(--warm); text-align: center; font: 650 .76rem/1.2 var(--mono); }
+.prefix-bands { display: grid; gap: 6px; margin: 0; min-width: 0; }
+.prefix-band { display: grid; gap: 3px; min-width: 0; font: 600 .75rem/1.2 var(--mono); }
+.prefix-band > div { display: flex; justify-content: space-between; gap: 3px; }
+.prefix-band ol { display: grid; grid-auto-columns: minmax(0, 1fr); grid-auto-flow: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.prefix-band li { display: flex; flex-wrap: wrap; justify-content: center; gap: 1px 5px; padding: 4px 1px; border-radius: 3px; color: #9caebc; overflow-wrap: anywhere; }
+.prefix-band [data-covered] { color: #d9fff2; background: #255347; border: 1px solid #568c7a; }
+.prefix-band[data-band='before'] [data-covered], .prefix-band [data-cancelled] { color: #d1e3f5; background: #27465d; border: 1px dashed #86a9c5; }
+.prefix-band [data-cancelled] { text-decoration: line-through; }
+.prefix-totals-lesson .prefix-totals-step:not(:has(p)) { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .prefix-band { animation: prefix-totals-appear .22s ease-out; }
 }
-
-.prefix-totals-operands > span:has(strong) {
-  display: grid;
-  justify-items: center;
-  gap: 1px;
-  padding: 3px 7px;
-  border: 1px solid #688eae;
-  border-radius: 5px;
-  background: #263f58;
-}
-
-.prefix-totals-operands .prefix-totals-through {
-  border-color: #6daea0;
-  background: linear-gradient(to right, #263f58, #224a3f);
-}
-
-.prefix-totals-operands .prefix-totals-difference {
-  border-color: #6daea0;
-  background: #224a3f;
-}
-.prefix-totals-operands strong { font-family: var(--mono); }
-.prefix-totals-math { margin-inline-start: 7px; color: var(--warm); }
 
 .prefix-totals-code {
   margin: 0;

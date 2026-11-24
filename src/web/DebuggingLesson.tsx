@@ -6,6 +6,7 @@ import { programSourceLines, type ProgramWalkthrough } from '../shared/programWa
 import type { Locale } from '../shared/types'
 import { tr } from './text'
 import { StepCount } from './LessonFrame'
+import { StepExplanation } from './LessonNotes'
 import './for-lesson.css'
 import './debugging-lesson.css'
 
@@ -47,8 +48,8 @@ function describe(step: Step | undefined, phase: Phase, increment: number, t: Tr
   }
 }
 
-function BatteryRow({ batteries, step, recorded, t }: {
-  batteries: number[]; step?: Step; recorded: number[]; t: Translate;
+function BatteryRow({ batteries, step, recorded, notes, skipped, t }: {
+  batteries: number[]; step?: Step; recorded: number[]; notes: (string | undefined)[]; skipped: boolean; t: Translate;
 }) {
   const columns = { '--debug-columns': Math.max(1, Math.min(3, batteries.length)) } as CSSProperties
   return <ol className="for-row for-batteries debug-batteries" data-testid="debug-batteries" style={columns}
@@ -57,11 +58,11 @@ function BatteryRow({ batteries, step, recorded, t }: {
       const charged = recorded[index] !== undefined
       const active = index === step?.batteryIndex
       const charge = recorded[index] ?? starting
-      return <li key={index} data-battery-index={index} data-charge={charge} data-charged={charged || undefined}
+      return <li key={index} data-battery-index={index} data-charge={charge} data-charged={charged || undefined} data-skipped={skipped && !charged || undefined}
         data-active={active || undefined} aria-current={active ? 'step' : undefined}>
         <span className="for-battery">{charge}</span>
         <span className="for-battery-number">{t(`第 ${index + 1} 块`, `Battery ${index + 1}`)}</span>
-        {charged && <span className="debug-battery-status">{t('已补电', 'Charged')}</span>}
+        {notes[index] && <span className="debug-battery-status">{notes[index]}</span>}
       </li>
     })}
   </ol>
@@ -86,6 +87,7 @@ function TraceSource({ code, active, chooseLine, selectedLine, loopLine, returnL
         {canChoose ? <button type="button" className="debug-code-choice" data-debug-line-choice={line}
           aria-pressed={line === selectedLine} onClick={() => chooseLine(line)}><code>{content}</code></button>
           : <code>{content}</code>}
+        {editingReturn && <small className="debug-line-place">{moved ? t('↲ 循环外', '↲ After loop') : t('↳ 循环内', '↳ Inside loop')}</small>}
       </li>
     })}
   </ol>
@@ -117,6 +119,10 @@ export function DebuggingLesson({ execution, locale, onReady }: {
   const match = output === undefined ? undefined : output === expected
   const recorded = repairRun?.results ?? step?.results ?? []
   const hasReturned = !!repairRun || stage === 'return' || stage === 'store' || stage === 'output'
+  const cellNotes = batteries.map((start, index) => recorded[index] !== undefined
+    ? `${start} → ${recorded[index]}`
+    : hasReturned ? t('未处理', 'Skipped')
+      : index === step?.batteryIndex ? t('↑ 读取', '↑ Read') : undefined)
   const choice = phase === 'row' && stage === 'output'
   const revealed = new Map(trace?.steps.slice(0, position).map(({ line, code }) => [line, code]))
   if (movedSource) revealed.set(returnLine, programSourceLines(movedSource)[returnLine - 1])
@@ -127,7 +133,7 @@ export function DebuggingLesson({ execution, locale, onReady }: {
     t('用一块电池试跑', 'Test one battery'),
     t('换一排，对照预期和实际', 'Test a row and compare'),
     t('找出提前结束的那一行', 'Find the line that exits early'),
-    t('把 return 移出循环', 'Move return out of the loop'),
+    editing ? t('把 return 移出循环', 'Move return out of the loop') : t('调整指令', 'Edit the instruction'),
     t('重新试跑确认', 'Run again to confirm'),
   ]
   const methodStep = fixed ? method.length : moved ? 4 : editing ? 3 : choice ? 2 : phase === 'row' ? 1 : 0
@@ -207,10 +213,11 @@ export function DebuggingLesson({ execution, locale, onReady }: {
             {trace && <StepCount position={position} total={trace.steps.length} locale={locale} />}
           </>}
       </div>}
-      {/* The caption stays above the code, because some steps ask the learner to pick a line in it. */}
       {trace === null || repairRun === null ? <p className="error-message" role="alert">
         {t('这次没能运行补电程序。再试一次。', 'The charging program did not run this time. Try again.')}
-      </p> : <p className="debug-description" role="status">{caption}</p>}
+      </p> : choice ? <p className="debug-description" role="status">
+        {selectedLine !== undefined ? caption : t('点选让函数提前结束的那一行。', 'Select the line that ended this run early.')}
+      </p> : <StepExplanation className="debug-description" locale={locale}>{caption}</StepExplanation>}
       {choice && <TraceSource code={code} active={editing ? returnLine : step?.line} chooseLine={chooseLine}
         selectedLine={selectedLine} loopLine={loopLine} returnLine={returnLine} moved={moved} editing={editing} t={t} />}
       {editing && <div className="debugging-navigation">
@@ -225,11 +232,11 @@ export function DebuggingLesson({ execution, locale, onReady }: {
         <h2>{title}</h2>
       </div>
       <div className="debugging-body">
-        <TraceRack state={{ rows: [batteries], saved: [recorded], locale, rowIndex: step ? 0 : undefined,
+        <TraceRack state={{ rows: [batteries], saved: [recorded], cellNotes: [cellNotes], locale, rowIndex: step ? 0 : undefined,
           batteryIndex: editing ? undefined : step?.batteryIndex,
-          returned: hasReturned ? t(`交回 ${recorded.length} 块`, `Returned · ${recorded.length}`) : undefined }} />
+          returned: hasReturned ? t(`交回 ${recorded.length}/${batteries.length}`, `Returned ${recorded.length}/${batteries.length}`) : undefined }} />
         <div className="for-board">
-          <BatteryRow batteries={batteries} recorded={recorded} step={editing ? undefined : step} t={t} />
+          <BatteryRow batteries={batteries} recorded={recorded} step={editing ? undefined : step} notes={cellNotes} skipped={hasReturned} t={t} />
           <dl className="debug-comparison">
             <div><dt>{t('预期结果', 'Expected result')}</dt><dd data-testid="debug-expected"><code>{expected}</code></dd></div>
             <div data-match={match}><dt>{t('实际结果', 'Actual result')}</dt>

@@ -56,7 +56,7 @@
     }
   ],
   "animation": {
-    "layout": "pipeline",
+    "layout": "row",
     "frames": [
       {
         "caption": {
@@ -74,7 +74,8 @@
               "zh": "目标 2",
               "en": "Target 2"
             },
-            "state": "active"
+            "state": "active",
+            "symbol": "🥽"
           },
           {
             "id": "tape",
@@ -96,7 +97,8 @@
             "value": {
               "zh": "目标 0",
               "en": "Target 0"
-            }
+            },
+            "symbol": "🧲"
           }
         ]
       },
@@ -113,10 +115,15 @@
               "en": "Goggles"
             },
             "value": {
-              "zh": "目标 2 · AI 1",
-              "en": "Target 2 · AI 1"
+              "zh": "AI 1 · 目标 2",
+              "en": "AI 1 · Goal 2"
             },
-            "state": "active"
+            "state": "active",
+            "annotation": {
+              "zh": "少 1",
+              "en": "1 short"
+            },
+            "symbol": "🥽"
           },
           {
             "id": "tape",
@@ -125,8 +132,8 @@
               "en": "Tape"
             },
             "value": {
-              "zh": "目标 1 · AI 0",
-              "en": "Target 1 · AI 0"
+              "zh": "AI 0 · 目标 1",
+              "en": "AI 0 · Goal 1"
             }
           },
           {
@@ -136,9 +143,10 @@
               "en": "Magnet"
             },
             "value": {
-              "zh": "目标 0 · AI 1",
-              "en": "Target 0 · AI 1"
-            }
+              "zh": "AI 1 · 目标 0",
+              "en": "AI 1 · Goal 0"
+            },
+            "symbol": "🧲"
           }
         ]
       },
@@ -155,9 +163,10 @@
               "en": "Goggles"
             },
             "value": {
-              "zh": "少装 1",
-              "en": "One too few"
-            }
+              "zh": "AI 1 · 目标 2",
+              "en": "AI 1 · Goal 2"
+            },
+            "symbol": "🥽"
           },
           {
             "id": "tape",
@@ -166,10 +175,14 @@
               "en": "Tape"
             },
             "value": {
-              "zh": "目标 1 · AI 0",
-              "en": "Target 1 · AI 0"
+              "zh": "AI 0 · 目标 1",
+              "en": "AI 0 · Goal 1"
             },
-            "state": "active"
+            "state": "active",
+            "annotation": {
+              "zh": "漏装",
+              "en": "Missing"
+            }
           },
           {
             "id": "magnet",
@@ -178,9 +191,10 @@
               "en": "Magnet"
             },
             "value": {
-              "zh": "目标 0 · AI 1",
-              "en": "Target 0 · AI 1"
-            }
+              "zh": "AI 1 · 目标 0",
+              "en": "AI 1 · Goal 0"
+            },
+            "symbol": "🧲"
           }
         ]
       },
@@ -197,9 +211,10 @@
               "en": "Goggles"
             },
             "value": {
-              "zh": "少装 1",
-              "en": "One too few"
-            }
+              "zh": "AI 1 · 目标 2",
+              "en": "AI 1 · Goal 2"
+            },
+            "symbol": "🥽"
           },
           {
             "id": "tape",
@@ -208,8 +223,8 @@
               "en": "Tape"
             },
             "value": {
-              "zh": "漏装",
-              "en": "Missing"
+              "zh": "AI 0 · 目标 1",
+              "en": "AI 0 · Goal 1"
             }
           },
           {
@@ -219,10 +234,15 @@
               "en": "Magnet"
             },
             "value": {
-              "zh": "多装 1",
-              "en": "One extra"
+              "zh": "AI 1 · 目标 0",
+              "en": "AI 1 · Goal 0"
             },
-            "state": "active"
+            "state": "active",
+            "annotation": {
+              "zh": "多 1",
+              "en": "1 extra"
+            },
+            "symbol": "🧲"
           }
         ]
       }

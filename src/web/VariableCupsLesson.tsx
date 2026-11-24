@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import { runProgramWalkthrough } from '../engine/programWalkthrough'
 import { programSourceLines, type ProgramWalkthrough, type ProgramWalkthroughFrame, type ProgramWalkthroughResult } from '../shared/programWalkthrough'
 import type { Locale } from '../shared/types'
 import { CommandDesk } from './Classroom'
 import { DeviceWindow } from './DeviceWindow'
+import { StepExplanation } from './LessonNotes'
 import { TeachingModel } from './station3d/TeachingModel'
 import { runIssueText, tr } from './text'
 import './variable-cups-lesson.css'
@@ -22,13 +23,14 @@ function numberIn(frame: ProgramWalkthroughFrame | undefined, name: string) {
   return typeof value === 'number' ? value : undefined
 }
 
-function Cup({ address, name, value, selected, onSelect, t }: {
-  address: number; name?: string; value?: number; selected: boolean; onSelect: () => void; t: Translate
+function Cup({ address, name, value, note, selected, missed, onSelect, t }: {
+  address: number; name?: string; value?: number; note?: string; selected: boolean; missed: boolean; onSelect: () => void; t: Translate
 }) {
   const empty = t('空杯', 'Empty')
-  const description = [t('地址 ' + address, 'Address ' + address), name, value === undefined ? empty : t('值 ' + value, 'value ' + value)].filter(Boolean).join(' · ')
+  const description = [t('地址 ' + address, 'Address ' + address), name, value === undefined ? empty : t('值 ' + value, 'value ' + value), note].filter(Boolean).join(' · ')
   return <button type="button" className="vc-cup" aria-label={description} data-cup-address={address}
-    data-name={name ?? ''} data-value={value ?? ''} data-selected={selected || undefined} onClick={onSelect}>
+    data-name={name ?? ''} data-value={value ?? ''} data-selected={selected || undefined} data-missed={missed || undefined} onClick={onSelect}>
+    <span className="vc-cup-note" aria-hidden="true">{note}</span>
     <span className="vc-cup-tag" data-named={!!name} aria-hidden="true">{name || ' '}</span>
     <span className="vc-socket" aria-hidden="true" />
     <span className="vc-glass" aria-hidden="true">
@@ -87,8 +89,12 @@ function CupPractice({ execution, config, locale, t, onTrial, onComplete }: {
           className="subtle-button" key={i} data-testid="cup-sample" data-input={entry.input} aria-pressed={i + 1 === sampleIndex}
           onClick={() => selectBattery(i + 1)}>{entry.label[locale]}</button>)}</div>
       </fieldset>
-      <p>{t('把 ' + sample.input + ' 记到 ' + config.variable + '，把读数留给 ' + config.snapshot + '，再把 ' + config.variable + ' 换成 0。猜猜最后两张标签各会读到几？',
-        'Store ' + sample.input + ' in ' + config.variable + ', save that reading in ' + config.snapshot + ', then set ' + config.variable + ' to 0. What will each name give you at the end?')}</p>
+      <ol className="vc-trial-path" aria-label={t('这次的操作', 'Operations for this battery')}>
+        <li>{sample.input} → <code>{config.variable}</code></li>
+        <li><code>{config.variable}</code> → <code>{config.snapshot}</code></li>
+        <li>0 → <code>{config.variable}</code></li>
+      </ol>
+      <p>{t('猜猜两个杯里最后各有几格？', 'Which value will each cup hold at the end?')}</p>
       <div className="vc-predictions">{fields.map(([field, name]) => <fieldset key={field} data-cup-prediction={field}>
         <legend><code>{name}</code></legend>
         <div className="vc-choices">{sample.predictions?.map(option => <button type="button" key={option} className="subtle-button"
@@ -142,10 +148,28 @@ export function VariableCupsLesson({ execution, locale, onComplete, onPhase }: {
   const reading = numberIn(current, variable)
   const saved = numberIn(current, snapshot)
   const latest = current?.output.at(-1)
+  const before = numberIn(visibleSteps.at(-2), variable)
+  const sourceIndex = sourceAddress === undefined ? -1 : config.addresses.indexOf(sourceAddress)
+  const copyIndex = copyAddress === undefined ? -1 : config.addresses.indexOf(copyAddress)
+  const copying = stage === 'replace' && sourceIndex >= 0 && copyIndex >= 0
+  const direction = sourceIndex < copyIndex ? '→' : '←'
+  const actions: Record<Stage, string> = {
+    store: t(`点空杯，存入 ${sample.input}`, `Tap an empty cup to store ${sample.input}`),
+    read: readChoice ? t('选出读数', 'Choose the reading') : t('点名字读数', 'Tap the name to read'),
+    copy: t('点另一个空杯留存读数', 'Tap another empty cup for the copy'),
+    replace: t(`点 ${variable}，换成 0`, `Tap ${variable} to store 0`),
+    show: t(`点 ${snapshot} 读数`, `Tap ${snapshot} to read`),
+    done: pending ? t('预测两个读数', 'Predict both readings') : t('读取完成', 'Read complete'),
+  }
   const cups = config.addresses.map(address => ({
     address,
     name: pending ? undefined : address === sourceAddress ? variable : address === copyAddress ? snapshot : undefined,
     value: address === sourceAddress ? reading : address === copyAddress ? saved : undefined,
+    note: pending ? undefined : address === sourceAddress && stage === 'read' ? `↓ ${reading}`
+      : address === sourceAddress && stage === 'copy' ? t('已读 · ' + reading, 'Read · ' + reading)
+      : address === sourceAddress && stage === 'show' ? `${before} → ${reading}`
+      : address === copyAddress && stage === 'show' ? t('保留 ' + saved, 'Kept ' + saved)
+      : address === copyAddress && stage === 'done' && latest !== undefined ? t('→ 屏幕', '→ Display') : undefined,
   }))
 
   const instructions: Record<Stage, string> = {
@@ -201,12 +225,20 @@ export function VariableCupsLesson({ execution, locale, onComplete, onPhase }: {
 
   return <div className="lecture-layout vc-lesson" data-testid="variable-cups" data-stage={stage} data-trial-input={trial?.input}>
     <DeviceWindow kind="instrument" className="vc-station" locale={locale} title={t('维修站的记忆杯架', 'Workshop memory shelf')}>
-      <div className="vc-instruction"><p role="status">{instructions[stage]}</p></div>
+      <div className="vc-instruction"><p role="status">{actions[stage]}</p></div>
       <TeachingModel sceneKey="python-address-cups" locale={locale} load={loadCupShelf}
-        label={t('按地址取放数字卡', 'Store and read cards by address')} state={{ cups, selected: lastAddress }}
+        label={t('按地址取放数字卡', 'Store and read cards by address')} state={{ cups, selected: lastAddress,
+          copy: copying ? { from: sourceIndex, to: copyIndex, label: t('复制 ' + saved, 'Copy ' + saved) } : undefined }}
         onPick={id => act(Number(id))} />
       <div className="vc-shelf" aria-label={t('按地址排列的杯子', 'Cups in address order')} role="group">
-        {cups.map(cup => <Cup key={cup.address} {...cup} t={t} selected={lastAddress === cup.address} onSelect={() => act(cup.address)} />)}
+        {copying && <div className="vc-copy-path" role="img" data-direction={sourceIndex < copyIndex ? 'right' : 'left'}
+          style={{ gridColumn: `${Math.min(copyIndex, sourceIndex) + 1} / ${Math.max(copyIndex, sourceIndex) + 2}`,
+            '--path-cups': Math.abs(copyIndex - sourceIndex) + 1 } as CSSProperties}
+          aria-label={t(`${variable} 的读数 ${saved} 复制到 ${snapshot}`, `Copy the reading ${saved} from ${variable} to ${snapshot}`)}>
+          <small>{t('复制', 'Copy')}</small><span>{saved}</span><b aria-hidden="true">{direction}</b>
+        </div>}
+        {cups.map(cup => <Cup key={cup.address} {...cup} t={t} selected={lastAddress === cup.address} missed={miss === cup.address}
+          onSelect={() => act(cup.address)} />)}
       </div>
       {stage === 'read' && readChoice && <div className="vc-choices vc-read-choice">
         <button type="button" className="subtle-button" data-testid="cup-read-choice" data-kind="address" onClick={() => setReadChoice('address')}>
@@ -228,8 +260,11 @@ export function VariableCupsLesson({ execution, locale, onComplete, onPhase }: {
           </li>)}</ol>
         </div>}
       </div>
-      <div className="vc-foot"><p>{t('把这排杯子想成一小片内存。架上的号码叫地址，告诉你杯子在哪儿。写 Python 时，用名字就能找到值，电脑会安排真正的存放位置。',
-        'Imagine this shelf as a tiny memory. Each shelf number is an address that tells you where a cup sits. In Python, a name finds a value. The computer handles its real storage.')}</p>
+      <div className="vc-foot"><StepExplanation locale={locale}>
+        <p>{instructions[stage]}</p>
+        <p>{t('把这排杯子想成一小片内存。架上的号码叫地址，告诉你杯子在哪儿。写 Python 时，用名字就能找到值，电脑会安排真正的存放位置。',
+          'Imagine this shelf as a tiny memory. Each shelf number is an address that tells you where a cup sits. In Python, a name finds a value. The computer handles its real storage.')}</p>
+        </StepExplanation>
         {step > 0 && <button type="button" className="subtle-button" onClick={reset}>{t('重新摆杯', 'Reset shelf')}</button>}
       </div>
     </DeviceWindow>

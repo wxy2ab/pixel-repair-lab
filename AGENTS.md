@@ -31,12 +31,14 @@
 - 电池前缀和课用 `execution.prefixTotalsLesson` 配置 `demo.batteries` 和换一排的 `practice`。演示允许选任意连续区间，练习的 `left` 和 `right` 从 0 编号并包含两端。`expected.prefix` 以 0 开头，之后按顺序记录每块电池下的累计值。`execution.source` 的 `battery_totals(charges, left, right)` 返回 `[逐块相加的总量, 累计表, 两个累计值相减的总量]`。练习用 `predictions.prefix` 和 `predictions.totals` 提供选项。外层 `execution.cases` 填空数组。参考 [算一段电池的总电量](levels/1121-prefix-totals-notes.json)。
 - 需要复用函数的算法、网格或竞技场关卡用 `helpers` 列出函数名。每个名字应有唯一对应的独立算法练习。参考解法用 `from algorithms import 名称`，玩家可导入自己保存的 `my_algorithms` 版本。
 - 网格场景和变体可用 `devices` 配置炮台、激光、镜子、开关、炸弹、钥匙、锁门和宝箱。用机关的 `id` 关联钥匙、开关和收集目标。参考[拐弯的光廊](levels/1922-bent-light-gallery.json)和[双锁档案库](levels/1925-double-seal-vault.json)。
+- 推箱子网格用 `warehouse.boxes` 和 `warehouse.targets` 填写等量的 `{x, y}` 地板坐标，目标用 `{"type":"parkBoxes"}`。任意箱子均可停在任一货位；所有货位必须同时被占用。`move` 推动紧邻的一只箱子时，箱子和芽芽各前进一格，共耗一个回合。墙、地图边界和另一个箱子会挡住推动。参考解填写能完成整张地图的 `solutionCards`。
 - 整条最短路练习可设 `pathGrading: "shortest"`，用例输入依次为矩形地图和两个 `[x, y]` 坐标。所有能走到终点且步数最少的方向列表都能通过。参考[设计整条最短路线](levels/1214-design-shortest-route.json)及复用该函数的[三仓导航派送](levels/1926-three-depot-dispatch.json)。
 - 电池架综合挑战用 `chargingChallenge.trialCase` 选定起始代码提前返回的小例子，用 `predictions` 引用不同的测试用例索引并提供整架电池的预测结果。`cases` 的参数依次为电池架和每块增加的电量。保持 `stage: "challenge"`，通过试跑和最终验证都使用玩家实际导入的函数。参考 [给整架电池补电](levels/950-python-advanced-capstone.json)。
 - 电池交接综合挑战用 `batteryDispatch.trialCase` 选小例子，`predictions` 用不同的用例索引配置取件顺序 `orders` 和最终记录 `records` 的选项。`cases` 的参数依次为电池到达顺序、起始电量字典、补电量和工单操作。`stage` 表示取队头补电后叠放，`retrieve` 表示取栈顶并按名登记。预期结果依次为取件清单和电量字典。参考 [维修站的电池交接单](levels/100-11-dispatch-report.json)。
 - 电池工单综合挑战用 `batteryPipeline.trialCase` 选小例子，用 `prediction.caseIndex` 引用不同的练习用例，并提供 `orders`、`pairs`、`totals`。用例参数依次为原始电量列表、配对目标、排好后区间的左端和右端。两端从 0 编号且都计入。程序调用 `sort_ascending`、`sorted_has_pair`、`prefix_totals`，返回 `[排序后的列表, 配对电量, 区间总量]`。参考 [维修站的电池工单](levels/1199-ranked-shipment.json)。
 - `lecture` 的 `sections` 说明知识点，`question` 给出一次预测及反馈，正确选项 `correct` 从 0 编号。为讲解提供 `animation`，在 2 到 10 帧中展示值、位置或状态的变化。每帧用双语 `caption` 说明当前动作，用相同的 `items[].id` 表示跨帧的同一对象。布局支持 `row`、`stack`、`grid`、`bars`、`pipeline`。`replay` 为网格示例提供独立的地图、数据、目标和可执行的 `source`，示例应与对应练习使用不同数据。AI 回放使用配有双语初始提示和修正提示的内嵌示例。
-- 讲解动画中的 `items[].swatch` 可用六位十六进制色值展示像素和颜色通道。
+- 讲解动画把短标注放在对应对象的双语 `annotation`，用 `value` 展示读数。完整说明留在帧的 `caption` 和课程笔记里。物品可用 `symbol`，像素与颜色通道用六位十六进制 `swatch`，电路元件可用 `glyph` 表示开关、灯、二极管及晶体管的当前状态。
+- 空间演示在 `animation.plot` 指定格数 `columns`、`rows`。每帧对象的 `box: [x, y, width, height]` 以左上角为原点。带 `symbol` 的对象显示在框内，其余矩形显示边界和相交区域。参考 [检测框的交并比](levels/551-yolox-explain.json)。
 - 带专用互动的讲解（`execution` 里有 `forLoop`、`stackLesson`、`batterySearch` 等配置）在通过后才显示 `sections` 和 `question`。`sections` 作为「本课要点」，按演示里实际发生的事来写，每条说一件事。`question` 作为选做的「再想一想」，换一组和演示、预测都不同的数据。新增一种互动讲解时，在 [lessonFlow.ts](src/web/lessonFlow.ts) 登记它各阶段的双语名称，课堂上方的「本课流程」会用到。
 - 从同类型的现有关卡开始。网格任务参考 [把路线装进口袋](levels/03-pocket-route.json)，带敌人的网格参考 [先来的先发货](levels/05-arrival-queue.json)，AI 协作参考 [AI 补给搭档](levels/11-ai-supply-box.json)。修改地形、实体、可用指令、目标或初始数据时，使用配置里的字段。
 - 所有本地化文字都提供 `zh` 和 `en`。网格任务应能通过鼠标组合指令卡过关，因此 `cards` 要覆盖参考解法。数据结构目标用 `origin` 检查实际操作来源，并用 `variants` 检查同一解法能适应的数据变化。

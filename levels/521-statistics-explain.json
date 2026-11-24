@@ -17,27 +17,39 @@
   "animation": {
     "layout": "bars",
     "frames": [
-      { "caption": { "zh": "五个样本已经排序，平均值和中位数都是 22°C。", "en": "The five readings are sorted. Both the mean and median are 22°C." }, "items": [
-        { "id": "a", "label": { "zh": "第 1 个", "en": "1st" }, "value": { "zh": "18°C", "en": "18°C" }, "height": 36 },
-        { "id": "b", "label": { "zh": "第 2 个", "en": "2nd" }, "value": { "zh": "20°C", "en": "20°C" }, "height": 40 },
-        { "id": "c", "label": { "zh": "第 3 个", "en": "3rd" }, "value": { "zh": "22°C", "en": "22°C" }, "height": 44, "state": "active" },
-        { "id": "d", "label": { "zh": "第 4 个", "en": "4th" }, "value": { "zh": "24°C", "en": "24°C" }, "height": 48 },
-        { "id": "e", "label": { "zh": "第 5 个", "en": "5th" }, "value": { "zh": "26°C", "en": "26°C" }, "height": 52 }
-      ] },
-      { "caption": { "zh": "只把最高值从 26°C 换成 44°C。", "en": "Replace only the highest reading, from 26°C to 44°C." }, "items": [
-        { "id": "a", "label": { "zh": "第 1 个", "en": "1st" }, "value": { "zh": "18°C", "en": "18°C" }, "height": 36 },
-        { "id": "b", "label": { "zh": "第 2 个", "en": "2nd" }, "value": { "zh": "20°C", "en": "20°C" }, "height": 40 },
-        { "id": "c", "label": { "zh": "第 3 个", "en": "3rd" }, "value": { "zh": "22°C", "en": "22°C" }, "height": 44 },
-        { "id": "d", "label": { "zh": "第 4 个", "en": "4th" }, "value": { "zh": "24°C", "en": "24°C" }, "height": 48 },
-        { "id": "e", "label": { "zh": "第 5 个", "en": "5th" }, "value": { "zh": "44°C", "en": "44°C" }, "height": 88, "state": "active" }
-      ] },
-      { "caption": { "zh": "平均值变为 25.6°C，极差变为 26°C。中位数仍然是第 3 个读数。", "en": "The mean rises to 25.6°C and the range to 26°C. The median stays at the third reading." }, "items": [
-        { "id": "a", "label": { "zh": "第 1 个", "en": "1st" }, "value": { "zh": "18°C", "en": "18°C" }, "height": 36 },
-        { "id": "b", "label": { "zh": "第 2 个", "en": "2nd" }, "value": { "zh": "20°C", "en": "20°C" }, "height": 40 },
-        { "id": "c", "label": { "zh": "中位数", "en": "Median" }, "value": { "zh": "22°C", "en": "22°C" }, "height": 44, "state": "done" },
-        { "id": "d", "label": { "zh": "第 4 个", "en": "4th" }, "value": { "zh": "24°C", "en": "24°C" }, "height": 48 },
-        { "id": "e", "label": { "zh": "第 5 个", "en": "5th" }, "value": { "zh": "44°C", "en": "44°C" }, "height": 88, "state": "active" }
-      ] }
+      {
+        "caption": {"zh": "五个样本已经排序，平均值和中位数都是 22°C。", "en": "The five readings are sorted. Both the mean and median are 22°C."},
+        "items": [
+          {"id": "a", "label": {"zh": "第 1 个", "en": "1st"}, "value": {"zh": "18°C", "en": "18°C"}, "height": 36},
+          {"id": "b", "label": {"zh": "第 2 个", "en": "2nd"}, "value": {"zh": "20°C", "en": "20°C"}, "height": 40},
+          {"id": "c", "label": {"zh": "第 3 个", "en": "3rd"}, "value": {"zh": "22°C", "en": "22°C"}, "height": 44, "state": "active", "annotation": {"zh": "正中间", "en": "Middle"}},
+          {"id": "d", "label": {"zh": "第 4 个", "en": "4th"}, "value": {"zh": "24°C", "en": "24°C"}, "height": 48},
+          {"id": "e", "label": {"zh": "第 5 个", "en": "5th"}, "value": {"zh": "26°C", "en": "26°C"}, "height": 52},
+          {"id": "mean", "label": {"zh": "平均值", "en": "Mean"}, "height": 44, "state": "active", "value": {"zh": "22°C", "en": "22°C"}, "annotation": {"zh": "110 ÷ 5", "en": "110 ÷ 5"}}
+        ]
+      },
+      {
+        "caption": {"zh": "只把最高值从 26°C 换成 44°C。", "en": "Replace only the highest reading, from 26°C to 44°C."},
+        "items": [
+          {"id": "a", "label": {"zh": "第 1 个", "en": "1st"}, "value": {"zh": "18°C", "en": "18°C"}, "height": 36},
+          {"id": "b", "label": {"zh": "第 2 个", "en": "2nd"}, "value": {"zh": "20°C", "en": "20°C"}, "height": 40},
+          {"id": "c", "label": {"zh": "第 3 个", "en": "3rd"}, "value": {"zh": "22°C", "en": "22°C"}, "height": 44},
+          {"id": "d", "label": {"zh": "第 4 个", "en": "4th"}, "value": {"zh": "24°C", "en": "24°C"}, "height": 48},
+          {"id": "e", "label": {"zh": "第 5 个", "en": "5th"}, "value": {"zh": "44°C", "en": "44°C"}, "height": 88, "state": "active", "annotation": {"zh": "升高 18°C", "en": "Up 18°C"}},
+          {"id": "mean", "label": {"zh": "平均值", "en": "Mean"}, "height": 51.2, "state": "active", "value": {"zh": "25.6°C", "en": "25.6°C"}, "annotation": {"zh": "128 ÷ 5", "en": "128 ÷ 5"}}
+        ]
+      },
+      {
+        "caption": {"zh": "平均值变为 25.6°C，极差变为 26°C。中位数仍然是第 3 个读数。", "en": "The mean rises to 25.6°C and the range to 26°C. The median stays at the third reading."},
+        "items": [
+          {"id": "a", "label": {"zh": "第 1 个", "en": "1st"}, "value": {"zh": "18°C", "en": "18°C"}, "height": 36},
+          {"id": "b", "label": {"zh": "第 2 个", "en": "2nd"}, "value": {"zh": "20°C", "en": "20°C"}, "height": 40},
+          {"id": "c", "label": {"zh": "中位数", "en": "Median"}, "value": {"zh": "22°C", "en": "22°C"}, "height": 44, "state": "done"},
+          {"id": "d", "label": {"zh": "第 4 个", "en": "4th"}, "value": {"zh": "24°C", "en": "24°C"}, "height": 48},
+          {"id": "e", "label": {"zh": "第 5 个", "en": "5th"}, "value": {"zh": "44°C", "en": "44°C"}, "height": 88, "state": "active", "annotation": {"zh": "极差 44 − 18 = 26°C", "en": "Range 44 − 18 = 26°C"}},
+          {"id": "mean", "label": {"zh": "平均值", "en": "Mean"}, "height": 51.2, "state": "done", "value": {"zh": "25.6°C", "en": "25.6°C"}, "annotation": {"zh": "128 ÷ 5", "en": "128 ÷ 5"}}
+        ]
+      }
     ]
   },
   "question": {

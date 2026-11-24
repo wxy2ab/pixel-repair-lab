@@ -111,7 +111,12 @@
               "zh": "截止",
               "en": "Off"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "transistor-off",
+            "annotation": {
+              "zh": "基极为 0",
+              "en": "Base = 0"
+            }
           },
           {
             "id": "s",
@@ -123,7 +128,8 @@
               "zh": "闭合",
               "en": "Closed"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "switch-closed"
           },
           {
             "id": "lamp",
@@ -135,7 +141,8 @@
               "zh": "灭",
               "en": "Off"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "lamp-off"
           }
         ]
       },
@@ -167,7 +174,12 @@
               "zh": "导通",
               "en": "Conducting"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "transistor-on",
+            "annotation": {
+              "zh": "基极为 1",
+              "en": "Base = 1"
+            }
           },
           {
             "id": "s",
@@ -179,7 +191,8 @@
               "zh": "闭合",
               "en": "Closed"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "switch-closed"
           },
           {
             "id": "lamp",
@@ -191,7 +204,8 @@
               "zh": "亮",
               "en": "On"
             },
-            "state": "done"
+            "state": "done",
+            "glyph": "lamp-on"
           }
         ]
       },
@@ -223,7 +237,8 @@
               "zh": "导通",
               "en": "Conducting"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "transistor-on"
           },
           {
             "id": "s",
@@ -235,7 +250,12 @@
               "zh": "断开",
               "en": "Open"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "switch-open",
+            "annotation": {
+              "zh": "这里断开",
+              "en": "Gap here"
+            }
           },
           {
             "id": "lamp",
@@ -247,7 +267,8 @@
               "zh": "灭",
               "en": "Off"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "lamp-off"
           }
         ]
       },
@@ -279,7 +300,8 @@
               "zh": "导通",
               "en": "Conducting"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "transistor-on"
           },
           {
             "id": "s",
@@ -291,7 +313,8 @@
               "zh": "闭合",
               "en": "Closed"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "switch-closed"
           },
           {
             "id": "lamp",
@@ -303,7 +326,12 @@
               "zh": "亮",
               "en": "On"
             },
-            "state": "done"
+            "state": "done",
+            "glyph": "lamp-on",
+            "annotation": {
+              "zh": "回路接通",
+              "en": "Loop closed"
+            }
           }
         ]
       }

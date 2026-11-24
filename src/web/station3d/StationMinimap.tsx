@@ -2,6 +2,7 @@ import { useId, useMemo, useState, type KeyboardEvent, type MouseEvent } from 'r
 import type { Locale, Position } from '../../shared/types'
 import { tr } from '../text'
 import type { StationFrame } from './types'
+import { cargoLabel } from '../WarehouseTiles'
 import './station-minimap.css'
 
 const preferenceKey = 'pixel-repair-lab:minimap-collapsed'
@@ -90,6 +91,15 @@ export function StationMinimap({ frame, locale, footprint, onCenter, ready = tru
           {frame.mapTargets?.map(({ x, y, id: itemId }, index) => <path key={itemId ?? index} data-minimap-marker="target"
             data-id={itemId} data-x={x} data-y={y} transform={`translate(${x + .5} ${y + .5})`}
             d="M0,-.59 L.59,0 L0,.59 L-.59,0 Z" className="station-minimap__target"><title>{target} ({x}, {y})</title></path>)}
+          {frame.warehouse?.targets.map(({ x, y }) => <rect key={x + ',' + y} data-minimap-marker="loading-pad"
+            x={x + .08} y={y + .08} width=".84" height=".84" className="station-minimap__pad">
+            <title>{t('货位', 'Loading pad')} ({x}, {y})</title></rect>)}
+          {frame.warehouse?.boxes.map(({ x, y }, i) => {
+            const parked = frame.warehouse?.targets.some(pad => pad.x === x && pad.y === y) ?? false
+            return <rect key={i} data-minimap-marker="crate" data-parked={parked || undefined}
+              x={x + .19} y={y + .19} width=".62" height=".62" rx=".07" className="station-minimap__crate">
+              <title>{cargoLabel(true, parked, locale)} ({x}, {y})</title></rect>
+          })}
           {frame.opponents.map((opponent, index) => <rect key={opponent.id ?? index} data-minimap-marker="rival" data-id={opponent.id}
             data-x={opponent.x} data-y={opponent.y} x={opponent.x + .19} y={opponent.y + .19} width=".62" height=".62" rx=".11"
             className="station-minimap__rival"><title>{opponent.name ?? rival} ({opponent.x}, {opponent.y})</title></rect>)}
@@ -103,6 +113,10 @@ export function StationMinimap({ frame, locale, footprint, onCenter, ready = tru
           <span><i data-symbol="player" />{player}</span>
           {frame.opponents.length > 0 && <span><i data-symbol="rival" />{rival}</span>}
           {Boolean(frame.mapTargets?.length) && <span><i data-symbol="target" />{target}</span>}
+          {frame.warehouse && <>
+            <span><i data-symbol="crate" />{t('货箱', 'Crate')}</span>
+            <span><i data-symbol="loading-pad" />{t('货位', 'Loading pad')}</span>
+          </>}
           <span><i data-symbol="view" />{sight}</span>
         </div>
       </>}

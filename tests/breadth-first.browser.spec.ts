@@ -54,6 +54,8 @@ test('breadth-first search lays out its queue and layers, then verifies the orde
       await expect(code).toContainText('queue.append([x, y])')
       await expect(cell(x, y)).toHaveAttribute('data-visited', 'true')
       await expect(cell(x, y)).toHaveAttribute('data-queued', 'true')
+      await expect(cell(x, y).locator('.bfs-cell-action')).toHaveText('入队')
+      await expect(queue.locator('li[data-added]')).toHaveAttribute('data-x', String(x))
       if (enqueued === 1) await expect(cell(x, y)).toHaveAttribute('data-depth', '1')
     } else if (next === 'visit') {
       await click('取出队头')
@@ -69,6 +71,8 @@ test('breadth-first search lays out its queue and layers, then verifies the orde
       await click('检查邻格')
       const reason = await step.getAttribute('data-reason')
       if (reason) skips.add(reason)
+      await expect(map.locator('.bfs-cell-action')).toHaveText(reason === 'edge' ? '越界' : reason === 'wall' ? '墙' : '已标记')
+      await expect(map.locator('.bfs-edge-arrow')).toHaveCount(1)
     } else if (next === 'goal') {
       await click('取出队头')
       await expect(step).toHaveAttribute('data-kind', 'goal')

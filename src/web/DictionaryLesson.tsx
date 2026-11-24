@@ -1,5 +1,6 @@
 import { BatteryMemory } from './BatteryMemory'
 import { CodingDevice } from './CodingDevice'
+import { StepExplanation } from './LessonNotes'
 import { useId, useMemo, useRef, useState } from 'react'
 import { runDictionaryLesson } from '../engine/programDictionaryLesson'
 import type { DictionaryLessonCase, ProgramWalkthrough } from '../shared/programWalkthrough'
@@ -53,8 +54,8 @@ function nextAction(stage: Stage, sample: DictionaryLessonCase, t: Translate) {
   }
 }
 
-function BatteryRecords({ records, active, added, updated, onChoose, promptId, t }: {
-  records: Record<string, number>; active?: string; added?: string; updated?: string;
+function BatteryRecords({ records, active, stage, prior, pending, onChoose, promptId, t }: {
+  records: Record<string, number>; active?: string; stage: Stage; prior?: number; pending?: number;
   onChoose?: (name: string) => void; promptId: string; t: Translate;
 }) {
   return <table className="dictionary-lesson-records" data-testid="dictionary-records"
@@ -63,13 +64,20 @@ function BatteryRecords({ records, active, added, updated, onChoose, promptId, t
       <th scope="col">{t('值（电量）', 'Value (charge)')}</th></tr></thead>
     <tbody>
       {Object.entries(records).map(([name, charge]) => <tr key={name} data-record-key={name} data-charge={charge}
-        data-active={name === active || undefined} data-added={name === added || undefined} data-updated={name === updated || undefined}>
+        data-active={name === active || undefined} data-added={name === active && stage === 'register' || undefined}
+        data-updated={name === active && stage === 'update' || undefined}>
         <th scope="row">
           {onChoose ? <button type="button" className="subtle-button dictionary-lesson-key"
             aria-describedby={promptId} onClick={() => onChoose(name)}><code>{JSON.stringify(name)}</code></button>
             : <code className="dictionary-lesson-key">{JSON.stringify(name)}</code>}
         </th>
-        <td><strong>{charge}</strong> <small>{t('格', 'units')}</small></td>
+        <td>{name === active && stage === 'update' && prior !== undefined && <span className="dictionary-before">{prior} → </span>}
+          <strong>{charge}</strong> <small>{t('格', 'units')}</small>
+          {name === active && <span className="dictionary-row-action">
+            {stage === 'lookup' ? t('已读取', 'Read') : stage === 'register' ? t('新登记', 'New entry')
+              : stage === 'calculate' ? t(`待写入 ${pending}`, `Pending ${pending}`) : t('已写回', 'Saved')}
+          </span>}
+        </td>
       </tr>)}
     </tbody>
   </table>
@@ -120,15 +128,14 @@ export function DictionaryLesson({ execution, locale, onReady }: {
 
   return <section className="classroom-demonstration panel dictionary-lesson" aria-label={title} data-testid="dictionary-lesson" data-dictionary-stage={stage}>
     <CodingDevice device="sorter" locale={locale} workbench controls={<>
-      {run ? <p className="dictionary-lesson-status" role="status" id={promptId}>
-        <span>{caption}</span>
-        {prompt && <span>{mistake && t('再看一次电池的名字。', 'Check the battery name again. ')}{prompt}</span>}
+      {run ? prompt && <p className="dictionary-lesson-status" role="status" id={promptId}>
+        {mistake && t('再看一次电池的名字。', 'Check the battery name again. ')}{prompt}
       </p> : <p className="error-message" id={promptId} role="alert">
         {t('现在无法运行电池登记程序。', 'The battery record program could not run.')}
       </p>}
       <div className="dictionary-lesson-bench">
-        <BatteryRecords records={records} active={active} added={stage === 'register' ? active : undefined}
-          updated={stage === 'update' ? active : undefined} onChoose={run && canChooseKey ? selectKey : undefined} promptId={promptId} t={t} />
+        <BatteryRecords records={records} active={active} stage={stage} prior={run?.steps[position - 1]?.records[sample.key]}
+          pending={calculation} onChoose={run && canChooseKey ? selectKey : undefined} promptId={promptId} t={t} />
         {stage === 'lookup' && <button type="button" className="subtle-button dictionary-lesson-arrival" data-testid="dictionary-arrival"
           aria-describedby={promptId} onClick={() => goTo(position + 1)}>
           <span>{t('登记新电池', 'Register the new battery')}</span>
@@ -144,6 +151,7 @@ export function DictionaryLesson({ execution, locale, onReady }: {
           {t('下一步', 'Next step')}
         </button>}
       </div>}
+      {run && <StepExplanation locale={locale}>{caption}</StepExplanation>}
     </>}>
       <div className="panel-heading"><h2>{title}</h2></div>
       <div className="dictionary-lesson-content">

@@ -7,7 +7,7 @@ import { poseGesture, type RobotGesture, type RobotRig } from './robotActivity'
 
 type XYZ = [number, number, number]
 type Finish = 'shell' | 'light'
-export type RobotAction = 'idle' | 'walk' | 'work' | 'wave'
+export type RobotAction = 'idle' | 'walk' | 'work' | 'wave' | 'push'
 
 // Bake small details into the same mesh so duplicate robots and batteries can share both
 // their geometry and their materials, including the individual colors of each panel.
@@ -203,12 +203,14 @@ function leg({ enamel, crown, accent }: Livery) {
 }
 
 function poseRobot(rig: RobotRig, action: RobotAction, seconds: number) {
-  const stride = action === 'walk' ? Math.sin(seconds * Math.PI * 4) : 0
+  const pushing = action === 'push'
+  const stride = action === 'walk' || pushing ? Math.sin(seconds * Math.PI * 4) : 0
   const breathing = Math.sin(seconds * 2.6)
   const wave = action === 'wave'
   const tapping = action === 'work' ? (1 - Math.cos(seconds * 10)) / 2 : 0
   rig.spine.position.y = .005 * breathing + .019 * Math.abs(stride) - .030 * tapping
   rig.spine.rotation.set(tapping * .093, 0, stride * .042)
+  if (pushing) rig.spine.rotation.x = .19
   rig.head.rotation.set(.016 * breathing + tapping * .30, Math.sin(seconds * 1.4) * .085, wave ? .105 : stride * -.048)
   // Set every joint from this pose, including blink, so replay scrubbing is reversible.
   const blink = (seconds + 1.6) % 3.86
@@ -228,7 +230,40 @@ function poseRobot(rig: RobotRig, action: RobotAction, seconds: number) {
       liftsHand ? .48 + Math.sin(seconds * 9) * .40 : 0,
     )
     rig.legs[i].rotation.x = stride * side * .61
+    if (pushing) {
+      rig.arms[i].position.z = .11
+      rig.arms[i].rotation.set(-1.16, 0, side * .14)
+      rig.hands[i].rotation.x = -.20
+    }
   }
+}
+
+function makeCargoCrate() {
+  const p = new ModelParts()
+  p.box([.70, .48, .70], [0, .30, 0], '#ac663e', .037)
+  for (const height of [.09, .52]) {
+    p.box([.76, .09, .76], [0, height, 0], '#efaa60', .025)
+  }
+  for (const x of [-.32, .32]) for (const z of [-.32, .32]) {
+    p.box([.082, .44, .082], [x, .295, z], '#f4bd78', .013)
+  }
+  for (const side of [-1, 1]) {
+    p.box([.63, .067, .032], [0, .306, side * .353], '#e9ab6e', 0, [0, 0, side * .48])
+    p.box([.032, .067, .63], [side * .353, .306, 0], '#e9ab6e', 0, [side * .48, 0, 0])
+  }
+  p.box([.60, .018, .60], [0, .568, 0], '#985637', .008)
+  for (const angle of [-Math.PI / 4, Math.PI / 4]) {
+    p.box([.70, .025, .075], [0, .585, 0], '#ffd08b', .008, [0, angle, 0])
+  }
+  return p
+}
+
+function makeParkedBadge() {
+  const p = new ModelParts()
+  p.box([.54, .028, .52], [0, .608, 0], '#277b62', .013)
+  p.capsule([-.18, .632, -.015], [-.055, .632, .125], .032, '#c6ffe0', 'light')
+  p.capsule([-.055, .632, .125], [.18, .632, -.15], .032, '#c6ffe0', 'light')
+  return p
 }
 
 function makeBattery() {
@@ -428,6 +463,13 @@ export function createStationModels() {
       poseGesture(rig, action, progress, condition)
     },
     battery: () => instance('battery', makeBattery),
+    cargoCrate() {
+      const model = instance('cargo-crate', makeCargoCrate)
+      const badge = instance('cargo-parked', makeParkedBadge)
+      model.add(badge)
+      model.userData.parkedBadge = badge
+      return model
+    },
     chip: (kind: 'power' | 'shield') => instance('chip-' + kind, () => makeChip(kind)),
     arenaLoot: (target: boolean) => instance(target ? 'arena-parcel' : 'arena-token', () => makeArenaLoot(target)),
     device(device: BoardDevice) {

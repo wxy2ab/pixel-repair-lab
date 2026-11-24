@@ -79,6 +79,13 @@ export const buildAssignment: ModelBuilder<AssignmentModel> = (state, kit, tools
       tools.label((zh ? '输出 ' : 'Out ') + lane.output, [x, .79, -.44], .20)
     }
     kit.rod([x, .352, -.44], [target, .352, .24], .041, written ? green : dim)
+    if (stage === 'store') {
+      const moved = fresh ? lane.result : lane.charge
+      const midpoint = (x + target) / 2
+      kit.casing([midpoint, .55, -.16], [.34, .15, .29], brass, .035)
+      if (moved !== undefined) tools.label(moved, [midpoint, .83, -.28], .18)
+      for (const side of [-.10, .10]) kit.rod([target - (target - x) * .25 + side, .37, .06], [target, .37, .23], .03, green)
+    }
     tools.label(fresh ? (zh ? '新变量' : 'New variable') : (zh ? '写回原变量' : 'Write back'), [x, .31, 1.04], .22)
   })
   if (stage === 'predict') tools.label((zh ? '输入 ' : 'Input ') + input, [0, .94, -.99], .19)
