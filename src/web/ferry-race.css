@@ -1,0 +1,103 @@
+.ferry-workshop { overflow: hidden; }
+.ferry-workshop h3 { font-size: 1rem; }
+.ferry-race-clock { color: var(--warm); font: 650 .87rem var(--mono); }
+.ferry-setup, .ferry-runners {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: clamp(12px, 2vw, 24px);
+  padding: clamp(10px, 2vw, 20px);
+  align-items: start;
+}
+.ferry-runners { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ferry-board {
+  --tile-gap: 3px;
+  display: grid;
+  grid-template-columns: repeat(var(--ferry-cols), minmax(0, 1fr));
+  gap: var(--tile-gap);
+  max-width: 38rem;
+  margin-inline: auto;
+  border: 3px solid #385467;
+  border-radius: 12px;
+  padding: 5px;
+  background: #102836;
+}
+.ferry-tile {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  aspect-ratio: 1;
+  border: 1px solid #355b68;
+  border-radius: 5px;
+  padding: 0;
+  background: repeating-linear-gradient(0deg, #264650 0 31%, #294b55 31% 34%);
+  color: #e3fbff;
+  user-select: none;
+}
+.ferry-tile[data-ground="#"] {
+  border-color: #214052;
+  background: repeating-linear-gradient(165deg, #112f40 0 9px, #183a4b 10px, #112f40 11px 20px);
+}
+.ferry-tile[data-ferry-piece] { cursor: grab; touch-action: none; }
+.ferry-tile[data-ferry-piece]:active { cursor: grabbing; }
+.ferry-tile[data-selected], .ferry-tile[data-hover] { outline: 2px solid var(--mint); outline-offset: -2px; }
+.ferry-tile[data-selected] { background: #325f58; }
+.ferry-tile .pixel-bot { position: absolute; width: 86%; max-width: 60px; pointer-events: none; }
+.ferry-battery, .ferry-block, .ferry-tile .ferry-dock-icon { grid-area: 1/1; pointer-events: none; }
+.ferry-battery {
+  display: grid; place-items: center;
+  width: 52%; height: 58%; max-width: 28px; max-height: 34px;
+  border: 2px solid #714b1d; border-top: 4px solid #ffde91; border-radius: 5px;
+  color: #392710; background: linear-gradient(90deg,#e7a83f,#ffdf78 55%,#e7a83f);
+  font: bold clamp(.65rem, 1.5vw, 1rem)/1 var(--mono);
+  box-shadow: 0 2px 2px #0a2338;
+}
+.ferry-battery[data-color="b"] { border-color: #407996; border-top-color: #b3eeff; color: #123749; background: linear-gradient(90deg,#65bad7,#b4efff 55%,#65bad7); }
+.ferry-block {
+  width: 82%; height: 70%; border-radius: 5px; border: 2px solid #456175;
+  background: repeating-linear-gradient(130deg, #8195a2 0 6px, #596e7e 6px 12px);
+  box-shadow: inset 0 3px #a9b9bf, 0 4px #32475a;
+}
+.ferry-tile .ferry-dock-icon { max-width: 44px; max-height: 39px; }
+.ferry-drop-ghost { position: absolute; inset: 0; display: grid; place-items: center; opacity: .62; pointer-events: none; }
+.ferry-plan, .ferry-racer { display: grid; gap: 10px; min-width: 0; }
+.ferry-racer .ferry-board { width: 100%; }
+.ferry-command-palette { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.ferry-command-palette button, .ferry-command-list button {
+  display: inline-flex; gap: .3em; align-items: center; justify-content: center;
+  min-height: 36px; min-width: 0; padding: 4px;
+  border: 1px solid #476675; border-radius: 6px; color: #e4f0f4; background: #1b3243;
+  font-size: .84rem; line-height: 1.2;
+}
+.ferry-command-palette button b { color: var(--mint); font: 700 1.08rem var(--mono); }
+.ferry-command-palette button:hover:enabled, .ferry-command-list button:hover { background: #2a4b58; }
+.ferry-command-list {
+  list-style: none; margin: 0; padding: 7px; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 3px;
+  min-height: 45px; max-height: 12rem; overflow-y: auto;
+  border: 1px dashed #486472; border-radius: 8px; background: #122330;
+}
+.ferry-command-list button { width: 30px; min-height: 28px; font: 700 .91rem var(--mono); }
+.ferry-plan-actions, .ferry-result { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.ferry-result { padding: 12px; border-top: 1px solid var(--border); }
+.ferry-result strong { margin-inline-end: auto; }
+.ferry-result strong[data-won="true"] { color: var(--mint); }
+.ferry-status { margin: 4px 0; color: var(--muted); font-size: .87rem; }
+.ferry-racer .ferry-status[data-met-goal] { color: #a0f2d0; font-weight: 700; }
+.race-goal-check {
+  display: inline-grid; place-items: center; width: 1.35em; height: 1.35em; margin-inline-end: .45em;
+  border-radius: 50%; background: #79edc1; color: #143d32; line-height: 1;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .race-goal-check { animation: race-check-in .38s ease-out; }
+  @keyframes race-check-in { from { transform: scale(.6); } 60% { transform: scale(1.12); } }
+}
+@media (max-width: 700px) {
+  .ferry-setup { grid-template-columns: minmax(0,1fr); }
+  .ferry-runners { gap: 6px; padding: 6px; }
+  .ferry-runners .ferry-board { --tile-gap: 1px; padding: 2px; border-width: 1px; border-radius: 6px; }
+  .ferry-runners .ferry-tile { border-radius: 2px; }
+  .ferry-runners .ferry-battery { font-size: .57rem; border-width: 1px; }
+  .ferry-race-clock, .ferry-status { font-size: .78rem; }
+}

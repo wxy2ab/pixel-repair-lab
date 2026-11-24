@@ -137,17 +137,25 @@ test('recommendations depend on full prerequisite completion and omit cleared ch
 
   const ready = page.getByRole('region', { name: '适合现在挑战', exact: true })
   const recommended = ready.locator('[data-recommended-challenge]')
+  async function expectTopicsToQualify(topics: string[]) {
+    const tiers = ['starter', 'intermediate', 'advanced']
+    const eligible = levels.filter(level => level.unit?.id === 'challenge-zone' && level.prerequisites?.length
+      && level.prerequisites.every(({ unit, topic }) => topics.includes(unit + '/' + topic)))
+      .sort((a, b) => tiers.indexOf(a.difficulty ?? 'intermediate') - tiers.indexOf(b.difficulty ?? 'intermediate')
+        || a.order - b.order || a.id.localeCompare(b.id, 'en'))
+      .slice(0, 3)
+    await expect(recommended).toHaveCount(eligible.length)
+    for (const [index, level] of eligible.entries()) {
+      await expect(recommended.nth(index)).toHaveAttribute('data-recommended-challenge', level.id)
+    }
+  }
   await expect(ready).toBeVisible()
-  await expect(recommended).toHaveCount(1)
-  await expect(recommended.first()).toHaveAttribute('data-recommended-challenge', 'challenge-marked-cargo-run')
+  await expectTopicsToQualify(['routing/breadth-first'])
 
   await page.evaluate(ids => localStorage.setItem('pixel-repair-lab:completed', JSON.stringify(ids)),
     [...foundations, ...routes].map(level => level.id))
   await page.reload()
-  await expect(recommended).toHaveCount(3)
-  await expect(recommended.nth(0)).toHaveAttribute('data-recommended-challenge', 'limited-battery-salvage')
-  await expect(recommended.nth(1)).toHaveAttribute('data-recommended-challenge', 'challenge-brass-key-store')
-  await expect(recommended.nth(2)).toHaveAttribute('data-recommended-challenge', 'double-patrol-lockdown')
+  await expectTopicsToQualify(['routing/breadth-first', 'foundations/sequence'])
 
   await page.evaluate(ids => localStorage.setItem('pixel-repair-lab:completed', JSON.stringify(ids)),
     [...core, 'limited-battery-salvage'])

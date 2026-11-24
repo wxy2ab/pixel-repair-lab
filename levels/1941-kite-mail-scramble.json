@@ -1,0 +1,171 @@
+{
+  "version": 1,
+  "id": "challenge-kite-mail-scramble",
+  "order": 1941,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": { "zh": "挑战场", "en": "Challenge Arena" }
+  },
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": { "zh": "风筝邮包争夺赛", "en": "Kite Mail Scramble" },
+  "concept": { "zh": "收集三份邮包 · 风筝换线", "en": "Collect three parcels · Shifting kite lines" },
+  "brief": { "zh": "收齐鱼形、月牙形和燕形三份邮包。第 10 回合结束时，未取的月牙邮包飞到东侧中庭。第 19 回合结束时，未取的燕形邮包飞到南廊。北侧有守点机，两台追击机会绕过摊位追上来。三件邮包均需站在所在格拾取。", "en": "Pick up the Fish, Moon and Swallow parcels. After turn 10 the Moon parcel flies to the east courtyard if still unclaimed. After turn 19 the Swallow parcel flies to the south arcade if still unclaimed. A sentry guards the north while two hunters weave around the stalls. Pick up each parcel on its own tile." },
+  "prerequisites": [
+    {
+      "unit": "python-intermediate",
+      "topic": "branches"
+    },
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "##################",
+    "#.......#........#",
+    "#..###..#.###....#",
+    "#..###....###.##.#",
+    "#.............##.#",
+    "#.##..##..##.....#",
+    "#.##..##..##.....#",
+    "#................#",
+    "#...###..#..###..#",
+    "#...###..#..###..#",
+    "#................#",
+    "##################"
+  ],
+  "start": { "x": 1, "y": 9 },
+  "items": [
+    { "id": "power-1", "x": 2, "y": 9 },
+    { "id": "power-2", "x": 3, "y": 8 },
+    { "id": "power-3", "x": 8, "y": 5 },
+    { "id": "shield-1", "x": 1, "y": 7 },
+    { "id": "shield-2", "x": 2, "y": 4 },
+    { "id": "shield-3", "x": 14, "y": 5 },
+    { "id": "shield-4", "x": 8, "y": 10 },
+    { "id": "fish-kite", "x": 1, "y": 3 },
+    { "id": "moon-kite", "x": 15, "y": 2 },
+    { "id": "swallow-kite", "x": 7, "y": 1 }
+  ],
+  "opponents": [
+    {
+      "id": "postmaster",
+      "title": { "zh": "云端邮长", "en": "Cloudmaster" },
+      "start": { "x": 8, "y": 4 },
+      "policy": {
+        "kind": "duelist",
+        "style": "sentry"
+      }
+    },
+    {
+      "id": "whistler",
+      "title": { "zh": "风哨", "en": "Whistler" },
+      "start": { "x": 12, "y": 7 },
+      "policy": {
+        "kind": "duelist",
+        "style": "hunter"
+      }
+    },
+    {
+      "id": "tailfin",
+      "title": { "zh": "燕尾", "en": "Tailfin" },
+      "start": { "x": 15, "y": 6 },
+      "policy": {
+        "kind": "duelist",
+        "style": "hunter"
+      }
+    }
+  ],
+  "objective": {
+    "kind": "collect",
+    "itemIds": [
+      "fish-kite",
+      "moon-kite",
+      "swallow-kite"
+    ]
+  },
+  "maxTurns": 48,
+  "combat": {
+    "health": 5,
+    "range": 4,
+    "buffs": [
+      { "id": "power-1", "kind": "power" },
+      { "id": "power-2", "kind": "power" },
+      { "id": "power-3", "kind": "power" },
+      { "id": "shield-1", "kind": "shield" },
+      { "id": "shield-2", "kind": "shield" },
+      { "id": "shield-3", "kind": "shield" },
+      { "id": "shield-4", "kind": "shield" }
+    ]
+  },
+  "shifts": [
+    {
+      "turn": 10,
+      "moveItems": [
+        { "id": "moon-kite", "x": 14, "y": 6 }
+      ]
+    },
+    {
+      "turn": 19,
+      "moveItems": [
+        { "id": "swallow-kite", "x": 8, "y": 9 }
+      ]
+    }
+  ],
+  "starterCode": "state = scan()\n",
+  "solutionCode": "def walk(direction, squares):\n    for step in range(squares):\n        move(direction)\n\nmove(\"right\")\npick()\n\nmove(\"up\")\nmove(\"right\")\npick()\n\nmove(\"left\")\nmove(\"up\")\nfor beat in range(2):\n    shoot(\"right\")\nmove(\"left\")\nwalk(\"up\", 4)\npick()\n\nmove(\"right\")\nguard()\nwalk(\"down\", 2)\nfor beat in range(2):\n    shoot(\"right\")\nwalk(\"right\", 2)\nmove(\"down\")\nmove(\"right\")\nwalk(\"down\", 2)\nwalk(\"right\", 2)\nmove(\"down\")\nmove(\"right\")\nmove(\"down\")\npick()\n\nwalk(\"up\", 2)\nwalk(\"right\", 4)\nmove(\"up\")\nwalk(\"right\", 2)\npick()\n",
+  "snippets": [
+    {
+      "label": { "zh": "向上走", "en": "Move up" },
+      "code": "move(\"up\")"
+    },
+    {
+      "label": { "zh": "向右走", "en": "Move right" },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": { "zh": "向下走", "en": "Move down" },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": { "zh": "向左走", "en": "Move left" },
+      "code": "move(\"left\")"
+    },
+    {
+      "label": { "zh": "向上发脉冲", "en": "Pulse up" },
+      "code": "shoot(\"up\")"
+    },
+    {
+      "label": { "zh": "向右发脉冲", "en": "Pulse right" },
+      "code": "shoot(\"right\")"
+    },
+    {
+      "label": { "zh": "向下发脉冲", "en": "Pulse down" },
+      "code": "shoot(\"down\")"
+    },
+    {
+      "label": { "zh": "向左发脉冲", "en": "Pulse left" },
+      "code": "shoot(\"left\")"
+    },
+    {
+      "label": { "zh": "开启防御", "en": "Guard" },
+      "code": "guard()"
+    },
+    {
+      "label": { "zh": "拾取脚下道具", "en": "Pick up here" },
+      "code": "pick()"
+    },
+    {
+      "label": { "zh": "查看赛场", "en": "Scan arena" },
+      "code": "state = scan()"
+    },
+    {
+      "label": { "zh": "原地等一拍", "en": "Wait a beat" },
+      "code": "wait()"
+    }
+  ]
+}

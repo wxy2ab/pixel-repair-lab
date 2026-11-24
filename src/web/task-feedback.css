@@ -1,0 +1,62 @@
+/* The mark is decorative. Each exercise announces its actual result in the existing status region. */
+:root :is(.charge-prediction-verification[data-match="true"], [data-task-success="true"]) {
+  position: relative;
+  min-block-size: 50px;
+  padding: 12px 14px 12px 56px;
+  border: 1px solid #68bc99;
+  border-inline-start-width: 4px;
+  border-radius: 10px;
+  background-image: linear-gradient(105deg, #50bc8a20, transparent 75%);
+}
+
+:is(.charge-prediction-verification[data-match="true"], [data-task-success="true"])::before,
+:is(.charge-prediction-verification[data-match="true"], [data-task-success="true"])::after {
+  content: "";
+  position: absolute;
+  top: 12px;
+  inset-inline-start: 12px;
+  width: 25px;
+  height: 25px;
+  pointer-events: none;
+}
+
+:is(.charge-prediction-verification[data-match="true"], [data-task-success="true"])::before {
+  border-radius: 50%;
+  background: #75e1ae;
+  box-shadow: 0 0 0 3px #54a47c40, 0 2px 3px #0a2b2426;
+}
+
+:is(.charge-prediction-verification[data-match="true"], [data-task-success="true"])::after {
+  background: #103e32;
+  clip-path: polygon(19% 52%, 29% 42%, 43% 56%, 71% 26%, 81% 36%, 43% 75%);
+}
+
+/* Leave the recorded results still when a child revisits a case or scrubs its replay. */
+@media (prefers-reduced-motion: no-preference) {
+  .charge-prediction-verification[data-match="true"]::before,
+  [data-task-pop="true"]::before { animation: task-seal-arrive .52s ease-out both; }
+  .charge-prediction-verification[data-match="true"]::after,
+  [data-task-pop="true"]::after { animation: task-seal-check .36s ease-out both; }
+  .task-progress__track > i { transition: width .32s ease-out; }
+}
+
+@keyframes task-seal-arrive {
+  0% { transform: scale(.65); opacity: .35; }
+  55% { transform: scale(1.12); box-shadow: 0 0 0 5px #6ae8ae50; }
+  100% { transform: scale(1); }
+}
+
+@keyframes task-seal-check {
+  from { opacity: 0; transform: translateY(3px) scale(.82); }
+  to { opacity: 1; transform: none; }
+}
+
+.task-progress { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; max-width: 100%; }
+.task-progress__track { display: inline-flex; overflow: hidden; width: 60px; height: 6px; border-radius: 6px; background: #738b911f; box-shadow: inset 0 0 0 1px #79948d77; }
+.task-progress__track > i { display: block; height: 100%; background: #44bd8b; border-radius: inherit; }
+
+@media (forced-colors: active) {
+  :is(.charge-prediction-verification[data-match="true"], [data-task-success="true"])::before { border: 1px solid CanvasText; }
+  :is(.charge-prediction-verification[data-match="true"], [data-task-success="true"])::after,
+  .task-progress__track > i { forced-color-adjust: none; background: CanvasText; }
+}

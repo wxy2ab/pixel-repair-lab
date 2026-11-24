@@ -1,5 +1,6 @@
 import { useRef, type CSSProperties } from 'react'
 import type { Level, Locale, Localized, Position } from '../shared/types'
+import { shortSeries } from '../shared/shortChallenges'
 import { challengeZoneId } from '../shared/coursePrerequisites'
 import {
   buildChallengePreparation, challengeDifficulties, challengeDifficultyLabels, challengeTypeLabels, type buildChallengeCatalog,
@@ -209,6 +210,8 @@ export function ChallengeCatalog({
   const { entries, recommendations, courses, nearest } = catalog
   const done = entries.filter(entry => entry.won).length
   const filtered = filterChallenges(entries, filters)
+  const seriesEntries = filters.type || filters.difficulty || filters.course ? []
+    : entries.filter(({ level }) => shortSeries(level)).sort((a, b) => a.level.order - b.level.order)
   const sets = challengeTypes.map(type => ({ type, entries: filtered.filter(entry => entry.type === type) }))
     .filter(section => section.entries.length)
   const courseValue = filters.course ? [filters.course.unitId, filters.course.topicId].filter(Boolean).join('/') : ''
@@ -268,6 +271,18 @@ export function ChallengeCatalog({
 
     <section id="challenge-browse" className="challenge-browse" aria-labelledby="challenge-browse-title" tabIndex={-1} ref={browsing}>
       <h3 id="challenge-browse-title">{t('自由选关', 'Browse challenges')}</h3>
+      {(['ferry', 'laserTrial'] as const).map(series => {
+        const members = seriesEntries.filter(({ level }) => shortSeries(level) === series)
+        if (!members.length) return null
+        const label = series === 'ferry' ? t('渡口短挑战', 'Ferry challenges') : t('激光短挑战', 'Laser challenges')
+        return <nav key={series} className="short-challenge-series" aria-label={label}>
+          <strong>{label}</strong>
+          {members.map(({ level, won }) => <button type="button" className="subtle-button" key={level.id}
+            onClick={() => onOpenLevel(level.id)}>{level.title[locale]}
+            {won && <span aria-label={t('已通关', 'Cleared')}> ✓</span>}
+          </button>)}
+        </nav>
+      })}
       <div className="challenge-filters">
         <label>{t('类型', 'Type')}
           <select value={filters.type ?? ''} onChange={event => onFiltersChange({

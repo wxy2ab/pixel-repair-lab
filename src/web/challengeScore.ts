@@ -1,8 +1,15 @@
 import type { GoalReplayEvidence } from './challengeGoalReview'
+import type { ArenaScenario } from '../shared/advanced'
+import type { Localized } from '../shared/types'
+
+type ArenaGoalKind = ArenaScenario['objective']['kind']
+export function isArenaGoalKind(value: unknown): value is ArenaGoalKind {
+  return value === 'score' || value === 'escape' || value === 'eliminate' || value === 'collect'
+}
 
 export type ChallengeScore =
   | { kind: 'grid'; turns: number; passed: number; total: number }
-  | { kind: 'arena'; mode: 'relaxed' | 'timed'; goal: 'score' | 'escape'; turns: number; score: number; passed: number; total: number }
+  | { kind: 'arena'; mode: 'relaxed' | 'timed'; goal: ArenaGoalKind; turns: number; score: number; passed: number; total: number }
   | { kind: 'algorithm'; passed: number; total: number; checks: number }
   | { kind: 'machine'; passed: number; total: number; instructions: number }
   | { kind: 'data'; passed: number; total: number; checks: number }
@@ -10,7 +17,7 @@ export type ChallengeScore =
   | { kind: 'ai'; rounds: number; mode: 'offline' | 'online' | 'mixed' }
 
 export type ChallengeRunHandlers = {
-  onWin: (score: ChallengeScore, replay: () => void, evidence?: GoalReplayEvidence) => void
+  onWin: (score: ChallengeScore, replay: () => void, evidence?: GoalReplayEvidence, outcome?: Localized) => void
   onFailure: (score: ChallengeScore, evidence?: GoalReplayEvidence) => void
   onStart: () => void
 }
@@ -154,7 +161,7 @@ function readScore(value: unknown): ChallengeScore | undefined {
       if (count(turns)) return { kind, turns, passed, total }
       break
     case 'arena':
-      if ((mode === 'relaxed' || mode === 'timed') && (goal === 'score' || goal === 'escape') && count(turns) && count(score)) {
+      if ((mode === 'relaxed' || mode === 'timed') && isArenaGoalKind(goal) && count(turns) && count(score)) {
         return { kind, mode, goal, turns, score, passed, total }
       }
       break

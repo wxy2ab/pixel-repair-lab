@@ -1,10 +1,15 @@
-import type { CardInstance, GridLevel, Level } from '../shared/types'
+import { isFerryCommand, isFerryLayout } from '../shared/ferry'
+import { gridOffsets } from '../shared/gridDevices'
+import { isMirrorLayout } from '../shared/laserTrial'
+import type { CardInstance, Direction, FerryCommand, FerryRaceLayout, GridLevel, Level, MirrorPlacement } from '../shared/types'
 
 export type GridChallengeDraft = {
   kind: 'grid'
   mode: 'cards' | 'python'
   cards: CardInstance[]
   source?: string
+  ferryRace?: { layout: FerryRaceLayout; commands: FerryCommand[] }
+  laserRace?: { mirrors: MirrorPlacement[]; commands: Direction[] }
 }
 
 export type ArenaChallengeDraft = {
@@ -86,7 +91,19 @@ export function parseChallengeDraft(level: Level, raw: string | null | undefined
 
   if (level.kind === 'grid' && (stored.mode === 'cards' || stored.mode === 'python')) {
     const source = readCode(stored.source)
-    return { kind: 'grid', mode: stored.mode, cards: readGridCards(level, stored.cards), ...(source !== undefined && { source }) }
+    const draft: GridChallengeDraft = { kind: 'grid', mode: stored.mode, cards: readGridCards(level, stored.cards), ...(source !== undefined && { source }) }
+    const race = stored.ferryRace
+    if (level.ferry?.kind === 'race' && isRecord(race) && isFerryLayout(level, race.layout)
+      && Array.isArray(race.commands) && race.commands.length <= 240 && race.commands.every(isFerryCommand)) {
+      draft.ferryRace = { layout: race.layout, commands: race.commands }
+    }
+    const laserRace = stored.laserRace
+    if (level.laserTrial?.kind === 'race' && isRecord(laserRace) && isMirrorLayout(level, laserRace.mirrors)
+      && Array.isArray(laserRace.commands) && laserRace.commands.length <= 240
+      && laserRace.commands.every((command): command is Direction => typeof command === 'string' && Object.hasOwn(gridOffsets, command))) {
+      draft.laserRace = { mirrors: laserRace.mirrors, commands: laserRace.commands }
+    }
+    return draft
   }
   if (level.kind === 'arena' && (stored.mode === 'relaxed' || stored.mode === 'timed')) {
     const source = readCode(stored.source)

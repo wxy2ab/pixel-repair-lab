@@ -1,4 +1,5 @@
-import type { GridSnapshot, Locale, Origin, RunFrame, Scenario } from '../shared/types'
+import type { GridLevel, GridSnapshot, Locale, Origin, RunFrame, Scenario } from '../shared/types'
+import { initialSnapshot } from '../engine/snapshot'
 import { tr } from './text'
 
 export type GridGoal = { key: string; label: string; done: boolean; progress?: string }
@@ -12,8 +13,10 @@ const moveSources: Record<Origin, [string, string]> = {
 }
 
 /** What each objective of this map needs, and how far the shown moment of the run has come. */
-export function gridGoals(scenario: Scenario, snapshot: GridSnapshot, frames: readonly RunFrame[], locale: Locale): GridGoal[] {
+export function gridGoals(scenario: Scenario & Pick<GridLevel, 'ferry'>, shown: GridSnapshot, frames: readonly RunFrame[], locale: Locale): GridGoal[] {
   const t = (zh: string, en: string) => tr(locale, zh, en)
+  // A collision frame shows the impact square. Credit objectives through the last successful action.
+  const snapshot = frames.at(-1)?.issue ? frames.findLast(frame => !frame.issue)?.state ?? initialSnapshot(scenario) : shown
   const submitted = frames.filter(frame => frame.action === 'submit' && !frame.issue).length
   const moved = frames.some(frame => frame.action === 'move' && !frame.issue)
   let submissionsBefore = 0
@@ -21,7 +24,7 @@ export function gridGoals(scenario: Scenario, snapshot: GridSnapshot, frames: re
     const key = objective.type + index
     switch (objective.type) {
       case 'exit': return {
-        key, label: t('停在出口', 'Stop at the exit'),
+        key, label: scenario.ferry ? t('到码头登船', 'Board at the dock') : t('停在出口', 'Stop at the exit'),
         done: snapshot.player.x === objective.x && snapshot.player.y === objective.y,
       }
       case 'collect': {

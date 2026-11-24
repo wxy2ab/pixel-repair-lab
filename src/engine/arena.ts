@@ -1,12 +1,13 @@
 import type {
-  ArenaAction, ArenaActor, ArenaEvent, ArenaFailure, ArenaFrame, ArenaLevel, ArenaOpponent, ArenaOutcome, ArenaReason,
+  ArenaActor, ArenaEvent, ArenaFailure, ArenaFrame, ArenaLevel, ArenaOpponent, ArenaOutcome, ArenaReason,
   ArenaProgramEvent, ArenaReading, ArenaResult, ArenaScan, ArenaScenario, ArenaShiftResult, ArenaSnapshot, PersonalAlgorithms,
 } from '../shared/advanced'
 import type { Direction, Position, RunIssue } from '../shared/types'
 import { selectHelpers } from '../shared/courseHelpers'
 import { SHORTEST_STEP_SOURCE } from './algorithms'
 import { ProgramError, PythonProgram, type PythonModules } from './python'
-import type { ArenaChoice } from './realtimeProtocol'
+import { isArenaChoice, type ArenaChoice } from './realtimeProtocol'
+import { aimAtPlayer, isActive, moveCombatants, resolvePulses } from './arenaCombat'
 import { initialArenaSnapshot } from './snapshot'
 import { mapScenarioAt } from '../shared/mapScenarios'
 import { bare, Values, type Value } from './values'
@@ -86,8 +87,10 @@ export class ArenaSession {
   }
 
   advance(action: ArenaChoice): { frame: ArenaFrame; decision?: Decision } | undefined {
-    if (this.decision) return undefined
-    const intent = action === 'pick' || action === 'wait' ? { action } : { action: 'move' as const, direction: action }
+    if (this.decision || !isArenaChoice(action, Boolean(this.scenario.combat))) return undefined
+    const intent: Intent = action === 'pick' || action === 'wait' || action === 'guard' ? { action }
+      : action.startsWith('shoot-') ? { action: 'shoot', direction: action.slice(6) as Direction }
+      : { action: 'move', direction: action as Direction }
     this.turn(intent, 0)
     return { frame: this.frames.at(-1)!, decision: this.decision }
   }
@@ -119,10 +122,11 @@ export class ArenaSession {
     const goal = this.scenario.objective
     const [player, ...opponents] = this.state.actors
     const stop = { turn: this.state.turn, issue }
-    return goal.kind === 'score'
-      ? { ...stop, goal: 'score', score: player.score, leaderScore: Math.max(0, ...opponents.map(actor => actor.score)) }
-      : { ...stop, goal: 'escape', atExit: samePosition(player, goal.exit),
-        remaining: goal.itemIds.filter(id => this.claims.get(id) !== player.id).length }
+    if (goal.kind === 'score') return { ...stop, goal: 'score', score: player.score, leaderScore: Math.max(0, ...opponents.map(actor => actor.score)) }
+    if (goal.kind === 'eliminate') return { ...stop, goal: 'eliminate', remaining: opponents.filter(isActive).length }
+    const remaining = goal.itemIds.filter(id => this.claims.get(id) !== player.id).length
+    return goal.kind === 'collect' ? { ...stop, goal: 'collect', remaining }
+      : { ...stop, goal: 'escape', atExit: samePosition(player, goal.exit), remaining }
   }
 
   private call(name: string, args: Value[], line: number, file?: string): Value {
@@ -137,7 +141,7 @@ export class ArenaSession {
           if (this.pendingScan) {
             this.pendingScan.count++
             this.pendingScan.line = line
-          } else this.pendingScan = { line, count: 1, value: structuredClone(reading) }
+          } else this.pendingScan = { line, count: 1, value: reading }
           if (file && file !== 'main.py') this.pendingScan.sourceName = file
           else delete this.pendingScan.sourceName
           if (this.recordFlow) {
@@ -151,14 +155,18 @@ export class ArenaSession {
         }
         return this.values.fromJson(reading)
       }
+      case 'shoot':
       case 'move': {
+        if (name === 'shoot' && !this.scenario.combat) return fail('unknownName')
         const direction = args[0]?.data
         if (args.length !== 1 || typeof direction !== 'string' || !Object.hasOwn(deltas, direction)) return fail('wrongArguments')
-        this.turn({ action: 'move', direction: direction as Direction }, line, file)
+        this.turn({ action: name, direction: direction as Direction }, line, file)
         break
       }
       case 'pick':
       case 'wait':
+      case 'guard':
+        if (name === 'guard' && !this.scenario.combat) return fail('unknownName')
         if (args.length) return fail('wrongArguments')
         this.turn({ action: name }, line, file)
         break
@@ -171,12 +179,16 @@ export class ArenaSession {
 
   scan(): ArenaReading {
     return {
-      tiles: this.tiles,
+      tiles: [...this.tiles],
       player: coordinates(this.state.actors[0]),
-      opponents: this.state.actors.slice(1),
-      items: this.state.items,
+      opponents: this.state.actors.slice(1).map(actor => ({ ...actor })),
+      items: this.state.items.map(item => ({ ...item })),
       turn: this.state.turn,
       exit: this.scenario.objective.kind === 'escape' ? coordinates(this.scenario.objective.exit) : null,
+      ...(this.state.collected && { collected: [...this.state.collected] }),
+      ...(this.scenario.combat && {
+        self: { ...this.state.actors[0] }, range: this.scenario.combat.range, buffs: this.scenario.combat.buffs.map(buff => ({ ...buff })),
+      }),
       ...(this.state.tiles ? {
         playerScore: this.state.actors[0].score,
         nextShift: this.scenario.shifts?.[this.shiftIndex]?.turn ?? null,
@@ -189,7 +201,7 @@ export class ArenaSession {
   }
 
   private adaptiveIntent(style: AdaptiveStyle, racer: Racer, racers: Racer[]): Intent {
-    const others = racers.filter(other => other !== racer)
+    const others = racers.filter(other => other !== racer && isActive(other.actor))
     const highestScore = Math.max(...others.map(({ actor }) => actor.score))
     const { score } = racer.actor
     const contest = score < highestScore || (score === highestScore && (
@@ -223,6 +235,24 @@ export class ArenaSession {
   private opponentIntent(opponent: ArenaOpponent, index: number, racers: Racer[]): Intent {
     const position = this.state.actors[index]
     const policy = opponent.policy
+    if (!isActive(position)) return { action: 'wait' }
+    if (policy.kind === 'duelist' && this.scenario.combat) {
+      const { buffs, range } = this.scenario.combat
+      const item = this.state.items.find(entry => samePosition(entry, position))
+      const chip = item && buffs.find(buff => buff.id === item.id)
+      if (chip && (position[chip.kind] ?? 0) < 3) return { action: 'pick' }
+      const direction = aimAtPlayer(this.tiles, this.state.actors, position, range)
+      if (direction) return (this.state.turn + 1) % 3 === 0 ? { action: 'guard' } : { action: 'shoot', direction }
+      if (policy.style === 'sentry') return { action: 'wait' }
+      const routes = [...this.tiles]
+      for (const ally of this.state.actors.slice(1)) {
+        if (ally === position || !isActive(ally)) continue
+        const row = routes[ally.y]
+        routes[ally.y] = row.slice(0, ally.x) + '#' + row.slice(ally.x + 1)
+      }
+      const chase = nextMove(routes, position, [this.state.actors[0]])
+      return chase ? { action: 'move', direction: chase } : { action: 'wait' }
+    }
     if (policy.kind === 'adaptive') return this.adaptiveIntent(policy.style, racers[index], racers)
     const canPick = policy.kind === 'collect' || (policy.kind === 'patrol' && this.scenario.objective.kind === 'score')
     if (canPick && this.state.items.some((item) => samePosition(item, position))) {
@@ -264,7 +294,7 @@ export class ArenaSession {
       Object.assign(item, to)
     }
     for (const position of shift.close ?? []) {
-      if (this.state.actors.some(actor => samePosition(actor, position))
+      if (this.state.actors.some(actor => isActive(actor) && samePosition(actor, position))
         || this.state.items.some(item => samePosition(item, position))) {
         result.blocked.push({ ...position })
       } else if (setTile(position, '#')) {
@@ -276,6 +306,7 @@ export class ArenaSession {
 
   private turn(player: Intent, line: number, file?: string): void {
     const previous = this.state.actors.map(({ x, y }) => ({ x, y }))
+    const inactive = this.state.actors.filter(actor => !isActive(actor)).map(actor => actor.id)
     const racers = this.scenario.opponents.some(opponent => opponent.policy.kind === 'adaptive')
       ? this.state.actors.map(actor => ({ actor, routes: new Map(routesFrom(this.tiles, actor)) }))
       : []
@@ -285,14 +316,15 @@ export class ArenaSession {
       const event: ArenaEvent = { actorId: actor.id, action }
       if (tactic) event.tactic = tactic
       if (targetId) event.targetId = targetId
-      if (direction) {
+      if (direction) event.direction = direction
+      if (direction && action === 'move' && !this.scenario.combat) {
         const next = move(actor, direction)
-        event.direction = direction
         if (passable(this.tiles, next)) Object.assign(actor, next)
         else event.blocked = true
       }
       return event
     })
+    if (this.scenario.combat) moveCombatants(this.tiles, this.state.actors, events)
 
     // Rotate who gets first claim when multiple actors pick on the same turn.
     for (let offset = 0; offset < intents.length; offset++) {
@@ -308,12 +340,22 @@ export class ArenaSession {
       this.claims.set(item.id, actor.id)
       events[index].itemId = item.id
       actor.score++
+      if (index === 0) this.state.collected?.push(item.id)
+      if (this.scenario.combat) {
+        const buff = this.scenario.combat.buffs.find(entry => entry.id === item.id)
+        if (buff) {
+          actor[buff.kind] = Math.min(3, (actor[buff.kind] ?? 0) + 1)
+          events[index].buff = buff.kind
+        }
+      }
     }
 
+    if (this.scenario.combat) resolvePulses(this.tiles, this.state.actors, events, this.scenario.combat.range)
     this.state.turn++
     const shift = this.applyShift()
     this.decide(previous)
-    this.frames.push({ line, state: structuredClone(this.state), events, ...(shift ? { shift } : {}),
+    this.frames.push({ line, state: structuredClone(this.state), events: inactive.length ? events.filter(event => !inactive.includes(event.actorId)) : events,
+      ...(shift ? { shift } : {}),
       ...(file && file !== 'main.py' && { sourceName: file }),
       ...(this.pendingProgram.length && { program: this.pendingProgram }),
       ...(this.pendingScan && { scan: this.pendingScan }) })
@@ -324,13 +366,23 @@ export class ArenaSession {
   private decide(previous: Position[]): void {
     const objective = this.scenario.objective
     const [player, ...opponents] = this.state.actors
-    if (objective.kind === 'escape') {
-      const caught = opponents.some((opponent, index) => (
+    if (!isActive(player)) {
+      const mutual = objective.kind === 'eliminate' && !opponents.some(isActive)
+      this.decision = { outcome: mutual ? 'draw' : 'loss', reason: 'disabled' }
+      return
+    }
+    if (objective.kind === 'eliminate') {
+      if (!opponents.some(isActive)) this.decision = { outcome: 'win', reason: 'eliminate' }
+      else if (this.state.turn >= this.scenario.maxTurns) this.decision = { outcome: 'loss', reason: 'timeout' }
+      return
+    }
+    if (objective.kind === 'escape' || objective.kind === 'collect') {
+      const caught = objective.kind === 'escape' && !this.scenario.combat && opponents.some((opponent, index) => (
         samePosition(player, opponent) || (samePosition(player, previous[index + 1]) && samePosition(opponent, previous[0]))
       ))
       if (caught) this.decision = { outcome: 'loss', reason: 'caught' }
-      else if (samePosition(player, objective.exit) && objective.itemIds.every((id) => this.claims.get(id) === player.id)) {
-        this.decision = { outcome: 'win', reason: 'escape' }
+      else if ((objective.kind === 'collect' || samePosition(player, objective.exit)) && objective.itemIds.every((id) => this.claims.get(id) === player.id)) {
+        this.decision = { outcome: 'win', reason: objective.kind }
       } else if (this.state.turn >= this.scenario.maxTurns) {
         this.decision = { outcome: 'loss', reason: 'timeout' }
       }

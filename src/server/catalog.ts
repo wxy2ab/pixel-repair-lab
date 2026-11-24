@@ -4,6 +4,7 @@ import { projectDirectory } from '../projectDirectory'
 import type { Issue, Level } from '../shared/types'
 import { prerequisiteIssues } from '../shared/coursePrerequisites'
 import { breadboardProgramIssues } from '../shared/breadboard'
+import { shortChallengeLinkIssues } from '../shared/shortChallenges'
 import { MAX_LEVEL_BYTES, parseLevel } from '../shared/validate'
 
 export const levelsDirectory = join(projectDirectory, 'levels')
@@ -62,6 +63,7 @@ export async function scanLevels(directory = levelsDirectory): Promise<Scan> {
     for (const { level, source } of unique) {
       issues.push(...prerequisiteIssues(level, catalog).map(issue => ({ ...issue, path: source + issue.path })))
       issues.push(...breadboardProgramIssues(level, catalog).map(issue => ({ ...issue, path: source + issue.path })))
+      issues.push(...shortChallengeLinkIssues(level, catalog).map(issue => ({ ...issue, path: source + issue.path })))
     }
     return { entries: unique, issues }
   } catch {

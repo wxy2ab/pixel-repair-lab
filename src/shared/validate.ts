@@ -7,6 +7,8 @@ import Ajv2020 from 'ajv/dist/2020.js'
 import schema from '../../level.schema.json'
 import { parameterNames } from './cards'
 import { blockingGridDevice } from './gridDevices'
+import { ferryIssues } from './ferry'
+import { laserTrialIssues } from './laserTrial'
 import { isShortestRoute, readRouteMap } from './routeMap'
 import { parseCandidate } from '../ai/core'
 import { collectionRecordsMatch, isProgramOrder, nestedRowsMatch, programGraphics, programSourceLines, structureKinds, type BatterySearchRange, type FirstBatterySearchInput, type ProgramWalkthrough, type TwoPointerMove } from './programWalkthrough'
@@ -100,6 +102,7 @@ function scenarioIssues(scenario: Scenario, prefix: string, issues: Issue[]) {
 
 function gridIssues(level: GridLevel, issues: Issue[]) {
   scenarioIssues(level, '', issues)
+  issues.push(...ferryIssues(level), ...laserTrialIssues(level))
   level.variants?.forEach((variant, index) => scenarioIssues({ ...level, ...variant }, '/variants/' + index, issues))
   const report = (path: string, code: string, message: string) => issues.push({ path, code, message })
   const byId = new Map(level.cards.map(card => [card.id, card]))
@@ -180,13 +183,24 @@ function aiIssues(level: AiLevel, issues: Issue[]) {
 
 function arenaIssues(scenario: ArenaScenario, prefix: string, issues: Issue[]) {
   const { tiles, start, items, opponents, objective } = scenario
-  const objectives: Scenario['objectives'] = objective.kind === 'escape'
-    ? [{ type: 'exit', ...objective.exit }, { type: 'collect', itemIds: objective.itemIds }]
-    : []
+  const objectives: Scenario['objectives'] = []
+  if (objective.kind === 'escape') objectives.push({ type: 'exit', ...objective.exit })
+  if ('itemIds' in objective) objectives.push({ type: 'collect', itemIds: objective.itemIds })
   scenarioIssues({ tiles, start, items, objectives }, prefix, issues)
   const ids = new Set(['player'])
   const starts = new Set([start.x + ',' + start.y])
   const report = (path: string, code: string, message: string) => issues.push({ path: prefix + path, code, message })
+  if (objective.kind === 'eliminate' && !scenario.combat) {
+    report('/objective', 'arena-combat', 'Enable combat for an elimination objective.')
+  }
+  if (objective.kind === 'score' && !items.length) report('/items', 'arena-score', 'A score race needs at least one item.')
+  const buffIds = new Set<string>()
+  for (const [index, buff] of (scenario.combat?.buffs ?? []).entries()) {
+    if (buffIds.has(buff.id) || !items.some(item => item.id === buff.id)) {
+      report('/combat/buffs/' + index + '/id', 'arena-buff', 'Each chip must refer to a different item on this map.')
+    }
+    buffIds.add(buff.id)
+  }
   for (const [index, opponent] of opponents.entries()) {
     const path = '/opponents/' + index
     if (ids.has(opponent.id)) report(path + '/id', 'duplicate-id', 'Opponent IDs must be unique and cannot be player.')
@@ -197,6 +211,7 @@ function arenaIssues(scenario: ArenaScenario, prefix: string, issues: Issue[]) {
     const startKey = opponent.start.x + ',' + opponent.start.y
     if (starts.has(startKey)) report(path + '/start', 'enemy-start', 'Each robot needs a separate starting tile.')
     starts.add(startKey)
+    if (opponent.policy.kind === 'duelist' && !scenario.combat) report(path + '/policy', 'arena-combat', 'Duelists need combat rules.')
 
     if (opponent.policy.kind !== 'patrol') continue
     const patrol = opponent.policy.path

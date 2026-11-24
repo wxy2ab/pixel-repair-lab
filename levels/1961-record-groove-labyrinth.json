@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-record-groove-labyrinth",
+  "order": 1961,
+  "difficulty": "advanced",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "stage": "challenge",
+  "prerequisites": [
+    {"unit": "python-intermediate", "topic": "for-loops"},
+    {"unit": "routing", "topic": "depth-first"}
+  ],
+  "title": {"zh": "唱片沟里的迷宫", "en": "The Record Groove Maze"},
+  "concept": {"zh": "三圈唱槽 · 锁住的唱针", "en": "Three concentric grooves · Needle vault"},
+  "brief": {
+    "zh": "从唱片中心取走母带，送到外圈东侧的唱臂。外圈西北角的钥匙能打开第一圈的门和母带箱。中圈的踏板切断内圈的折光线。三个唱槽在不同位置相通。限 62 回合。",
+    "en": "Carry the master recording from the center to the tonearm on the eastern rim. The key in the northwest corner of the outer groove unlocks the first gate and the master chest. A plate in the middle groove cuts the bent light across the inner groove. Each groove connects to the next at a different point. Finish within 62 turns."
+  },
+  "hints": [],
+  "tiles": [
+    "###################",
+    "#.................#",
+    "#.######.########.#",
+    "#.##...........##.#",
+    "#.##.#########.##.#",
+    "#.##.##........##.#",
+    "#.##.#..#.#.##.##.#",
+    "#.##........##....#",
+    "#.##.##.....##.##.#",
+    "#.##........##.##.#",
+    "#.##.####.####.##.#",
+    "#.##...........##.#",
+    "#.###############.#",
+    "#.................#",
+    "###################"
+  ],
+  "start": {"x": 1, "y": 13},
+  "turnLimit": 62,
+  "allowedApi": [
+    "move",
+    "pick"
+  ],
+  "devices": [
+    {"kind": "key", "id": "needle-key", "x": 1, "y": 1},
+    {"kind": "door", "id": "record-gate", "x": 8, "y": 2, "keyId": "needle-key"},
+    {"kind": "door", "id": "return-gate", "x": 15, "y": 7, "switchId": "record-stop"},
+    {"kind": "switch", "id": "record-stop", "x": 12, "y": 11},
+    {"kind": "laser", "id": "pickup-light", "x": 6, "y": 6, "direction": "down", "switchId": "record-stop"},
+    {"kind": "mirror", "id": "needle-prism", "x": 6, "y": 7, "orientation": "\\"},
+    {"kind": "chest", "id": "master-recording", "x": 9, "y": 7, "keyId": "needle-key"}
+  ],
+  "objectives": [
+    {"type": "collect", "itemIds": ["master-recording"]},
+    {"type": "exit", "x": 17, "y": 6}
+  ],
+  "cards": [
+    {"id": "up", "label": {"zh": "向上", "en": "Move up"}, "template": "move(\"up\")"},
+    {"id": "right", "label": {"zh": "向右", "en": "Move right"}, "template": "move(\"right\")"},
+    {"id": "down", "label": {"zh": "向下", "en": "Move down"}, "template": "move(\"down\")"},
+    {"id": "left", "label": {"zh": "向左", "en": "Move left"}, "template": "move(\"left\")"},
+    {
+      "id": "repeat",
+      "label": {"zh": "重复几次", "en": "Repeat moves"},
+      "template": "for step in range({{count}}):",
+      "block": true,
+      "parameters": [
+        {
+          "name": "count",
+          "label": {"zh": "次数", "en": "Times"},
+          "choices": [
+            {"id": "n2", "label": {"zh": "2", "en": "2"}, "code": "2"},
+            {"id": "n3", "label": {"zh": "3", "en": "3"}, "code": "3"},
+            {"id": "n4", "label": {"zh": "4", "en": "4"}, "code": "4"},
+            {"id": "n5", "label": {"zh": "5", "en": "5"}, "code": "5"},
+            {"id": "n6", "label": {"zh": "6", "en": "6"}, "code": "6"},
+            {"id": "n7", "label": {"zh": "7", "en": "7"}, "code": "7"},
+            {"id": "n8", "label": {"zh": "8", "en": "8"}, "code": "8"},
+            {"id": "n9", "label": {"zh": "9", "en": "9"}, "code": "9"},
+            {"id": "n10", "label": {"zh": "10", "en": "10"}, "code": "10"},
+            {"id": "n11", "label": {"zh": "11", "en": "11"}, "code": "11"},
+            {"id": "n12", "label": {"zh": "12", "en": "12"}, "code": "12"}
+          ]
+        }
+      ]
+    },
+    {"id": "pick", "label": {"zh": "打开脚下的宝箱", "en": "Open this chest"}, "template": "pick()"}
+  ],
+  "solutionCards": [
+    {"cardId": "repeat", "values": {"count": "n12"}, "children": [{"cardId": "up"}]},
+    {"cardId": "repeat", "values": {"count": "n7"}, "children": [{"cardId": "right"}]},
+    {"cardId": "down"},
+    {"cardId": "down"},
+    {"cardId": "repeat", "values": {"count": "n6"}, "children": [{"cardId": "right"}]},
+    {"cardId": "repeat", "values": {"count": "n8"}, "children": [{"cardId": "down"}]},
+    {"cardId": "repeat", "values": {"count": "n5"}, "children": [{"cardId": "left"}]},
+    {"cardId": "repeat", "values": {"count": "n4"}, "children": [{"cardId": "up"}]},
+    {"cardId": "pick"},
+    {"cardId": "up"},
+    {"cardId": "up"},
+    {"cardId": "repeat", "values": {"count": "n5"}, "children": [{"cardId": "right"}]},
+    {"cardId": "down"},
+    {"cardId": "down"},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "right"}]},
+    {"cardId": "up"}
+  ]
+}

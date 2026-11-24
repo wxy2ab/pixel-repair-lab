@@ -38,7 +38,8 @@ function groupLabel({ score }: ChallengeScoreSeries, locale: Locale) {
     : score.kind === 'grid' || score.kind === 'arena' ? tr(locale, `${score.total} 个场景`, `${score.total} maps`)
       : tr(locale, `${score.total} 个用例`, `${score.total} cases`)
   return score.kind === 'arena'
-    ? (score.goal === 'escape' ? tr(locale, '撤离', 'Escape') : tr(locale, '计分对抗', 'Score battle')) + ' · ' + count
+    ? ({ escape: tr(locale, '撤离', 'Escape'), score: tr(locale, '计分对抗', 'Score battle'),
+      eliminate: tr(locale, '击退对手', 'Disable rivals'), collect: tr(locale, '收集物资', 'Collect supplies') }[score.goal]) + ' · ' + count
     : count
 }
 

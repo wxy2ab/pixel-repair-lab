@@ -8,6 +8,7 @@ import type { Bit, CircuitCase, CircuitInput, CircuitLevel, Gate } from '../shar
 import type { Locale } from '../shared/types'
 import { tr } from './text'
 import { HintSteps } from './HintSteps'
+import { TaskProgress } from './TaskProgress'
 import './circuit.css'
 
 function startingInput(scenario: CircuitCase): CircuitInput {
@@ -173,14 +174,15 @@ export default function CircuitLesson({ level, locale, onComplete, onMistake }: 
             {goal.baseHigh !== undefined && <li>{t('基极输入', 'Base input')} <code>{goal.baseHigh ? 'HIGH' : 'LOW'}</code></li>}
             {goal.gate && <li>{t('逻辑门', 'Gate')} <code>{goal.gate}</code></li>}
           </ul> : <p>{t('改变输入，比较变化前后的读数。', 'Change an input and compare the readings.')}</p>}
-          <p className={reviews[selected] === true ? 'win-message' : reviews[selected] === false ? 'error-message' : ''}
+          <p data-task-success={reviews[selected] === true || undefined}
+            className={reviews[selected] === true ? 'win-message' : reviews[selected] === false ? 'error-message' : ''}
             role="status">
             {reviews[selected] === true ? demo ? t('已记录这一组。', 'Observation recorded.') : t('这一组设置正确。', 'This setup is correct.') :
               reviews[selected] === false ? (componentMode ? t('看看 LED 和两个控制钮的状态，哪一项和任务不同？', 'Look at the LED and both controls. Which state differs from the task?') :
                 t('还有条件没满足。对照目标检查读数和门输出。', 'A target is still unmet. Compare the reading and gate output with the goal.')) :
                 t('当前场景', 'Current scenario') + ' · ' + scenario.label[locale]}
           </p>
-          {level.cases.length > 1 && <p>{t('已完成场景', 'Scenarios complete')} <strong>{passed}/{level.cases.length}</strong></p>}
+          <TaskProgress label={t('已完成场景', 'Scenarios complete')} done={passed} total={level.cases.length} />
           {level.hints.length > 0 && <details><summary>{t('任务提示', 'Mission hints')}</summary><HintSteps hints={level.hints} locale={locale} /></details>}
         </section>
       </div>

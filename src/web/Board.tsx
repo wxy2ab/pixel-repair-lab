@@ -1,11 +1,15 @@
-import { useMemo, type CSSProperties } from 'react'
-import type { GridSnapshot, Locale, Position, Scenario } from '../shared/types'
+import { useMemo, type CSSProperties, type ReactNode } from 'react'
+import type { GridLevel, GridSnapshot, Locale, Position, Scenario } from '../shared/types'
 import { ActionRobot } from './ActionRobot'
 import { StationViewport } from './station3d/StationViewport'
+import { gridMapTargets } from './station3d/mapTargets'
+import { useArenaMapMode } from './ArenaMapMode'
 import type { StationFrame } from './station3d/types'
 import { tr } from './text'
 import { boardDevice, describeDevice, deviceName, emittingRay, hazardName, rayArms } from './gridDeviceDisplay'
 import { GridDeviceGlyph } from './GridDeviceGlyph'
+import { FerryDockIcon } from './icons'
+import './arena-chips.css'
 import { trailArmsByCell, visibleTrailEdges } from './boardTrail'
 
 const at = (position: Position, x: number, y: number) => position.x === x && position.y === y
@@ -32,7 +36,9 @@ export function MapTiles({ locale, batteries, trail, ...scene }: Omit<StationFra
   )
 }
 
-function FlatMap({ frame, locale, selected }: { frame: StationFrame; locale: Locale; selected?: Position }) {
+export function FlatMap({ frame, locale, selected, cellControl }: {
+  frame: StationFrame; locale: Locale; selected?: Position; cellControl?: (position: Position) => ReactNode
+}) {
   const { tiles, exit, playerPosition, opponents, items, cellChanges } = frame
   const columns = tiles[0].length
   const arms = useMemo(() => trailArmsByCell(frame.trailEdges ?? [], columns), [frame.trailEdges, columns])
@@ -44,20 +50,24 @@ function FlatMap({ frame, locale, selected }: { frame: StationFrame; locale: Loc
       <div className="map-coordinate map-coordinate--y" aria-hidden="true">
         {tiles.map((_, index) => <span key={index}>{index}</span>)}
       </div>
-      <div className="tilemap" role="img"
+      <div className="tilemap" role={cellControl ? 'group' : 'img'}
         aria-label={tr(locale, '机器人位于 ' + playerPosition.x + '，' + playerPosition.y, 'Robot at ' + playerPosition.x + ', ' + playerPosition.y)}
       >
         {tiles.flatMap((row, y) => [...row].map((tile, x) => {
           const goal = exit && at(exit, x, y)
           const rivalsHere = opponents.filter(opponent => at(opponent, x, y))
           const item = items.find(candidate => at(candidate, x, y))
-          const player = at(playerPosition, x, y)
+          const player = !frame.playerDown && at(playerPosition, x, y)
+          const buff = item && frame.arenaBuffs?.find(chip => chip.id === item.id)
+          const target = item && frame.arenaTargetIds?.includes(item.id)
+          const shots = frame.arenaShots?.filter(event => event.path?.some(cell => at(cell, x, y)))
           const changes = cellChanges?.filter(change => at(change.position, x, y)).map(change => change.state).join(' ')
           const device = frame.devices?.find(device => at(device, x, y))
           const emitter = emittingRay(device, frame.hazards)
           const hazards = frame.hazards?.filter(hazard => at(hazard, x, y))
           return <span key={x + ':' + y} className={'tile ' + (tile === '#' ? 'tile--wall' : 'tile--floor') + (goal ? ' tile--exit' : '')}
             data-x={x} data-y={y} data-item-id={item?.id} data-arena-change={changes || undefined}
+            data-buff={buff?.kind} data-target-item={target || undefined}
             data-device-id={device?.id} data-device={device?.kind} data-device-state={device?.status}
             data-hazard={hazards?.length ? [...new Set(hazards.map(h => h.kind))].join(' ') : undefined}
             data-inspected={selected && at(selected, x, y) || undefined}
@@ -67,13 +77,17 @@ function FlatMap({ frame, locale, selected }: { frame: StationFrame; locale: Loc
             {emitter && <span className="device-ray" data-kind={emitter.kind} data-arm={emitter.direction} aria-hidden="true" />}
             {hazards?.flatMap((hazard, i) => hazard.kind === 'bomb' ? <span key={i} className="device-burst" aria-hidden="true" />
               : rayArms(hazard, device).map(arm => <span key={i + arm} className="device-ray" data-kind={hazard.kind} data-arm={arm} aria-hidden="true" />))}
-            {goal && <span className="exit-icon" aria-hidden="true">↥</span>}
+            {goal && (frame.ferryDock ? <FerryDockIcon /> : <span className="exit-icon" aria-hidden="true">↥</span>)}
             {device && <GridDeviceGlyph device={device} />}
-            {item && <span className="gem" aria-hidden="true" />}
+            {shots?.map(shot => <i key={shot.actorId} className="arena-pulse-line" data-side={shot.actorId === 'player' ? 'player' : 'rival'}
+              data-direction={shot.direction} aria-hidden="true" />)}
+            {buff ? <span className="arena-chip" data-kind={buff.kind} aria-hidden="true">{buff.kind === 'power' ? 'ϟ' : '◆'}</span>
+              : item && <span className={frame.arenaBuffs ? (target ? 'arena-parcel' : 'arena-token') : 'gem'} aria-hidden="true" />}
             {rivalsHere.map((rival, index) => rival.label
               ? <span key={index} className="rival-marker" style={{ '--rival-index': rival.index ?? index } as CSSProperties}><Robot enemy /><small>{rival.label}</small></span>
               : <Robot key={index} enemy />)}
             {player && <ActionRobot activity={frame.activity} locale={locale} />}
+            {cellControl?.({ x, y })}
           </span>
         }))}
       </div>
@@ -81,9 +95,10 @@ function FlatMap({ frame, locale, selected }: { frame: StationFrame; locale: Loc
   )
 }
 
-export function Board({ level, snapshot, locale, trail, activity, showHardware = true }: {
-  level: Scenario; snapshot: GridSnapshot; locale: Locale; trail?: readonly Position[]; activity?: StationFrame['activity']; showHardware?: boolean
+export function Board({ level, snapshot, locale, trail, activity, showHardware = true, exitLabel }: {
+  level: Scenario & Pick<GridLevel, 'ferry'>; snapshot: GridSnapshot; locale: Locale; trail?: readonly Position[]; activity?: StationFrame['activity']; showHardware?: boolean; exitLabel?: string
 }) {
+  const mapMode = useArenaMapMode()
   const exit = level.objectives.find(goal => goal.type === 'exit')
   const drops = snapshot.items.length > 0 || Boolean(level.items?.length)
   const state = snapshot.devices
@@ -91,12 +106,13 @@ export function Board({ level, snapshot, locale, trail, activity, showHardware =
   const deviceLegend = devices?.filter((device, i) => devices.findIndex(other => other.kind === device.kind) === i)
   return (
     <>
-      <MapTiles tiles={level.tiles} exit={exit} playerPosition={snapshot.player} opponents={snapshot.enemies} items={snapshot.items}
+      <MapTiles tiles={level.tiles} exit={exit} ferryDock={Boolean(level.ferry)} playerPosition={snapshot.player} opponents={snapshot.enemies} items={snapshot.items}
+        mapTargets={mapMode ? gridMapTargets(level, snapshot) : undefined}
         activity={activity}
         devices={devices} hazards={state?.hazards} locale={locale} trail={trail} />
       <div className="board-legend" aria-label={tr(locale, '图例', 'Legend')}>
         <span><i className="legend-player" />{tr(locale, '芽芽', 'Sprout')}</span>
-        {exit && <span><i className="legend-exit" />{tr(locale, '出口', 'Exit')}</span>}
+        {exit && <span><i className="legend-exit" />{exitLabel ?? tr(locale, '出口', 'Exit')}</span>}
         {drops && <span><i className="legend-item" />{tr(locale, '零件', 'Part')}</span>}
         {Boolean(level.enemies?.length) && <span><i className="legend-enemy" />{tr(locale, '巡逻机器人', 'Patrol bot')}</span>}
         {deviceLegend?.map(device => <span key={device.kind}><GridDeviceGlyph device={device} legend />{deviceName(device.kind, locale)}</span>)}

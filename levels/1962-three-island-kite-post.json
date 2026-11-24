@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-three-island-kite-post",
+  "order": 1962,
+  "difficulty": "advanced",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "stage": "challenge",
+  "prerequisites": [
+    {"unit": "python-intermediate", "topic": "for-loops"},
+    {"unit": "routing", "topic": "breadth-first"}
+  ],
+  "title": {"zh": "风筝群岛的三封信", "en": "Three Letters of Kite Island"},
+  "concept": {"zh": "跨岛取件 · 双锁邮袋", "en": "Island crossings · Two mail keys"},
+  "brief": {
+    "zh": "把三封风筝信送到东北角的放飞台。西岛蓝钥匙开中岛和东岛的两个蓝邮袋。东岛的金钥匙开西岛南边的金邮袋。潮汐踏板能放下连接东西航线的两座短桥。限 99 回合。",
+    "en": "Deliver all three kite letters to the northeast launch platform. The west island’s blue key opens the blue mailbags on the middle and east islands. The east island’s gold key opens the gold mailbag at the southern tip of the west island. The tide plate lowers two short bridges between the routes. Finish within 99 turns."
+  },
+  "hints": [],
+  "tiles": [
+    "####################",
+    "###############....#",
+    "########....#......#",
+    "##....##......#....#",
+    "##.##.......###....#",
+    "#......#....#####.##",
+    "#......###.######.##",
+    "#.....####.######.##",
+    "#.....####.######.##",
+    "#.....##....###....#",
+    "####.###...........#",
+    "#....###....###....#",
+    "#...........###....#",
+    "#....##.###.###....#",
+    "#....##.....########",
+    "####################"
+  ],
+  "start": {"x": 1, "y": 8},
+  "turnLimit": 99,
+  "allowedApi": [
+    "move",
+    "pick"
+  ],
+  "devices": [
+    {"kind": "key", "id": "blue-key", "x": 2, "y": 3},
+    {"kind": "key", "id": "gold-key", "x": 18, "y": 12},
+    {"kind": "switch", "id": "tide-plate", "x": 8, "y": 9},
+    {"kind": "door", "id": "west-float", "x": 6, "y": 12, "switchId": "tide-plate"},
+    {"kind": "door", "id": "east-float", "x": 13, "y": 10, "switchId": "tide-plate"},
+    {"kind": "chest", "id": "reed-letter", "x": 10, "y": 2, "keyId": "blue-key"},
+    {"kind": "chest", "id": "feather-letter", "x": 15, "y": 1, "keyId": "blue-key"},
+    {"kind": "chest", "id": "ribbon-letter", "x": 1, "y": 14, "keyId": "gold-key"}
+  ],
+  "objectives": [
+    {"type": "collect", "itemIds": ["reed-letter", "feather-letter", "ribbon-letter"]},
+    {"type": "exit", "x": 18, "y": 2}
+  ],
+  "cards": [
+    {"id": "up", "label": {"zh": "向上", "en": "Move up"}, "template": "move(\"up\")"},
+    {"id": "right", "label": {"zh": "向右", "en": "Move right"}, "template": "move(\"right\")"},
+    {"id": "down", "label": {"zh": "向下", "en": "Move down"}, "template": "move(\"down\")"},
+    {"id": "left", "label": {"zh": "向左", "en": "Move left"}, "template": "move(\"left\")"},
+    {
+      "id": "repeat",
+      "label": {"zh": "重复几次", "en": "Repeat moves"},
+      "template": "for step in range({{count}}):",
+      "block": true,
+      "parameters": [
+        {
+          "name": "count",
+          "label": {"zh": "次数", "en": "Times"},
+          "choices": [
+            {"id": "n2", "label": {"zh": "2", "en": "2"}, "code": "2"},
+            {"id": "n3", "label": {"zh": "3", "en": "3"}, "code": "3"},
+            {"id": "n4", "label": {"zh": "4", "en": "4"}, "code": "4"},
+            {"id": "n5", "label": {"zh": "5", "en": "5"}, "code": "5"},
+            {"id": "n6", "label": {"zh": "6", "en": "6"}, "code": "6"},
+            {"id": "n7", "label": {"zh": "7", "en": "7"}, "code": "7"}
+          ]
+        }
+      ]
+    },
+    {"id": "pick", "label": {"zh": "打开脚下的宝箱", "en": "Open this chest"}, "template": "pick()"}
+  ],
+  "solutionCards": [
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "up"}]},
+    {"cardId": "right"},
+    {"cardId": "up"},
+    {"cardId": "up"},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "right"}]},
+    {"cardId": "down"},
+    {"cardId": "repeat", "values": {"count": "n5"}, "children": [{"cardId": "right"}]},
+    {"cardId": "repeat", "values": {"count": "n5"}, "children": [{"cardId": "down"}]},
+    {"cardId": "left"},
+    {"cardId": "left"},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "right"}]},
+    {"cardId": "down"},
+    {"cardId": "repeat", "values": {"count": "n7"}, "children": [{"cardId": "right"}]},
+    {"cardId": "down"},
+    {"cardId": "down"},
+    {"cardId": "up"},
+    {"cardId": "up"},
+    {"cardId": "repeat", "values": {"count": "n7"}, "children": [{"cardId": "left"}]},
+    {"cardId": "down"},
+    {"cardId": "down"},
+    {"cardId": "repeat", "values": {"count": "n7"}, "children": [{"cardId": "left"}]},
+    {"cardId": "down"},
+    {"cardId": "down"},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "left"}]},
+    {"cardId": "pick"},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "up"}]},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "right"}]},
+    {"cardId": "repeat", "values": {"count": "n6"}, "children": [{"cardId": "up"}]},
+    {"cardId": "right"},
+    {"cardId": "up"},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "right"}]},
+    {"cardId": "up"},
+    {"cardId": "up"},
+    {"cardId": "right"},
+    {"cardId": "right"},
+    {"cardId": "pick"},
+    {"cardId": "right"},
+    {"cardId": "down"},
+    {"cardId": "right"},
+    {"cardId": "right"},
+    {"cardId": "up"},
+    {"cardId": "right"},
+    {"cardId": "right"},
+    {"cardId": "up"},
+    {"cardId": "pick"},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "right"}]},
+    {"cardId": "down"}
+  ]
+}

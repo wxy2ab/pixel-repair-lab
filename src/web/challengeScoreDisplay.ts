@@ -8,7 +8,7 @@ export function metricLabel(id: ChallengeScoreMetric['id'], score: ChallengeScor
   const multipleScenes = (score.kind === 'grid' || score.kind === 'arena') && score.total > 1
   const labels: Record<ChallengeScoreMetric['id'], string> = {
     turns: multipleScenes ? t('主场景回合', 'Main map turns') : t('回合', 'Turns'),
-    score: score.kind === 'arena' && score.goal === 'escape' ? t('收集物品', 'Items collected')
+    score: score.kind === 'arena' && score.goal !== 'score' ? t('收集物品', 'Items collected')
       : multipleScenes ? t('主场景得分', 'Main map points') : t('得分', 'Points'),
     cases: score.kind === 'data' ? t('通过步骤', 'Steps passed')
       : score.kind === 'arena' || score.kind === 'grid' ? t('通过场景', 'Maps passed')

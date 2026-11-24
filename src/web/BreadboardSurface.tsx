@@ -170,7 +170,7 @@ export default function BreadboardSurface({ mode, locale, wires, selectedPin, on
       setChosenProbe('red')
     }
   }
-  const probePointer = useRef<{ id: number; probe: Probe } | undefined>(undefined)
+  const pointerTool = useRef<{ id: number; tool: Probe | BreadboardPartKind } | undefined>(undefined)
   const suppressClick = useRef(false)
   const meterReading = useMemo(() => measureBreadboardMeter({
     mode: meterMode, boardMode: mode, build: { parts, wires }, closed, powered, uno: unoState, ...probePins,
@@ -247,20 +247,28 @@ export default function BreadboardSurface({ mode, locale, wires, selectedPin, on
     setHover(undefined)
   }
 
-  function probePointerStart(event: PointerEvent, probe: Probe) {
-    if (event.isPrimary && event.button === 0) probePointer.current = { id: event.pointerId, probe }
+  function pointerStart(event: PointerEvent, tool: Probe | BreadboardPartKind) {
+    if (event.isPrimary && event.button === 0) pointerTool.current = { id: event.pointerId, tool }
   }
 
-  function probePointerEnd(event: PointerEvent<HTMLDivElement>) {
-    const gesture = probePointer.current
+  function pointerEnd(event: PointerEvent<HTMLDivElement>) {
+    const gesture = pointerTool.current
     if (!gesture || gesture.id !== event.pointerId) return
-    probePointer.current = undefined
+    pointerTool.current = undefined
     // Touch and auto-scrolling a long board can complete without native HTML drag events.
     const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('[data-bread-contact]')
     const pin = target?.getAttribute('data-bread-contact')
     if (target && pin && event.currentTarget.contains(target)) {
-      chooseProbe(gesture.probe)
-      setProbeAt(gesture.probe, pin)
+      const { tool } = gesture
+      if (tool === 'red' || tool === 'black') {
+        chooseProbe(tool)
+        setProbeAt(tool, pin)
+      } else {
+        if (editLocked || !isBreadboardSocket(pin)) return
+        onBeginPartEdit?.()
+        setChosenProbe(undefined)
+        install(droppedPart(tool, pin, parts.find(part => part.kind === tool)))
+      }
       suppressClick.current = true
     }
   }
@@ -358,20 +366,20 @@ export default function BreadboardSurface({ mode, locale, wires, selectedPin, on
     ? t('点一个孔放红表笔。表笔可以碰到已经接线的孔。', 'Touch the red probe to a socket. Occupied sockets can be tested too.')
     : t('点一个孔放黑表笔。表笔可以碰到已经接线的孔。', 'Touch the black probe to a socket. Occupied sockets can be tested too.')
   return <div className="bread-surface" data-testid="bread-surface"
-    onPointerDownCapture={() => { probePointer.current = undefined; suppressClick.current = false }}
-    onPointerUp={probePointerEnd} onPointerCancel={() => { probePointer.current = undefined }}
+    onPointerDownCapture={() => { pointerTool.current = undefined; suppressClick.current = false }}
+    onPointerUp={pointerEnd} onPointerCancel={() => { pointerTool.current = undefined }}
     onClickCapture={event => { if (suppressClick.current && event.detail) { event.stopPropagation(); suppressClick.current = false } }}
     onKeyDown={event => {
     if (event.key === 'Escape') { finishEdit(); if (!editLocked) setChosenProbe(undefined) }
   }}>
     <BreadboardPartsTray parts={parts} locale={locale} chosen={dragging ?? editing?.kind} locked={editLocked}
-      onChoose={choose} onDrag={beginDrag} onEnd={endDrag}
+      onChoose={choose} onDrag={beginDrag} onEnd={endDrag} onPointer={pointerStart}
       onFlip={() => { finishEdit(); onFlipLed() }} onRemove={kind => { finishEdit(); onRemovePart(kind) }} />
     <BreadboardMeter locale={locale} mode={meterMode} pins={probePins} selected={chosenProbe} reading={meterReading}
       editLocked={editLocked} onReading={onMeterReading} recallId={appliedRecall}
       onMode={next => { setMeterMode(next); chooseProbe(chosenProbe ?? 'red') }}
       onChoose={chooseProbe} onWire={() => setChosenProbe(undefined)}
-      onDrag={dragProbeStart} onEndDrag={dragProbeEnd} onPointer={probePointerStart} />
+      onDrag={dragProbeStart} onEndDrag={dragProbeEnd} onPointer={pointerStart} />
     <div className="bread-fitting-guide" data-invalid={invalid}>
       <span aria-live="polite" data-testid="bread-fitting-message">{instruction}</span>
       {editing && <button type="button" onClick={finishEdit}>{t('取消', 'Cancel')}</button>}
@@ -448,6 +456,7 @@ export default function BreadboardSurface({ mode, locale, wires, selectedPin, on
                   data-testid={isButton ? 'bread-physical-switch' : 'bread-handle-' + part.kind}
                   aria-label={isButton ? switchText : moveLabel} title={isButton ? switchText : moveLabel}
                   aria-pressed={isButton ? closed : undefined}
+                  onPointerDown={event => { if (!editLocked) pointerStart(event, part.kind) }}
                   onDragStart={event => beginDrag(event, part.kind)} onDragEnd={endDrag}
                   onClick={() => {
                     if (isButton) { finishEdit(); onToggle() }
@@ -470,7 +479,7 @@ export default function BreadboardSurface({ mode, locale, wires, selectedPin, on
       {(['red', 'black'] as const).map(probe => {
         const pin = probePins[probe]
         return pin && <BreadboardProbeLead key={probe} probe={probe} pin={pin} point={pinPoint(pin, mode)}
-          locale={locale} enabled={Boolean(chosenProbe)} onChoose={chooseProbe} onDrag={dragProbeStart} onEndDrag={dragProbeEnd} onPointer={probePointerStart} />
+          locale={locale} enabled={Boolean(chosenProbe)} onChoose={chooseProbe} onDrag={dragProbeStart} onEndDrag={dragProbeEnd} onPointer={pointerStart} />
       })}
     </svg>
     <div className="bread-legend">

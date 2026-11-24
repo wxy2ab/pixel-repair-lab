@@ -174,7 +174,7 @@ export function BatteryPipelineTrial({ level, locale, source, personal, course, 
               {t('这个结果和工单对不上。检查所用的函数，或换回课程函数再试。',
                 'This result does not match the work order. Check the selected functions or try the course versions.')}
             </p>}
-            {atEnd && trial.passed && <p className="win-message">{t('小例子试跑完成。', 'The small example is complete.')}</p>}
+            {atEnd && trial.passed && <p className="win-message" data-task-success="true">{t('小例子试跑完成。', 'The small example is complete.')}</p>}
           </div>
           {step && <div className="pipeline-trial-source">
             {helper && step.module && <p data-testid="battery-pipeline-module" data-module={step.module}>

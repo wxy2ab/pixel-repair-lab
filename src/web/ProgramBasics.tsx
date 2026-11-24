@@ -106,7 +106,7 @@ export function ProgramBasics({ execution, locale, onReady, onNewInput, notes, e
             <span aria-hidden="true">{step === 'output' ? '↺' : '▶'}</span>
             {step === 'input' ? t('按规则处理', 'Apply the rule') : step === 'process' ? t('查看输出', 'Show the output') : t('重新运行', 'Run again')}
           </button>
-          <p role="status">{status}</p>
+          <p role="status" data-task-success={completed || undefined}>{status}</p>
         </div>
         {failed && <p role="alert" className="error-message">{t('这次没有得到结果。重新运行一次试试。', 'The program did not return a result. Try running it again.')}</p>}
       </DeviceWindow>

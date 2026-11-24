@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-laser-shortcut",
+  "order": 1978,
+  "difficulty": "starter",
+  "unit": {"id":"challenge-zone","order":90,"title":{"zh":"挑战场","en":"Challenge Arena"}},
+  "stage": "challenge",
+  "prerequisites": [{"unit":"foundations","topic":"sequence"}],
+  "title": {"zh":"光廊一 · 开关还是钥匙","en":"Light Hall I · Switch or Key"},
+  "concept": {"zh":"激光、镜子和锁门","en":"Laser, mirror and locked gate"},
+  "brief": {
+    "zh": "在 14 回合内让芽芽安全到达东边的出口。光束遇到斜镜会转弯，踩到亮线就停机。踩下北边的开关，激光就会一直熄灭。走到南边的钥匙格，南廊的门就会打开。每走一格用一回合。",
+    "en": "Reach the east exit safely within 14 turns. The mirror bends the beam. Sprout stops on a lit square. Stepping on the north switch keeps the laser off. Stepping on the south key unlocks the gate in the lower hall. Each move takes one turn."
+  },
+  "hints": [],
+  "laserTrial": {"kind":"crossing","next":"challenge-laser-turned-mirror"},
+  "tiles": [
+    "#########",
+    "#.##.####",
+    "#.......#",
+    "#....##.#",
+    "#.......#",
+    "##.#.####",
+    "#########"
+  ],
+  "start": {"x":1,"y":2},
+  "turnLimit": 14,
+  "allowedApi": ["move"],
+  "devices": [
+    {"kind":"laser","id":"hall-beam","x":2,"y":3,"direction":"right","switchId":"cutoff"},
+    {"kind":"mirror","id":"turning-glass","x":4,"y":3,"orientation":"/"},
+    {"kind":"switch","id":"cutoff","x":1,"y":1},
+    {"kind":"key","id":"brass-key","x":2,"y":5},
+    {"kind":"door","id":"lower-gate","x":6,"y":4,"keyId":"brass-key"}
+  ],
+  "objectives": [{"type":"exit","x":7,"y":2}],
+  "cards": [
+    {"id":"up","label":{"zh":"向上","en":"Move up"},"template":"move(\"up\")"},
+    {"id":"right","label":{"zh":"向右","en":"Move right"},"template":"move(\"right\")"},
+    {"id":"down","label":{"zh":"向下","en":"Move down"},"template":"move(\"down\")"},
+    {"id":"left","label":{"zh":"向左","en":"Move left"},"template":"move(\"left\")"}
+  ],
+  "solutionCards": [
+    {"cardId":"up"},
+    {"cardId":"down"},
+    {"cardId":"right"},
+    {"cardId":"right"},
+    {"cardId":"right"},
+    {"cardId":"right"},
+    {"cardId":"right"},
+    {"cardId":"right"}
+  ]
+}

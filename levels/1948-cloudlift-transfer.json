@@ -1,0 +1,192 @@
+{
+  "version": 1,
+  "id": "challenge-cloudlift-transfer",
+  "order": 1948,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": { "zh": "挑战场", "en": "Challenge Arena" }
+  },
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": { "zh": "云梯末班车", "en": "Last Cloudlift" },
+  "concept": { "zh": "取票换乘 · 中央升降井", "en": "Ticket transfer · Lift shaft" },
+  "brief": { "zh": "收好日票和夜票，赶上东北角的末班云梯。第 9 回合结束时升降井的北桥开放，南桥升起。第 19 回合结束时南桥重新放下。两台守站机把守候车层，巡站机会追过检票口。第 56 回合结束前带着两张票抵达出口。", "en": "Collect the Sun and Moon tickets and catch the last cloudlift in the northeast. After turn 9 the north bridge opens and the south bridge lifts. After turn 19 the south bridge drops again. Two platform sentries watch the waiting rooms while a roaming inspector pursues you through the gates. Reach the exit with both tickets by turn 56." },
+  "prerequisites": [
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "rival-strategy"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "####################",
+    "#.......####.......#",
+    "#.###...####.......#",
+    "#.###....##...###..#",
+    "#.......####..###..#",
+    "#.......####.......#",
+    "#.......####.......#",
+    "####.###...........#",
+    "#.......####.......#",
+    "#.......#######.##.#",
+    "#.......####.......#",
+    "#..###..####.......#",
+    "#..#.#........###..#",
+    "#.......####..##...#",
+    "#.......####.......#",
+    "####################"
+  ],
+  "start": { "x": 2, "y": 13 },
+  "items": [
+    { "id": "sun-ticket", "x": 3, "y": 4 },
+    { "id": "moon-ticket", "x": 17, "y": 13 },
+    { "id": "power-1", "x": 2, "y": 12 },
+    { "id": "power-2", "x": 13, "y": 6 },
+    { "id": "shield-1", "x": 2, "y": 10 },
+    { "id": "shield-2", "x": 6, "y": 5 },
+    { "id": "shield-3", "x": 17, "y": 10 }
+  ],
+  "opponents": [
+    {
+      "id": "porter",
+      "title": { "zh": "云梯门卫", "en": "Lift Porter" },
+      "start": { "x": 14, "y": 7 },
+      "policy": {
+        "kind": "duelist",
+        "style": "sentry"
+      }
+    },
+    {
+      "id": "checker",
+      "title": { "zh": "蓝帽检票员", "en": "Blue Cap" },
+      "start": { "x": 5, "y": 3 },
+      "policy": {
+        "kind": "duelist",
+        "style": "sentry"
+      }
+    },
+    {
+      "id": "night-shift",
+      "title": { "zh": "夜班长", "en": "Night Shift" },
+      "start": { "x": 16, "y": 11 },
+      "policy": {
+        "kind": "duelist",
+        "style": "hunter"
+      }
+    }
+  ],
+  "objective": {
+    "kind": "escape",
+    "exit": { "x": 18, "y": 2 },
+    "itemIds": [
+      "sun-ticket",
+      "moon-ticket"
+    ]
+  },
+  "maxTurns": 56,
+  "combat": {
+    "health": 7,
+    "range": 4,
+    "buffs": [
+      {
+        "id": "power-1",
+        "kind": "power"
+      },
+      {
+        "id": "power-2",
+        "kind": "power"
+      },
+      {
+        "id": "shield-1",
+        "kind": "shield"
+      },
+      {
+        "id": "shield-2",
+        "kind": "shield"
+      },
+      {
+        "id": "shield-3",
+        "kind": "shield"
+      }
+    ]
+  },
+  "shifts": [
+    {
+      "turn": 9,
+      "open": [
+        { "x": 9, "y": 3 },
+        { "x": 10, "y": 3 }
+      ],
+      "close": [
+        { "x": 9, "y": 12 }
+      ]
+    },
+    {
+      "turn": 19,
+      "open": [
+        { "x": 9, "y": 12 }
+      ],
+      "close": [
+        { "x": 10, "y": 3 }
+      ]
+    }
+  ],
+  "starterCode": "state = scan()\n",
+  "solutionCode": "def walk(direction, squares):\n    for step in range(squares):\n        move(direction)\n\nmove(\"up\")\npick()\n\nwalk(\"up\", 2)\npick()\n\nwalk(\"up\", 2)\nwalk(\"right\", 2)\nwalk(\"up\", 4)\nmove(\"left\")\npick()\n\nwalk(\"right\", 2)\nmove(\"down\")\nguard()\nmove(\"down\")\nmove(\"left\")\nwalk(\"down\", 2)\nmove(\"right\")\nmove(\"down\")\nwalk(\"right\", 2)\nwalk(\"down\", 3)\nwalk(\"right\", 5)\nmove(\"down\")\nmove(\"right\")\nmove(\"down\")\nwalk(\"right\", 3)\nmove(\"up\")\nmove(\"right\")\npick()\n\nwalk(\"up\", 3)\nmove(\"right\")\nwalk(\"up\", 8)\n",
+  "snippets": [
+    {
+      "label": { "zh": "向上走", "en": "Move up" },
+      "code": "move(\"up\")"
+    },
+    {
+      "label": { "zh": "向右走", "en": "Move right" },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": { "zh": "向下走", "en": "Move down" },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": { "zh": "向左走", "en": "Move left" },
+      "code": "move(\"left\")"
+    },
+    {
+      "label": { "zh": "向上发脉冲", "en": "Pulse up" },
+      "code": "shoot(\"up\")"
+    },
+    {
+      "label": { "zh": "向右发脉冲", "en": "Pulse right" },
+      "code": "shoot(\"right\")"
+    },
+    {
+      "label": { "zh": "向下发脉冲", "en": "Pulse down" },
+      "code": "shoot(\"down\")"
+    },
+    {
+      "label": { "zh": "向左发脉冲", "en": "Pulse left" },
+      "code": "shoot(\"left\")"
+    },
+    {
+      "label": { "zh": "开启防御", "en": "Guard" },
+      "code": "guard()"
+    },
+    {
+      "label": { "zh": "拾取脚下道具", "en": "Pick up here" },
+      "code": "pick()"
+    },
+    {
+      "label": { "zh": "查看赛场", "en": "Scan arena" },
+      "code": "state = scan()"
+    },
+    {
+      "label": { "zh": "原地等一拍", "en": "Wait a beat" },
+      "code": "wait()"
+    }
+  ]
+}

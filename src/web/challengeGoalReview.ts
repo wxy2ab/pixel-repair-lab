@@ -2,7 +2,7 @@ import type { Localized } from '../shared/types'
 import type { PendingChallengeGoal } from './challengeGoals'
 import { readChallengeScore, scoreMetrics, type ChallengeScore, type ChallengeScoreMetric } from './challengeScore'
 
-const turnActions = ['move', 'pick', 'wait', 'step', 'submit'] as const
+const turnActions = ['move', 'pick', 'wait', 'step', 'submit', 'shoot', 'guard'] as const
 export const goalReplayTurnLimit = 64
 export const goalReplayCaseLimit = 64
 

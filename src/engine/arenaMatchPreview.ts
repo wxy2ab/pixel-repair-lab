@@ -48,7 +48,7 @@ export function previewArenaMatch(request: ArenaMatchPreviewRequest, includeBoar
     scores: snapshot.actors.map(({ id, score }) => ({ id, score })),
     ...(mode === 'timed' ? { remainingMs: progress.remainingMs } : {}),
     ...(savedAt === undefined ? {} : { savedAt }),
-    ...(includeBoard ? { board: { tiles: snapshot.tiles ?? level.tiles, actors: snapshot.actors, items: snapshot.items } } : {}),
+    ...(includeBoard ? { board: { tiles: snapshot.tiles ?? level.tiles, actors: snapshot.actors.filter(actor => actor.hp !== 0), items: snapshot.items } } : {}),
   }
 }
 

@@ -179,7 +179,7 @@ export function VisualProgramGuide({ execution, visual, locale, onReady }: {
             showFunctions={phase === 'reveal' || structure} />}
         <div className="visual-program-response" role="status" data-testid="visual-program-feedback">
           {phase === 'order' && trial ? trial.passed
-            ? <p className="win-message">{t('顺序正确。屏幕显示', 'The order works. The screen shows')} <strong>{trial.result.output[0]}</strong>{t('。', '.')}</p>
+            ? <p className="win-message" data-task-success="true" data-task-pop="true">{t('顺序正确。屏幕显示', 'The order works. The screen shows')} <strong>{trial.result.output[0]}</strong>{t('。', '.')}</p>
             : <p className="error-message">{trial.blocked && trial.result.issue?.code === 'unknownName'
               ? t(`「${trial.blocked.label.zh}」还在等需要的数字。把能给它这个数字的图放到前面。`, `“${trial.blocked.label.en}” needs a number that is still missing. Move the picture that provides it earlier.`)
               : t('沿箭头看看哪一步能先提供需要的数字。', 'Follow the arrows and find the first action that can provide the number.')}</p>

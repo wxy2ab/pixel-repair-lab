@@ -10,6 +10,8 @@ import type { Locale, Position, RunIssue } from '../shared/types'
 import { ArenaBoard, ArenaStateReference, ArenaTurnEvents, arenaResultText } from './ArenaPanels'
 import { arenaPlayerActivity } from './arenaActivities'
 import { ArenaObservationBoard } from './ArenaObservationBoard'
+import { ArenaConsolePanel, ArenaConsoleToggle, type ArenaConsoleControl } from './ArenaConsole'
+import { ArenaMapOutcome, ArenaMatchKeys } from './ArenaMapShortcuts'
 import MapScenarioPicker from './MapScenarioPicker'
 import { runIssueText, tr } from './text'
 import { CourseHelperPicker } from './CourseHelperPicker'
@@ -28,6 +30,7 @@ import { HintSteps } from './HintSteps'
 import './realtimeArena.css'
 
 type Props = {
+  consoleControl: ArenaConsoleControl
   level: ArenaLevel
   locale: Locale
   onComplete: () => void
@@ -49,6 +52,32 @@ const commands = [
   { action: 'pick', icon: '◆', zh: '拾取', en: 'Pick' },
   { action: 'wait', icon: '◷', zh: '等待', en: 'Wait' },
 ] as const
+
+const pulseDirections = [
+  { dir: 'left', icon: '←', zh: '左', en: 'left' }, { dir: 'up', icon: '↑', zh: '上', en: 'up' },
+  { dir: 'down', icon: '↓', zh: '下', en: 'down' }, { dir: 'right', icon: '→', zh: '右', en: 'right' },
+] as const
+
+function CombatPad({ locale, queued, choose }: { locale: Locale; queued?: ArenaChoice; choose: (action: ArenaChoice) => void }) {
+  const t = (zh: string, en: string) => tr(locale, zh, en)
+  function button(action: ArenaChoice, label: string, face: string) {
+    return <button type="button" key={action} className="subtle-button" aria-label={label} title={label}
+      data-arena-action={action} aria-pressed={queued === action} onClick={() => choose(action)}>{face}</button>
+  }
+  return <div className="arena-combat-pad" role="group" aria-label={t('下一回合动作', 'Action for the next turn')}>
+    <div className="arena-combat-axes">{(['move', 'shoot'] as const).map(kind =>
+      <div key={kind} data-action-group={kind}><span>{kind === 'shoot' ? t('发射', 'Fire') : t('移动', 'Move')}</span>
+        {pulseDirections.map(({ dir, icon, zh, en }) => kind === 'shoot'
+          ? button(`shoot-${dir}`, t('向' + zh + '发射', 'Fire ' + en), icon)
+          : button(dir, t('向' + zh, 'Move ' + en), icon))}
+      </div>)}</div>
+    <div className="arena-combat-utility">
+      {button('guard', t('防守', 'Guard'), t('防守', 'Guard'))}
+      {button('pick', t('拾取', 'Pick'), t('拾取', 'Pick'))}
+      {button('wait', t('等待', 'Wait'), t('等待', 'Wait'))}
+    </div>
+  </div>
+}
 
 type Phase = 'preparing' | 'ready' | 'paused' | 'starting' | 'playing' | 'done' | 'failed'
 type Clock = { deadline: number } | { remainingMs: number }
@@ -115,7 +144,7 @@ export function RealtimeArena(props: Props) {
   return <RealtimeMatch key={attempt} {...props} initialCheckpoint={attempt === 0 ? props.initialCheckpoint : undefined} reset={reset} />
 }
 
-function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course, code, setCode, challenge, initialCheckpoint, onCheckpointChange, reset }: Props & { reset: () => void }) {
+function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course, code, setCode, challenge, initialCheckpoint, onCheckpointChange, reset, consoleControl }: Props & { reset: () => void }) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const [phase, setPhase] = useState<Phase>('preparing')
   const [mapIndex, setMapIndex] = useState(0)
@@ -144,6 +173,9 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
   const writeCheckpoint = useRef(onCheckpointChange)
   const saved = useRef<{ progress: RealtimeArenaProgress; clock: Clock } | undefined>(undefined)
   const snapshot = frame?.state ?? initial
+  const queueAction = useCallback((action: ArenaChoice) => {
+    worker.current?.postMessage({ type: 'action', action, turn: snapshot.turn + 1 } satisfies RealtimeArenaRequest)
+  }, [snapshot.turn])
   const active = phase === 'ready' || phase === 'paused' || phase === 'playing'
   const dynamic = Boolean(level.shifts?.length)
   const shownLevel = mapScenarioAt(level, mapIndex)
@@ -349,10 +381,13 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
     failed: t('赛场连接中断。重新准备再试。', 'The arena stopped responding. Set up a new round to retry.'),
   }[phase]
 
-  return <div className="lesson-layout">
+  const showPad = Boolean(level.combat && phase === 'playing' && !preview && !observing)
+  return <>
+    <ArenaMatchKeys playing={phase === 'playing' && !preview && !observing} combat={Boolean(level.combat)} onChoose={queueAction} />
+    <ArenaMapOutcome won={phase === 'done' && result?.won} text={!observing && !preview && (phase === 'failed' || phase === 'done') ? status : undefined} />
     <div className="play-column">
       {observing ? <ArenaObservationBoard level={level} locale={locale} initialMap={mapIndex} onExit={() => setObserving(false)} /> : <>
-      <ArenaBoard level={shownLevel} locale={locale} snapshot={preview ? initialArenaSnapshot(shownLevel) : snapshot}
+      <ArenaBoard level={shownLevel} locale={locale} snapshot={preview ? initialArenaSnapshot(shownLevel) : snapshot} frame={preview ? undefined : frame}
         activity={!preview ? arenaPlayerActivity(activityFrame) : undefined}
         trail={trail.visible && !preview ? playerPositions : undefined}
         latestShift={preview ? undefined : latestShift} finished={!preview && (phase === 'done' || phase === 'failed')}
@@ -361,11 +396,11 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
           <p role="status" className={result?.won ? 'win-message' : result || phase === 'failed' ? 'error-message' : undefined}>
             {status}
           </p>
-          {clock && <TurnTimer clock={clock} locale={locale} />}
+          {clock && !showPad && <TurnTimer clock={clock} locale={locale} />}
           {frame && policyStep && policyCursor.count > 0 && <PolicyPlayback step={policyStep} frame={frame} cursor={policyCursor} locale={locale} />}
-          {phase === 'playing' && <div className="arena-manual-actions" role="group" aria-label={t('下一回合动作', 'Action for the next turn')}>
+          {phase === 'playing' && !level.combat && <div className="arena-manual-actions" role="group" aria-label={t('下一回合动作', 'Action for the next turn')}>
             {commands.map(command => <button key={command.action} type="button" className="subtle-button" aria-pressed={queued === command.action}
-              onClick={() => send({ type: 'action', action: command.action, turn: snapshot.turn + 1 })}>
+              onClick={() => queueAction(command.action)}>
               <b aria-hidden="true">{command.icon}</b>{t(command.zh, command.en)}
             </button>)}
           </div>}
@@ -375,7 +410,7 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
       {!preview && frame && <ArenaTurnEvents frame={frame} level={level} locale={locale} />}
       </>}
     </div>
-    <CommandDesk locale={locale}>
+    <ArenaConsolePanel control={consoleControl} locale={locale}><CommandDesk locale={locale}>
       <div className="play-column">
         <section className="panel editor-panel timed-policy-panel">
           <div className="panel-heading"><h2><span className="bracket-icon" aria-hidden="true">{'{ }'}</span>{t('实时 Python 策略', 'Live Python policy')}</h2></div>
@@ -390,9 +425,10 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
                 'One action per turn. A button press overrides the policy. Sprout waits if neither supplies an action.')
               : t('每回合把最新的赛场交给策略。返回一个动作。没有策略或接管指令时，芽芽会原地等待。',
                 'Your policy gets the latest arena each turn. Return one action. Sprout waits whenever there is no policy or button press.')}</p>
-            <div className="api-list">{commands.map(({ action }) => <code key={action}>{JSON.stringify(action)}</code>)}</div>
+            <div className="api-list">{[...commands.map(({ action }) => action), ...(level.combat ? ['guard', ...pulseDirections.map(({ dir }) => 'shoot-' + dir)] : [])]
+              .map(action => <code key={action}>{JSON.stringify(action)}</code>)}</div>
             <CourseHelperPicker names={level.helpers} course={course} personal={personal} code={code} locale={locale} onChange={setCode} />
-            {dynamic && <ArenaStateReference locale={locale} timed />}
+            {(dynamic || level.combat) && <ArenaStateReference locale={locale} timed dynamic={dynamic} combat={Boolean(level.combat)} />}
             {(!dynamic || Object.keys(personal).some(name => !level.helpers?.includes(name))) && <details className="timed-policy-note">
               <summary>{dynamic ? t('我的算法', 'My algorithms') : t('查看赛场数据和算法', 'Arena data and algorithms')}</summary>
               {!dynamic && <p>{t('state 包含棋盘 tiles、自己的坐标 player、对手 opponents、零件 items、回合 turn，以及出口 exit。坐标顺序是 x、y。',
@@ -413,8 +449,11 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
           <summary>{t('任务提示', 'Mission hints')}</summary><HintSteps hints={level.hints} locale={locale} />
         </details>}
       </div>
-    </CommandDesk>
-    <PlayToolbar locale={locale} trail={trail}>
+    </CommandDesk></ArenaConsolePanel>
+    <PlayToolbar locale={locale} trail={trail} quickActions={showPad && <>
+      {clock && <TurnTimer clock={clock} locale={locale} />}
+      <CombatPad locale={locale} queued={queued} choose={queueAction} />
+    </>}>
       {observing ? <button type="button" className="primary-button" onClick={() => setObserving(false)}>{t('返回对局', 'Return to match')}</button> : <>
         {!preview && (canStart || phase === 'preparing' || phase === 'starting') && <button type="button" className="primary-button" disabled={!canStart} onClick={start}>
           {resume ? t('继续对局', 'Resume match') : t('开始', 'Start')}
@@ -432,6 +471,7 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
         {!preview && canReset && <button type="button" className="subtle-button" onClick={resetMatch}>{t('重新准备', 'Reset match')}</button>}
         {observeButton}
       </>}
+      {consoleControl.mapMode && <ArenaConsoleToggle control={consoleControl} locale={locale} />}
     </PlayToolbar>
-  </div>
+  </>
 }

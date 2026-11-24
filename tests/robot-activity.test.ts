@@ -63,7 +63,7 @@ test('every scene command changes the rig and control directions remain visible 
     // Covers the complete command union, including movement which uses the walking rig.
     const commands: Record<StationAction, true> = { scan: true, read_map: true, move: true, pick: true,
       say: true, wait: true, load: true, store: true, step: true, submit: true, if: true, for: true,
-      while: true, call: true, return: true, break: true, continue: true }
+      while: true, call: true, return: true, break: true, continue: true, shoot: true, guard: true }
     for (const action of Object.keys(commands) as StationAction[]) {
       if (action === 'move') models.pose(robot, 'walk', .12)
       else {

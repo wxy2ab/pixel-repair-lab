@@ -71,6 +71,8 @@ export function arenaFailureReview(result: ArenaResult) {
   const gaps: Localized[] = []
   if (issue) gaps.push(issueWithoutLine(issue))
 
+  if (result.reason === 'disabled') gaps.push({ zh: '芽芽的能量耗尽了。', en: 'Sprout ran out of energy.' })
+  if (result.reason === 'timeout') gaps.push({ zh: '对抗的回合已经用完。', en: 'The match reached its turn limit.' })
   if (failure.goal === 'score') {
     const { score, leaderScore } = failure
     gaps.push({ zh: `你的得分是 ${score}，得分最高的对手有 ${leaderScore} 分。`, en: `You scored ${score}. The leading rival scored ${leaderScore}.` })
@@ -81,14 +83,15 @@ export function arenaFailureReview(result: ArenaResult) {
         en: `You needed ${needed} more ${needed === 1 ? 'point' : 'points'} to beat the top rival score in this match.`,
       })
     }
+  } else if (failure.goal === 'eliminate') {
+    gaps.push({ zh: `还有 ${failure.remaining} 台对手机器人在场上。`, en: `Rivals still active: ${failure.remaining}.` })
   } else {
     if (result.reason === 'caught') gaps.push({ zh: '这一回合被对手拦住了。', en: 'A rival intercepted you this turn.' })
-    if (result.reason === 'timeout') gaps.push({ zh: '对抗的回合已经用完。', en: 'The match reached its turn limit.' })
     if (failure.remaining > 0) gaps.push({
-      zh: `还差 ${failure.remaining} 件撤离所需的物品。`,
+      zh: failure.goal === 'escape' ? `还差 ${failure.remaining} 件撤离所需的物品。` : `还差 ${failure.remaining} 件目标物资。`,
       en: `Required items still missing: ${failure.remaining}.`,
     })
-    if (!failure.atExit) gaps.push({ zh: '还没有抵达出口。', en: 'The exit still needs to be reached.' })
+    if (failure.goal === 'escape' && !failure.atExit) gaps.push({ zh: '还没有抵达出口。', en: 'The exit still needs to be reached.' })
   }
 
   const topics = issue?.code === 'missingKey' || issue?.code === 'type'

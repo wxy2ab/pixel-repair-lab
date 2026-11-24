@@ -5,6 +5,7 @@ import type { Locale } from '../shared/types'
 import { tr } from './text'
 import { StructureRack } from './BatteryMemory'
 import { StructureTrace } from './StructureTrace'
+import { TaskProgress } from './TaskProgress'
 import './charge-prediction.css'
 import './for-prediction.css'
 import './structures-prediction.css'
@@ -121,11 +122,12 @@ export function StructuresPrediction({ execution, locale, onComplete }: {
             <div><dt>{t('实际取到的电池', 'Battery picked')}</dt><dd data-testid="structures-actual-battery">{verification.selected.name}</dd></div>
           </dl>
           {usedCode && <p className="structures-run-code"><code>{usedCode}</code></p>}
-          <p>{matched ? t('结构和电池都选对了！', 'You chose the right structure and battery!')
+          <p>{matched ? t(`第 ${active + 1} 张取件单完成！结构和电池都选对了。`, `Request ${active + 1} complete! You chose the right structure and battery.`)
             : !rightStructure ? t('这是你选的结构取到的电池。再读一遍取件单，看看它要求按什么规则取。',
               'That battery came from the structure you chose. Read the request again and look for its picking rule.')
               : t('结构选对了。对照取件规则和电池排列，再猜一次。', 'The structure fits. Check the picking rule and battery order, then try another prediction.')}</p>
         </div>
+        {matched && <TaskProgress label={t('已完成取件单', 'Requests complete')} done={passed.size} total={practice.tasks.length} />}
         {!matched ? <button type="button" className="subtle-button" onClick={() => {
           clearPrediction()
           firstChoice.current?.focus()

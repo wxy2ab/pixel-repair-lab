@@ -41,7 +41,7 @@ export function SavedArenaBoard({ level, board, compareBoard, locale, testId, on
   const changeLabels = {
     player: t('芽芽位置', 'Sprout position'),
     rivals: t('对手位置', 'Rival positions'),
-    battery: t('剩余电池', 'Remaining batteries'),
+    battery: level.combat ? t('剩余道具', 'Remaining items') : t('剩余电池', 'Remaining batteries'),
     gate: t('通道开关', 'Gate states'),
   }
   const listPositions = (positions: Position[]) => positions.map(coordinates).join(t('、', ', '))
@@ -57,9 +57,8 @@ export function SavedArenaBoard({ level, board, compareBoard, locale, testId, on
   const description = [
     t('保存时的棋盘', 'Saved board'),
     ...actors.map(actor => t(`${actor.name}位于 ${coordinates(actor)}`, `${actor.name} at ${coordinates(actor)}`)),
-    items.size
-      ? t(`电池位于 ${listPositions(board.items)}`, `Batteries at ${listPositions(board.items)}`)
-      : t('没有剩余电池', 'No batteries left'),
+    items.size ? t(level.combat ? '道具位于 ' : '电池位于 ', level.combat ? 'Items at ' : 'Batteries at ') + listPositions(board.items)
+      : level.combat ? t('没有剩余道具', 'No items left') : t('没有剩余电池', 'No batteries left'),
     ...(openGates.length ? [t(`开启的门位于 ${listPositions(openGates)}`, `Open gates at ${listPositions(openGates)}`)] : []),
     ...(closedGates.length ? [t(`关闭的门位于 ${listPositions(closedGates)}`, `Closed gates at ${listPositions(closedGates)}`)] : []),
     ...(changes && !changeDetails.length ? [noChanges] : changeDetails),
@@ -105,7 +104,7 @@ export function SavedArenaBoard({ level, board, compareBoard, locale, testId, on
     <figcaption className="saved-arena-board-legend">
       <span><i className="saved-arena-board-actor saved-arena-board-actor--player" aria-hidden="true" />{sprout}</span>
       <span><i className="saved-arena-board-actor" aria-hidden="true" />{t('对手', 'Rivals')}</span>
-      <span><i className="saved-arena-board-battery" aria-hidden="true" />{t('电池', 'Battery')}</span>
+      <span><i className="saved-arena-board-battery" aria-hidden="true" />{level.combat ? t('道具', 'Item') : t('电池', 'Battery')}</span>
       {gates.size > 0 && <>
         <span><i className="saved-arena-board-gate saved-arena-board-gate--open" aria-hidden="true" />{t('门已开', 'Gate open')}</span>
         <span><i className="saved-arena-board-gate saved-arena-board-gate--closed" aria-hidden="true" />{t('门已关', 'Gate closed')}</span>

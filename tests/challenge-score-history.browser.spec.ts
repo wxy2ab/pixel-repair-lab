@@ -23,14 +23,15 @@ test('real challenge wins compare with the previous clearance and persistent per
   const next = catalog.levels.find(level => level.id === nextId)
   if (salvage?.kind !== 'grid' || !next || !salvage.turnLimit) throw new Error('Missing challenge fixtures')
 
-  // Give the real map enough room for one out-and-back detour, so both runs can win.
+  // Leave room for a detour and keep the two challenge fixtures stable as the catalog grows.
   const fast = cardsToPython(salvage.cards, salvage.solutionCards)
   const slow = 'move("right")\nmove("left")\n' + fast
   const fastTurns = salvage.turnLimit
   const slowTurns = fastTurns + 2
   await page.route('**/api/levels', route => route.fulfill({ json: {
     ...catalog,
-    levels: catalog.levels.map(level => level.id === salvageId ? { ...salvage, turnLimit: slowTurns } : level),
+    levels: catalog.levels.filter(level => level.unit?.id !== 'challenge-zone' || level.id === salvageId || level.id === nextId)
+      .map(level => level.id === salvageId ? { ...salvage, turnLimit: slowTurns } : level),
   } }))
 
   const completedLessons = catalog.levels.filter(level =>

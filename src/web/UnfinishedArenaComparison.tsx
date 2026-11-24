@@ -104,7 +104,7 @@ function describeChange(change: SavedArenaChange, level: ArenaLevel, locale: Loc
     if (change.kind === 'battery') {
       const itemIndex = level.items.findIndex(item => item.id === entry.id)
       const batteryName = itemIndex < 0 ? entry.id : itemIndex + 1
-      label = t(`电池 ${batteryName}`, `Battery ${batteryName}`)
+      label = level.combat ? t(`道具 ${entry.id}`, `Item ${entry.id}`) : t(`电池 ${batteryName}`, `Battery ${batteryName}`)
     }
     return {
       id: entry.id,
@@ -134,7 +134,10 @@ function MatchChangeList({
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const list = useRef<HTMLDivElement>(null)
   const currentRow = useRef<HTMLButtonElement>(null)
-  const groups = changeGroups.map(group => ({ ...group, items: changesInCategory(changes, group.id) }))
+  const groups = changeGroups.map(group => ({
+    ...group, ...(group.id === 'batteries' && first.level.combat && { zh: '道具', en: 'Items' }),
+    items: changesInCategory(changes, group.id),
+  }))
   const current = changes[currentIndex]
   const previous = changes[currentIndex - 1]
   const next = changes[currentIndex + 1]
@@ -165,7 +168,7 @@ function MatchChangeList({
         <span>{t('变化分类', 'Change category')}</span>
         <select value={category} onChange={event => onCategoryChange(event.currentTarget.value as ChangeCategory, event.currentTarget)}>
           <option value="all">{t('全部变化', 'All changes')}</option>
-          {changeGroups.map(group => <option key={group.id} value={group.id}>{t(group.zh, group.en)}</option>)}
+          {groups.map(group => <option key={group.id} value={group.id}>{t(group.zh, group.en)}</option>)}
         </select>
       </label>
       <div className="arena-match-change-navigation">

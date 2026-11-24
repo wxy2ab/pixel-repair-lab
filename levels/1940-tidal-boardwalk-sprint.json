@@ -1,0 +1,183 @@
+{
+  "version": 1,
+  "id": "challenge-tidal-boardwalk-sprint",
+  "order": 1940,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": { "zh": "挑战场", "en": "Challenge Arena" }
+  },
+  "stage": "challenge",
+  "difficulty": "intermediate",
+  "title": { "zh": "浪尖栈桥冲刺", "en": "Tidal Boardwalk Sprint" },
+  "concept": { "zh": "冲线 · 涨落栈桥 · 护盾叠层", "en": "Race to the exit · Tidal bridges · Shields" },
+  "brief": { "zh": "冲到东岸的终点浮标。第 8 回合结束时中桥落下并关闭北桥。第 17 回合结束时北桥复开，南桥收起。四台浪花机器人守着渡口，抵达终点就能赢。每一层护盾能吸收一点命中，最多储存三层。", "en": "Reach the finish buoy on the east bank. After turn 8 the center bridge opens and the north bridge closes. After turn 17 the north bridge reopens and the south bridge folds away. Four surf bots guard the crossing. Each shield layer absorbs one pulse point and you can carry three layers." },
+  "prerequisites": [
+    {
+      "unit": "python-intermediate",
+      "topic": "branches"
+    },
+    {
+      "unit": "python-intermediate",
+      "topic": "for-loops"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "##################",
+    "#.......##.......#",
+    "#..##.......##...#",
+    "#.......##..##...#",
+    "#.....#.##.......#",
+    "#.......##.......#",
+    "#..##...##.#.....#",
+    "#..##...##...##..#",
+    "#............##..#",
+    "#.......##.......#",
+    "##################"
+  ],
+  "start": { "x": 2, "y": 8 },
+  "items": [
+    { "id": "power-1", "x": 4, "y": 8 },
+    { "id": "power-2", "x": 6, "y": 7 },
+    { "id": "power-3", "x": 11, "y": 8 },
+    { "id": "shield-1", "x": 2, "y": 7 },
+    { "id": "shield-2", "x": 2, "y": 6 },
+    { "id": "shield-3", "x": 5, "y": 8 },
+    { "id": "shield-4", "x": 11, "y": 3 }
+  ],
+  "opponents": [
+    {
+      "id": "foam",
+      "title": { "zh": "白浪", "en": "Foam" },
+      "start": { "x": 11, "y": 2 },
+      "policy": {
+        "kind": "duelist",
+        "style": "sentry"
+      }
+    },
+    {
+      "id": "tide",
+      "title": { "zh": "青浪", "en": "Tide" },
+      "start": { "x": 11, "y": 8 },
+      "policy": {
+        "kind": "duelist",
+        "style": "sentry"
+      }
+    },
+    {
+      "id": "buoy",
+      "title": { "zh": "泡泡", "en": "Bubble" },
+      "start": { "x": 16, "y": 5 },
+      "policy": {
+        "kind": "duelist",
+        "style": "sentry"
+      }
+    },
+    {
+      "id": "skater",
+      "title": { "zh": "滑浪板", "en": "Skater" },
+      "start": { "x": 14, "y": 4 },
+      "policy": {
+        "kind": "duelist",
+        "style": "hunter"
+      }
+    }
+  ],
+  "objective": {
+    "kind": "escape",
+    "exit": { "x": 16, "y": 2 },
+    "itemIds": []
+  },
+  "maxTurns": 33,
+  "combat": {
+    "health": 5,
+    "range": 5,
+    "buffs": [
+      { "id": "power-1", "kind": "power" },
+      { "id": "power-2", "kind": "power" },
+      { "id": "power-3", "kind": "power" },
+      { "id": "shield-1", "kind": "shield" },
+      { "id": "shield-2", "kind": "shield" },
+      { "id": "shield-3", "kind": "shield" },
+      { "id": "shield-4", "kind": "shield" }
+    ]
+  },
+  "shifts": [
+    {
+      "turn": 8,
+      "open": [
+        { "x": 8, "y": 5 },
+        { "x": 9, "y": 5 }
+      ],
+      "close": [
+        { "x": 8, "y": 2 },
+        { "x": 9, "y": 2 }
+      ]
+    },
+    {
+      "turn": 17,
+      "open": [
+        { "x": 8, "y": 2 },
+        { "x": 9, "y": 2 }
+      ],
+      "close": [
+        { "x": 8, "y": 8 },
+        { "x": 9, "y": 8 }
+      ]
+    }
+  ],
+  "starterCode": "state = scan()\n",
+  "solutionCode": "def walk(direction, squares):\n    for step in range(squares):\n        move(direction)\n\nmove(\"up\")\npick()\n\nmove(\"up\")\npick()\n\nmove(\"up\")\nwalk(\"right\", 4)\nwalk(\"down\", 2)\npick()\n\nwalk(\"up\", 2)\nfor beat in range(3):\n    shoot(\"right\")\nwalk(\"right\", 4)\nmove(\"up\")\nwalk(\"right\", 4)\nwalk(\"up\", 2)\nwalk(\"right\", 2)\n",
+  "snippets": [
+    {
+      "label": { "zh": "向上走", "en": "Move up" },
+      "code": "move(\"up\")"
+    },
+    {
+      "label": { "zh": "向右走", "en": "Move right" },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": { "zh": "向下走", "en": "Move down" },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": { "zh": "向左走", "en": "Move left" },
+      "code": "move(\"left\")"
+    },
+    {
+      "label": { "zh": "向上发脉冲", "en": "Pulse up" },
+      "code": "shoot(\"up\")"
+    },
+    {
+      "label": { "zh": "向右发脉冲", "en": "Pulse right" },
+      "code": "shoot(\"right\")"
+    },
+    {
+      "label": { "zh": "向下发脉冲", "en": "Pulse down" },
+      "code": "shoot(\"down\")"
+    },
+    {
+      "label": { "zh": "向左发脉冲", "en": "Pulse left" },
+      "code": "shoot(\"left\")"
+    },
+    {
+      "label": { "zh": "开启防御", "en": "Guard" },
+      "code": "guard()"
+    },
+    {
+      "label": { "zh": "拾取脚下道具", "en": "Pick up here" },
+      "code": "pick()"
+    },
+    {
+      "label": { "zh": "查看赛场", "en": "Scan arena" },
+      "code": "state = scan()"
+    },
+    {
+      "label": { "zh": "原地等一拍", "en": "Wait a beat" },
+      "code": "wait()"
+    }
+  ]
+}

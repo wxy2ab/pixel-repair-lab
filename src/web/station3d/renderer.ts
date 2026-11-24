@@ -6,11 +6,13 @@ import { emittingRay, rayArms } from '../gridDeviceDisplay'
 import { createStationModels } from './models'
 import { createRobotSignals } from './robotActivity'
 import { createWorkshopSet } from './workshop'
+import { visibleMapFloor } from './mapFootprint'
 import type { StationCamera, StationFrame } from './types'
 
 type RendererCallbacks = {
   onInspect: (cell: Position | undefined) => void
   onFailure: () => void
+  onMapFootprint?: (points: Position[]) => void
 }
 type Block = {
   x: number; y: number; z: number
@@ -168,6 +170,16 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
   let yaw = defaultYaw
   let pitch = defaultPitch
   let magnification = 1
+  let mapNavigation = false
+  // A jump from follow mode keeps its close lens while detaching the camera from Sprout.
+  let pinnedLens: StationCamera | undefined
+  const mapFrustum = new THREE.Frustum()
+  const projectionView = new THREE.Matrix4()
+  const lastProjectionView = new THREE.Matrix4()
+  let lastFootprint: Position[] | undefined
+  let inlineCamera: { mode: StationCamera; yaw: number; pitch: number; magnification: number } | undefined
+  let offsetX = 0, offsetZ = 0
+  let focusX = 0, focusZ = 0, unitsPerPixel = 1
   let viewportWidth = 1
   let viewportHeight = 1
   let drag: { id: number; x: number; y: number; yaw: number; pitch: number; moved: boolean } | undefined
@@ -188,6 +200,20 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
   outline(selection, selectionMaterial, 0.91)
   selection.visible = false
 
+  function reportFootprint(columns: number, rows: number) {
+    if (!mapNavigation || !callbacks.onMapFootprint) return
+    projectionView.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse)
+    const previous = lastFootprint
+    if (previous && projectionView.equals(lastProjectionView)) return
+    lastProjectionView.copy(projectionView)
+    mapFrustum.setFromProjectionMatrix(projectionView)
+    const points = visibleMapFloor(mapFrustum, columns, rows)
+    if (previous && points.length === previous.length && points.every((p, i) =>
+      Math.abs(p.x - previous[i].x) <= .0001 && Math.abs(p.y - previous[i].y) <= .0001)) return
+    lastFootprint = points
+    callbacks.onMapFootprint(points)
+  }
+
   function cameraFit() {
     const columns = frame.tiles[0].length
     const rows = frame.tiles.length
@@ -198,6 +224,8 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
       const player = entities.get('bot:player')?.object.position
       cx = player?.x ?? frame.playerPosition.x
       cz = player?.z ?? frame.playerPosition.y
+    }
+    if ((pinnedLens ?? cameraMode) === 'follow') {
       height = 0.57
       distance = 4.85 / (Math.min(camera.aspect, 1) * magnification)
     } else {
@@ -215,6 +243,20 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
       }
       distance = fit * 1.025 / magnification
     }
+    if (pinnedLens) {
+      // Aim at the selected floor tile without changing the camera's height above the floor.
+      distance += height / Math.sin(pitch)
+      height = 0
+    }
+    focusX = cx
+    focusZ = cz
+    if (mapNavigation) {
+      cx = THREE.MathUtils.clamp(cx + offsetX, 0, columns - 1)
+      cz = THREE.MathUtils.clamp(cz + offsetZ, 0, rows - 1)
+      unitsPerPixel = 2 * distance * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) / viewportHeight
+      canvas.dataset.cameraCenter = cx.toFixed(2) + ',' + cz.toFixed(2)
+      canvas.dataset.cameraZoom = String(magnification)
+    }
     camera.position.set(cx + distance * Math.sin(yaw) * Math.cos(pitch),
       height + distance * Math.sin(pitch), cz + distance * Math.cos(yaw) * Math.cos(pitch))
     camera.lookAt(cx, height, cz)
@@ -222,14 +264,39 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     camera.updateProjectionMatrix()
     camera.updateMatrixWorld()
     environment?.updateView(camera)
+    reportFootprint(columns, rows)
   }
 
   function resetCamera() {
+    pinnedLens = undefined
     yaw = cameraMode === 'follow' ? 0.40 : defaultYaw
     pitch = cameraMode === 'follow' ? 0.55 : defaultPitch
     magnification = 1
+    offsetX = offsetZ = 0
     cameraFit()
     redraw()
+  }
+
+  function pan(dx: number, dy: number) {
+    if (!mapNavigation) return
+    const horizontal = dx * unitsPerPixel
+    const vertical = dy * unitsPerPixel / Math.sin(pitch)
+    offsetX = THREE.MathUtils.clamp(offsetX + horizontal * Math.cos(yaw) + vertical * Math.sin(yaw), -focusX, frame.tiles[0].length - 1 - focusX)
+    offsetZ = THREE.MathUtils.clamp(offsetZ - horizontal * Math.sin(yaw) + vertical * Math.cos(yaw), -focusZ, frame.tiles.length - 1 - focusZ)
+    cameraFit()
+    redraw()
+  }
+
+  function centerMapOn(cell: Position): StationCamera {
+    if (!mapNavigation) return cameraMode
+    const columns = frame.tiles[0].length, rows = frame.tiles.length
+    pinnedLens ??= cameraMode
+    cameraMode = 'overview'
+    offsetX = THREE.MathUtils.clamp(cell.x, 0, columns - 1) - (columns - 1) / 2
+    offsetZ = THREE.MathUtils.clamp(cell.y, 0, rows - 1) - (rows - 1) / 2
+    cameraFit()
+    redraw()
+    return cameraMode
   }
 
   function releaseTerrain() {
@@ -380,7 +447,7 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
 
   function updateHazards() {
     const mirrors = frame.devices?.filter(device => device.kind === 'mirror') ?? []
-    const key = JSON.stringify([frame.hazards ?? [], mirrors])
+    const key = JSON.stringify([frame.hazards ?? [], mirrors, frame.arenaShots])
     if (key === hazardKey) return
     hazardKey = key
     if (hazardMesh) {
@@ -389,6 +456,13 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
       hazardMesh = undefined
     }
     const blocks: Block[] = []
+    for (const shot of frame.arenaShots ?? []) {
+      const horizontal = shot.direction === 'left' || shot.direction === 'right'
+      for (const cell of shot.path ?? []) {
+        blocks.push({ x: cell.x, y: .39, z: cell.y, width: horizontal ? .90 : .095, height: .08,
+          depth: horizontal ? .095 : .90, color: shot.actorId === 'player' ? 0x54ffe2 : 0xff78a6, cell })
+      }
+    }
     for (const device of frame.devices ?? []) {
       const emitter = emittingRay(device, frame.hazards)
       if (!emitter) continue
@@ -476,6 +550,7 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     const location = next.location ?? 'workshop'
     const setKey = location + ':' + columns + 'x' + rows
     if (setKey !== environmentKey) {
+      lastFootprint = undefined
       if (environment) { scene.remove(environment.group); environment.dispose() }
       environment = createWorkshopSet({ kind: 'field', variant: location, columns, rows })
       scene.add(environment.group)
@@ -553,7 +628,7 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
       entry.object.scale.setScalar(scale)
       entry.cell = cell
     }
-    const bots = [{ cell: next.playerPosition, key: 'bot:player', label: undefined, index: undefined, enemy: false },
+    const bots = [...(next.playerDown ? [] : [{ cell: next.playerPosition, key: 'bot:player', label: undefined, index: undefined, enemy: false }]),
       ...next.opponents.map((bot, i) => ({ cell: bot, key: 'bot:rival:' + (bot.id ?? i), label: bot.label, index: bot.index ?? i, enemy: true }))]
     const occupied = new Map<string, typeof bots>()
     for (const bot of bots) {
@@ -569,9 +644,20 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
         group.length > 1 ? Math.min(0.68, 1.45 / Math.sqrt(group.length)) : 1,
         bot.label ?? '', () => models.robot(bot.enemy, bot.index, bot.label))
     })
+    for (const shot of next.arenaShots ?? []) {
+      if (!shot.direction) continue
+      const bot = entities.get(shot.actorId === 'player' ? 'bot:player' : 'bot:rival:' + shot.actorId)
+      if (!bot) continue
+      const direction = gridOffsets[shot.direction]
+      bot.fromYaw = bot.toYaw = Math.atan2(direction.x, direction.y)
+    }
     for (const item of next.items) {
       const shared = occupied.has(positionKey(item))
-      place('item:' + item.id, item, shared ? -0.29 : 0, shared ? 0.27 : 0, shared ? 0.65 : 1, '', () => models.battery())
+      const chip = next.arenaBuffs?.find(buff => buff.id === item.id)
+      const target = next.arenaTargetIds?.includes(item.id) ?? false
+      place('item:' + item.id, item, shared ? -0.29 : 0, shared ? 0.27 : 0, shared ? 0.65 : 1,
+        chip?.kind ?? (next.arenaBuffs ? (target ? 'parcel' : 'token') : 'battery'),
+        () => chip ? models.chip(chip.kind) : next.arenaBuffs ? models.arenaLoot(target) : models.battery())
     }
     for (const device of next.devices ?? []) {
       const signature = JSON.stringify(device)
@@ -622,7 +708,13 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     }
     contacts.count = entities.size
     if (next.exit) {
-      if (!exit) { exit = models.exit(); actors.add(exit) }
+      const ferryDock = Boolean(next.ferryDock)
+      if (!exit || exit.userData.ferryDock !== ferryDock) {
+        if (exit) actors.remove(exit)
+        exit = models.exit(ferryDock)
+        exit.userData.ferryDock = ferryDock
+        actors.add(exit)
+      }
       exit.visible = true
       exit.position.set(next.exit.x, 0.013, next.exit.y)
       exit.userData.cell = next.exit
@@ -757,6 +849,12 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     const dx = event.clientX - drag.x, dy = event.clientY - drag.y
     if (!drag.moved && Math.hypot(dx, dy) < 5) return
     drag.moved = true
+    if (mapNavigation) {
+      drag.x = event.clientX
+      drag.y = event.clientY
+      pan(-dx, -dy)
+      return
+    }
     yaw = drag.yaw - dx * 0.009
     pitch = THREE.MathUtils.clamp(drag.pitch + dy * 0.007, 0.49, 1.38)
     cameraFit()
@@ -804,6 +902,8 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     delete canvas.dataset.robotAction
     delete canvas.dataset.robotPickup
     delete canvas.dataset.robotMotion
+    delete canvas.dataset.cameraZoom
+    delete canvas.dataset.cameraCenter
     models.dispose()
     contacts?.dispose()
     hazardMesh?.dispose()
@@ -837,7 +937,32 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
   return {
     update,
     inspectCell,
-    zoom(factor: number) { magnification = THREE.MathUtils.clamp(magnification * factor, 0.65, 2.5); cameraFit(); redraw() },
+    zoom(factor: number) { magnification = THREE.MathUtils.clamp(magnification * factor, 0.65, mapNavigation ? 5 : 2.5); cameraFit(); redraw() },
+    pan,
+    centerMapOn,
+    setMapNavigation(active: boolean) {
+      if (mapNavigation === active) return cameraMode
+      mapNavigation = active
+      lastFootprint = undefined
+      pinnedLens = undefined
+      offsetX = offsetZ = 0
+      if (active) {
+        inlineCamera = { mode: cameraMode, yaw, pitch, magnification }
+        cameraMode = 'overview'
+        resetCamera()
+      } else if (inlineCamera) {
+        cameraMode = inlineCamera.mode
+        yaw = inlineCamera.yaw
+        pitch = inlineCamera.pitch
+        magnification = inlineCamera.magnification
+        inlineCamera = undefined
+        delete canvas.dataset.cameraZoom
+        delete canvas.dataset.cameraCenter
+        cameraFit()
+        redraw()
+      }
+      return cameraMode
+    },
     rotate(radians: number) { yaw += radians; cameraFit(); redraw() },
     setCamera(mode: StationCamera) { cameraMode = mode; resetCamera() },
     resetCamera,

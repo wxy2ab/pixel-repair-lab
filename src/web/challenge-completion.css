@@ -1,18 +1,60 @@
-.challenge-completion {
+.panel.challenge-completion {
   scroll-margin-block-start: 12px;
   padding: clamp(11px, 2vw, 18px);
   margin-block-end: 16px;
   border-color: #4f8b76;
-  background: linear-gradient(115deg, #1d3c38, #1b2c41 65%);
+  background: linear-gradient(125deg, #192f34, #182537 70%);
 }
 .challenge-completion-heading {
   display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 5px 10px;
+  align-items: center;
+  gap: clamp(10px, 2vw, 18px);
+  position: relative;
+  overflow: hidden;
+  padding: clamp(10px, 1.25vw, 16px);
+  border: 1px solid #498771;
+  border-inline-start: 4px solid var(--win-accent);
+  border-radius: 10px;
+  background: linear-gradient(110deg, #275344, #193e3c 58%, #19323a);
+  --win-accent: #90f2cb;
 }
-.challenge-completion-heading h2 { color: #c6ffe4; font-size: 21px; }
-.challenge-completion-heading > span { color: #c6d9ed; font-size: 13px; }
+.challenge-completion-heading[data-record] {
+  --win-accent: #ffcf7c; border-color: #927b4b; border-inline-start-color: var(--win-accent);
+  background: linear-gradient(110deg, #4a442c, #303e39 58%, #1d323c);
+}
+.challenge-victory-mark {
+  position: relative; flex: 0 0 auto; display: grid; place-items: center;
+  width: clamp(53px, 6vw, 74px); aspect-ratio: 1; border-radius: 22%;
+  background: radial-gradient(ellipse at 45% 65%, #397361, #163d37 72%);
+  border: 1px solid #638e7b; box-shadow: inset 0 -3px 0 #112d2b;
+}
+.challenge-victory-mark .pixel-bot { width: 91%; max-width: none; }
+.challenge-victory-mark i {
+  position: absolute; z-index: 2; right: -3px; bottom: -2px; display: grid; place-items: center;
+  width: 1.35em; aspect-ratio: 1; border-radius: 50%; border: 2px solid #1a3733;
+  background: var(--win-accent); color: #12352c; font: 900 18px/1 system-ui, sans-serif;
+}
+.challenge-victory-title { min-width: 0; }
+.challenge-victory-title > div { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; }
+.challenge-victory-title > div > span:first-child { color: var(--win-accent); font-size: clamp(.94rem, 1.2vw, 1.06rem); font-weight: 750; }
+.challenge-victory-title .challenge-victory-mode { color: #c6d9ed; font-size: .82rem; }
+.challenge-completion-heading h2 {
+  color: #f2fff9; font-size: clamp(19px, 2.35vw, 27px); line-height: 1.24; margin: 4px 0 0; overflow-wrap: anywhere;
+}
+.challenge-victory-title p { margin: 4px 0 0; color: #cee8df; font-size: .92rem; line-height: 1.45; }
+@media (prefers-reduced-motion: no-preference) {
+  .challenge-completion-heading::after {
+    content: ''; pointer-events: none; position: absolute; inset: 0; opacity: 0;
+    background: linear-gradient(110deg, transparent 36%, #c8ffda19 48%, transparent 60%);
+    animation: challenge-glint .8s ease-out;
+  }
+  @keyframes challenge-glint { from { transform: translateX(-65%); opacity: 0; } 25% { opacity: 1; } to { transform: translateX(70%); opacity: 0; } }
+  .challenge-victory-mark .pixel-bot { animation: challenge-hop .62s ease-out both; }
+  .challenge-victory-mark i { animation: challenge-stamp .37s .23s ease-out backwards; }
+  .challenge-goal-result[data-achieved='true'] .challenge-goal-heading strong { animation: challenge-stamp .37s ease-out; }
+  @keyframes challenge-hop { 0%, 100% { transform: translateY(0); } 42% { transform: translateY(-13%) rotate(-5deg); } 76% { transform: scale(1.04,.96); } }
+  @keyframes challenge-stamp { from { opacity: 0; transform: scale(1.25) rotate(-10deg); } to { opacity: 1; transform: scale(1); } }
+}
 .challenge-new-best {
   padding: 2px 6px;
   border-radius: 4px;
@@ -63,6 +105,7 @@
 .challenge-goal-heading h3 { font-size: 15px; }
 .challenge-goal-heading strong { color: #ffd29c; font-size: 13px; }
 .challenge-goal-result[data-achieved='true'] .challenge-goal-heading strong { color: #b6f0d6; }
+.challenge-goal-result[data-achieved='true'] .challenge-goal-heading strong::before { content: '✓'; margin-inline-end: .4em; }
 .challenge-goal-result dl { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 6px 0; }
 .challenge-goal-result dl > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px 6px; }
 .challenge-goal-result dt { color: #cadaea; font-size: 13px; }

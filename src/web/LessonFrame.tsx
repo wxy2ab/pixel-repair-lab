@@ -27,7 +27,7 @@ function Phases({ flow, current, recap, locale, onJump }: {
       // A phase whose part of the page exists can be jumped to. Earlier phases stay in place above.
       const reachable = last ? recap : index <= current
       const body = <>
-        <span className="lesson-phases__mark" aria-hidden="true">{index + 1}</span>
+        <span className="lesson-phases__mark" aria-hidden="true">{state === 'done' ? '✓' : index + 1}</span>
         <span>{label}</span>
         <span className="sr-only">{state === 'done' ? t('（已完成）', ' (done)') : state === 'current' ? t('（进行中）', ' (current)')
           : state === 'open' ? t('（可查看）', ' (available)') : ''}</span>
@@ -57,7 +57,8 @@ function Recap({ level, locale }: { level: LectureLevel; locale: Locale }) {
             aria-pressed={selected === index} data-result={selected === index ? correct ? 'right' : 'wrong' : undefined}
             onClick={() => setSelected(index)}>{option[locale]}</button>)}
         </div>
-        {selected !== undefined && <p role="status" className={(correct ? 'win-message' : 'error-message') + ' prediction-feedback'}>
+        {selected !== undefined && <p role="status" data-task-success={correct || undefined} data-task-pop={correct || undefined}
+          className={(correct ? 'win-message' : 'error-message') + ' prediction-feedback'}>
           {correct ? t('答对了！', 'That’s right! ') + question.feedback[locale]
             : t('再想想上面的要点，换一个答案试试。', 'Look at the key points again and try another answer.')}
         </p>}

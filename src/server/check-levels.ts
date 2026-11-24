@@ -9,6 +9,9 @@ import { resolve } from 'node:path'
 import { verifyAiLevel } from '../ai/core'
 import { runAlgorithm } from '../engine/algorithms'
 import { runArena } from '../engine/arena'
+import { runFerryRace } from '../engine/ferryRace'
+import { runMirrorRace } from '../engine/mirrorRace'
+import { shortChallengeLinkIssues, shortCrossing } from '../shared/shortChallenges'
 import { runBatteryDispatchTrial } from '../engine/batteryDispatch'
 import { runBatteryPipelineTrial } from '../engine/batteryPipeline'
 import { runBatterySearch } from '../engine/programBatterySearch'
@@ -644,7 +647,18 @@ function verifyReference(level: Level, summary: Check, catalog: Level[]): Issue[
         ? [{ path: path + '/helpers/' + index, code: 'missing-helper', message: 'Expected one standalone reference exercise for ' + name + '.' }]
         : [])
       if (missing.length) return missing
-      if (level.kind === 'grid') return record(runProgram(level, cardsToPython(level.cards, level.solutionCards), undefined, course), '/solutionCards')
+      if (level.kind === 'grid') {
+        const source = cardsToPython(level.cards, level.solutionCards)
+        if (level.laserTrial?.kind === 'race') {
+          const { won } = runMirrorRace(level, level.laserTrial.solutionMirrors, source)
+          return record({ won, passedCases: Number(won), totalCases: 1 }, '/solutionCards')
+        }
+        if (level.ferry?.kind === 'race') {
+          const { won } = runFerryRace(level, level.ferry.solutionLayout, source)
+          return record({ won, passedCases: Number(won), totalCases: 1 }, '/solutionCards')
+        }
+        return record(runProgram(level, source, undefined, course), '/solutionCards')
+      }
       if (level.kind === 'arena') return record(runArena(level, level.solutionCode, undefined, course), '/solutionCode')
       const result = runAlgorithm(level, level.solutionCode, undefined, course)
       const errors = record({
@@ -828,7 +842,7 @@ if (filenames.length > 1 || unknownFlags.length) {
   const file = filenames[0]
   const scan = file ? await readLevelFile(resolve(file), file) : await scanLevels()
   issues.push(...scan.issues)
-  const needsCourse = file && scan.entries.some(({ level }) => level.prerequisites?.length
+  const needsCourse = file && scan.entries.some(({ level }) => level.prerequisites?.length || shortCrossing(level)
     || (level.kind === 'breadboard' && (level.board.programId || level.board.carryFrom))
     || ((level.kind === 'algorithm' || level.kind === 'arena' || level.kind === 'grid') && level.helpers?.length))
   const catalog = (needsCourse ? (await scanLevels()).entries : scan.entries).map(({ level }) => level)
@@ -836,7 +850,7 @@ if (filenames.length > 1 || unknownFlags.length) {
   const visionChecks: { level: VisionLevel; summary: Check }[] = []
   for (const { source, level } of scan.entries) {
     if (file) {
-      const references = [...prerequisiteIssues(level, catalog), ...breadboardProgramIssues(level, catalog)]
+      const references = [...prerequisiteIssues(level, catalog), ...breadboardProgramIssues(level, catalog), ...shortChallengeLinkIssues(level, catalog)]
       issues.push(...references.map(issue => ({ ...issue, path: source + issue.path })))
     }
     const summary: Check = { path: source, id: level.id, kind: level.kind }

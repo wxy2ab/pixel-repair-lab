@@ -58,3 +58,45 @@
   .arena-pace p { order: 1; flex: 1 1 260px; margin: 0; }
   .arena-pace .segmented { order: 2; }
 }
+
+.arena-layout { min-width: 0; }
+.arena-layout .arena-console { min-width: 0; }
+.arena-robot-stats li[data-hit] { border-color: #ff9e81; }
+.arena-robot-stats .arena-hit-damage { color: #ffa48c; }
+.arena-robot-stats .arena-guard-active { color: #88e3ff; }
+.arena-console[hidden] { display: none; }
+.arena-console-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
+.arena-layout .map-well { max-width: min(100%, calc(var(--cols) * 56px + 42px)); }
+.arena-combat-status { padding: 9px 12px; border-bottom: 1px solid var(--border); background: #122334; }
+.arena-combat-goal, .arena-robot-name { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.arena-combat-goal { font-size: .8rem; color: #b4efd8; }
+.arena-combat-goal > span { margin-inline-start: auto; color: #a3b9ce; }
+.arena-robot-stats { list-style: none; display: flex; flex-wrap: wrap; gap: 5px; padding: 0; margin: 6px 0 0; }
+.arena-robot-stats li { border: 1px solid #3b465c; border-radius: 8px; padding: 5px 8px; background: #1c283a; font-size: .75rem; }
+.arena-robot-stats [data-robot-id="player"] { border-color: #407967; background: #19372f; }
+.arena-robot-name { gap: 4px; line-height: 1.3; }
+.arena-robot-name i { font: 700 .72rem var(--mono); color: #ffb6a6; }
+.arena-robot-stats [data-robot-id="player"] i { color: var(--mint); }
+.arena-hp { display: flex; align-items: center; gap: 5px; margin-top: 3px; }
+.arena-hp meter { width: 2.2rem; height: .65rem; }
+.arena-robot-stats small { color: #bccedd; font-size: .72rem; }
+.arena-offline { color: #d9a890; }
+.arena-combat-pad { display: flex; gap: 6px; padding: 5px 0 7px; margin-bottom: 5px; border-bottom: 1px solid #40576c; }
+.arena-combat-axes { flex: 1; min-width: 0; display: grid; gap: 3px; }
+.arena-combat-axes > div { display: grid; grid-template-columns: 2.6em repeat(4, minmax(0,1fr)); gap: 4px; align-items: center; }
+.arena-combat-axes span { font-size: .75rem; font-weight: 700; color: #b1d9eb; }
+.arena-combat-axes [data-action-group="shoot"] span { color: #ffd38a; }
+.arena-combat-utility { display: grid; align-content: stretch; gap: 2px; }
+.arena-combat-pad button { min-width: 0; min-height: 31px; padding: 3px 6px; font-size: .88rem; }
+.arena-combat-utility button { min-height: 23px; padding-block: 1px; font-size: .76rem; }
+.arena-combat-pad button[aria-pressed="true"] { background: #3a6556; color: #e1fff2; border-color: var(--mint); }
+.arena-combat-pad [data-action-group="shoot"] button[aria-pressed="true"] { background: #6c4d2b; border-color: #f6c376; }
+.arena-layout .play-toolbar:has(.arena-combat-pad) { width: min(40rem, calc(100vw - 24px)); }
+@media (max-width: 600px) {
+  .arena-robot-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .arena-robot-stats li { padding: 4px 6px; }
+  .arena-combat-pad { gap: 4px; }
+  .arena-combat-axes button { min-height: 39px; }
+  .arena-combat-utility button { min-height: 27px; }
+  .arena-layout .play-toolbar__actions > button { overflow-wrap: anywhere; }
+}

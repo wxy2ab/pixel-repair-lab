@@ -61,6 +61,8 @@ function turnAction({ action, x, y, item, blocked }: GoalReplayTurn, locale: Loc
     case 'step': return t('执行一步指令', 'Executed an instruction')
     case 'submit': return t('提交结果', 'Submitted a result')
     case 'wait': return t('等待', 'Waited')
+    case 'shoot': return t('发射脉冲', 'Fired a pulse')
+    case 'guard': return t('展开防御', 'Guarded')
   }
 }
 

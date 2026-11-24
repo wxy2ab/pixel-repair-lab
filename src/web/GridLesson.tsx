@@ -5,6 +5,9 @@ import type { PersonalAlgorithms } from '../shared/advanced'
 import type { GridLevel, GridMapRun, Locale, RunResult } from '../shared/types'
 import { Board } from './Board'
 import { useClassroom } from './Classroom'
+import { ArenaConsolePanel, ArenaConsoleToggle, useArenaConsole } from './ArenaConsole'
+import { ArenaMapWorkspace } from './ArenaMapWorkspace'
+import { ArenaMapOutcome, MapShortcutGuide } from './ArenaMapShortcuts'
 import { DeviceWindow } from './DeviceWindow'
 import { GridReadout } from './GridReadout'
 import { GridHardwareBench, gridBenchKind } from './GridHardwareBench'
@@ -28,6 +31,10 @@ import { ExecutionSource } from './ExecutionSource'
 import { InlineExecutionSource } from './InlineExecutionSource'
 import { actionViewingDelay, gridPlayback, gridStepActivity } from './gridExecution'
 import { HintSteps } from './HintSteps'
+import { FerryPulseClock, ferryCrossingResult } from './FerryCrossing'
+import { carriedCrossingProgram, saveCrossingProgram } from './shortChallengeProgram'
+import { shortCrossing } from '../shared/shortChallenges'
+import { LaserStatus, laserCrossingResult } from './LaserCrossing'
 
 type Phase = 'idle' | 'running' | 'replaying' | 'paused' | 'done'
 type GridPlayback = RunResult & { inspected?: { index: number; run: GridMapRun } }
@@ -44,7 +51,12 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
 }) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const classroom = useClassroom()
-  const [draft, setDraft] = useState<GridChallengeDraft>(() => initialDraft ?? { kind: 'grid', mode: 'cards', cards: [] })
+  const crossing = Boolean(shortCrossing(level))
+  const ferry = level.ferry?.kind === 'crossing'
+  const laser = level.laserTrial?.kind === 'crossing'
+  const consoleControl = useArenaConsole('pixel-repair-lab:' + (ferry ? 'ferry' : laser ? 'laser' : 'grid') + '-console')
+  const [carriedProgram] = useState(() => challenge && carriedCrossingProgram(level))
+  const [draft, setDraft] = useState<GridChallengeDraft>(() => initialDraft ?? carriedProgram ?? { kind: 'grid', mode: 'cards', cards: [] })
   const { mode, cards, source: typedCode } = draft
   const [tutorial, setTutorial] = useState(0)
   const [phase, setPhase] = useState<Phase>('idle')
@@ -145,13 +157,14 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
     creditedResult.current = result
     const score = { kind: 'grid' as const, turns: result.final.turn, passed: result.passedCases, total: result.totalCases }
     if (result.won) {
+      if (crossing && challenge) saveCrossingProgram(level, draft)
       onWin()
       challenge?.onWin(score, retry, gridGoalReplayEvidence(level, result))
     } else if (result.issue?.code !== 'internal') {
       onMistake?.()
       challenge?.onFailure(score, gridGoalReplayEvidence(level, result))
     }
-  }, [challenge, level, onWin, onMistake, phase, result, retry])
+  }, [challenge, crossing, draft, level, onWin, onMistake, phase, result, retry])
 
   function run(singleStep: boolean, clock = false) {
     if (!hasCommands || disabled) return
@@ -211,18 +224,24 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
       disabled={disabled} onClick={() => { if (mode !== 'python') updateDraft({ mode: 'python', source: typedCode ?? generated }) }}>Python</button>
   )
 
+  const crossingFeedback = crossing && result ? (ferry ? ferryCrossingResult : laserCrossingResult)(locale, result) : undefined
+  const crossingResult = !observation.active && phase === 'done' ? crossingFeedback : undefined
   const board = <section className={'panel board-panel' + (tutorialStep?.target === 'board' ? ' guided' : '')}>
     <div className="panel-heading">
-      <h2><span className="bracket-icon" aria-hidden="true">⌗</span>{t('维修区', 'Workshop')}</h2>
+      <h2><span className="bracket-icon" aria-hidden="true">⌗</span>{ferry ? t('渡口', 'Ferry landing') : laser ? t('光廊', 'Light hall') : t('维修区', 'Workshop')}</h2>
       <span className="board-size">{scenario.tiles[0].length} × {scenario.tiles.length}</span>
     </div>
     <MapScenarioPicker locale={locale} index={shownMap} count={mapCount} onChange={observation.active ? observation.selectMap : selectMap} />
+    {ferry && <FerryPulseClock level={level} locale={locale} turn={snapshot.turn} />}
+    {laser && <LaserStatus level={level} snapshot={snapshot} locale={locale} />}
     {bench && <GridHardwareBench key={shownMap} mode={bench} scenario={scenario} locale={locale} snapshot={snapshot}
       before={displayedAction ? mapRun?.frames[shownFrame - 1]?.state ?? initialSnapshot(scenario) : snapshot} frame={displayedAction}
       submitted={mapRun?.frames.slice(0, shownFrame + 1).findLast(item => item.action === 'submit')?.value}
       onStep={hasCommands && !observation.active && phase !== 'running' && phase !== 'done' ? pulseClock : undefined} />}
     <Board level={scenario} locale={locale} snapshot={snapshot} activity={gridStepActivity(currentStep)} showHardware={!bench}
+      exitLabel={ferry ? t('登船点', 'Ferry dock') : undefined}
       trail={trail.visible && !observation.active ? gridTrailAt(scenario, mapRun, shownFrame) : undefined} />
+    {crossingResult && <p role="status" className="grid-map-outcome" data-testid={ferry ? 'ferry-crossing-result' : 'laser-crossing-result'}>{crossingResult}</p>}
     {!observation.active && <GridGoals scenario={scenario} snapshot={snapshot} locale={locale}
       frames={mapRun?.frames.slice(0, phase === 'done' ? undefined : shownFrame + 1) ?? []} />}
     {observation.active && <MapObservationControls observation={observation} locale={locale} />}
@@ -252,7 +271,11 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
   </details> : null
   const programEditor = <section className="panel editor-panel" ref={editor}>
     <div className="panel-heading">
-      <h2><span className="bracket-icon" aria-hidden="true">{'{ }'}</span>{t('程序控制台', 'Program console')}</h2>
+      {(classroom || consoleControl.mapMode) && <h2><span className="bracket-icon" aria-hidden="true">{'{ }'}</span>{t('程序控制台', 'Program console')}</h2>}
+      {carriedProgram && <button type="button" className="subtle-button" data-ferry-restore={ferry ? '' : undefined} data-laser-restore={laser ? '' : undefined} disabled={disabled}
+        onClick={() => updateDraft({ mode: carriedProgram.mode, cards: carriedProgram.cards, source: carriedProgram.source })}>
+        {t('恢复上一关程序', 'Restore previous program')}
+      </button>}
       <div className="segmented" role="tablist" aria-label={t('编辑方式', 'Editing mode')}>
         <button type="button" role="tab" id="cards-tab" aria-selected={mode === 'cards'} aria-controls="cards-panel" disabled={disabled}
           onClick={() => { if (mode !== 'cards') updateDraft({ mode: 'cards' }) }}>{t('指令卡', 'Cards')}</button>
@@ -297,12 +320,12 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
   const failingMap = result?.failure && result.passedCases !== mapIndex && !mapRun?.issue
     ? t(`地图 ${result.passedCases + 1} · `, `Map ${result.passedCases + 1} · `) : ''
   const errorFile = terminalIssue && terminalIssue.sourceName
-  const errorText = terminalIssue ? failingMap + (errorFile && errorFile !== 'main.py' ? errorFile + ' · ' : '') + runIssueText(locale, terminalIssue) : undefined
+  const errorText = terminalIssue ? failingMap + (errorFile && errorFile !== 'main.py' ? errorFile + ' · ' : '') + (crossingResult ?? runIssueText(locale, terminalIssue)) : undefined
   const stepStatus = !observation.active && (active || phase === 'done') && (stepIssue || current || next) ?
     <div className="grid-step-pair">
       {(current || stepIssue) && <span className="grid-step-reading" data-testid="grid-step-reading" data-line={stepLine}>
         {stepIssue
-          ? <strong className="grid-step-error">{file && file !== 'main.py' ? file + ' · ' : ''}{runIssueText(locale, stepIssue)}</strong>
+          ? <strong className="grid-step-error">{file && file !== 'main.py' ? file + ' · ' : ''}{crossingFeedback ?? runIssueText(locale, stepIssue)}</strong>
           : <strong>{t(`当前 · 第 ${stepLine} 行`, `Current · Line ${stepLine}`)}</strong>}
         {statement && <code title={statement}>{statement}</code>}
       </span>}
@@ -331,6 +354,7 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
           disabled={phase === 'running'} onClick={() => observation.start(mapIndex)}>{t('观察地图', 'Observe map')}</button>}
       <button type="button" className="subtle-button" onClick={reset}>{active || phase === 'running' ? t('停止', 'Stop') : t('重置棋盘', 'Reset board')}</button>
     </>}
+    {!classroom && consoleControl.mapMode && <ArenaConsoleToggle control={consoleControl} locale={locale} />}
   </PlayToolbar>
   const feedback = <section className={'panel output-panel' + (!observation.active && phase === 'done' && result?.won ? ' output-panel--win' : '')}>
     <div className="panel-heading"><h2><span className="bracket-icon" aria-hidden="true">›_</span>{t('运行反馈', 'Run feedback')}</h2></div>
@@ -339,7 +363,7 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
         ? t('巡逻机器人到了芽芽站的格子。', 'A patrol reached Sprout’s square.')
         : observedHazard ? runIssueText(locale, { code: observedHazard.kind + 'Hit' })
         : t('芽芽留在起点。', 'Sprout stays at the start.')}</p> : <>
-        {phase === 'idle' && <p>{t('运行程序后，机器人会照着指令行动。', 'Run your program to see Sprout follow its commands.')}</p>}
+        {phase === 'idle' && <p>{crossing ? t('等待出发。', 'Ready to start.') : t('运行程序后，机器人会照着指令行动。', 'Run your program to see Sprout follow its commands.')}</p>}
         {phase === 'running' && <p>{t('正在读取程序…', 'Reading the program…')}</p>}
         {active && current && <p>{t('第 ', 'Line ')}{current.line}{t(' 行 · ', ' · ')}<code>{statement}</code></p>}
         {mapRun?.flowTruncated && <p>{t('程序走了很多步。后面的函数和判断动画已省略，棋盘仍显示每次行动。', 'This program ran for many steps. Later function and control-flow animations are omitted. All board actions are shown.')}</p>}
@@ -347,7 +371,7 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
         {errorText && <p className="error-message">{errorText}</p>}
       </>}
     </div>
-    {review && <ChallengeFailureReview review={review} onRetry={retry} />}
+    {review && !crossing && <ChallengeFailureReview review={review} onRetry={retry} />}
     {mapRun && <ol className="run-log">
       {mapRun.frames.slice(0, shownFrame + 1).filter(event => ['say', 'scan', 'submit', 'read_map'].includes(event.action)).slice(-8).map((event, index) => <li key={index}>
         <code>{event.action}()</code> <span>{typeof event.value === 'string' ? event.value : JSON.stringify(event.value)}</span>
@@ -368,9 +392,14 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
     </DeviceWindow>
     {toolbar}
   </div>
-  return <div className="lesson-layout">
+  return <ArenaMapWorkspace locale={locale} title={level.title[locale]} consoleControl={consoleControl} dockedConsole={crossing}
+    shortcutHelp={<MapShortcutGuide locale={locale} />}>
+    <ArenaMapOutcome won={phase === 'done' && result?.won} text={observation.active ? undefined : crossingResult ?? errorText ?? (phase === 'done' && result?.won
+      ? t('任务完成！', 'Mission complete!') : undefined)} />
     <div className="play-column">{board}</div>
-    <div className="play-column">{guide}{programEditor}{feedback}</div>
+    <ArenaConsolePanel control={consoleControl} locale={locale}>
+      <div className="play-column">{guide}{programEditor}{feedback}</div>
+    </ArenaConsolePanel>
     {toolbar}
-  </div>
+  </ArenaMapWorkspace>
 }

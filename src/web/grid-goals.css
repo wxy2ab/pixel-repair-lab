@@ -1,6 +1,6 @@
 .grid-goals {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   flex-wrap: wrap;
   gap: 6px 12px;
   margin: 0 15px 12px;
@@ -34,3 +34,19 @@
 .grid-goals li[data-done] { color: #bdf3de; }
 .grid-goals li[data-done] i { border-color: var(--mint); background: var(--mint); }
 .grid-goals li[data-done] em { color: var(--mint); }
+.grid-goals__progress { display: grid; min-width: 78px; gap: 4px; }
+.grid-goals__track { height: 4px; border-radius: 6px; overflow: hidden; background: #2d4357; }
+.grid-goals__track i { display: block; height: 100%; background: #75eec2; transition: width .28s ease; }
+.grid-goals li { border: 1px solid transparent; padding: 3px 5px; border-radius: 6px; }
+.grid-goals li[data-done] { border-color: #37645d; background: #1b3c39; }
+@media (prefers-reduced-motion: no-preference) {
+  .grid-goals li[data-done] i { animation: goal-check-in .42s ease-out; }
+  @keyframes goal-check-in {
+    0% { transform: scale(.72); box-shadow: 0 0 0 0 #88f9ca90; }
+    55% { transform: scale(1.16); }
+    100% { transform: scale(1); box-shadow: 0 0 0 5px transparent; }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .grid-goals__track i, .grid-goals li i { transition: none; }
+}

@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "kind": "arena",
+  "id": "challenge-pendulum-night-express",
+  "order": 1972,
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": {"zh": "摆钟城的追车铃", "en": "The Pendulum City Express"},
+  "concept": {"zh": "追车与摆渡巡线 · 两枚车铃 · 换桥", "en": "Chase and shuttle · Two bells · Bridge swaps"},
+  "brief": {
+    "zh": "取回北线和东线的两块车铃电池，50 回合内抵达西南终点。检票员会一直追芽芽，两辆摆渡车则沿固定线路往返。与它们同格或迎面换位都会出局。第 6、18 回合换桥，东线未被取走的车铃在第 18 回合移到夜站。",
+    "en": "Collect the north and east bell batteries and reach the southwest terminus within 50 turns. The conductor chases Sprout while two shuttles follow fixed tracks. Sharing a square or swapping places head-on ends the run. Bridges switch on turns 6 and 18. The east bell moves to the night stop on turn 18 if it is still there."
+  },
+  "hints": [],
+  "prerequisites": [
+    {"unit": "python-intermediate", "topic": "branches"},
+    {"unit": "routing", "topic": "breadth-first"},
+    {"unit": "algorithm-advanced", "topic": "rival-strategy"}
+  ],
+  "tiles": [
+    "####################",
+    "####.....###########",
+    "##................##",
+    "##.####.####.####.##",
+    "##.####.#########.##",
+    "##................##",
+    "##.##.#.##.#.#.##.##",
+    "##.##.#.##.#.#.##..#",
+    "##.##.#.##.#.#.##..#",
+    "##.................#",
+    "##.####.####.####..#",
+    "##.####.####.####.##",
+    "#.................##",
+    "#####.....##########",
+    "####################"
+  ],
+  "start": {"x": 4, "y": 2},
+  "items": [{"id": "north-bell", "x": 8, "y": 1}, {"id": "east-bell", "x": 17, "y": 7}],
+  "opponents": [
+    {"id": "conductor", "title": {"zh": "检票员", "en": "Conductor"}, "start": {"x": 2, "y": 9}, "policy": {"kind": "pursue"}},
+    {
+      "id": "yellow-shuttle",
+      "title": {"zh": "黄线摆渡车", "en": "Yellow Shuttle"},
+      "start": {"x": 11, "y": 5},
+      "policy": {
+        "kind": "patrol",
+        "path": [
+          {"x": 11, "y": 5},
+          {"x": 12, "y": 5},
+          {"x": 13, "y": 5},
+          {"x": 14, "y": 5},
+          {"x": 13, "y": 5},
+          {"x": 12, "y": 5},
+          {"x": 11, "y": 5},
+          {"x": 10, "y": 5},
+          {"x": 9, "y": 5},
+          {"x": 8, "y": 5},
+          {"x": 9, "y": 5},
+          {"x": 10, "y": 5}
+        ]
+      }
+    },
+    {
+      "id": "violet-shuttle",
+      "title": {"zh": "紫线摆渡车", "en": "Violet Shuttle"},
+      "start": {"x": 6, "y": 9},
+      "policy": {
+        "kind": "patrol",
+        "path": [
+          {"x": 6, "y": 9},
+          {"x": 7, "y": 9},
+          {"x": 8, "y": 9},
+          {"x": 9, "y": 9},
+          {"x": 10, "y": 9},
+          {"x": 11, "y": 9},
+          {"x": 10, "y": 9},
+          {"x": 9, "y": 9},
+          {"x": 8, "y": 9},
+          {"x": 7, "y": 9},
+          {"x": 6, "y": 9},
+          {"x": 5, "y": 9}
+        ]
+      }
+    }
+  ],
+  "shifts": [
+    {"turn": 6, "open": [{"x": 12, "y": 4}], "close": [{"x": 7, "y": 7}]},
+    {"turn": 18, "open": [{"x": 5, "y": 10}], "close": [{"x": 12, "y": 8}], "moveItems": [{"id": "east-bell", "x": 18, "y": 10}]}
+  ],
+  "objective": {"kind": "escape", "itemIds": ["north-bell", "east-bell"], "exit": {"x": 1, "y": 12}},
+  "maxTurns": 50,
+  "starterCode": "state = scan()",
+  "snippets": [
+    {"label": {"zh": "查看赛场", "en": "Scan the field"}, "code": "state = scan()"},
+    {"label": {"zh": "向上", "en": "Move up"}, "code": "move(\"up\")"},
+    {"label": {"zh": "向右", "en": "Move right"}, "code": "move(\"right\")"},
+    {"label": {"zh": "向下", "en": "Move down"}, "code": "move(\"down\")"},
+    {"label": {"zh": "向左", "en": "Move left"}, "code": "move(\"left\")"},
+    {"label": {"zh": "取走脚下道具", "en": "Pick up the item here"}, "code": "pick()"},
+    {"label": {"zh": "等待一回合", "en": "Wait one turn"}, "code": "wait()"}
+  ],
+  "solutionCode": "move(\"up\")\nfor step in range(4):\n    move(\"right\")\npick()\nmove(\"down\")\nfor step in range(9):\n    move(\"right\")\nfor step in range(5):\n    move(\"down\")\nmove(\"right\")\nfor step in range(3):\n    move(\"down\")\npick()\nmove(\"left\")\nfor step in range(2):\n    move(\"down\")\nfor step in range(16):\n    move(\"left\")"
+}

@@ -1,0 +1,337 @@
+.arena-map-workspace { position: relative; }
+.arena-map-floating:not([data-map-fullscreen]) {
+  --console-inset: clamp(6px, 1vw, 12px);
+  --console-width: min(29rem, 49%);
+  grid-template-columns: minmax(0, 1fr);
+}
+.arena-map-docked:not([data-map-fullscreen])[data-console="closed"] { grid-template-columns: minmax(0, 1fr); }
+.arena-map-docked:not([data-map-fullscreen]) > .arena-console .arena-console-heading { border-radius: var(--radius) var(--radius) 0 0; }
+.challenge-stage .arena-map-workspace:not([data-map-fullscreen]) > .play-column {
+  position: static;
+  max-height: none;
+  overflow: visible;
+}
+.arena-map-floating:not([data-map-fullscreen]) .station-stage {
+  aspect-ratio: 1.85;
+  max-height: min(780px, 75dvh);
+}
+.arena-map-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-inline-start: auto;
+}
+.station-tools .arena-map-controls > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 5px 10px;
+  border: 1px solid #496177;
+  border-radius: 7px;
+  background: #1b3042;
+  color: #d8e7f3;
+  white-space: nowrap;
+}
+.station-tools .arena-map-controls > .arena-map-size-toggle,
+.arena-map-controls .arena-console-toggle[aria-expanded="true"] {
+  background: #1b393b;
+  border-color: #598e88;
+  color: #cefff0;
+}
+.arena-map-floating:not([data-map-fullscreen]) > .arena-console {
+  position: absolute;
+  z-index: 3;
+  top: calc(var(--arena-map-tools-bottom, 0px) + var(--console-inset));
+  inset-inline-end: var(--console-inset);
+  width: var(--console-width);
+  max-height: min(37rem, 68dvh, max(12rem, calc(var(--arena-map-surface-height, 68dvh) - 2 * var(--console-inset))));
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  border: 1px solid #608296;
+  border-radius: 12px;
+  background: #142537;
+  box-shadow: 0 10px 32px #071321ad, 0 2px 5px #07132166;
+}
+/* A short 2D board can share a row with the popup at its normal cell size. If
+   the map needs the whole row, the empty spacer wraps and takes no height. */
+@media (min-width: 751px) {
+  .arena-map-floating:not([data-map-fullscreen])[data-console="open"] [data-view="2d"] > .station-flat-board {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .arena-map-floating:not([data-map-fullscreen])[data-console="open"] [data-view="2d"] > .station-flat-board::after {
+    content: "";
+    flex: 0 0 calc(var(--console-width) + var(--console-inset));
+    height: 0;
+  }
+}
+.arena-console-heading {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 8px 5px 12px;
+  border-bottom: 1px solid #425c70;
+  background: #1c3445;
+  color: #dbf1f3;
+  font-size: .875rem;
+}
+.arena-console-heading h2 { margin: 0; font-size: inherit; }
+.arena-console-heading > .arena-console-dismiss {
+  display: grid;
+  place-items: center;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 4px;
+}
+@media (max-width: 750px) {
+  .arena-map-floating:not([data-map-fullscreen]) > .arena-console {
+    width: min(24rem, calc(100% - 2 * var(--console-inset)));
+    max-height: min(42dvh, max(8.5rem, calc(var(--arena-map-surface-height, 55dvh) * .62)));
+  }
+  .station-tools .arena-map-controls > button {
+    min-height: 38px;
+    gap: 4px;
+    padding-inline: 7px;
+    font-size: .8125rem;
+  }
+}
+.arena-map-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.arena-map-bar > button { display: inline-flex; gap: 6px; align-items: center; justify-content: center; }
+.arena-map-bar .arena-map-size-toggle { border-color: #598e88; background: #1b393b; color: #cefff0; }
+.arena-map-bar > button[aria-expanded="true"] { background: #28524f; color: #cffff0; border-color: #70b5a3; }
+
+html:has(.arena-map-workspace[data-map-fullscreen]) { overflow: hidden; scrollbar-gutter: auto; }
+.arena-map-workspace[data-map-fullscreen] {
+  --map-gap: clamp(6px, 1vw, 14px);
+  --map-toolbar-space: calc(var(--play-toolbar-height, 54px) + max(8px, env(safe-area-inset-bottom)) + 9px);
+  --map-panel-top: calc(var(--arena-map-heading, 50px) + var(--map-gap));
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  isolation: isolate;
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  overflow: hidden;
+  outline: 0;
+  background: #102130;
+  color: #eaf4fb;
+}
+.arena-map-workspace[data-map-fullscreen]::backdrop { background: #102130; }
+.arena-map-workspace[data-map-fullscreen] .arena-map-bar {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 6;
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 47px;
+  padding: max(6px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) 6px max(10px, env(safe-area-inset-left));
+  border-bottom: 1px solid #395267;
+  background: #112230;
+  color: #eaf4fb;
+}
+.arena-map-bar > .arena-map-title {
+  margin-inline-end: auto;
+  overflow: hidden;
+  min-width: 0;
+  max-width: 45%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1rem;
+}
+.arena-map-bar > .segmented { margin: 0 7px 0 0; }
+.arena-map-bar button { white-space: nowrap; }
+
+/* Keep the original scene mounted while its surrounding panels become a report drawer. */
+.arena-map-workspace.arena-layout[data-console][data-map-fullscreen] > .play-column {
+  position: absolute;
+  inset: var(--map-panel-top) auto auto var(--map-gap);
+  display: grid;
+  gap: 8px;
+  width: min(22rem, calc(100% - var(--map-gap) * 2));
+  max-height: calc(100% - var(--map-panel-top) - var(--map-toolbar-space));
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.arena-map-workspace[data-map-fullscreen]:not([data-map-drawer="report"]) > .play-column {
+  visibility: hidden;
+  pointer-events: none;
+}
+.arena-map-workspace[data-map-fullscreen][data-map-drawer="report"] > .play-column {
+  visibility: visible;
+  pointer-events: auto;
+  border: 1px solid #4a6478;
+  border-radius: 12px;
+  background: #122333;
+  box-shadow: 0 6px 24px #07142299;
+}
+.arena-map-workspace[data-map-fullscreen] > .play-column .station-viewport {
+  position: fixed;
+  inset: var(--arena-map-heading, 50px) 0 0;
+  z-index: -1;
+  visibility: visible;
+  pointer-events: auto;
+  background: radial-gradient(ellipse at 50% 49%, #29465a, #102131 83%);
+}
+.arena-map-workspace.arena-layout[data-map-fullscreen] .station-stage,
+.arena-map-workspace[data-map-fullscreen] [data-view="2d"] > .station-flat-board {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  min-height: 0;
+  aspect-ratio: auto;
+}
+.arena-map-workspace[data-map-fullscreen] .station-tools,
+.arena-map-workspace[data-map-fullscreen] .station-caption {
+  position: absolute;
+  z-index: 1;
+  left: var(--map-gap);
+  max-width: calc(100% - var(--map-gap) * 2);
+  border: 1px solid #456278;
+  border-radius: 10px;
+  background: #112534f5;
+}
+.arena-map-workspace[data-map-fullscreen] .station-tools {
+  top: var(--map-gap);
+  justify-content: start;
+  gap: 5px;
+  padding: 4px;
+}
+.arena-map-workspace[data-map-fullscreen] .station-caption {
+  bottom: var(--map-toolbar-space);
+  padding: 4px 8px;
+  max-width: calc(100% - 8rem);
+  font-size: .72rem;
+  min-height: 0;
+  pointer-events: none;
+}
+.arena-map-workspace[data-map-fullscreen] .station-action-cue,
+.arena-map-workspace[data-map-fullscreen] .station-fallback {
+  position: absolute;
+  z-index: 1;
+  bottom: calc(var(--map-toolbar-space) + 32px);
+  left: var(--map-gap);
+  max-width: calc(100% - var(--map-gap) * 2);
+  margin: 0;
+  pointer-events: none;
+}
+.arena-map-workspace[data-map-fullscreen] .board-panel :is(.arena-turn-hud, .board-legend .turn-display) {
+  position: fixed;
+  display: inline-flex;
+  gap: .55rem;
+  align-items: center;
+  z-index: 1;
+  right: var(--map-gap);
+  bottom: var(--map-toolbar-space);
+  visibility: visible;
+  padding: 3px 8px;
+  border-radius: 7px;
+  border: 1px solid #456278;
+  background: #112534f5;
+  color: #defdeb;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+.arena-map-health { color: #a3e7bb; font: 650 .8rem var(--mono); }
+.arena-map-workspace[data-map-fullscreen] > .arena-console,
+.arena-map-keys {
+  position: absolute;
+  z-index: 3;
+  top: var(--map-panel-top);
+  right: var(--map-gap);
+  width: min(29rem, calc(100% - var(--map-gap) * 2));
+  max-height: calc(100% - var(--map-panel-top) - var(--map-toolbar-space));
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  border: 1px solid #587386;
+  border-radius: 12px;
+  background: #162b39;
+  box-shadow: 0 6px 24px #07142299;
+}
+.arena-map-keys { width: min(23rem, calc(100% - var(--map-gap) * 2)); padding: .8rem 1rem; }
+.map-shortcut-guide { display: grid; gap: .45rem; margin: 0; }
+.map-shortcut-guide > div { display: grid; grid-template-columns: minmax(6.5rem, auto) 1fr; gap: .75rem; align-items: center; }
+.map-shortcut-guide dt, .map-shortcut-guide dd { margin: 0; }
+.map-shortcut-guide kbd {
+  display: inline-block;
+  padding: 2px 5px;
+  border: 1px solid #6b8796;
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  color: #d2f8e7;
+  background: #233b4a;
+  font: 600 .78rem var(--mono);
+}
+.arena-map-workspace[data-map-fullscreen] .play-toolbar {
+  z-index: 5;
+  left: 50%;
+  right: auto;
+  bottom: max(6px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  max-width: calc(100% - 2 * var(--map-gap));
+  background: #162938f7;
+}
+.arena-map-workspace[data-map-fullscreen] > .arena-map-outcome {
+  position: absolute;
+  z-index: 2;
+  top: 24%;
+  left: 50%;
+  max-width: calc(100% - 30px);
+  width: max-content;
+  margin: 0;
+  transform: translateX(-50%);
+  padding: .6rem 1.2rem;
+  border: 1px solid #78b3a7;
+  border-radius: 10px;
+  background: #142e35f5;
+  color: #f0fff8;
+  pointer-events: none;
+}
+.arena-map-workspace .arena-map-outcome[data-victory] {
+  display: flex; align-items: center; gap: .6em; border: 2px solid #7de6b1;
+  background: #173c35; box-shadow: 0 5px 22px #0a191a77; font-weight: 750;
+}
+.arena-map-outcome[data-victory] > span {
+  display: inline-grid; flex: none; place-items: center; width: 1.55em; aspect-ratio: 1;
+  background: #89e9b9; color: #143329; border-radius: 50%;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .arena-map-outcome[data-victory] > span { animation: map-victory-check .4s ease-out; }
+  @keyframes map-victory-check { from { transform: scale(.65); } 65% { transform: scale(1.14); } }
+}
+@media (max-width: 600px) {
+  .arena-map-workspace[data-map-fullscreen] .arena-map-bar { gap: 3px 5px; padding-inline: 7px; }
+  .arena-map-bar > .arena-map-title { flex: 1 1 0; max-width: none; font-size: .85rem; }
+  .arena-map-bar > .segmented { margin: 0; }
+  .arena-map-bar > button, .arena-map-bar .segmented button { min-height: 32px; padding: 3px 6px; font-size: .78rem; }
+  .arena-map-bar > button svg { width: 14px; }
+  .arena-map-workspace[data-map-fullscreen] .arena-map-size-toggle { width: 34px; }
+  .arena-map-workspace[data-map-fullscreen] .arena-map-size-toggle span { display: none; }
+  .arena-map-workspace[data-map-fullscreen] > .arena-console {
+    width: min(100% - var(--map-gap) * 2, 26rem);
+    max-height: min(35dvh, calc(100% - var(--map-panel-top) - var(--map-toolbar-space)));
+  }
+  .arena-map-workspace[data-map-fullscreen] .station-caption:not(:has(.station-inspection)) { display: none; }
+}

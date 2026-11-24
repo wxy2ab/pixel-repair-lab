@@ -135,7 +135,7 @@ export default function ArduinoLesson({ level, locale, onComplete, onMistake }: 
             : <p>{t('按下时', 'Pressed')} · <b>{showLamp(state.pressedLed)}</b><br />{t('松开时', 'Released')} · <b>{showLamp(state.releasedLed)}</b></p>}
           <button type="button" className="primary-button" disabled={!observed || checked === true} onClick={check} data-testid="uno-check">
             {level.stage === 'demo' ? t('记录观察', 'Record observations') : t('检查信号灯', 'Check the light')}</button>
-          {checked !== undefined && <p role="status" className={checked ? 'win-message' : 'error-message'}>{checked ? t('实测记录符合任务。', 'Your readings match the task.')
+          {checked !== undefined && <p role="status" data-task-success={checked || undefined} className={checked ? 'win-message' : 'error-message'}>{checked ? t('实测记录符合任务。', 'Your readings match the task.')
             : t('把两条实测记录和任务对一对。改好设置后，再跑一遍。', 'Compare both readings with the task. Adjust the setting and run again.')}</p>}
         </div>
       </div>

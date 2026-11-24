@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type Locator, type Page } from '@playwright/test'
 import { readFileSync } from 'node:fs'
 import { cardsToPython } from '../src/shared/cards'
 import type { ArenaLevel } from '../src/shared/advanced'
@@ -10,6 +10,15 @@ const control = (page: Page, name: string) => page.getByTestId('map-observe-' + 
 const cell = (page: Page, x: number, y: number) => page.locator(`.tile[data-x="${x}"][data-y="${y}"]`)
 const button = (page: Page, name: string) => page.getByRole('button', { name, exact: true })
 const savedWork = (page: Page) => page.evaluate(() => ({ ...localStorage }))
+
+function savedBoard(board: Locator) {
+  return board.evaluate(node => {
+    const copy = node.cloneNode(true) as Element
+    // Sprout's square belongs to the checkpoint. A momentary pick or movement animation can finish.
+    copy.querySelectorAll('.pixel-bot:not(.pixel-bot--enemy)').forEach(robot => robot.replaceWith('Sprout'))
+    return copy.outerHTML
+  })
+}
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('pixel-repair-lab:board-view', '2d'))
@@ -105,7 +114,7 @@ test('observation shows actual arena shifts and restores a paused official repla
   const replay = page.getByRole('slider', { name: '回放进度' })
   await replay.fill('2')
   const board = page.locator('.tilemap')
-  const originalBoard = await board.innerHTML()
+  const originalBoard = await savedBoard(board)
   await editor.fill('')
   const saved = await savedWork(page)
   expect(saved[`pixel-repair-lab:arena-match:${shifting.id}:relaxed`]).toBeTruthy()
@@ -121,7 +130,7 @@ test('observation shows actual arena shifts and restores a paused official repla
   await expect(page.getByTestId('arena-turn-events').locator('[data-tactic]')).toHaveCount(3)
   await control(page, 'exit').click()
   await expect(replay).toHaveValue('2')
-  expect(await board.innerHTML()).toBe(originalBoard)
+  expect(await savedBoard(board)).toBe(originalBoard)
   expect(await savedWork(page)).toEqual(saved)
   await expect(editor).toHaveValue('')
 })
@@ -138,14 +147,14 @@ test('timed observation leaves an existing match paused with its saved board and
   const remaining = await timer.getAttribute('value')
   const saved = await savedWork(page)
   const board = page.locator('.tilemap')
-  const originalBoard = await board.innerHTML()
+  const originalBoard = await savedBoard(board)
   await observeAndPause(page)
   await control(page, 'next').click()
   await control(page, 'next').click()
   await control(page, 'exit').click()
   await expect(resume).toBeEnabled()
   await expect(timer).toHaveAttribute('value', remaining!)
-  expect(await board.innerHTML()).toBe(originalBoard)
+  expect(await savedBoard(board)).toBe(originalBoard)
   expect(await savedWork(page)).toEqual(saved)
   await resume.click()
   await expect(page.getByTestId('arena-turn')).toContainText('2/' + shifting.maxTurns)

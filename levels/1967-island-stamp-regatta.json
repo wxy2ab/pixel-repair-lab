@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "kind": "arena",
+  "id": "challenge-island-stamp-regatta",
+  "order": 1967,
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": {"zh": "彩灯环岛集邮赛", "en": "Lantern Island Stamp Regatta"},
+  "concept": {"zh": "三岛竞速 · 渡船改线 · 抢邮票", "en": "Three islands · Changing ferries · Stamp race"},
+  "brief": {
+    "zh": "和三艘邮船争抢 18 块盖着邮戳的电池，抢完或 42 回合结束时要独占第一。第 7 和第 18 回合两座渡桥换班，未领取的船票邮戳会换到新码头。铜铃号追最近的邮票，另两艘船会随局势换目标。中央短廊在第 18 回合尝试关门，封在里面的电池可能留到终场。每块电池值一分。",
+    "en": "Outscore three mailboats by collecting postmarked batteries. The race ends when all 18 are claimed or 42 turns are up. On turns 7 and 18 the ferry bridges change shifts and unclaimed ferry stamps move to new piers. Brass Bell heads for the nearest stamp while the other two boats adjust their targets. The central pocket tries to close on turn 18 and can trap its battery until the end. Each battery is worth one point."
+  },
+  "hints": [],
+  "prerequisites": [
+    {"unit": "python-intermediate", "topic": "collections"},
+    {"unit": "routing", "topic": "breadth-first"},
+    {"unit": "algorithm-advanced", "topic": "rival-strategy"}
+  ],
+  "tiles": [
+    "####################",
+    "####################",
+    "#####.........######",
+    "##.......###..######",
+    "##.####..###......##",
+    "##.####..#.##.###.##",
+    "##.####..#.##.###.##",
+    "##.....#..........##",
+    "##.#.##.##.#.##.#.##",
+    "##...##.##...##.#.##",
+    "##.####.####.####.##",
+    "##......####.####.##",
+    "###.##.....#......##",
+    "###....#############",
+    "####################"
+  ],
+  "start": {"x": 3, "y": 12},
+  "items": [
+    {"id": "shell", "x": 4, "y": 7},
+    {"id": "fern", "x": 2, "y": 4},
+    {"id": "bell", "x": 5, "y": 3},
+    {"id": "kite", "x": 7, "y": 4},
+    {"id": "reef", "x": 5, "y": 11},
+    {"id": "whale", "x": 6, "y": 13},
+    {"id": "crab", "x": 3, "y": 12},
+    {"id": "buoy", "x": 9, "y": 7},
+    {"id": "wave", "x": 10, "y": 6},
+    {"id": "sail", "x": 8, "y": 2},
+    {"id": "ink", "x": 13, "y": 4},
+    {"id": "drum", "x": 17, "y": 5},
+    {"id": "tide", "x": 15, "y": 7},
+    {"id": "fish", "x": 12, "y": 9},
+    {"id": "coral", "x": 13, "y": 12},
+    {"id": "mist", "x": 17, "y": 11},
+    {"id": "leaf", "x": 7, "y": 12},
+    {"id": "gull", "x": 10, "y": 2}
+  ],
+  "opponents": [
+    {"id": "brass", "title": {"zh": "铜铃号", "en": "Brass Bell"}, "start": {"x": 9, "y": 2}, "policy": {"kind": "collect"}},
+    {
+      "id": "coral-boat",
+      "title": {"zh": "珊瑚号", "en": "Coral"},
+      "start": {"x": 13, "y": 7},
+      "policy": {"kind": "adaptive", "style": "secure"}
+    },
+    {
+      "id": "paper-boat",
+      "title": {"zh": "纸帆号", "en": "Paper Sail"},
+      "start": {"x": 17, "y": 12},
+      "policy": {"kind": "adaptive", "style": "flex"}
+    }
+  ],
+  "shifts": [
+    {
+      "turn": 7,
+      "open": [{"x": 7, "y": 7}],
+      "close": [{"x": 5, "y": 2}],
+      "moveItems": [{"id": "gull", "x": 6, "y": 7}, {"id": "mist", "x": 14, "y": 7}]
+    },
+    {
+      "turn": 18,
+      "open": [{"x": 11, "y": 12}],
+      "close": [{"x": 10, "y": 7}],
+      "moveItems": [{"id": "leaf", "x": 12, "y": 12}, {"id": "drum", "x": 17, "y": 10}]
+    }
+  ],
+  "objective": {"kind": "score"},
+  "maxTurns": 42,
+  "starterCode": "state = scan()",
+  "snippets": [
+    {"label": {"zh": "查看赛场", "en": "Scan the field"}, "code": "state = scan()"},
+    {"label": {"zh": "向上", "en": "Move up"}, "code": "move(\"up\")"},
+    {"label": {"zh": "向右", "en": "Move right"}, "code": "move(\"right\")"},
+    {"label": {"zh": "向下", "en": "Move down"}, "code": "move(\"down\")"},
+    {"label": {"zh": "向左", "en": "Move left"}, "code": "move(\"left\")"},
+    {"label": {"zh": "取走脚下道具", "en": "Pick up the item here"}, "code": "pick()"},
+    {"label": {"zh": "等待一回合", "en": "Wait one turn"}, "code": "wait()"}
+  ],
+  "solutionCode": "pick()\nmove(\"up\")\nfor step in range(2):\n    move(\"right\")\npick()\nmove(\"right\")\nfor step in range(2):\n    move(\"down\")\npick()\nmove(\"up\")\nmove(\"right\")\npick()\nfor step in range(5):\n    move(\"up\")\nfor step in range(3):\n    move(\"left\")\npick()\nfor step in range(3):\n    move(\"right\")\nfor step in range(5):\n    move(\"down\")\nfor step in range(10):\n    move(\"right\")\nfor step in range(2):\n    move(\"up\")\npick()"
+}

@@ -1,10 +1,11 @@
-import type { ApiName, Locale } from '../shared/types'
-import type { StationActivity } from './station3d/types'
+import type { Locale } from '../shared/types'
+import type { StationActivity, StationCommand } from './station3d/types'
 import { pythonValue } from './pythonValue'
 import { describeFlow } from './stationFlowCue'
 import { tr } from './text'
 
-const labels: Record<ApiName, readonly [string, string]> = {
+const labels: Record<StationCommand, readonly [string, string]> = {
+  shoot: ['发射脉冲', 'Fire pulse'], guard: ['防守', 'Guard'],
   scan: ['扫描', 'Scan'], read_map: ['读取地图', 'Read map'], submit: ['提交', 'Submit'], pick: ['拾取', 'Pick up'],
   move: ['移动', 'Move'], wait: ['等待', 'Wait'], say: ['说话', 'Say'], load: ['读取内存', 'Read memory'],
   store: ['写入内存', 'Write memory'], step: ['推进时钟', 'Clock pulse'],

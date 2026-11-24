@@ -28,6 +28,14 @@ export type RackBinding = { name: string; value: Json }
 export type RackStep = { line: number; sourceName: string; bindings?: RackBinding[]; boardActions?: number }
 export type Direction = 'up' | 'down' | 'left' | 'right'
 export type Position = { x: number; y: number }
+export type FerryRaceLayout = { batteries: [Position, Position]; wall: Position }
+export type FerryCommand = Direction | 'pick' | 'wait'
+export type ChallengeCrossing = { kind: 'crossing'; next?: string; carryFrom?: string }
+export type FerryChallenge =
+  | ChallengeCrossing
+  | { kind: 'race'; wall: Position; solutionLayout: FerryRaceLayout }
+export type MirrorPlacement = Position & { orientation: '/' | '\\' }
+export type LaserTrial = ChallengeCrossing | { kind: 'race'; mirrorIds: string[]; solutionMirrors: MirrorPlacement[] }
 export type ApiName = 'move' | 'scan' | 'pick' | 'say' | 'submit' | 'load' | 'store' | 'step' | 'wait' | 'read_map'
 export type Origin = 'list-index' | 'stack-pop' | 'queue-pop' | 'dict-index' | 'memory-load'
 
@@ -107,6 +115,8 @@ export type LevelMetadata = {
 
 export type GridLevel = LevelMetadata & Scenario & {
   kind: 'grid'
+  ferry?: FerryChallenge
+  laserTrial?: LaserTrial
   helpers?: string[]
   allowedApi: ApiName[]
   cards: CardDefinition[]

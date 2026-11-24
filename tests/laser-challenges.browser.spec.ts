@@ -1,0 +1,142 @@
+import { expect, test, type Page } from '@playwright/test'
+
+const first = 'challenge-laser-shortcut'
+const second = 'challenge-laser-turned-mirror'
+const race = 'challenge-laser-mirror-race'
+const summary = (page: Page) => page.getByRole('region', { name: '通关总结', exact: true })
+const entry = (page: Page, id: string) => page.locator(`#challenge-browse [data-challenge-level="${id}"]`)
+
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('pixel-repair-lab:locale', 'zh')
+    localStorage.setItem('pixel-repair-lab:board-view', '2d')
+  })
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/#challenge-browse')
+})
+
+async function playCrossing(page: Page) {
+  const toolbar = page.getByTestId('play-toolbar')
+  await toolbar.getByRole('button', { name: '运行', exact: true }).click()
+  await toolbar.getByRole('button', { name: '查看结果', exact: true }).click()
+}
+
+async function addCards(page: Page, cards: string[]) {
+  for (const id of cards) await page.locator('[data-add-card="' + id + '"]').click()
+}
+
+test('the phone shows the reflected beam and the goal before opening the rules', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await entry(page, second).click()
+  const brief = page.getByTestId('mission-brief')
+  await expect(brief.locator('.mission-brief__goal')).toContainText('安全到达')
+  const showRules = brief.getByRole('button', { name: '查看规则' })
+  await expect(showRules).toHaveAttribute('aria-expanded', 'false')
+  const lastLit = page.locator('.tile[data-hazard="laser"]').last()
+  await expect.poll(async () => {
+    const tile = await lastLit.boundingBox()
+    const toolbar = await page.getByTestId('play-toolbar').boundingBox()
+    return Boolean(tile && toolbar && tile.y >= 0 && tile.y + tile.height <= toolbar.y)
+  }).toBe(true)
+  await showRules.click()
+  await expect(brief.locator('.mission-brief__rules')).toContainText('镜子')
+})
+
+test('a child can carry a key-route program into the rotated hall, see the hit, and repair its beginning with the mouse', async ({ page }) => {
+  const series = page.getByRole('navigation', { name: '激光短挑战', exact: true })
+  await expect(series.getByRole('button')).toHaveCount(3)
+  await series.getByRole('button', { name: /光廊一/ }).click()
+  await addCards(page, ['down', 'down', 'right', 'down', 'up', 'right', 'right', 'right', 'right', 'right', 'up', 'up'])
+  const program = await page.getByTestId('generated-code').innerText()
+  await playCrossing(page)
+  await expect(summary(page).locator('[data-score-metric="turns"] td').first()).toHaveText('12')
+  await summary(page).locator('[data-next-challenge="' + second + '"]').click()
+  await expect(page.getByTestId('generated-code')).toHaveText(program)
+  await playCrossing(page)
+  await expect(page.getByTestId('laser-crossing-result')).toContainText('第 7 回合')
+  await expect(page.getByTestId('laser-crossing-result')).toContainText('第 7 行')
+  await expect(summary(page)).toHaveCount(0)
+  await page.locator('[data-select-card="0"]').click()
+  await page.getByRole('button', { name: '在前面添加', exact: true }).click()
+  await addCards(page, ['up', 'down'])
+  await playCrossing(page)
+  await expect(summary(page).locator('[data-score-metric="turns"] td').first()).toHaveText('14')
+  await summary(page).locator('[data-next-challenge="' + race + '"]').click()
+  await expect(page.getByTestId('mirror-race-run')).toBeVisible()
+})
+
+test('the switch shortcut can be carried as Python, restored with the mouse, and reused after the mirror turns', async ({ page }) => {
+  await entry(page, first).click()
+  await addCards(page, ['up', 'down', ...Array(6).fill('right')])
+  await page.getByRole('button', { name: '复制到手写模式', exact: true }).click()
+  const editor = page.getByRole('textbox', { name: '编写 Python', exact: true })
+  const program = await editor.inputValue()
+  await playCrossing(page)
+  await expect(summary(page).locator('[data-score-metric="turns"] td').first()).toHaveText('8')
+  await summary(page).locator('[data-next-challenge="' + second + '"]').click()
+  await expect(editor).toHaveValue(program)
+  await page.getByRole('tab', { name: '指令卡', exact: true }).click()
+  await addCards(page, ['left'])
+  await page.locator('[data-laser-restore]').click()
+  await expect(editor).toHaveValue(program)
+  await playCrossing(page)
+  await expect(summary(page).locator('[data-score-metric="turns"] td').first()).toHaveText('8')
+})
+
+test('the two runners follow the edited beams on one clock and can have different ending turns', async ({ page }) => {
+  await entry(page, race).click()
+  const go = page.getByTestId('mirror-race-run')
+  const edit = page.getByTestId('mirror-race-edit')
+  const result = page.getByTestId('mirror-race-result')
+  const end = page.getByRole('button', { name: '跳到结尾', exact: true })
+  const cell = (xy: string) => page.locator('[data-mirror-cell="' + xy + '"]')
+  const player = page.locator('[data-mirror-racer="player"]')
+  const bot = page.locator('[data-mirror-racer="bot"]')
+
+  for (const direction of ['right', 'right', 'down', 'down', 'down', 'down', 'left', 'left'])
+    await page.locator('[data-mirror-command="' + direction + '"]').click()
+  await go.click()
+  await end.click()
+  await expect(result).toHaveAttribute('data-won', 'false')
+  await expect(bot).toHaveAttribute('data-outcome', 'exit')
+  await expect(bot.locator('[data-met-goal]')).toHaveCount(0)
+  await edit.click()
+
+  await cell('2,4').dragTo(cell('3,4'))
+  await expect(cell('3,4')).toHaveAttribute('data-edit-mirror', '0')
+  await page.locator('[data-rotate-mirror="0"]').click()
+  await cell('4,2').click()
+  await cell('3,3').click()
+  await expect(cell('3,3')).toHaveAttribute('data-edit-mirror', '1')
+  await page.locator('[data-rotate-mirror="1"]').click()
+  await expect(page.locator('.mirror-map .tile[data-x="6"][data-y="3"]')).toHaveAttribute('data-hazard', 'laser')
+
+  await page.getByRole('button', { name: '挑战场', exact: true }).click()
+  await page.reload()
+  await entry(page, race).click()
+  await expect(cell('3,4')).toHaveAttribute('data-edit-mirror', '0')
+  await expect(page.getByRole('list', { name: '已排指令' }).getByRole('button')).toHaveCount(8)
+
+  await go.click()
+  await page.getByRole('button', { name: '暂停回放', exact: true }).click()
+  await page.getByRole('slider', { name: '回放进度', exact: true }).fill('1')
+  await expect(player).toHaveAttribute('data-position', '7,1')
+  await expect(bot).toHaveAttribute('data-position', '6,2')
+  await expect(bot).not.toHaveAttribute('data-outcome', 'laser')
+  await expect(bot.locator('[data-met-goal]')).toHaveCount(0)
+  await page.getByRole('button', { name: '下一步', exact: true }).click()
+  await expect(bot).toHaveAttribute('data-outcome', 'laser')
+  await expect(bot).toHaveAttribute('data-position', '6,3')
+  await expect(player).toHaveAttribute('data-position', '8,1')
+  await expect(bot.locator('[data-met-goal]')).toBeVisible()
+  await expect(player.locator('[data-met-goal]')).toHaveCount(0)
+  await end.click()
+  await expect(bot).toContainText('第 2 回合碰到激光')
+  await expect(bot).toHaveAttribute('data-position', '6,3')
+  await expect(player).toContainText('第 8 回合安全到达出口')
+  await expect(result).toHaveAttribute('data-won', 'true')
+  await expect(summary(page).getByRole('heading', { name: '光廊三 · 谁会碰到光？' })).toBeVisible()
+  await expect(summary(page)).toContainText('芽芽在第 8 回合安全到达。最短路机器人在第 2 回合碰到了激光。')
+  await expect(page.getByTestId('completion-feedback')).toHaveCount(0)
+  await expect(summary(page).locator('[data-score-metric="turns"] td').first()).toHaveText('8')
+})

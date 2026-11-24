@@ -56,3 +56,12 @@ test('a blocked move does not satisfy the required-move goal', () => {
   const goals = gridGoals(scenario, state, [frame('move', state, { code: 'blocked' })], 'zh')
   assert.equal(goals[3].done, false)
 })
+
+test('a beam hit at the exit keeps the exit unchecked while retaining earlier objectives', () => {
+  const safe = initialSnapshot(scenario)
+  safe.memory[1] = 21
+  const hit = { ...safe, player: { x: 4, y: 0 } }
+  const goals = gridGoals(scenario, hit, [frame('store', safe), frame('move', hit, { code: 'laserHit' })], 'en')
+  assert.equal(goals.find(goal => goal.key.startsWith('exit'))?.done, false)
+  assert.equal(goals.find(goal => goal.key.startsWith('memory'))?.done, true)
+})

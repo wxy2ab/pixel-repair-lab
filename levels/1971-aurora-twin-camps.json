@@ -1,0 +1,159 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-aurora-twin-camps",
+  "order": 1971,
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": {"zh": "极光双营地的无线电", "en": "Radio Run at the Aurora Camps"},
+  "concept": {"zh": "两张营地图 · 指南针 · 取件再汇合", "en": "Two camps · Compass bearings · Cargo rendezvous"},
+  "brief": {
+    "zh": "在两张营地图上都把天线和电芯送到东边的无线电站。第二张图把山脊、巡车和货物都上下翻了个面，无线电站还在东边。营地指南针的 outward 指向山上，inward 指向山脚。用同一程序通过两图。限 46 回合。",
+    "en": "Take the antenna and cell to the eastern radio station on both camp maps. The second map flips the ridge, trolley and cargo upside down. The radio station is still in the east. The camp compass gives outward for uphill and inward for downhill. One program must finish both maps. You have 46 turns."
+  },
+  "hints": [],
+  "prerequisites": [
+    {"unit": "python-intermediate", "topic": "collections"},
+    {"unit": "python-intermediate", "topic": "for-loops"},
+    {"unit": "routing", "topic": "breadth-first"}
+  ],
+  "tiles": [
+    "####################",
+    "#####...######...###",
+    "#####.#.####......##",
+    "###......#...####.##",
+    "###.####.#.#.####.##",
+    "###.####...#.####.##",
+    "###.####.###.####.##",
+    "#...##.......##....#",
+    "###.##.#####.##.####",
+    "###.##.##....##.####",
+    "###....##.##.##.####",
+    "######.##.##....####",
+    "######....##########",
+    "####################",
+    "####################"
+  ],
+  "start": {"x": 1, "y": 7},
+  "items": [{"id": "ridge-aerial", "x": 5, "y": 1}, {"id": "valley-cell", "x": 15, "y": 11}],
+  "enemies": [
+    {
+      "path": [
+        {"x": 11, "y": 7},
+        {"x": 12, "y": 7},
+        {"x": 11, "y": 7},
+        {"x": 10, "y": 7},
+        {"x": 9, "y": 7},
+        {"x": 8, "y": 7},
+        {"x": 9, "y": 7},
+        {"x": 10, "y": 7}
+      ]
+    }
+  ],
+  "objectives": [{"type": "collect", "itemIds": ["ridge-aerial", "valley-cell"]}, {"type": "exit", "x": 18, "y": 7}],
+  "input": {"outward": "up", "inward": "down"},
+  "turnLimit": 46,
+  "allowedApi": ["move", "wait", "pick", "scan"],
+  "variants": [
+    {
+      "tiles": [
+        "####################",
+        "####################",
+        "######....##########",
+        "######.##.##....####",
+        "###....##.##.##.####",
+        "###.##.##....##.####",
+        "###.##.#####.##.####",
+        "#...##.......##....#",
+        "###.####.###.####.##",
+        "###.####...#.####.##",
+        "###.####.#.#.####.##",
+        "###......#...####.##",
+        "#####.#.####......##",
+        "#####...######...###",
+        "####################"
+      ],
+      "start": {"x": 1, "y": 7},
+      "items": [{"id": "ridge-aerial", "x": 5, "y": 13}, {"id": "valley-cell", "x": 15, "y": 3}],
+      "enemies": [
+        {
+          "path": [
+            {"x": 11, "y": 7},
+            {"x": 12, "y": 7},
+            {"x": 11, "y": 7},
+            {"x": 10, "y": 7},
+            {"x": 9, "y": 7},
+            {"x": 8, "y": 7},
+            {"x": 9, "y": 7},
+            {"x": 10, "y": 7}
+          ]
+        }
+      ],
+      "objectives": [{"type": "collect", "itemIds": ["ridge-aerial", "valley-cell"]}, {"type": "exit", "x": 18, "y": 7}],
+      "input": {"outward": "down", "inward": "up"}
+    }
+  ],
+  "cards": [
+    {"id": "up", "label": {"zh": "向上", "en": "Move up"}, "template": "move(\"up\")"},
+    {"id": "right", "label": {"zh": "向右", "en": "Move right"}, "template": "move(\"right\")"},
+    {"id": "down", "label": {"zh": "向下", "en": "Move down"}, "template": "move(\"down\")"},
+    {"id": "left", "label": {"zh": "向左", "en": "Move left"}, "template": "move(\"left\")"},
+    {"id": "pick", "label": {"zh": "捡起货物", "en": "Pick up cargo"}, "template": "pick()"},
+    {"id": "wait", "label": {"zh": "原地等一回合", "en": "Wait one turn"}, "template": "wait()"},
+    {
+      "id": "repeat",
+      "label": {"zh": "重复几次", "en": "Repeat moves"},
+      "template": "for step in range({{count}}):",
+      "block": true,
+      "parameters": [
+        {
+          "name": "count",
+          "label": {"zh": "次数", "en": "Times"},
+          "choices": [
+            {"id": "n2", "label": {"zh": "2", "en": "2"}, "code": "2"},
+            {"id": "n3", "label": {"zh": "3", "en": "3"}, "code": "3"},
+            {"id": "n4", "label": {"zh": "4", "en": "4"}, "code": "4"},
+            {"id": "n5", "label": {"zh": "5", "en": "5"}, "code": "5"},
+            {"id": "n6", "label": {"zh": "6", "en": "6"}, "code": "6"},
+            {"id": "n7", "label": {"zh": "7", "en": "7"}, "code": "7"},
+            {"id": "n8", "label": {"zh": "8", "en": "8"}, "code": "8"},
+            {"id": "n9", "label": {"zh": "9", "en": "9"}, "code": "9"},
+            {"id": "n10", "label": {"zh": "10", "en": "10"}, "code": "10"},
+            {"id": "n11", "label": {"zh": "11", "en": "11"}, "code": "11"},
+            {"id": "n12", "label": {"zh": "12", "en": "12"}, "code": "12"},
+            {"id": "n13", "label": {"zh": "13", "en": "13"}, "code": "13"},
+            {"id": "n14", "label": {"zh": "14", "en": "14"}, "code": "14"},
+            {"id": "n15", "label": {"zh": "15", "en": "15"}, "code": "15"},
+            {"id": "n16", "label": {"zh": "16", "en": "16"}, "code": "16"},
+            {"id": "n17", "label": {"zh": "17", "en": "17"}, "code": "17"},
+            {"id": "n18", "label": {"zh": "18", "en": "18"}, "code": "18"}
+          ]
+        }
+      ]
+    },
+    {"id": "read", "label": {"zh": "读取营地指南针", "en": "Read camp compass"}, "template": "compass = scan()"},
+    {"id": "outward", "label": {"zh": "上坡一格", "en": "Move uphill"}, "template": "move(compass[\"outward\"])"},
+    {"id": "inward", "label": {"zh": "下坡一格", "en": "Move downhill"}, "template": "move(compass[\"inward\"])"}
+  ],
+  "solutionCards": [
+    {"cardId": "read"},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "right"}]},
+    {"cardId": "repeat", "values": {"count": "n4"}, "children": [{"cardId": "outward"}]},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "right"}]},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "outward"}]},
+    {"cardId": "pick"},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "right"}]},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "inward"}]},
+    {"cardId": "right"},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "inward"}]},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "right"}]},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "outward"}]},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "right"}]},
+    {"cardId": "repeat", "values": {"count": "n8"}, "children": [{"cardId": "inward"}]},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "right"}]},
+    {"cardId": "pick"},
+    {"cardId": "repeat", "values": {"count": "n4"}, "children": [{"cardId": "outward"}]},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "right"}]}
+  ]
+}

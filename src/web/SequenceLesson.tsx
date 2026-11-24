@@ -201,7 +201,8 @@ export function SequenceLesson({ execution, locale, onComplete, onPhase }: {
             {issue && <small>{t('卡在这一步', 'Stopped here')}</small>}
           </li>)}</ol>
         </section>
-        <p className="sequence-feedback" role="status" data-testid="sequence-feedback" data-error={!!blocked || undefined}>
+        <p className="sequence-feedback" role="status" data-testid="sequence-feedback" data-error={!!blocked || undefined}
+          data-task-success={(phase !== 'debug' && passed) || undefined} data-task-pop={(phase !== 'debug' && passed) || undefined}>
           {feedback}
         </p>
       </div>

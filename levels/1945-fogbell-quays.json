@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "id": "challenge-fogbell-quays",
+  "order": 1945,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": { "zh": "挑战场", "en": "Challenge Arena" }
+  },
+  "stage": "challenge",
+  "difficulty": "intermediate",
+  "title": { "zh": "夜航码头夺铃赛", "en": "Night Ferry Bell Rally" },
+  "concept": { "zh": "抢分 · 三条登船道", "en": "Score race · Three gangways" },
+  "brief": { "zh": "在码头收集铃铛，最后独占第一。每拾取一只铃铛得一分。第 8 和 16 回合结束时，渡船换岸，一条登船道开放，另一条收起。两台搬运机会按比分和剩余铃铛改换目标。铃铛取完或第 34 回合结束时结算。", "en": "Collect dock bells and finish alone in first place. Each bell is worth one point. After turns 8 and 16 the ferry changes banks, opening one gangway and lifting another. Two porters choose their next bell based on the scores and remaining stock. The race ends when the bells run out or turn 34 ends." },
+  "prerequisites": [
+    {
+      "unit": "python-intermediate",
+      "topic": "branches"
+    },
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "###################",
+    "#.....#.....#.....#",
+    "#.................#",
+    "#.....#.....#.....#",
+    "#.###.#.....#.....#",
+    "#.###.#.....#.###.#",
+    "#.....#.......###.#",
+    "#...........#.....#",
+    "#.....#.###.#.....#",
+    "#.....#.###.#.###.#",
+    "#.....#.....#.....#",
+    "#.................#",
+    "#.....#.....#.....#",
+    "###################"
+  ],
+  "start": { "x": 2, "y": 10 },
+  "items": [
+    { "id": "bell-1", "x": 2, "y": 8 },
+    { "id": "bell-2", "x": 3, "y": 11 },
+    { "id": "bell-3", "x": 4, "y": 7 },
+    { "id": "bell-4", "x": 5, "y": 3 },
+    { "id": "bell-5", "x": 4, "y": 2 },
+    { "id": "bell-6", "x": 8, "y": 3 },
+    { "id": "bell-7", "x": 9, "y": 6 },
+    { "id": "bell-8", "x": 10, "y": 11 },
+    { "id": "bell-9", "x": 14, "y": 11 },
+    { "id": "bell-10", "x": 16, "y": 8 },
+    { "id": "bell-11", "x": 15, "y": 3 },
+    { "id": "bell-12", "x": 17, "y": 10 },
+    { "id": "bell-13", "x": 10, "y": 2 },
+    { "id": "bell-14", "x": 8, "y": 7 }
+  ],
+  "opponents": [
+    {
+      "id": "rope",
+      "title": { "zh": "缆绳号", "en": "Hawser" },
+      "start": { "x": 15, "y": 2 },
+      "policy": {
+        "kind": "adaptive",
+        "style": "secure"
+      }
+    },
+    {
+      "id": "bucket",
+      "title": { "zh": "水桶号", "en": "Bucket" },
+      "start": { "x": 13, "y": 12 },
+      "policy": {
+        "kind": "adaptive",
+        "style": "intercept"
+      }
+    }
+  ],
+  "objective": {
+    "kind": "score"
+  },
+  "maxTurns": 34,
+  "shifts": [
+    {
+      "turn": 8,
+      "open": [
+        { "x": 6, "y": 5 }
+      ],
+      "close": [
+        { "x": 6, "y": 7 }
+      ]
+    },
+    {
+      "turn": 16,
+      "open": [
+        { "x": 12, "y": 8 }
+      ],
+      "close": [
+        { "x": 12, "y": 11 }
+      ]
+    }
+  ],
+  "starterCode": "state = scan()\n",
+  "solutionCode": "def walk(direction, squares):\n    for step in range(squares):\n        move(direction)\n\nwalk(\"up\", 2)\npick()\n\nwalk(\"right\", 2)\nmove(\"up\")\npick()\n\nmove(\"up\")\nmove(\"right\")\nmove(\"up\")\nwalk(\"right\", 3)\nwalk(\"down\", 2)\npick()\n\nmove(\"up\")\nmove(\"right\")\npick()\n\nwalk(\"right\", 4)\nmove(\"down\")\nwalk(\"right\", 2)\nmove(\"down\")\nmove(\"right\")\npick()\n\nmove(\"right\")\nwalk(\"down\", 2)\npick()\n\nmove(\"up\")\n",
+  "snippets": [
+    {
+      "label": { "zh": "向上走", "en": "Move up" },
+      "code": "move(\"up\")"
+    },
+    {
+      "label": { "zh": "向右走", "en": "Move right" },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": { "zh": "向下走", "en": "Move down" },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": { "zh": "向左走", "en": "Move left" },
+      "code": "move(\"left\")"
+    },
+    {
+      "label": { "zh": "拾取脚下道具", "en": "Pick up here" },
+      "code": "pick()"
+    },
+    {
+      "label": { "zh": "查看赛场", "en": "Scan arena" },
+      "code": "state = scan()"
+    },
+    {
+      "label": { "zh": "原地等一拍", "en": "Wait a beat" },
+      "code": "wait()"
+    }
+  ]
+}

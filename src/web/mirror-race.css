@@ -1,0 +1,40 @@
+.mirror-map .map-well {
+  margin: 0 auto;
+  width: 100%;
+  padding: 5px 7px 8px 3px;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  grid-template-rows: 1rem auto;
+  border-color: #4b4762;
+  background: #191b2d;
+}
+.mirror-map .tile > .pixel-bot { width: 100%; max-width: 52px; pointer-events: none; }
+.mirror-map .tile:has(> .pixel-bot) { outline: 2px solid #68d7b7; outline-offset: -2px; }
+.mirror-map .tile:has(> .pixel-bot--enemy) { outline-color: #ffbd78; }
+.mirror-map .device-ray { width: calc(50% + 1px + var(--tile-gap) / 2); }
+.mirror-map[data-hit] .tile:has(.pixel-bot) { outline: 2px solid #ff84a8; outline-offset: -2px; background: #713345; }
+.mirror-map[data-hit] .pixel-bot { filter: grayscale(.85) drop-shadow(0 0 3px #ff738e); }
+.mirror-cell-control {
+  position: absolute; z-index: 4; inset: 0;
+  border: 0; border-radius: inherit; padding: 0; background: transparent; color: #dcfaff;
+}
+.mirror-cell-control[data-edit-mirror] { cursor: grab; }
+.mirror-cell-control[data-edit-mirror]:active { cursor: grabbing; }
+.mirror-cell-control:focus-visible, .mirror-cell-control[data-selected], .mirror-cell-control[data-hover] {
+  outline: 2px solid #72eac4; outline-offset: -2px;
+}
+.mirror-cell-control small {
+  position: absolute; right: 3%; bottom: 1%; min-width: 1.2em; border-radius: 30%;
+  background: #163743; color: #c9f5ff; font: 700 clamp(8px, 1vw, 13px)/1.2 var(--mono);
+}
+.mirror-rotate { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.mirror-rotate b { color: var(--mint); }
+.mirror-rotate code { color: #aee5ff; }
+.mirror-race .ferry-racer[data-outcome="laser"] .ferry-status { color: #ffa6bd; }
+.mirror-race .ferry-racer[data-outcome="exit"] .ferry-status { color: var(--mint); }
+@media (max-width: 700px) {
+  .mirror-race .ferry-runners .map-well { display: block; padding: 3px; }
+  .mirror-race .ferry-runners .map-coordinate { display: none; }
+  .mirror-race .ferry-runners .tilemap { --tile-gap: 1px; }
+  .mirror-race .ferry-runners .device-ray { border-top-width: 2px; }
+  .mirror-race .ferry-runners .tile:has(> .pixel-bot) { outline-width: 1px; outline-offset: -1px; }
+}

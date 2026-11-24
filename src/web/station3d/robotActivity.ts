@@ -23,6 +23,17 @@ export function poseGesture(rig: RobotRig, action: RobotGesture, progress: numbe
   const turn = Math.sin((progress - .5) * Math.PI)
   const { spine, head, arms, hands, legs } = rig
   switch (action) {
+    case 'shoot':
+      spine.rotation.x = -.18 * e
+      arms[1].rotation.set(-1.55 * e, -.18 * e, .25 * e)
+      hands[1].rotation.x = -.28 * e
+      break
+    case 'guard':
+      spine.position.y -= .065 * e
+      arms[0].rotation.set(-1.05 * e, -.4 * e, .72 * e)
+      arms[1].rotation.set(-1.05 * e, .4 * e, -.72 * e)
+      head.rotation.x = .14 * e
+      break
     case 'scan':
     case 'read_map': {
       const sweep = action === 'read_map' ? 1.06 : .72
@@ -219,12 +230,28 @@ export function createRobotSignals() {
   piece(loop, new THREE.TorusGeometry(.19, .034, 7, 32, 1.75 * Math.PI), violet)
   const cursor = piece(loop, new THREE.SphereGeometry(.065, 8, 6), mint)
   const arrow = piece(loop, new THREE.ConeGeometry(.083, .16, 4), warm)
-  group.add(fan, packet, battery, key, glints, bubble, dial, crossed, stack, choice, reader, loop)
+  const pulse = new THREE.Group()
+  piece(pulse, new THREE.SphereGeometry(.09, 8, 6), warm)
+  piece(pulse, new THREE.TorusGeometry(.13, .016, 6, 16), warm)
+  const shield = new THREE.Group()
+  piece(shield, new THREE.SphereGeometry(.50, 16, 10), ink(0x66d9ff, .21))
+  piece(shield, new THREE.TorusGeometry(.50, .019, 6, 32), mint).rotation.x = Math.PI / 2
+  group.add(fan, packet, battery, key, glints, bubble, dial, crossed, stack, choice, reader, loop, pulse, shield)
   group.visible = false
 
   function show(action: RobotGesture, p: number, condition = true) {
     group.visible = true
     const e = strength(p)
+    pulse.visible = action === 'shoot'
+    if (pulse.visible) {
+      pulse.position.set(.21, .60, .42 + .40 * p)
+      pulse.scale.setScalar(.55 + e)
+    }
+    shield.visible = action === 'guard'
+    if (shield.visible) {
+      shield.position.set(0, .43, 0)
+      shield.scale.setScalar(.70 + .50 * e)
+    }
     fan.visible = action === 'scan' || action === 'read_map'
     if (fan.visible) {
       fan.rotation.y = (p - .5) * (action === 'read_map' ? 2.25 : 1.38)

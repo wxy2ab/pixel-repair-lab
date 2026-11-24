@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-firefly-mine-whistle",
+  "order": 1968,
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": {"zh": "萤火矿井的撤离哨", "en": "Whistle in Firefly Mine"},
+  "concept": {"zh": "限时撤离 · 脉冲连响 · 避让洞", "en": "Evacuation run · Pulse chain · Refuge niches"},
+  "brief": {
+    "zh": "带上上层矿样和深层矿样，从西南升降机撤离。矿井的五个振动器会在第 5、13、22、32、45 回合各震一次。震动只持续一回合，会波及振动器和上下左右相邻的一格。矿车在深层长廊来回行驶。限 69 回合。",
+    "en": "Take a sample from the upper shaft and one from the deep shaft to the southwest lift. The five tremor cells pulse once each on turns 5, 13, 22, 32 and 45. A pulse lasts one turn and reaches the cell and its four immediate neighbors. An ore cart shuttles along the deep tunnel. You have 69 turns."
+  },
+  "hints": [],
+  "prerequisites": [{"unit": "python-intermediate", "topic": "for-loops"}, {"unit": "routing", "topic": "breadth-first"}],
+  "tiles": [
+    "###################",
+    "#####...###########",
+    "#...............###",
+    "#########...###.###",
+    "#########.#####.###",
+    "#...............###",
+    "#.#.#########.#####",
+    "#...####......#####",
+    "###.####.##########",
+    "###..............##",
+    "####.##.###...#..##",
+    "####....########..#",
+    "#########..#####..#",
+    "##................#",
+    "##.################",
+    "###################"
+  ],
+  "start": {"x": 1, "y": 2},
+  "items": [{"id": "upper-ore", "x": 15, "y": 5}, {"id": "deep-ore", "x": 16, "y": 13}],
+  "enemies": [
+    {
+      "path": [
+        {"x": 13, "y": 9},
+        {"x": 14, "y": 9},
+        {"x": 15, "y": 9},
+        {"x": 14, "y": 9},
+        {"x": 13, "y": 9},
+        {"x": 12, "y": 9},
+        {"x": 11, "y": 9},
+        {"x": 10, "y": 9},
+        {"x": 9, "y": 9},
+        {"x": 10, "y": 9},
+        {"x": 11, "y": 9},
+        {"x": 12, "y": 9}
+      ]
+    }
+  ],
+  "devices": [
+    {"kind": "bomb", "id": "echo-a", "x": 6, "y": 2, "atTurn": 5},
+    {"kind": "bomb", "id": "echo-b", "x": 13, "y": 2, "atTurn": 13},
+    {"kind": "bomb", "id": "echo-c", "x": 12, "y": 5, "atTurn": 22},
+    {"kind": "bomb", "id": "echo-d", "x": 12, "y": 9, "atTurn": 32},
+    {"kind": "bomb", "id": "echo-e", "x": 12, "y": 13, "atTurn": 45}
+  ],
+  "objectives": [{"type": "collect", "itemIds": ["upper-ore", "deep-ore"]}, {"type": "exit", "x": 2, "y": 14}],
+  "turnLimit": 69,
+  "allowedApi": ["move", "wait", "pick"],
+  "cards": [
+    {"id": "up", "label": {"zh": "向上", "en": "Move up"}, "template": "move(\"up\")"},
+    {"id": "right", "label": {"zh": "向右", "en": "Move right"}, "template": "move(\"right\")"},
+    {"id": "down", "label": {"zh": "向下", "en": "Move down"}, "template": "move(\"down\")"},
+    {"id": "left", "label": {"zh": "向左", "en": "Move left"}, "template": "move(\"left\")"},
+    {"id": "pick", "label": {"zh": "捡起货物", "en": "Pick up cargo"}, "template": "pick()"},
+    {"id": "wait", "label": {"zh": "原地等一回合", "en": "Wait one turn"}, "template": "wait()"},
+    {
+      "id": "repeat",
+      "label": {"zh": "重复几次", "en": "Repeat moves"},
+      "template": "for step in range({{count}}):",
+      "block": true,
+      "parameters": [
+        {
+          "name": "count",
+          "label": {"zh": "次数", "en": "Times"},
+          "choices": [
+            {"id": "n2", "label": {"zh": "2", "en": "2"}, "code": "2"},
+            {"id": "n3", "label": {"zh": "3", "en": "3"}, "code": "3"},
+            {"id": "n4", "label": {"zh": "4", "en": "4"}, "code": "4"},
+            {"id": "n5", "label": {"zh": "5", "en": "5"}, "code": "5"},
+            {"id": "n6", "label": {"zh": "6", "en": "6"}, "code": "6"},
+            {"id": "n7", "label": {"zh": "7", "en": "7"}, "code": "7"},
+            {"id": "n8", "label": {"zh": "8", "en": "8"}, "code": "8"},
+            {"id": "n9", "label": {"zh": "9", "en": "9"}, "code": "9"},
+            {"id": "n10", "label": {"zh": "10", "en": "10"}, "code": "10"},
+            {"id": "n11", "label": {"zh": "11", "en": "11"}, "code": "11"},
+            {"id": "n12", "label": {"zh": "12", "en": "12"}, "code": "12"},
+            {"id": "n13", "label": {"zh": "13", "en": "13"}, "code": "13"},
+            {"id": "n14", "label": {"zh": "14", "en": "14"}, "code": "14"},
+            {"id": "n15", "label": {"zh": "15", "en": "15"}, "code": "15"},
+            {"id": "n16", "label": {"zh": "16", "en": "16"}, "code": "16"},
+            {"id": "n17", "label": {"zh": "17", "en": "17"}, "code": "17"},
+            {"id": "n18", "label": {"zh": "18", "en": "18"}, "code": "18"}
+          ]
+        }
+      ]
+    }
+  ],
+  "solutionCards": [
+    {"cardId": "repeat", "values": {"count": "n6"}, "children": [{"cardId": "wait"}]},
+    {"cardId": "repeat", "values": {"count": "n14"}, "children": [{"cardId": "right"}]},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "down"}]},
+    {"cardId": "pick"},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "left"}]},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "down"}]},
+    {"cardId": "repeat", "values": {"count": "n5"}, "children": [{"cardId": "left"}]},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "down"}]},
+    {"cardId": "repeat", "values": {"count": "n4"}, "children": [{"cardId": "right"}]},
+    {"cardId": "down"},
+    {"cardId": "right"},
+    {"cardId": "up"},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "right"}]},
+    {"cardId": "repeat", "values": {"count": "n4"}, "children": [{"cardId": "down"}]},
+    {"cardId": "pick"},
+    {"cardId": "repeat", "values": {"count": "n14"}, "children": [{"cardId": "left"}]},
+    {"cardId": "down"}
+  ]
+}

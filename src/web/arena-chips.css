@@ -1,0 +1,43 @@
+.arena-chip {
+  position: absolute;
+  inset: 16% 19%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  font: 800 clamp(10px, 1.3vw, 20px)/1 var(--mono);
+  color: #40230a;
+  background: linear-gradient(135deg, #fff1a3, #ff922f);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+.arena-chip[data-kind="shield"] {
+  color: #1b4866;
+  background: linear-gradient(130deg, #adf3ff, #44b4f9);
+  clip-path: polygon(50% 0, 94% 16%, 90% 60%, 72% 86%, 50% 100%, 28% 86%, 10% 60%, 6% 16%);
+}
+.arena-pulse-line {
+  position: absolute;
+  inset: 44% 0;
+  z-index: 3;
+  pointer-events: none;
+  background: #b4fff4;
+  box-shadow: 0 0 6px 2px #39e7c9;
+}
+.arena-pulse-line[data-direction="up"], .arena-pulse-line[data-direction="down"] { inset: 0 44%; }
+.arena-pulse-line[data-side="rival"] { background: #ffc4db; box-shadow: 0 0 6px 2px #f366a2; }
+.arena-parcel, .arena-token {
+  position: absolute;
+  inset: 24%;
+  z-index: 2;
+}
+.arena-parcel {
+  inset: 24% 19%;
+  border-radius: 15%;
+  background: linear-gradient(90deg, transparent 40%, #fff1a3 40% 59%, transparent 59%),
+    linear-gradient(0deg, #c85c22 44%, #ffe89b 44% 56%, #f09239 56%);
+  box-shadow: 0 1px 3px #653918;
+}
+.arena-token {
+  border-radius: 50%;
+  background: repeating-linear-gradient(130deg, #f37199 0 24%, #fff0cb 25% 36%);
+  box-shadow: inset -2px -2px 2px #b6467d;
+}
