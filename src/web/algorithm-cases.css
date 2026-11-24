@@ -1,0 +1,76 @@
+.algorithm-cases { display: grid; gap: 12px; }
+.algorithm-cases__head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; }
+.teaching-panel.algorithm-cases h2 { margin: 0; }
+.algorithm-cases__signature { color: #b8eadd; font-size: 13.5px; overflow-wrap: anywhere; }
+.algorithm-cases__tally {
+  margin-inline-start: auto;
+  padding: 2px 10px;
+  border: 1px solid #7a5b3a;
+  border-radius: 999px;
+  background: #3d2e20;
+  color: #ffd9a6;
+  font-size: 12.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.algorithm-cases__tally[data-all] { border-color: #3f8a70; background: #1c4036; color: #b6f6dc; }
+.algorithm-cases__tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.algorithm-cases__tabs button { min-height: 34px; padding: 4px 11px; }
+.algorithm-cases__tabs button[aria-pressed='true'] { border-color: #69d9b0; background: #23483e; color: #b5f9e0; }
+/* Drawn as images, so a chip keeps the plain name "Case N". The outcome is in its description. */
+.algorithm-cases__tabs button[data-outcome]::after { content: ''; flex: none; width: 13px; height: 13px; background: center / contain no-repeat; }
+.algorithm-cases__tabs button[data-outcome='passed'] { border-color: #3f8a70; }
+.algorithm-cases__tabs button[data-outcome='passed']::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.6 8.6l3 3 5.8-7' fill='none' stroke='%2365efbd' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+.algorithm-cases__tabs button[data-outcome='failed'] { border-color: #a6674f; background: #3a2824; color: #ffd9cb; }
+.algorithm-cases__tabs button[data-outcome='failed']::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.4 4.4l7.2 7.2M11.6 4.4l-7.2 7.2' fill='none' stroke='%23ffab94' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.algorithm-cases__tabs button[data-outcome='failed'][aria-pressed='true'] { box-shadow: 0 0 0 2px #ffab9440; }
+.algorithm-case {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #101929;
+  overflow: hidden;
+}
+.algorithm-case > div { display: grid; grid-template-columns: 5.4em minmax(0, 1fr); gap: 4px 12px; padding: 9px 12px; }
+.algorithm-case > div + div { border-top: 1px dashed #2b3d57; }
+.algorithm-case dt { padding-top: 2px; color: var(--muted); font-size: 12.5px; font-weight: 650; }
+.algorithm-case dd { min-width: 0; margin: 0; }
+.algorithm-case pre {
+  max-height: 210px;
+  margin: 0;
+  overflow: auto;
+  color: #cbeee2;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre;
+  scrollbar-width: thin;
+}
+.algorithm-case__args { display: grid; gap: 7px; }
+.algorithm-case__args > div { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: 8px; }
+.algorithm-case__name { color: #9fc4ff; font: 650 13.5px/1.5 var(--mono); white-space: nowrap; }
+.algorithm-case__verdict { display: inline-block; margin-top: 5px; font-size: 12.5px; font-weight: 750; }
+.algorithm-case[data-outcome='passed'] { border-color: #3f8a70; }
+.algorithm-case[data-outcome='passed'] .algorithm-case__verdict { color: var(--mint); }
+.algorithm-case[data-outcome='failed'] { border-color: #a6674f; }
+.algorithm-case[data-outcome='failed'] .algorithm-case__actual { background: #2c1f1e; }
+.algorithm-case[data-outcome='failed'] .algorithm-case__verdict { color: #ffb39c; }
+.algorithm-case .error-message { margin: 0; }
+.algorithm-cases__all { font-size: 13px; }
+.algorithm-cases__all summary { width: fit-content; color: var(--muted); cursor: pointer; }
+.algorithm-cases__all summary:hover { color: #eaf3ff; }
+.algorithm-cases__scroll { max-height: 300px; margin-top: 8px; overflow: auto; border: 1px solid var(--border); border-radius: 9px; scrollbar-width: thin; }
+.algorithm-cases__all table { width: 100%; border-collapse: collapse; }
+.algorithm-cases__all th, .algorithm-cases__all td { padding: 6px 9px; border-bottom: 1px solid #25354c; text-align: start; vertical-align: top; }
+.algorithm-cases__all thead th { position: sticky; top: 0; background: #1a283d; color: var(--muted); font-size: 12px; white-space: nowrap; }
+.algorithm-cases__all tbody th { color: var(--dim); font: 650 12px var(--mono); }
+.algorithm-cases__all td code { display: block; max-width: 34ch; overflow: hidden; color: #cbeee2; text-overflow: ellipsis; white-space: nowrap; }
+.algorithm-cases__all tr[data-selected] { background: #1b2c43; }
+.algorithm-cases__all tr[data-outcome='failed'] td:last-child code { color: #ffb39c; }
+.algorithm-cases__all tr[data-outcome='passed'] td:last-child code { color: var(--mint); }
+.algorithm-cases__all tr:last-child > * { border-bottom: 0; }
+/* Long values scroll inside their own box. They never widen the panel. */
+.algorithm-cases, .algorithm-cases > *, .algorithm-case > div, .algorithm-case__args > div { min-width: 0; }
+.algorithm-case dd, .algorithm-case__args { overflow: hidden; }

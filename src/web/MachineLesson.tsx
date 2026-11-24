@@ -10,6 +10,8 @@ import { goalReplayIssue } from './goalReplayEvidence'
 import type { MachineChallengeDraft } from './challengeDraft'
 import type { ChallengeRunHandlers } from './challengeScore'
 import { tr } from './text'
+import { CodeField } from './CodeField'
+import { HintSteps } from './HintSteps'
 import './machine.css'
 
 const hints: Record<MachineOp, [string, string]> = {
@@ -326,8 +328,8 @@ function Session({ level, locale, onComplete, onMistake, challenge, initialDraft
           </div>
           {!demo && <>
             <label className="machine-editor-label" htmlFor={editorId}>{t('编写汇编', 'Write assembly')}</label>
-            <textarea id={editorId} ref={editor} className="machine-source" value={source} spellCheck={false} autoCapitalize="off" autoComplete="off"
-              maxLength={12_000} onChange={(event) => updateSource(event.currentTarget.value)} />
+            <CodeField id={editorId} inputRef={editor} className="machine-source" python={false} locale={locale} value={source}
+              maxLength={12_000} onChange={updateSource} />
             <div className="machine-palette" role="group" aria-label={t('添加指令', 'Add instructions')}>
               <label htmlFor={addressId}>{t('地址', 'Address')}</label>
               <select id={addressId} value={address} onChange={(event) => setAddressChoice(Number(event.currentTarget.value))}>
@@ -354,7 +356,7 @@ function Session({ level, locale, onComplete, onMistake, challenge, initialDraft
           </p>}
           {review && <ChallengeFailureReview review={review} onRetry={retry} />}
           {level.hints.length > 0 && <details className="machine-hints"><summary>{t('任务提示', 'Mission hints')}</summary>
-            <ul>{level.hints.map((hint, index) => <li key={index}>{hint[locale]}</li>)}</ul>
+            <HintSteps hints={level.hints} locale={locale} />
           </details>}
         </section>
       </CommandDesk>

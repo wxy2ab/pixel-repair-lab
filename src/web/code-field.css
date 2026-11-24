@@ -1,0 +1,62 @@
+.code-field { --code-size: 14px; --code-leading: 1.55; --code-pad: 10px; display: grid; gap: 5px; min-width: 0; }
+.code-field:has(.machine-source) { --code-size: .9rem; --code-leading: 1.4; --code-pad: 8px; }
+.code-field__frame {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-width: 0;
+  border: 1px solid #3b526e;
+  border-radius: 9px;
+  background: #0f1826;
+  overflow: hidden;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.code-field__frame:focus-within { border-color: #58b999; box-shadow: 0 0 0 3px #65efbd24; }
+.code-field[data-disabled] .code-field__frame { opacity: .72; }
+.code-field__gutter {
+  position: relative;
+  min-width: 2.7em;
+  overflow: hidden;
+  border-right: 1px solid #25364d;
+  background: #131f31;
+  color: #6f86a6;
+  font-family: var(--mono);
+  user-select: none;
+}
+/* Out of flow, so a long program never stretches the editor taller than the textarea. */
+.code-field__numbers {
+  position: absolute;
+  inset: 0 0 auto;
+  display: grid;
+  padding: var(--code-pad) 8px var(--code-pad) 6px;
+  counter-reset: code-line;
+  font-size: var(--code-size);
+  text-align: right;
+  will-change: transform;
+}
+.code-field__numbers span { counter-increment: code-line; height: calc(1em * var(--code-leading)); line-height: calc(1em * var(--code-leading)); }
+.code-field__numbers span::before { content: counter(code-line); font-size: .86em; }
+.code-field__numbers span[data-active] { color: #c9f7e5; font-weight: 700; }
+.code-field .code-field__frame .code-field__input {
+  display: block;
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  outline: 0;
+  background: transparent;
+  white-space: pre;
+  overflow: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #3d5270 transparent;
+}
+.code-field .code-field__frame .code-field__input:focus-visible { outline: 0; }
+/* The classroom desk is a light surface. The editor follows it. */
+.command-desk .code-field__frame:has(.machine-source) { border-color: #97aeba; background: #fff; }
+.command-desk .code-field__frame:has(.machine-source):focus-within { border-color: #358e9d; box-shadow: 0 0 0 3px #358e9d2e; }
+.command-desk .code-field__frame:has(.machine-source) .code-field__gutter { border-color: #d3dee4; background: #eef3f5; color: #7b8f9c; }
+.command-desk .code-field__frame:has(.machine-source) .code-field__numbers span[data-active] { color: #1d5661; }
+.code-field__hint { margin: 0; color: var(--dim); font-size: 12px; line-height: 1.45; }
+.command-desk .code-field:has(.machine-source) .code-field__hint { color: var(--desk-muted, #455e72); }
+@media (max-width: 670px) { .code-field__hint { display: none; } }
+@media (hover: none) { .code-field__hint { display: none; } }

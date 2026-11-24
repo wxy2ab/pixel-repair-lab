@@ -1,0 +1,87 @@
+.mission-brief {
+  margin-bottom: 14px;
+  border: 1px solid #344a66;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #1a2a41, #162133 65%);
+  box-shadow: 0 6px 18px #050b1630;
+}
+.mission-brief[data-pinned] {
+  position: sticky;
+  top: 8px;
+  z-index: 6;
+  border-color: #4c7f97;
+  background: #17263a;
+  box-shadow: 0 10px 28px #030812a6;
+}
+.mission-brief__bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  min-height: 42px;
+  padding: 7px 8px 7px 14px;
+}
+.mission-brief[data-open] .mission-brief__bar { border-bottom: 1px solid #2a3c55; }
+.mission-brief__title { flex: none; color: var(--warm); font-size: 13px; font-weight: 750; letter-spacing: .04em; }
+.mission-brief__facts { display: flex; flex: 1 1 260px; flex-wrap: wrap; gap: 5px; min-width: 0; margin: 0; padding: 0; list-style: none; }
+.mission-brief__facts li {
+  padding: 2px 9px;
+  border: 1px solid #364c69;
+  border-radius: 999px;
+  background: #1d2f47;
+  color: #d6e3f5;
+  font-size: 12.5px;
+  line-height: 1.55;
+  white-space: nowrap;
+}
+.mission-brief__facts li[data-difficulty] { font-weight: 700; }
+.mission-brief__facts li[data-difficulty='starter'] { border-color: #3f8a70; background: #1c4036; color: #b6f6dc; }
+.mission-brief__facts li[data-difficulty='intermediate'] { border-color: #5a70a8; background: #26335a; color: #cfdcff; }
+.mission-brief__facts li[data-difficulty='advanced'] { border-color: #9a6a3c; background: #4a3220; color: #ffdcae; }
+.mission-brief__tools { display: flex; gap: 2px; margin-inline-start: auto; }
+.mission-brief__tools .text-button { min-height: 30px; padding: 3px 8px; border-radius: 7px; white-space: nowrap; }
+.mission-brief__tools .text-button:hover { background: #24364f; }
+.mission-brief__tools .text-button[aria-pressed='true'] { color: var(--mint); }
+.mission-brief__body { padding: 11px 16px 13px; }
+.mission-brief[data-pinned] .mission-brief__body { max-height: min(34vh, 260px); overflow-y: auto; scrollbar-width: thin; }
+.mission-brief__goal { margin: 0; color: #eef4fd; font-size: 16px; line-height: 1.6; text-wrap: pretty; }
+.mission-brief__rules {
+  columns: 2 340px;
+  column-gap: 30px;
+  margin: 9px 0 0;
+  padding: 0;
+  list-style: none;
+  color: #c3d1e5;
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+.mission-brief__rules li { position: relative; margin-bottom: 4px; padding-inline-start: 16px; break-inside: avoid; text-wrap: pretty; }
+.mission-brief__rules li::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 2px;
+  top: .62em;
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+  background: var(--mint);
+  opacity: .8;
+}
+.mission-brief code {
+  padding: 1px 5px;
+  border: 1px solid #33506a;
+  border-radius: 5px;
+  background: #12203299;
+  color: #b9f0dd;
+  font-size: .9em;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 670px) {
+  .mission-brief__title { display: none; }
+  .mission-brief__bar { padding-inline-start: 9px; }
+  .mission-brief__body { padding: 9px 11px 11px; }
+  .mission-brief__goal { font-size: 15px; }
+}
+/* The AI task panel is a narrow column, so its rules stack in one. */
+.ai-mission .mission-brief__rules { columns: 1; margin-top: 10px; font-size: .95rem; }
+.ai-mission .mission-brief__rules li { margin-bottom: 6px; }

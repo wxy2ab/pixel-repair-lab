@@ -157,14 +157,14 @@ export function Lecture({ level, locale, onComplete, preview }: LearningProps & 
     <p>{level.question.prompt[locale]}</p>
     <div className="choices-column">
       {level.question.options.map((option, index) => <button type="button" key={index} className="subtle-button"
-        aria-pressed={selected === index} onClick={() => {
+        aria-pressed={selected === index} data-result={selected === index ? correct ? 'right' : 'wrong' : undefined} onClick={() => {
           setSelected(index)
           if (index === level.question.correct) onComplete()
         }}>
         {option[locale]}
       </button>)}
     </div>
-    {selected !== undefined && <p role="status" className={correct ? 'win-message' : 'error-message'}>
+    {selected !== undefined && <p role="status" className={(correct ? 'win-message' : 'error-message') + ' prediction-feedback'}>
       {correct ? tr(locale, '答对了！', 'That’s right! ') + level.question.feedback[locale]
         : interfaceLesson ? tr(locale, '再看看刚才回放的步骤，然后试一次。', 'Check the steps in the replay, then try again.')
           : tr(locale, '再试一次。想想刚才的例子。', 'Try again. Think about the example.')}

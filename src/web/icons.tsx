@@ -1,0 +1,18 @@
+const paths = {
+  modules: <><rect x="2.5" y="2.5" width="6" height="6" rx="1.6" /><rect x="11.5" y="2.5" width="6" height="6" rx="1.6" /><rect x="2.5" y="11.5" width="6" height="6" rx="1.6" /><rect x="11.5" y="11.5" width="6" height="6" rx="1.6" /></>,
+  challenge: <><path d="M4.5 17.5v-15" /><path d="M4.5 3.5h9.8l-2 3.4 2 3.4H4.5" /></>,
+  record: <><path d="M4 5h12M4 10h12M4 15h7" /><path d="m13.2 15 1.6 1.6 3-3.4" /></>,
+  algorithms: <><path d="m6.5 6-4 4 4 4" /><path d="m13.5 6 4 4-4 4" /><path d="m11.4 3.6-2.8 12.8" /></>,
+  preview: <><path d="M1.8 10S4.8 4.4 10 4.4 18.2 10 18.2 10 15.2 15.6 10 15.6 1.8 10 1.8 10Z" /><circle cx="10" cy="10" r="2.5" /></>,
+  collapse: <><rect x="2.5" y="3.5" width="15" height="13" rx="2.4" /><path d="M7.5 3.5v13" /><path d="m13 8-2 2 2 2" /></>,
+  expand: <><rect x="2.5" y="3.5" width="15" height="13" rx="2.4" /><path d="M7.5 3.5v13" /><path d="m11.4 8 2 2-2 2" /></>,
+  refresh: <><path d="M16.2 8.2A6.4 6.4 0 1 0 16.4 12" /><path d="M16.6 3.8v4.6H12" /></>,
+} as const
+
+export type IconName = keyof typeof paths
+
+/** Line icons drawn on a 20 by 20 grid. They are decorative; the button text carries the name. */
+export function Icon({ name, size = 17 }: { name: IconName; size?: number }) {
+  return <svg viewBox="0 0 20 20" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.7"
+    strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">{paths[name]}</svg>
+}

@@ -23,6 +23,8 @@ import { ChallengeFailureReview } from './ChallengeFailureReview'
 import { arenaFailureReview } from './challengeGameReview'
 import { arenaGoalReplayEvidence } from './goalReplayEvidence'
 import type { ChallengeRunHandlers, ChallengeScore } from './challengeScore'
+import { CodeField } from './CodeField'
+import { HintSteps } from './HintSteps'
 import './realtimeArena.css'
 
 type Props = {
@@ -379,8 +381,7 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
           <div className="panel-heading"><h2><span className="bracket-icon" aria-hidden="true">{'{ }'}</span>{t('实时 Python 策略', 'Live Python policy')}</h2></div>
           <div className="editor-body">
             <label htmlFor="realtime-python" className="python-label">{dynamic ? 'decide(state)' : t('编写 decide(state)', 'Write decide(state)')}</label>
-            <textarea id="realtime-python" className="python-input" spellCheck={false} autoCapitalize="off" autoComplete="off" maxLength={12000}
-              value={code} onChange={event => setCode(event.currentTarget.value)} />
+            <CodeField id="realtime-python" locale={locale} maxLength={12000} value={code} onChange={setCode} />
             {!preview && !observing && phase !== 'failed' && frame && policyStep?.source === code &&
               <ExecutionSource locale={locale} code={code} current={policyCursor.event ?? policyStep}
                 personal={runModules.current} course={runCourse.current} />}
@@ -409,7 +410,7 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
           </p>
         </section>
         {level.hints.length > 0 && <details className="panel teaching-panel">
-          <summary>{t('任务提示', 'Mission hints')}</summary>{level.hints.map((hint, index) => <p key={index}>{hint[locale]}</p>)}
+          <summary>{t('任务提示', 'Mission hints')}</summary><HintSteps hints={level.hints} locale={locale} />
         </details>}
       </div>
     </CommandDesk>

@@ -51,3 +51,10 @@
 .timed-policy-playback output {
   font-variant-numeric: tabular-nums;
 }
+/* One slim row on wider screens, so the board starts higher. */
+@media (min-width: 700px) {
+  .arena-pace { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 16px; padding: 8px 14px; }
+  .arena-pace-heading { display: contents; }
+  .arena-pace p { order: 1; flex: 1 1 260px; margin: 0; }
+  .arena-pace .segmented { order: 2; }
+}

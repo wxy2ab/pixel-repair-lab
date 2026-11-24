@@ -1,19 +1,20 @@
 import { createPortal } from 'react-dom'
 import { createRoot } from 'react-dom/client'
-import { Fragment, lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { Fragment, lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { ArenaLevel } from '../shared/advanced'
 import type { Catalog, Level, Locale } from '../shared/types'
 import type { RealtimeArenaCheckpoint } from '../engine/realtimeProtocol'
 import { AlgorithmLibrary, persistAlgorithms, readAlgorithms } from './AlgorithmLibrary'
 import { challengeZoneId } from '../shared/coursePrerequisites'
 import { ChallengePrerequisites } from './ChallengeCatalog'
+import { ChallengeBrief } from './ChallengeBrief'
 import { ChallengeCompletion } from './ChallengeCompletion'
 import { readArenaMatch, readArenaReload, saveArenaMatch, saveArenaReload, type ArenaReload } from './arenaMatchProgress'
 import type { ArenaReplayProgress } from './arenaReplayProgress'
 import { challengeDraftKey, parseChallengeDraft, supportsChallengeDraft, type ChallengeDraft } from './challengeDraft'
 import { ChallengeReplayFocusResult } from './ChallengeReplayFocusResult'
 import { ChallengeStudyRoute } from './ChallengeStudyRoute'
-import { buildChallengeCatalog, buildChallengePreparation, challengeType, nextChallenge, type ChallengeFilters, type ChallengeType } from './challengeModel'
+import { buildChallengeCatalog, buildChallengePreparation, challengeDifficulties, challengeDifficultyLabels, challengeType, challengeTypeLabels, challengeTypes, nextChallenge, type ChallengeFilters, type ChallengeType } from './challengeModel'
 import { buildChallengeRoutes, challengeRouteSkipsKey, lastChallengeKey, loadChallengeRouteSkips, loadLastChallenge } from './challengeRoutes'
 import { challengeScoresKey, challengeScoreSignature, readChallengeScores, updateChallengeScores, type ChallengeRunHandlers, type ChallengeScore, type ChallengeScoreComparison, type ChallengeScoreHistory } from './challengeScore'
 import { adjustChallengeGoal, archiveChallengeGoal, challengeGoalsKey, completedChallengeGoals, evaluateChallengeGoal, goalForScore, matchesCurrentChallenge, pendingChallengeGoals, readChallengeGoalStore, recordChallengeGoalFailure, removeChallengeGoal, saveChallengeGoal, serializeChallengeGoalStore, type ChallengeGoal, type ChallengeGoalEvaluation, type ChallengeGoalStore, type CompletedChallengeGoal, type PendingChallengeGoal } from './challengeGoals'
@@ -25,7 +26,9 @@ import type { ChallengeGoalTab } from './ChallengeGoalList'
 import { LessonView } from './LessonView'
 import { ModuleCatalog } from './ModuleCatalog'
 import { buildLearningRecord, learningRecordKey, readLearningLog, recordLesson, reviewMaterialsFor, type RecordTab } from './learningRecordModel'
-import { groupLevels, isCourseFinal, isCourseOverview, isOptionalChallenge, stageLabel } from './lessonTools'
+import { groupLevels, isCourseFinal, isCourseOverview, isOptionalChallenge, levelStage, stageLabel } from './lessonTools'
+import { LessonNext, TopicSteps } from './LessonGuide'
+import { Icon } from './icons'
 import { courseFor, CourseNavigation, OverviewTopics } from './LearningCourse'
 import { modulesForCourse } from './roadmapModel'
 import { Robot } from './Board'
@@ -47,6 +50,7 @@ const UnfinishedArenaMatches = lazy(() => import('./UnfinishedArenaMatchList').t
 const localeKey = 'pixel-repair-lab:locale'
 const progressKey = 'pixel-repair-lab:completed'
 const lastLessonKey = 'pixel-repair-lab:last-lesson'
+const railKey = 'pixel-repair-lab:mission-rail'
 const challengeGoalsHash = '#challenge-goals'
 const unfinishedMatchesHash = '#unfinished-matches'
 type Section = 'modules' | 'campaign' | 'preview' | 'algorithms' | 'record' | 'challenge-records' | 'challenge-goals' | 'unfinished-matches'
@@ -106,7 +110,7 @@ function RetainedChallenge({ visible, children }: { visible: boolean; children: 
     return () => playArea.remove()
   }, [visible, playArea])
 
-  return <div ref={viewport} hidden={!visible}>{createPortal(children, playArea)}</div>
+  return <div ref={viewport} className="challenge-stage" hidden={!visible}>{createPortal(children, playArea)}</div>
 }
 
 function readStorage(key: string) {
@@ -208,6 +212,8 @@ function App() {
   const [personal, setPersonal] = useState(readAlgorithms)
   const [storageFailed, setStorageFailed] = useState(false)
   const [routeOpen, setRouteOpen] = useState(false)
+  const [railHidden, setRailHidden] = useState(() => readStorage(railKey) === 'hidden')
+  const rail = useRef<HTMLElement>(null)
   const t = (zh: string, en: string) => tr(locale, zh, en)
 
   useEffect(() => {
@@ -279,7 +285,15 @@ function App() {
   const isChallenge = section === 'campaign' && activeGroup?.unit.id === challengeZoneId && !review
   const isRouteAttempt = isChallenge && routeChallengeId === level.id
   const canRestartChallenge = isChallenge && supportsChallengeDraft(level)
-  const ordered = activeGroup?.levels ?? []
+  const inChallengeZone = activeGroup?.unit.id === challengeZoneId
+  // The arena lists its challenges by kind, easiest first, so a long list stays easy to scan.
+  const ordered = useMemo(() => {
+    const members = activeGroup?.levels ?? []
+    if (activeGroup?.unit.id !== challengeZoneId) return members
+    const tier = (candidate: Level) => challengeDifficulties.indexOf(candidate.difficulty ?? 'intermediate')
+    return [...members].sort((left, right) => challengeTypes.indexOf(challengeType(left)) - challengeTypes.indexOf(challengeType(right))
+      || tier(left) - tier(right) || left.order - right.order)
+  }, [activeGroup])
   const course = level && courseFor(level)
   const courseOrder = course ? modulesForCourse(course, groups).flatMap(group => group.levels) : []
   const outline = section === 'campaign' && Boolean(activeGroup)
@@ -698,6 +712,25 @@ function App() {
     replayChallengeWithFocus(level.id, entry.score, retryReplayFocus(entry))
   }
 
+  const activeLevelId = section === 'campaign' ? level?.id : undefined
+  useEffect(() => {
+    // Keep the open lesson visible in a long mission list without moving the page itself.
+    const list = rail.current
+    const current = list?.querySelector<HTMLElement>('.mission-list [aria-current="step"]')
+    if (!list || !current || list.scrollHeight <= list.clientHeight) return
+    const frame = list.getBoundingClientRect()
+    const item = current.getBoundingClientRect()
+    if (item.top < frame.top + 8 || item.bottom > frame.bottom - 8) {
+      list.scrollTop += item.top - frame.top - (frame.height - item.height) / 2
+    }
+  }, [activeLevelId, railHidden])
+
+  function toggleRail() {
+    const next = !railHidden
+    setRailHidden(next)
+    writeStorage(railKey, next ? 'hidden' : 'shown')
+  }
+
   const progress = <div className="overview-progress">
     <div className="section-label"><h2>{t('总进度', 'Overall progress')}</h2><strong>{completedCount}<span> / {levels.length}</span></strong></div>
     <div className="progress-track" role="progressbar" aria-label={t('已完成任务', 'Completed missions')}
@@ -707,6 +740,8 @@ function App() {
   </div>
 
   const showCourseRail = outline && level && course && !invalidStudyRoute && !invalidArenaReload
+    && !reviewSource && !(studyChallenge && studyPlan) && !railHidden
+  const guidedLesson = outline && level && course && !invalidStudyRoute && !invalidArenaReload
     && !reviewSource && !(studyChallenge && studyPlan)
 
   return <div className="app-shell">
@@ -717,20 +752,20 @@ function App() {
       </button>
       <nav className="top-nav" aria-label={t('主导航', 'Main navigation')}>
         <button type="button" className={(section === 'campaign' && !review && !isChallenge || section === 'modules') ? 'active' : ''} aria-current={section === 'modules' ? 'page' : undefined} onClick={() => goTo('modules')}>
-          <span aria-hidden="true">▦</span>{t('学习模块', 'Learning modules')}
+          <span aria-hidden="true"><Icon name="modules" /></span>{t('学习模块', 'Learning modules')}
         </button>
         {hasChallenges && <button type="button" className={'challenge-jump' + (isChallenge || challengePanel ? ' active' : '')}
           aria-current={isChallenge || challengePanel ? 'page' : undefined} onClick={() => openChallenges()}>
-          <span aria-hidden="true">⚑</span>{t('挑战场', 'Challenge Arena')}
+          <span aria-hidden="true"><Icon name="challenge" /></span>{t('挑战场', 'Challenge Arena')}
         </button>}
         <button type="button" className={section === 'record' || review ? 'active' : ''} aria-current={section === 'record' ? 'page' : undefined} onClick={() => openRecord('history')}>
-          <span aria-hidden="true">≡</span>{t('学习记录', 'Study history')}
+          <span aria-hidden="true"><Icon name="record" /></span>{t('学习记录', 'Study history')}
         </button>
         <button type="button" className={section === 'algorithms' ? 'active' : ''} aria-current={section === 'algorithms' ? 'page' : undefined} onClick={() => goTo('algorithms')}>
-          <span aria-hidden="true">⌘</span>{t('我的算法', 'My algorithms')}
+          <span aria-hidden="true"><Icon name="algorithms" /></span>{t('我的算法', 'My algorithms')}
         </button>
         <button type="button" className={section === 'preview' ? 'active' : ''} aria-current={section === 'preview' ? 'page' : undefined} onClick={() => goTo('preview')}>
-          <span aria-hidden="true">◇</span>{t('关卡预览', 'Level preview')}
+          <span aria-hidden="true"><Icon name="preview" /></span>{t('关卡预览', 'Level preview')}
         </button>
       </nav>
       <div className="language-switch segmented" role="group" aria-label={t('语言', 'Language')}>
@@ -739,26 +774,45 @@ function App() {
       </div>
     </header>
 
-    <div className={outline ? 'app-main' : 'app-main app-main--solo'}>
-      {outline && activeGroup && <aside className={'sidebar' + (routeOpen ? ' sidebar-open' : '') + (showCourseRail ? ' classroom-rail' : '')}
+    <div className={outline ? 'app-main' + (railHidden ? ' app-main--rail-hidden' : '') : 'app-main app-main--solo'}>
+      {outline && activeGroup && <aside ref={rail} className={'sidebar' + (routeOpen ? ' sidebar-open' : '') + (showCourseRail ? ' classroom-rail' : '')}
         aria-label={t('学习进度与任务列表', 'Progress and mission list')}>
+        <button type="button" className="icon-button rail-toggle rail-toggle--show" onClick={toggleRail}
+          aria-label={t('展开任务列表栏', 'Show the mission list panel')} title={t('展开任务列表栏', 'Show the mission list panel')}>
+          <Icon name="expand" size={19} />
+        </button>
         {showCourseRail && <CourseNavigation course={course} level={level} ordered={courseOrder} locale={locale} completed={completed}
           onOpen={openLevel} onHome={() => goTo('modules')} />}
         <div className="sidebar-heading">
           {progress}
           <div className="route-title">
             <h3>{t('任务列表', 'Mission list')}</h3>
-            <button type="button" className="icon-button" aria-label={t('刷新关卡列表', 'Refresh mission list')} onClick={() => setRefresh(value => value + 1)}>↻</button>
+            <span className="route-tools">
+              <button type="button" className="icon-button" aria-label={t('刷新关卡列表', 'Refresh mission list')} title={t('刷新关卡列表', 'Refresh mission list')}
+                onClick={() => setRefresh(value => value + 1)}><Icon name="refresh" /></button>
+              <button type="button" className="icon-button rail-toggle" onClick={toggleRail}
+                aria-label={t('收起任务列表栏', 'Hide the mission list panel')} title={t('收起任务列表栏，给工作区更多空间', 'Hide the mission list panel for a wider workspace')}>
+                <Icon name="collapse" size={19} />
+              </button>
+            </span>
           </div>
         </div>
         <div className="mission-groups">
           <section className="mission-group" aria-label={activeGroup.unit.title[locale]}>
             <h3>{activeGroup.unit.title[locale]}</h3>
             <ol className="mission-list">
-              {activeGroup.levels.map((candidate, index) => <Fragment key={candidate.id}>
-                {isCourseOverview(candidate) && (index === 0 || !isCourseOverview(activeGroup.levels[index - 1])) &&
+              {ordered.map((candidate, index) => {
+                const done = completed.includes(candidate.id)
+                const type = inChallengeZone ? challengeType(candidate) : undefined
+                const sameType = type ? ordered.filter(entry => challengeType(entry) === type) : []
+                const difficulty = candidate.difficulty ?? 'intermediate'
+                return <Fragment key={candidate.id}>
+                {type && (index === 0 || challengeType(ordered[index - 1]) !== type) &&
+                  <li className="course-topic-heading course-topic-heading--count">{challengeTypeLabels[type][locale]}
+                    <span>{sameType.filter(entry => completed.includes(entry.id)).length}/{sameType.length}</span></li>}
+                {isCourseOverview(candidate) && (index === 0 || !isCourseOverview(ordered[index - 1])) &&
                   <li className="course-topic-heading">{t('课程全貌', 'Course overview')}</li>}
-                {candidate.topic && activeGroup.levels[index - 1]?.topic?.id !== candidate.topic.id &&
+                {candidate.topic && ordered[index - 1]?.topic?.id !== candidate.topic.id &&
                   <li className="course-topic-heading">{candidate.topic.title[locale]}</li>}
                 {course && isOptionalChallenge(candidate) &&
                   <li className="course-topic-heading">{t('阶段综合挑战 · 选做', 'Optional stage challenge')}</li>}
@@ -766,13 +820,15 @@ function App() {
                 <li>
                 <button type="button" className={section === 'campaign' && candidate.id === level?.id ? 'active' : ''}
                   aria-current={section === 'campaign' && candidate.id === level?.id ? 'step' : undefined}
-                  onClick={() => openLevel(candidate.id)}>
-                  <span className="mission-stage">{course && isOptionalChallenge(candidate) ? t('选做', 'Optional') : stageLabel(candidate, locale)}</span>
+                  data-done={done || undefined} onClick={() => openLevel(candidate.id)}>
+                  {type
+                    ? <span className="mission-stage" data-difficulty={difficulty}>{challengeDifficultyLabels[difficulty][locale]}</span>
+                    : <span className="mission-stage" data-stage={isCourseFinal(candidate) ? 'final' : levelStage(candidate)}>{course && isOptionalChallenge(candidate) ? t('选做', 'Optional') : stageLabel(candidate, locale)}</span>}
                   <span className="mission-name">{candidate.title[locale]}</span>
-                  {completed.includes(candidate.id) && <span className="mission-check" aria-label={t('已完成', 'Complete')}>✓</span>}
+                  {done && <span className="mission-check" aria-label={t('已完成', 'Complete')}>✓</span>}
                 </button>
                 </li>
-              </Fragment>)}
+              </Fragment>})}
             </ol>
           </section>
         </div>
@@ -837,7 +893,7 @@ function App() {
               <div>
                 <div className="mission-meta">{activeGroup && <span>{activeGroup.unit.title[locale]} · {stageLabel(level, locale)}</span>}<span className="concept-tag">{level.topic?.title[locale] ?? level.concept[locale]}</span></div>
                 <h1>{level.title[locale]}</h1>
-                {level.kind !== 'ai' && <p>{level.brief[locale]}</p>}
+                {level.kind !== 'ai' && !isChallenge && <p>{level.brief[locale]}</p>}
               </div>
               {((isWon && !showCourseRail) || isRouteAttempt || canRestartChallenge) && <div className="mission-finish">
                 {isWon && !showCourseRail && <span className="complete-tag">{t('已完成', 'Complete')}</span>}
@@ -853,6 +909,8 @@ function App() {
               </div>}
               {level.unit?.id === challengeZoneId && <WorkshopForLesson level={level} locale={locale} completed={isWon} />}
             </div>
+            {isChallenge && level.kind !== 'ai' && <ChallengeBrief key={level.id} level={level} locale={locale} />}
+            {guidedLesson && <TopicSteps level={level} ordered={ordered} completed={completed} locale={locale} onOpen={openLevel} />}
             {currentSummary && <ChallengeCompletion comparison={currentSummary.comparison} goalResult={currentSummary.goalResult} locale={locale} next={recommended}
               replayFocusResult={currentReplayFocus && <ChallengeReplayFocusResult result={currentReplayFocus.result}
                 reference={currentReplayFocus.reference} locale={locale} inSummary />}
@@ -890,6 +948,7 @@ function App() {
             {retainedChallenge?.id !== level.id &&
               <LessonView catalog={levels} key={`${review?.visit ?? 0}:${JSON.stringify(level)}`} level={level} locale={locale} completed={completed}
                 onComplete={markWin} onMistake={markMistake} personal={personal} onSave={saveAlgorithm} onOpenLevel={openLevel} />}
+            {guidedLesson && isWon && <LessonNext level={level} ordered={courseOrder} locale={locale} onOpen={openLevel} onHome={() => goTo('modules')} />}
             {!reviewSource && level.kind === 'lecture' && level.overview && !level.execution?.intro &&
               <OverviewTopics ordered={ordered} completed={completed} locale={locale} onOpen={openLevel} />}
           </>}

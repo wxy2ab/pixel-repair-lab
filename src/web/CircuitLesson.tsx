@@ -7,6 +7,7 @@ import { binaryValue, circuitMeetsGoal, gateOutput, isComponentCircuit } from '.
 import type { Bit, CircuitCase, CircuitInput, CircuitLevel, Gate } from '../shared/hardware'
 import type { Locale } from '../shared/types'
 import { tr } from './text'
+import { HintSteps } from './HintSteps'
 import './circuit.css'
 
 function startingInput(scenario: CircuitCase): CircuitInput {
@@ -180,7 +181,7 @@ export default function CircuitLesson({ level, locale, onComplete, onMistake }: 
                 t('当前场景', 'Current scenario') + ' · ' + scenario.label[locale]}
           </p>
           {level.cases.length > 1 && <p>{t('已完成场景', 'Scenarios complete')} <strong>{passed}/{level.cases.length}</strong></p>}
-          {level.hints.length > 0 && <details><summary>{t('任务提示', 'Mission hints')}</summary>{level.hints.map((hint, index) => <p key={index}>{hint[locale]}</p>)}</details>}
+          {level.hints.length > 0 && <details><summary>{t('任务提示', 'Mission hints')}</summary><HintSteps hints={level.hints} locale={locale} /></details>}
         </section>
       </div>
     </CommandDesk>

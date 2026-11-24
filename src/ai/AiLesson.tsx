@@ -8,6 +8,8 @@ import { ChallengeFailureReview, type ChallengeReviewData } from '../web/Challen
 import type { GoalReplayEvidence } from '../web/challengeGoalReview'
 import type { ChallengeRunHandlers, ChallengeScore } from '../web/challengeScore'
 import { checkAudit, gradeCandidate, maxPromptLength, parseCandidate, runPracticeTurn, simulateCandidate, type ItemCheck } from './core'
+import { BriefBody } from '../web/ChallengeBrief'
+import { HintSteps } from '../web/HintSteps'
 import './ai.css'
 
 const copy = {
@@ -332,7 +334,7 @@ function AiLessonSession({ level, locale, preview, onWin, onMistake, challenge, 
 
   const mission = <aside className="ai-mission">
     <h2>{t.mission}</h2>
-    <p className="ai-brief">{level.brief[locale]}</p>
+    <BriefBody text={level.brief[locale]} className="ai-brief" />
     <p>{level.concept[locale]}</p>
     <h3>{t.inventory}</h3>
     <ul className="ai-inventory">
@@ -343,7 +345,7 @@ function AiLessonSession({ level, locale, preview, onWin, onMistake, challenge, 
     </ul></>}
     {level.hints.length > 0 && <details className="ai-details">
       <summary>{t.hints}</summary>
-      <ul>{level.hints.map((hint, index) => <li key={index}>{hint[locale]}</li>)}</ul>
+      <HintSteps hints={level.hints} locale={locale} />
     </details>}
   </aside>
   const composer = <>

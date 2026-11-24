@@ -1,0 +1,41 @@
+.hint-steps { display: grid; gap: 8px; margin-top: 8px; }
+.hint-steps ol { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; counter-reset: hint; }
+.hint-steps li {
+  position: relative;
+  padding: 7px 10px 7px 36px;
+  border-inline-start: 3px solid var(--warm, #f6c976);
+  border-radius: 0 8px 8px 0;
+  background: color-mix(in srgb, var(--warm, #f6c976) 9%, transparent);
+  line-height: 1.55;
+  counter-increment: hint;
+  animation: hint-in .25s ease both;
+}
+.hint-steps li::before {
+  content: counter(hint);
+  position: absolute;
+  inset-inline-start: 9px;
+  top: 8px;
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: var(--warm, #f6c976);
+  color: #3b2a12;
+  font: 750 11px var(--mono);
+}
+.hint-steps__more {
+  justify-self: start;
+  padding: 4px 10px;
+  border: 1px dashed currentColor;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  opacity: .82;
+}
+.hint-steps__more:hover { opacity: 1; }
+details:has(> .hint-steps) > summary { cursor: pointer; font-weight: 650; }
+@keyframes hint-in { from { opacity: 0; transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .hint-steps li { animation: none; } }

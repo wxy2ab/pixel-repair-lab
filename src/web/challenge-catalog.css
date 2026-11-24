@@ -147,12 +147,29 @@
   background: #1d2b42;
   text-align: start;
 }
-.challenge-card:hover { border-color: #bf965f; background: #25344a; }
+.challenge-card { transition: border-color .15s ease, background-color .15s ease, transform .15s ease, box-shadow .15s ease; }
+.challenge-card:hover { border-color: #bf965f; background: #25344a; transform: translateY(-2px); box-shadow: 0 10px 22px #050b1650; }
+.challenge-card-top { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.challenge-card-title { display: grid; gap: 5px; flex: 1; min-width: 0; }
 .challenge-card[data-completed] { border-color: #4d786f; }
 .challenge-card-head { display: flex; align-items: start; justify-content: space-between; gap: 7px; }
 .challenge-card-head strong { font-size: 16px; line-height: 1.35; overflow-wrap: anywhere; }
 .challenge-check { flex: none; color: var(--mint); }
-.challenge-brief { flex: 1; color: #becbe0; font-size: 13px; line-height: 1.5; }
+/* The card previews the mission. The full brief opens with the challenge. */
+.challenge-brief {
+  display: -webkit-box;
+  flex: 0 1 auto;
+  overflow: hidden;
+  color: #becbe0;
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+.challenge-card > .challenge-rules { margin-top: auto; }
+.challenge-card > .challenge-rules:empty { display: none; }
+.challenge-card > .challenge-rules:empty + .challenge-open { margin-top: auto; }
 .challenge-rules { display: flex; flex-wrap: wrap; gap: 4px 8px; color: #cfd9ea; font: 650 12px var(--mono); }
 .challenge-rules > span { padding: 2px 5px; border-radius: 4px; background: #2b3950; }
 .challenge-open { color: var(--warm); font-size: 13px; font-weight: 750; }
@@ -254,11 +271,30 @@
 .challenge-prep-remaining ol { margin: 5px 0 1px; padding-inline-start: 1.4em; }
 .challenge-prep-remaining li { overflow-wrap: anywhere; }
 
+/* On a challenge page the study list stays one slim strip, so the workspace starts higher. */
+.challenge-prerequisites .challenge-prep-course-name.subtle-button { min-height: 32px; padding: 4px 10px; font-size: 13px; }
+.challenge-prerequisites .challenge-prep-remaining { padding-top: 0; border-top: 0; font-size: 12.5px; }
+.challenge-prerequisites .challenge-prep-remaining summary { padding: 0; color: var(--muted); }
+@media (min-width: 900px) {
+  .challenge-prerequisites {
+    grid-template-columns: auto minmax(0, 1fr) minmax(150px, 230px);
+    align-items: center;
+    gap: 4px 14px;
+    padding: 8px 13px;
+  }
+  .challenge-prerequisites-heading { display: contents; }
+  .challenge-prerequisites-heading .challenge-prep-meter { order: 2; max-width: none; }
+  .challenge-prerequisites > ul { order: 1; display: flex; flex-wrap: wrap; gap: 6px 12px; }
+  .challenge-prerequisites > ul > li { display: inline-flex; grid-template-columns: none; gap: 6px; }
+  .challenge-prerequisites .challenge-prep-remaining { order: 3; grid-column: 2 / -1; }
+}
+
 .challenge-preview {
   display: grid;
   place-items: center;
-  min-height: 94px;
-  padding: 6px;
+  flex: 0 0 92px;
+  min-height: 62px;
+  padding: 5px;
   border: 1px solid #334662;
   border-radius: 6px;
   background: repeating-linear-gradient(0deg, #111d30 0 3px, #142035 3px 4px);
@@ -268,7 +304,7 @@
   grid-template-columns: repeat(var(--challenge-columns), minmax(0, 1fr));
   grid-template-rows: repeat(var(--challenge-rows), minmax(0, 1fr));
   gap: 1px;
-  width: min(100%, 164px, calc(74px * var(--challenge-columns) / var(--challenge-rows)));
+  width: min(100%, 164px, calc(50px * var(--challenge-columns) / var(--challenge-rows)));
   aspect-ratio: var(--challenge-columns) / var(--challenge-rows);
 }
 .challenge-preview-map > span { background: #203249; border-radius: 1px; }

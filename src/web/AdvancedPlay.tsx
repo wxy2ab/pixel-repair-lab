@@ -14,6 +14,8 @@ import { ReplayControls } from './ReplayControls'
 import { useClassroom, CommandDesk } from './Classroom'
 import { DeviceWindow } from './DeviceWindow'
 import { FunctionInspector } from './FunctionInspector'
+import { AlgorithmCases } from './AlgorithmCases'
+import { CodeField } from './CodeField'
 import { AlgorithmRunToolbar, type AlgorithmDebugCursor } from './AlgorithmRunToolbar'
 import { ExecutionSource } from './ExecutionSource'
 import { PlayToolbar, useTrailPreference } from './PlayToolbar'
@@ -27,16 +29,17 @@ import { executionLine } from './executionLine'
 import type { AlgorithmChallengeDraft, ArenaChallengeDraft } from './challengeDraft'
 import type { ChallengeRunHandlers } from './challengeScore'
 import { runIssueText, tr } from './text'
+import { HintSteps } from './HintSteps'
 
 type PlayProps = { locale: Locale; onComplete: () => void; onMistake?: () => void }
 
 function PracticeEditor<Lesson extends AlgorithmLevel | ArenaLevel>({
-  level, locale, code, setCode, pending, children, personal, inputRef, toolbar, execution,
+  level, locale, code, setCode, pending, children, personal, inputRef, toolbar, execution, onRun,
 }: {
   level: Lesson; locale: Locale; code: string; setCode: (value: string) => void; pending: boolean;
   children?: ReactNode; personal?: PersonalAlgorithms;
   inputRef?: RefObject<HTMLTextAreaElement | null>;
-  toolbar?: ReactNode; execution?: ReactNode;
+  toolbar?: ReactNode; execution?: ReactNode; onRun?: () => void;
 }) {
   const localField = useRef<HTMLTextAreaElement>(null)
   const field = inputRef ?? localField
@@ -64,8 +67,8 @@ function PracticeEditor<Lesson extends AlgorithmLevel | ArenaLevel>({
     <div className="editor-body">
       {execution}
       <label htmlFor="advanced-python" className="python-label">{t('编写 Python', 'Write Python')}</label>
-      <textarea id="advanced-python" ref={field} className="python-input" spellCheck={false} autoCapitalize="off" autoComplete="off" maxLength={12000}
-        disabled={pending} value={code} onFocus={() => { focused.current = true }} onChange={event => setCode(event.target.value)} />
+      <CodeField id="advanced-python" inputRef={field} locale={locale} maxLength={12000} disabled={pending} value={code}
+        onFocus={() => { focused.current = true }} onChange={setCode} onRun={onRun} />
       <div className="demo-picker">
         {level.snippets.map((snippet, index) => <button type="button" className="subtle-button" key={index} disabled={pending} onClick={() => insert(snippet.code)}>
           {snippet.label[locale]}
@@ -212,7 +215,7 @@ export function AlgorithmPractice({ level, locale, onComplete, onMistake, person
       }, issue => setResult({ won: false, cases: [], issue }))
   }
 
-  const programEditor = <PracticeEditor level={level} locale={locale} code={code} setCode={updateCode}
+  const programEditor = <PracticeEditor level={level} locale={locale} code={code} setCode={updateCode} onRun={code.trim() ? run : undefined}
     pending={worker.pending} inputRef={editor} execution={<ExecutionSource locale={locale} code={code} personal={personal} course={course}
       current={current} next={next} />}>
     <CourseHelperPicker names={level.helpers} course={course} personal={personal} code={code} locale={locale}
@@ -228,7 +231,7 @@ export function AlgorithmPractice({ level, locale, onComplete, onMistake, person
     </p>
     {review && <ChallengeFailureReview review={review} onRetry={retry} />}
     {level.hints.length > 0 && <details><summary>{t('任务提示', 'Mission hints')}</summary>
-      {level.hints.map((hint, index) => <p key={index}>{hint[locale]}</p>)}
+      <HintSteps hints={level.hints} locale={locale} />
     </details>}
     {onSave && result?.won && code === verified && <button type="button" className="primary-button" disabled={saved || personal[level.functionName] === verified}
       onClick={() => { onSave(level.functionName, code); setSaved(true) }}>
@@ -249,22 +252,9 @@ export function AlgorithmPractice({ level, locale, onComplete, onMistake, person
     </div>
     {feedback}
   </DeviceWindow>{toolbar}</>
-  return <><div className="lesson-layout">
-    {level.pathGrading ? inspector : <section className="panel teaching-panel">
-      <h2>{t('验证用例', 'Test cases')}</h2>
-      <p><code>{level.functionName}()</code></p>
-      <ol className="function-cases">{level.cases.map((test, index) => {
-        const checked = (index === caseIndex && debugOutcome) || result?.cases[index]
-        return <li key={index}>
-          <button type="button" className="subtle-button" aria-pressed={index === caseIndex} onClick={() => selectCase(index)}>{t('用例', 'Case')} {index + 1}</button>
-          <pre className="sample-code">{JSON.stringify(test.args, null, 1)}</pre>
-          <div>{t('预期', 'Expected')} <code>{JSON.stringify(test.expected)}</code></div>
-          {checked && <div className={checked.passed ? 'win-message' : 'error-message'}>
-            {checked.issue ? runIssueText(locale, checked.issue) : (checked.passed ? t('通过', 'Passed') : t('得到', 'Got')) + ' ' + JSON.stringify(checked.actual)}
-          </div>}
-        </li>
-      })}</ol>
-    </section>}
+  return <><div className={'lesson-layout' + (level.pathGrading ? '' : ' lesson-layout--code')}>
+    {level.pathGrading ? inspector : <AlgorithmCases level={level} locale={locale} index={caseIndex} selectCase={selectCase}
+      outcomes={result?.cases} stepped={debugOutcome} />}
     <div className="play-column">{programEditor}{feedback}</div>
   </div>{toolbar}</>
 }
@@ -588,6 +578,7 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
     <CommandDesk locale={locale}>
       <div className="play-column">
         <PracticeEditor level={level} locale={locale} code={code} setCode={setCode} pending={worker.pending}
+          onRun={hasCommands && !observing ? () => run() : undefined}
           execution={<ExecutionSource locale={locale} code={code} current={current} next={next} personal={runPersonal} course={runCourse} />}
           personal={personal} inputRef={editor} toolbar={toolbar}>
           <CourseHelperPicker names={level.helpers} course={course} personal={personal} code={code} locale={locale}
@@ -605,7 +596,7 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
           </p>
           {result && (atEnd || !frames) && result.totalCases > 1 && <p>{t('场景通过', 'Scenarios passed')} {result.passedCases}/{result.totalCases}</p>}
           {review && <ChallengeFailureReview review={review} onRetry={retry} />}
-          {level.hints.length > 0 && <details><summary>{t('任务提示', 'Mission hints')}</summary>{level.hints.map((hint, index) => <p key={index}>{hint[locale]}</p>)}</details>}
+          {level.hints.length > 0 && <details><summary>{t('任务提示', 'Mission hints')}</summary><HintSteps hints={level.hints} locale={locale} /></details>}
         </section>}
       </div>
     </CommandDesk>

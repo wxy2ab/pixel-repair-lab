@@ -12,6 +12,8 @@ import MapScenarioPicker from './MapScenarioPicker'
 import { hasProgramCommands, MapObservationControls, useMapObservation } from './MapObservation'
 import { gridObservationFrames, gridObservationTurns, initialSnapshot } from '../engine/snapshot'
 import { ProgramEditor } from './ProgramEditor'
+import { CodeField } from './CodeField'
+import { GridGoals } from './GridGoals'
 import { CourseHelperPicker } from './CourseHelperPicker'
 import { ChallengeFailureReview } from './ChallengeFailureReview'
 import type { GridChallengeDraft } from './challengeDraft'
@@ -25,6 +27,7 @@ import { executionLine } from './executionLine'
 import { ExecutionSource } from './ExecutionSource'
 import { InlineExecutionSource } from './InlineExecutionSource'
 import { actionViewingDelay, gridPlayback, gridStepActivity } from './gridExecution'
+import { HintSteps } from './HintSteps'
 
 type Phase = 'idle' | 'running' | 'replaying' | 'paused' | 'done'
 type GridPlayback = RunResult & { inspected?: { index: number; run: GridMapRun } }
@@ -220,6 +223,8 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
       onStep={hasCommands && !observation.active && phase !== 'running' && phase !== 'done' ? pulseClock : undefined} />}
     <Board level={scenario} locale={locale} snapshot={snapshot} activity={gridStepActivity(currentStep)} showHardware={!bench}
       trail={trail.visible && !observation.active ? gridTrailAt(scenario, mapRun, shownFrame) : undefined} />
+    {!observation.active && <GridGoals scenario={scenario} snapshot={snapshot} locale={locale}
+      frames={mapRun?.frames.slice(0, phase === 'done' ? undefined : shownFrame + 1) ?? []} />}
     {observation.active && <MapObservationControls observation={observation} locale={locale} />}
     {!observation.active && phase === 'done' && mapCount > 1 && <p className="grid-map-outcome" role="status">{!mapRun
       ? t('本次运行还没检查到这张地图。', 'This map was not reached in this run.')
@@ -242,7 +247,7 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
     </div>
   </section> : (level.hints.length > 0 || level.tutorial?.length) ? <details className="panel hints">
     <summary>{t('任务提示', 'Mission hints')}</summary>
-    {level.hints.map((hint, index) => <p key={index}>{hint[locale]}</p>)}
+    {level.hints.length > 0 && <HintSteps hints={level.hints} locale={locale} />}
     {level.tutorial && <button type="button" className="text-button" onClick={() => setTutorial(0)}>{t('重看引导', 'Review walkthrough')}</button>}
   </details> : null
   const programEditor = <section className="panel editor-panel" ref={editor}>
@@ -271,8 +276,8 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
     </div> : <div className="editor-body" id="python-panel" role="tabpanel" aria-labelledby="python-tab">
       <ExecutionSource locale={locale} code={activeCode} current={current} next={next} personal={personal} course={course} />
       <label className="python-label" htmlFor="python-code">{t('编写 Python', 'Write Python')}</label>
-      <textarea className="python-input" id="python-code" value={typedCode ?? ''} spellCheck={false} autoCapitalize="off" autoComplete="off"
-        disabled={disabled} onChange={event => updateDraft({ source: event.target.value })} />
+      <CodeField id="python-code" locale={locale} value={typedCode ?? ''} disabled={disabled}
+        onChange={source => updateDraft({ source })} onRun={hasCommands && !observation.active ? () => run(false) : undefined} />
       <CourseHelperPicker names={level.helpers} course={course} personal={personal} code={typedCode ?? ''} locale={locale}
         disabled={disabled} onChange={source => updateDraft({ source })} />
       {Object.keys(personal).some(name => !level.helpers?.includes(name)) && <div className="demo-picker">{Object.keys(personal).filter(name => !level.helpers?.includes(name)).map(name => <button type="button" key={name}

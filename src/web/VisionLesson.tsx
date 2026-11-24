@@ -7,6 +7,7 @@ import { useEffect, useId, useRef, useState, type CSSProperties, type PointerEve
 import { parseVisionRequest, visionFields, visionMeetsGoal, type RGB, type VisionBox, type VisionCase, type VisionField, type VisionFrame, type VisionLevel, type VisionMode, type VisionParameters, type VisionRequest, type VisionResult } from '../shared/vision'
 import type { Locale } from '../shared/types'
 import { tr } from './text'
+import { HintSteps } from './HintSteps'
 import './vision-course.css'
 
 const loadPixelBench = () => import('./station3d/pixel-instrument').then(module => module.buildPixelInstrument)
@@ -320,7 +321,7 @@ function VisionExperiment({ level, scenario, locale, scenarioPicker, onPass, onF
         <p>{scenario.prompt[locale]}</p>
         {!classroom && settings}
         {level.hints.length > 0 && <details className="vision-details"><summary>{t('提示', 'Hints')}</summary>
-          <ul>{level.hints.map((hint, index) => <li key={index}>{hint[locale]}</li>)}</ul>
+          <HintSteps hints={level.hints} locale={locale} />
         </details>}
       </section>
     </CommandDesk>
