@@ -77,6 +77,7 @@ test('four battery operations show real reads and removals, and each new request
   await verify.click()
   await expect(actual).toHaveText('S')
   await expect(practice).toHaveAttribute('data-match', 'false')
+  await expect(practice.locator('.task-progress')).toHaveCount(0)
   await expect(practice.locator('[data-structure-task="0"]')).not.toHaveAttribute('data-passed', 'true')
   await button(practice, '再猜一次').click()
   await expect(actual).toHaveCount(0)
@@ -97,6 +98,7 @@ test('four battery operations show real reads and removals, and each new request
     await verify.click()
     await expect(actual).toHaveText(expectedPractice[task.kind])
     await expect(practice).toHaveAttribute('data-match', 'true')
+    await expect(practice.locator('.task-progress')).toHaveText(`已完成取件单 ${index + 1}/${tasks.tasks.length}`)
     await expect(practice.locator(`[data-structure-task="${index}"]`)).toHaveAttribute('data-passed', 'true')
     if (index < tasks.tasks.length - 1) {
       await expect(completed).toHaveCount(0)

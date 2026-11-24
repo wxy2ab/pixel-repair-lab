@@ -1,0 +1,175 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-storm-eye-flight-recorder",
+  "order": 1973,
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": {"zh": "风暴眼的失落航图", "en": "Lost Charts in the Storm Eye"},
+  "concept": {"zh": "四方回收 · 环形避风道 · 定时脉冲", "en": "Four chart fragments · Shelter rings · Timed pulses"},
+  "brief": {
+    "zh": "找回东、西、南、北四份散落的航图，在风暴眼集合。三台风暴信标在第 8、18、32 回合各震一次，只影响当回合的本格和相邻四格。内环有两台巡车，靠外环的风道每 4 回合有一次横向脉冲。限 90 回合。",
+    "en": "Recover the four chart fragments from the cardinal points and rendezvous in the storm eye. Three storm beacons pulse on turns 8, 18 and 32. Each pulse affects its own square and its four neighbors for that turn. Two trolleys patrol the inner ring, and a duct by the outer ring pulses sideways every 4 turns. You have 90 turns."
+  },
+  "hints": [],
+  "prerequisites": [{"unit": "python-intermediate", "topic": "for-loops"}, {"unit": "routing", "topic": "breadth-first"}],
+  "tiles": [
+    "###################",
+    "#########.#########",
+    "##...............##",
+    "##.######.###....##",
+    "##....#######.##.##",
+    "##.##.........##.##",
+    "##.##.###.###.##.##",
+    "##.##.###.###.##.##",
+    "#...#.............#",
+    "##.##.###.###.##.##",
+    "##.##.###.###.##.##",
+    "##.##.........##.##",
+    "##.##.#######....##",
+    "##....###..#..##.##",
+    "##...............##",
+    "#########.#########",
+    "###################"
+  ],
+  "start": {"x": 9, "y": 8},
+  "items": [
+    {"id": "north-chart", "x": 9, "y": 1},
+    {"id": "west-chart", "x": 1, "y": 8},
+    {"id": "south-chart", "x": 9, "y": 15},
+    {"id": "east-chart", "x": 17, "y": 8}
+  ],
+  "enemies": [
+    {
+      "path": [
+        {"x": 8, "y": 5},
+        {"x": 9, "y": 5},
+        {"x": 10, "y": 5},
+        {"x": 11, "y": 5},
+        {"x": 12, "y": 5},
+        {"x": 13, "y": 5},
+        {"x": 12, "y": 5},
+        {"x": 11, "y": 5},
+        {"x": 10, "y": 5},
+        {"x": 9, "y": 5},
+        {"x": 8, "y": 5},
+        {"x": 7, "y": 5},
+        {"x": 6, "y": 5},
+        {"x": 5, "y": 5},
+        {"x": 6, "y": 5},
+        {"x": 7, "y": 5}
+      ]
+    },
+    {
+      "path": [
+        {"x": 13, "y": 11},
+        {"x": 12, "y": 11},
+        {"x": 11, "y": 11},
+        {"x": 10, "y": 11},
+        {"x": 9, "y": 11},
+        {"x": 8, "y": 11},
+        {"x": 7, "y": 11},
+        {"x": 6, "y": 11},
+        {"x": 5, "y": 11},
+        {"x": 6, "y": 11},
+        {"x": 7, "y": 11},
+        {"x": 8, "y": 11},
+        {"x": 9, "y": 11},
+        {"x": 10, "y": 11},
+        {"x": 11, "y": 11},
+        {"x": 12, "y": 11}
+      ]
+    }
+  ],
+  "devices": [
+    {"kind": "bomb", "id": "north-gust", "x": 9, "y": 2, "atTurn": 8},
+    {"kind": "bomb", "id": "west-gust", "x": 2, "y": 8, "atTurn": 18},
+    {"kind": "bomb", "id": "south-gust", "x": 9, "y": 13, "atTurn": 32},
+    {"kind": "cannon", "id": "jetstream", "x": 2, "y": 14, "direction": "right", "period": 4, "phase": 0}
+  ],
+  "objectives": [
+    {"type": "collect", "itemIds": ["north-chart", "west-chart", "south-chart", "east-chart"]},
+    {"type": "exit", "x": 9, "y": 8}
+  ],
+  "turnLimit": 90,
+  "allowedApi": ["move", "wait", "pick"],
+  "cards": [
+    {"id": "up", "label": {"zh": "向上", "en": "Move up"}, "template": "move(\"up\")"},
+    {"id": "right", "label": {"zh": "向右", "en": "Move right"}, "template": "move(\"right\")"},
+    {"id": "down", "label": {"zh": "向下", "en": "Move down"}, "template": "move(\"down\")"},
+    {"id": "left", "label": {"zh": "向左", "en": "Move left"}, "template": "move(\"left\")"},
+    {"id": "pick", "label": {"zh": "捡起货物", "en": "Pick up cargo"}, "template": "pick()"},
+    {"id": "wait", "label": {"zh": "原地等一回合", "en": "Wait one turn"}, "template": "wait()"},
+    {
+      "id": "repeat",
+      "label": {"zh": "重复几次", "en": "Repeat moves"},
+      "template": "for step in range({{count}}):",
+      "block": true,
+      "parameters": [
+        {
+          "name": "count",
+          "label": {"zh": "次数", "en": "Times"},
+          "choices": [
+            {"id": "n2", "label": {"zh": "2", "en": "2"}, "code": "2"},
+            {"id": "n3", "label": {"zh": "3", "en": "3"}, "code": "3"},
+            {"id": "n4", "label": {"zh": "4", "en": "4"}, "code": "4"},
+            {"id": "n5", "label": {"zh": "5", "en": "5"}, "code": "5"},
+            {"id": "n6", "label": {"zh": "6", "en": "6"}, "code": "6"},
+            {"id": "n7", "label": {"zh": "7", "en": "7"}, "code": "7"},
+            {"id": "n8", "label": {"zh": "8", "en": "8"}, "code": "8"},
+            {"id": "n9", "label": {"zh": "9", "en": "9"}, "code": "9"},
+            {"id": "n10", "label": {"zh": "10", "en": "10"}, "code": "10"},
+            {"id": "n11", "label": {"zh": "11", "en": "11"}, "code": "11"},
+            {"id": "n12", "label": {"zh": "12", "en": "12"}, "code": "12"},
+            {"id": "n13", "label": {"zh": "13", "en": "13"}, "code": "13"},
+            {"id": "n14", "label": {"zh": "14", "en": "14"}, "code": "14"},
+            {"id": "n15", "label": {"zh": "15", "en": "15"}, "code": "15"},
+            {"id": "n16", "label": {"zh": "16", "en": "16"}, "code": "16"},
+            {"id": "n17", "label": {"zh": "17", "en": "17"}, "code": "17"},
+            {"id": "n18", "label": {"zh": "18", "en": "18"}, "code": "18"}
+          ]
+        }
+      ]
+    }
+  ],
+  "solutionCards": [
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "wait"}]},
+    {"cardId": "repeat", "values": {"count": "n4"}, "children": [{"cardId": "right"}]},
+    {"cardId": "repeat", "values": {"count": "n5"}, "children": [{"cardId": "down"}]},
+    {"cardId": "left"},
+    {"cardId": "down"},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "left"}]},
+    {"cardId": "up"},
+    {"cardId": "down"},
+    {"cardId": "left"},
+    {"cardId": "down"},
+    {"cardId": "pick"},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "up"}]},
+    {"cardId": "right"},
+    {"cardId": "wait"},
+    {"cardId": "down"},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "right"}]},
+    {"cardId": "up"},
+    {"cardId": "right"},
+    {"cardId": "repeat", "values": {"count": "n5"}, "children": [{"cardId": "up"}]},
+    {"cardId": "repeat", "values": {"count": "n4"}, "children": [{"cardId": "right"}]},
+    {"cardId": "pick"},
+    {"cardId": "repeat", "values": {"count": "n4"}, "children": [{"cardId": "left"}]},
+    {"cardId": "repeat", "values": {"count": "n6"}, "children": [{"cardId": "up"}]},
+    {"cardId": "repeat", "values": {"count": "n4"}, "children": [{"cardId": "left"}]},
+    {"cardId": "up"},
+    {"cardId": "pick"},
+    {"cardId": "down"},
+    {"cardId": "repeat", "values": {"count": "n7"}, "children": [{"cardId": "left"}]},
+    {"cardId": "repeat", "values": {"count": "n6"}, "children": [{"cardId": "down"}]},
+    {"cardId": "left"},
+    {"cardId": "pick"},
+    {"cardId": "right"},
+    {"cardId": "repeat", "values": {"count": "n4"}, "children": [{"cardId": "up"}]},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "right"}]},
+    {"cardId": "down"},
+    {"cardId": "repeat", "values": {"count": "n4"}, "children": [{"cardId": "right"}]},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "down"}]}
+  ]
+}

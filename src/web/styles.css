@@ -1,5 +1,6 @@
 @import './board.css';
 @import './editor.css';
+@import './task-feedback.css';
 
 :root {
   color-scheme: dark;
@@ -263,7 +264,6 @@ code, pre { font-family: var(--mono); }
 .import-symbol { font-family: var(--mono); font-size: 25px; color: var(--mint); background: #203c39; border-radius: 10px; padding: 8px 12px; }
 .preview-heading { margin-top: 24px; }
 .preview-details h3 { margin-bottom: 8px; }
-.mobile-missions { display: none; }
 
 @media (min-width: 1600px) { .app-main { grid-template-columns: 268px minmax(0, 1fr); } }
 @media (max-width: 1100px) { .app-main { grid-template-columns: 204px minmax(0, 1fr); } .sidebar { padding-inline: 8px; } }
@@ -280,9 +280,6 @@ code, pre { font-family: var(--mono); }
 }
 @media (max-width: 670px) {
   .app-main { display: block; }
-  .sidebar { display: none; border-bottom: 1px solid var(--border); }
-  .sidebar.sidebar-open { display: block; max-height: 325px; overflow: auto; }
-  .mobile-missions { display: inline-flex; margin: 0 0 16px; }
   .content { padding-top: 12px; }
   .mission-heading { flex-wrap: wrap; }
   .top-nav { border-radius: 10px; }

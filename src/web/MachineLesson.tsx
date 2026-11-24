@@ -10,6 +10,7 @@ import { goalReplayIssue } from './goalReplayEvidence'
 import type { MachineChallengeDraft } from './challengeDraft'
 import type { ChallengeRunHandlers } from './challengeScore'
 import { tr } from './text'
+import { TaskProgress } from './TaskProgress'
 import { CodeField } from './CodeField'
 import { HintSteps } from './HintSteps'
 import './machine.css'
@@ -346,12 +347,12 @@ function Session({ level, locale, onComplete, onMistake, challenge, initialDraft
             <button type="button" className="subtle-button" disabled={!terminal || result.frames.length === 0} onClick={checkAll}>
               {t('检验全部场景', 'Check all scenarios')}
             </button>
-            {tested > 0 && <span>{t('已通过', 'Passed')} {level.cases.filter((_, index) => checked[index]?.won).length}/{level.cases.length}</span>}
+            {tested > 0 && <TaskProgress label={t('已通过', 'Passed')} done={level.cases.filter((_, index) => checked[index]?.won).length} total={level.cases.length} />}
           </div>}
-          {complete && <p className="machine-feedback machine-matching" role="status">{demo
+          {complete && <p className="machine-feedback machine-matching" role="status" data-task-success="true">{demo
             ? t('已执行到 HALT，演示完成。', 'HALT reached. Demo complete.')
             : t('同一份程序通过了所有场景。', 'The same program passed all scenarios.')}</p>}
-          {!complete && !demo && terminal && result.won && <p className="machine-feedback machine-matching" role="status">
+          {!complete && !demo && terminal && result.won && <p className="machine-feedback machine-matching" role="status" data-task-success="true">
             {t('当前场景通过。', 'This scenario passed.')}
           </p>}
           {review && <ChallengeFailureReview review={review} onRetry={retry} />}

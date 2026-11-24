@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import type { ApiName, Locale } from '../shared/types'
-import type { StationActivity } from './station3d/types'
+import type { Locale } from '../shared/types'
+import type { StationActivity, StationCommand } from './station3d/types'
 import { describeFlow } from './stationFlowCue'
 import { tr } from './text'
 import './action-robot.css'
 
-const actions: Record<ApiName, [symbol: string, zh: string, en: string]> = {
+const actions: Record<StationCommand, [symbol: string, zh: string, en: string]> = {
+  shoot: ['✦', '发射脉冲', 'Firing a pulse'], guard: ['⬡', '展开防护', 'Guarding'],
   scan: ['◎', '扫描', 'Scanning'],
   read_map: ['▦', '看地图', 'Reading the map'],
   move: ['➜', '移动', 'Moving'],

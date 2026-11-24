@@ -14,9 +14,12 @@ export function GridGoals({ scenario, snapshot, frames, locale }: {
   if (!goals.length) return null
   const finished = goals.filter(goal => goal.done).length
   return <div className="grid-goals" data-testid="grid-goals" data-complete={finished === goals.length || undefined}>
-    <span className="grid-goals__title">{tr(locale, '本图目标', 'Goals')}
-      <b>{finished}/{goals.length}</b>
-    </span>
+    <div className="grid-goals__progress">
+      <span className="grid-goals__title">{tr(locale, '本图目标', 'Goals')}
+        <b aria-live="polite" aria-atomic="true"><span className="sr-only">{tr(locale, '已达成', 'Completed')} </span>{finished}/{goals.length}</b>
+      </span>
+      <span className="grid-goals__track" aria-hidden="true"><i style={{ width: (finished / goals.length * 100) + '%' }} /></span>
+    </div>
     <ul aria-label={tr(locale, '本图目标清单', 'Goals for this map')}>
       {goals.map(goal => <li key={goal.key} data-done={goal.done || undefined}>
         <i aria-hidden="true">{goal.done ? '✓' : ''}</i>

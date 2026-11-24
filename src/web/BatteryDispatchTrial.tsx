@@ -261,7 +261,7 @@ export function BatteryDispatchTrial({ level, locale, source, personal, course, 
             </div>
           </div>}
           <DispatchBoard sample={sample} step={step} t={t} />
-          {finished && <p className="win-message" role="status">{t('小例子试跑完成。', 'The small trial is complete.')}</p>}
+          {finished && <p className="win-message" role="status" data-task-success="true">{t('小例子试跑完成。', 'The small trial is complete.')}</p>}
           {step?.kind === 'return' && !trial.passed && <p className="error-message" role="status">
             {t('取件顺序或电量登记和工单对不上。', 'The pickup order or charge register does not match the work order.')}
           </p>}

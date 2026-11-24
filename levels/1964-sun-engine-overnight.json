@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-sun-engine-overnight",
+  "order": 1964,
+  "difficulty": "advanced",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "stage": "challenge",
+  "prerequisites": [
+    {"unit": "python-intermediate", "topic": "branches"},
+    {"unit": "routing", "topic": "breadth-first"}
+  ],
+  "title": {"zh": "地下太阳机的黎明", "en": "Dawn of the Clockwork Sun"},
+  "concept": {"zh": "双反光闸 · 脉冲脊桥 · 两枚日轮", "en": "Two prism gates · Pulse bridge · Twin sun wheels"},
+  "brief": {
+    "zh": "把两枚日轮送到东北角的太阳机。西南水冷踏板切断第一道折光线。西北车间的踏板切断第二道折光线，也能升起终点的舱门。东南角的钥匙同时配西北和东北的日轮箱。脊桥的脉冲从第 2 回合起每四回合发亮。限 90 回合。",
+    "en": "Deliver both sun wheels to the clockwork sun in the northeast. The southwest cooling plate cuts the first bent beam. The northwest workshop plate cuts the second bent beam and raises the finish hatch. The key in the southeast fits the sun-wheel chests in both northern workshops. The ridge bridge pulses every fourth turn starting on turn 2. Finish within 90 turns."
+  },
+  "hints": [],
+  "tiles": [
+    "####################",
+    "#......########....#",
+    "#......#####.....###",
+    "#........###.....###",
+    "#........###.....###",
+    "###.###..###.....###",
+    "##..##.......#.#####",
+    "##......####.....###",
+    "#.#..#.#######...###",
+    "#......##......#.###",
+    "###..####.####.#.###",
+    "#.........####.#.###",
+    "#.....#######......#",
+    "#........####......#",
+    "#.....##.####......#",
+    "#.....##...........#",
+    "#.....###.###......#",
+    "####################"
+  ],
+  "start": {"x": 1, "y": 15},
+  "turnLimit": 90,
+  "allowedApi": [
+    "move",
+    "pick",
+    "wait"
+  ],
+  "devices": [
+    {"kind": "switch", "id": "cooling-plate", "x": 1, "y": 11},
+    {"kind": "laser", "id": "cooling-lamp", "x": 1, "y": 8, "direction": "down", "switchId": "cooling-plate"},
+    {"kind": "mirror", "id": "cooling-prism", "x": 1, "y": 9, "orientation": "\\"},
+    {"kind": "switch", "id": "lift-plate", "x": 1, "y": 1},
+    {"kind": "laser", "id": "lift-lamp", "x": 16, "y": 7, "direction": "left", "switchId": "lift-plate"},
+    {"kind": "mirror", "id": "lift-prism", "x": 12, "y": 7, "orientation": "\\"},
+    {"kind": "key", "id": "solar-key", "x": 18, "y": 16},
+    {"kind": "chest", "id": "dawn-wheel", "x": 1, "y": 4, "keyId": "solar-key"},
+    {"kind": "chest", "id": "dusk-wheel", "x": 16, "y": 2, "keyId": "solar-key"},
+    {"kind": "door", "id": "solar-hatch", "x": 17, "y": 1, "switchId": "lift-plate"},
+    {"kind": "cannon", "id": "ridge-clock", "x": 9, "y": 16, "direction": "up", "period": 4, "phase": 2}
+  ],
+  "objectives": [
+    {"type": "collect", "itemIds": ["dawn-wheel", "dusk-wheel"]},
+    {"type": "exit", "x": 18, "y": 1}
+  ],
+  "cards": [
+    {"id": "up", "label": {"zh": "向上", "en": "Move up"}, "template": "move(\"up\")"},
+    {"id": "right", "label": {"zh": "向右", "en": "Move right"}, "template": "move(\"right\")"},
+    {"id": "down", "label": {"zh": "向下", "en": "Move down"}, "template": "move(\"down\")"},
+    {"id": "left", "label": {"zh": "向左", "en": "Move left"}, "template": "move(\"left\")"},
+    {
+      "id": "repeat",
+      "label": {"zh": "重复几次", "en": "Repeat moves"},
+      "template": "for step in range({{count}}):",
+      "block": true,
+      "parameters": [
+        {
+          "name": "count",
+          "label": {"zh": "次数", "en": "Times"},
+          "choices": [
+            {"id": "n2", "label": {"zh": "2", "en": "2"}, "code": "2"},
+            {"id": "n3", "label": {"zh": "3", "en": "3"}, "code": "3"},
+            {"id": "n4", "label": {"zh": "4", "en": "4"}, "code": "4"},
+            {"id": "n5", "label": {"zh": "5", "en": "5"}, "code": "5"},
+            {"id": "n6", "label": {"zh": "6", "en": "6"}, "code": "6"},
+            {"id": "n7", "label": {"zh": "7", "en": "7"}, "code": "7"},
+            {"id": "n8", "label": {"zh": "8", "en": "8"}, "code": "8"},
+            {"id": "n9", "label": {"zh": "9", "en": "9"}, "code": "9"},
+            {"id": "n10", "label": {"zh": "10", "en": "10"}, "code": "10"}
+          ]
+        }
+      ]
+    },
+    {"id": "pick", "label": {"zh": "打开脚下的宝箱", "en": "Open this chest"}, "template": "pick()"},
+    {"id": "wait", "label": {"zh": "原地等一回合", "en": "Wait one turn"}, "template": "wait()"}
+  ],
+  "solutionCards": [
+    {"cardId": "repeat", "values": {"count": "n4"}, "children": [{"cardId": "up"}]},
+    {"cardId": "repeat", "values": {"count": "n4"}, "children": [{"cardId": "right"}]},
+    {"cardId": "down"},
+    {"cardId": "down"},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "right"}]},
+    {"cardId": "down"},
+    {"cardId": "down"},
+    {"cardId": "repeat", "values": {"count": "n10"}, "children": [{"cardId": "right"}]},
+    {"cardId": "down"},
+    {"cardId": "up"},
+    {"cardId": "repeat", "values": {"count": "n10"}, "children": [{"cardId": "left"}]},
+    {"cardId": "up"},
+    {"cardId": "up"},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "left"}]},
+    {"cardId": "up"},
+    {"cardId": "up"},
+    {"cardId": "left"},
+    {"cardId": "repeat", "values": {"count": "n4"}, "children": [{"cardId": "up"}]},
+    {"cardId": "left"},
+    {"cardId": "repeat", "values": {"count": "n6"}, "children": [{"cardId": "up"}]},
+    {"cardId": "left"},
+    {"cardId": "left"},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "down"}]},
+    {"cardId": "pick"},
+    {"cardId": "repeat", "values": {"count": "n7"}, "children": [{"cardId": "right"}]},
+    {"cardId": "down"},
+    {"cardId": "down"},
+    {"cardId": "repeat", "values": {"count": "n4"}, "children": [{"cardId": "right"}]},
+    {"cardId": "repeat", "values": {"count": "n4"}, "children": [{"cardId": "up"}]},
+    {"cardId": "repeat", "values": {"count": "n4"}, "children": [{"cardId": "right"}]},
+    {"cardId": "pick"},
+    {"cardId": "up"},
+    {"cardId": "right"},
+    {"cardId": "right"}
+  ]
+}

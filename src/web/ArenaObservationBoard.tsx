@@ -35,7 +35,7 @@ export function ArenaObservationBoard({ level, locale, initialMap, onExit }: {
   const frames = maps.current[index]
   const latestShift = frames?.findLast((entry, i) => i < observation.step && entry.shift)?.shift
   return <>
-    <ArenaBoard level={map} locale={locale} snapshot={frame?.state ?? initialArenaSnapshot(map)}
+    <ArenaBoard level={map} locale={locale} snapshot={frame?.state ?? initialArenaSnapshot(map)} frame={frame}
       finished={!!frames && observation.step === frames.length} latestShift={latestShift}
       mapPicker={observation.active && <MapScenarioPicker locale={locale} index={index} count={count} onChange={observation.selectMap} />}>
       {observation.active ? <MapObservationControls observation={{ ...observation, exit: onExit }} locale={locale} /> : <>

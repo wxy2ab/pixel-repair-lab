@@ -41,6 +41,8 @@
 - 从同类型的现有关卡开始。网格任务参考 [把路线装进口袋](levels/03-pocket-route.json)，带敌人的网格参考 [先来的先发货](levels/05-arrival-queue.json)，AI 协作参考 [AI 补给搭档](levels/11-ai-supply-box.json)。修改地形、实体、可用指令、目标或初始数据时，使用配置里的字段。
 - 所有本地化文字都提供 `zh` 和 `en`。网格任务应能通过鼠标组合指令卡过关，因此 `cards` 要覆盖参考解法。数据结构目标用 `origin` 检查实际操作来源，并用 `variants` 检查同一解法能适应的数据变化。
 - 独立闯关任务放在 `challenge-zone` 单元，单元排序为 90，双语标题为「挑战场」和「Challenge Arena」。用 `stage: "challenge"`，任务说明写目标和胜负规则。网格可用 `turnLimit` 限制回合，移动、拾取和 CPU 单步各耗一回合，扫描免费。最后一回合刚好完成有效。
+- 渡口关用 `ferry.kind` 选择过桥（`crossing`）或双路线竞赛（`race`）。过桥关的 `next` 指向同一单元的下一场，`carryFrom` 指定要带入哪一场的通关程序。竞赛用 `items` 摆两块电池，`ferry.wall` 摆活动墙，`turnLimit` 指定开船回合。验关会在 `ferry.solutionLayout` 上运行 `solutionCards`，检查玩家拿齐电池准时登船且就近机器人误船。
+- 激光短挑战用 `laserTrial.kind` 选择路径关（`crossing`）或摆镜竞赛（`race`）。路径关用同系列的 `next` 和 `carryFrom` 衔接。竞赛在 `devices` 摆放激光器和镜子，在 `mirrorIds` 列出可移动镜子的 ID，按相同顺序填写参考摆法 `solutionMirrors`。验关会同时检查芽芽安全到达出口、走最短路的机器人被光束照到。
 - 挑战场的 `brief` 会显示为任务简报：第一句作为目标，其余每句各占一行规则。每句只写一条规则，用句号结束。函数调用、下划线命名和形如 `[起点, 终点]` 的返回格式会显示为代码，中文说明里出现的起始代码参数名也是。网格关卡的 `objectives` 会生成棋盘下方的目标清单，按配置顺序逐项显示。
 - 挑战场关卡用 `prerequisites` 标注建议先学的课程，按推荐顺序填写 `{ "unit": "现有单元 ID", "topic": "该单元下的知识点 ID" }`。只推荐整个模块时省略 `topic`。标题从现有双语课程读取，课程校验会检查引用是否存在，玩家可以直接进入挑战。
 - 挑战场关卡填写 `difficulty`。`starter`（入门）适用于规则固定、可用少量操作或直接运用已学知识完成的关卡，`intermediate`（进阶）适用于需要组合知识或考虑对手行动的关卡，`advanced`（高难）适用于需要应对实时变化、多重限制，或设计更复杂算法的关卡。挑战场按关卡的 `kind` 分组，用配置中的难度排序和筛选。
@@ -58,6 +60,7 @@
 - 「已达成」保存目标、达成时的成绩和设定后的重玩次数。重玩按整次挑战判定计数，达成的那次也计入。旧记录缺少次数时显示「未记录」。从达成成绩设新目标会保留原记录。
 - 「目标推荐」参考同一关卡、玩法和测试范围最近两到三次有时间记录的通关成绩。推荐以上次通关为起点改善一个单位，优先选近期曾达到的门槛。已有进行中目标的玩法不再推荐。
 - 动态竞技可在 `shifts` 依回合填写 `turn`、`open`、`close` 和 `moveItems`。指定回合结束时先开门，再移动尚未被收集的电池，最后关门。机器人或电池占住的门本次保持开启。策略通过 `scan()` 读取更新后的 `tiles` 和 `items`。`adaptive` 对手可选 `secure`、`intercept` 或 `flex`，行动取决于比分、目标位置和当前通道。
+- 脉冲对抗用 `combat.health`、`combat.range` 设置双方耐久和射程。`combat.buffs` 每项用 `id` 引用同场景的道具，`kind` 可选 `power` 或 `shield`。会发射和防御的对手用 `policy.kind: "duelist"`，配 `style: "sentry"` 驻守或 `"hunter"` 追击。目标可用 `eliminate` 击退全部对手，`collect` 拿齐 `itemIds`，或 `escape` 抵达 `exit`。`escape.itemIds` 为空数组时只需抵达。参考 [霓虹弹球杯](levels/1939-neon-pinball-cup.json) 和 [浪尖栈桥冲刺](levels/1940-tidal-boardwalk-sprint.json)。
 - 网格的 `solutionCards` 必须能完成主场景和所有变体。算法与竞技场按 Schema 提供 `starterCode`、`solutionCode` 和补写片段，参考代码必须通过全部用例或变体。AI 任务的 `examplePrompts` 包含首轮请求和每次模拟错误后的参考修正。写完运行 `npm run levels:check -- levels/你的关卡.json`，需要机器可读结果时加 `--json`。
 - `circuit` 配置二进制、逻辑门和组合实验。每个案例提供初始开关 `bits`，有门时再提供初始 `gate`。练习和挑战声明 `goal` 与可通过的 `solution`。
 - 电路模式 `diode` 和 `transistor` 都用两位 `bits`。第一位表示开关闭合，第二位分别表示二极管正向或晶体管基极为高电平。`goal.output` 是指示灯的亮灭，可再指定开关、方向或基极状态。

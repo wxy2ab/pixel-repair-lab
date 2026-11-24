@@ -1,0 +1,196 @@
+{
+  "version": 1,
+  "id": "challenge-coral-record-dive",
+  "order": 1947,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": { "zh": "挑战场", "en": "Challenge Arena" }
+  },
+  "stage": "challenge",
+  "difficulty": "intermediate",
+  "title": { "zh": "珊瑚城寻声", "en": "Coral Soundings" },
+  "concept": { "zh": "三只海螺 · 分流的礁穴", "en": "Three conches · Branching reefs" },
+  "brief": { "zh": "打捞珊瑚城的三只录音海螺。第 11 回合结束时海流把还没捡走的蓝海螺冲进东边的水道。紫海螺在第 21 回合结束时会漂到北礁。两台潜水机器人会追赶，另一台守着水道。芽芽必须在停机或第 50 回合结束前收齐海螺。", "en": "Salvage all three recording conches in Coral City. After turn 11 the current sweeps the unclaimed blue conch into the east channel. After turn 21 the unclaimed violet conch drifts to the north reef. Two dive bots give chase and a third guards the channel. Collect the set before losing power and by the end of turn 50." },
+  "prerequisites": [
+    {
+      "unit": "structures",
+      "topic": "dictionaries"
+    },
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "###################",
+    "#.......##........#",
+    "#.......##........#",
+    "#..####.....###...#",
+    "#..###..##..###...#",
+    "#.......##........#",
+    "#.....##...###....#",
+    "#.....##...###.##.#",
+    "#.###.##...##..##.#",
+    "#.###.............#",
+    "#.###.......###...#",
+    "#.....####..###...#",
+    "#.....####..##....#",
+    "#.................#",
+    "###################"
+  ],
+  "start": { "x": 2, "y": 12 },
+  "items": [
+    { "id": "red-conch", "x": 3, "y": 6 },
+    { "id": "blue-conch", "x": 16, "y": 3 },
+    { "id": "violet-conch", "x": 11, "y": 13 },
+    { "id": "power-1", "x": 2, "y": 11 },
+    { "id": "power-2", "x": 5, "y": 6 },
+    { "id": "power-3", "x": 15, "y": 4 },
+    { "id": "shield-1", "x": 3, "y": 12 },
+    { "id": "shield-2", "x": 9, "y": 9 },
+    { "id": "shield-3", "x": 16, "y": 11 }
+  ],
+  "opponents": [
+    {
+      "id": "bubble",
+      "title": { "zh": "气泡号", "en": "Bubbles" },
+      "start": { "x": 16, "y": 6 },
+      "policy": {
+        "kind": "duelist",
+        "style": "sentry"
+      }
+    },
+    {
+      "id": "manta",
+      "title": { "zh": "蝠鲼号", "en": "Manta" },
+      "start": { "x": 12, "y": 2 },
+      "policy": {
+        "kind": "duelist",
+        "style": "hunter"
+      }
+    },
+    {
+      "id": "fin",
+      "title": { "zh": "飞鳍号", "en": "Fin" },
+      "start": { "x": 15, "y": 11 },
+      "policy": {
+        "kind": "duelist",
+        "style": "hunter"
+      }
+    }
+  ],
+  "objective": {
+    "kind": "collect",
+    "itemIds": [
+      "red-conch",
+      "blue-conch",
+      "violet-conch"
+    ]
+  },
+  "maxTurns": 50,
+  "combat": {
+    "health": 7,
+    "range": 3,
+    "buffs": [
+      {
+        "id": "power-1",
+        "kind": "power"
+      },
+      {
+        "id": "power-2",
+        "kind": "power"
+      },
+      {
+        "id": "power-3",
+        "kind": "power"
+      },
+      {
+        "id": "shield-1",
+        "kind": "shield"
+      },
+      {
+        "id": "shield-2",
+        "kind": "shield"
+      },
+      {
+        "id": "shield-3",
+        "kind": "shield"
+      }
+    ]
+  },
+  "shifts": [
+    {
+      "turn": 11,
+      "open": [
+        { "x": 12, "y": 7 }
+      ],
+      "moveItems": [
+        { "id": "blue-conch", "x": 16, "y": 10 }
+      ]
+    },
+    {
+      "turn": 21,
+      "open": [
+        { "x": 9, "y": 5 }
+      ],
+      "moveItems": [
+        { "id": "violet-conch", "x": 9, "y": 3 }
+      ]
+    }
+  ],
+  "starterCode": "state = scan()\n",
+  "solutionCode": "def walk(direction, squares):\n    for step in range(squares):\n        move(direction)\n\nmove(\"up\")\npick()\n\nmove(\"left\")\nmove(\"up\")\nwait()\nwalk(\"up\", 3)\nwalk(\"right\", 2)\nmove(\"up\")\npick()\n\nwalk(\"right\", 2)\nmove(\"up\")\nmove(\"right\")\nmove(\"up\")\nmove(\"right\")\nmove(\"up\")\nwalk(\"right\", 2)\npick()\n\nmove(\"right\")\nwalk(\"down\", 6)\nwalk(\"right\", 5)\nmove(\"down\")\nmove(\"right\")\npick()\n",
+  "snippets": [
+    {
+      "label": { "zh": "向上走", "en": "Move up" },
+      "code": "move(\"up\")"
+    },
+    {
+      "label": { "zh": "向右走", "en": "Move right" },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": { "zh": "向下走", "en": "Move down" },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": { "zh": "向左走", "en": "Move left" },
+      "code": "move(\"left\")"
+    },
+    {
+      "label": { "zh": "向上发脉冲", "en": "Pulse up" },
+      "code": "shoot(\"up\")"
+    },
+    {
+      "label": { "zh": "向右发脉冲", "en": "Pulse right" },
+      "code": "shoot(\"right\")"
+    },
+    {
+      "label": { "zh": "向下发脉冲", "en": "Pulse down" },
+      "code": "shoot(\"down\")"
+    },
+    {
+      "label": { "zh": "向左发脉冲", "en": "Pulse left" },
+      "code": "shoot(\"left\")"
+    },
+    {
+      "label": { "zh": "开启防御", "en": "Guard" },
+      "code": "guard()"
+    },
+    {
+      "label": { "zh": "拾取脚下道具", "en": "Pick up here" },
+      "code": "pick()"
+    },
+    {
+      "label": { "zh": "查看赛场", "en": "Scan arena" },
+      "code": "state = scan()"
+    },
+    {
+      "label": { "zh": "原地等一拍", "en": "Wait a beat" },
+      "code": "wait()"
+    }
+  ]
+}

@@ -255,6 +255,59 @@ function makeBattery() {
   return parts
 }
 
+function makeChip(kind: 'power' | 'shield') {
+  const chip = new ModelParts()
+  const power = kind === 'power'
+  const color = power ? '#ffb35d' : '#67dcff'
+  chip.box([.44, .10, .39], [0, .075, 0], graphite, .025)
+  for (const x of [-.16, 0, .16]) {
+    chip.box([.055, .04, .46], [x, .073, 0], color, .009)
+  }
+  if (power) {
+    chip.add(new THREE.OctahedronGeometry(.245), color, [0, .345, 0], [0, .4, 0], 'light')
+  } else {
+    chip.add(new THREE.IcosahedronGeometry(.235), '#3589c8', [0, .32, 0])
+    chip.add(new THREE.TorusGeometry(.25, .025, 6, 20), color, [0, .32, 0], [.25, .3, 0], 'light')
+  }
+  return chip
+}
+
+function makeArenaLoot(target: boolean) {
+  const parts = new ModelParts()
+  if (target) {
+    parts.box([.54, .36, .42], [0, .215, 0], '#e98638', .04)
+    parts.box([.10, .37, .43], [0, .215, 0], '#fff0ad', .012)
+    parts.box([.55, .37, .08], [0, .215, 0], '#ffd982', .012)
+  } else {
+    parts.add(new THREE.SphereGeometry(.21, 16, 12), '#e967a0', [0, .24, 0])
+    parts.add(new THREE.TorusGeometry(.207, .035, 6, 24), '#ffecba', [0, .24, 0], [.5, .3, 0], 'light')
+  }
+  return parts
+}
+
+function makeFerryDock() {
+  const parts = new ModelParts()
+  parts.box([.88, .045, .86], [0, .03, 0], '#227e92', .05)
+  for (const x of [-.29, -.10, .09, .28]) {
+    parts.box([.16, .08, .17], [x, .08, .31], '#d49b62', .012)
+  }
+  const hull = new THREE.Shape()
+  hull.moveTo(-.36, -.13)
+  hull.lineTo(.14, -.13)
+  hull.lineTo(.37, .05)
+  hull.lineTo(.14, .23)
+  hull.lineTo(-.36, .23)
+  hull.closePath()
+  const boat = new THREE.ExtrudeGeometry(hull, { depth: .13, bevelEnabled: false })
+  boat.rotateX(-Math.PI / 2)
+  parts.add(boat, '#ef9557', [0, .065, 0])
+  parts.box([.37, .15, .23], [-.09, .26, -.046], '#ffe7ad', .025)
+  parts.box([.42, .025, .28], [-.09, .344, -.046], '#52838c', .012)
+  parts.cylinder(.039, .052, .12, [-.19, .412, -.046], '#e67c52')
+  for (const x of [-.19, -.04]) parts.box([.08, .062, .24], [x, .27, -.046], '#337287', .009)
+  return parts
+}
+
 function makeExit() {
   const parts = new ModelParts()
   parts.cylinder(.441, .408, .073, [0, .040, 0], '#355767')
@@ -375,6 +428,8 @@ export function createStationModels() {
       poseGesture(rig, action, progress, condition)
     },
     battery: () => instance('battery', makeBattery),
+    chip: (kind: 'power' | 'shield') => instance('chip-' + kind, () => makeChip(kind)),
+    arenaLoot: (target: boolean) => instance(target ? 'arena-parcel' : 'arena-token', () => makeArenaLoot(target)),
     device(device: BoardDevice) {
       const model = instance(device.kind + '-' + device.status, () => deviceModel(new ModelParts(), device))
       if (device.kind === 'chest') {
@@ -392,7 +447,7 @@ export function createStationModels() {
       if (device.kind === 'bomb' && device.status === 'armed') addNumber(model, String(device.remaining), .78)
       return model
     },
-    exit: () => instance('exit', makeExit),
+    exit: (ferryDock = false) => ferryDock ? instance('ferry-dock', makeFerryDock) : instance('exit', makeExit),
     dispose() {
       for (const geometry of geometries) geometry.dispose()
       for (const material of Object.values(materials)) material.dispose()

@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-laser-mirror-race",
+  "order": 1980,
+  "unit": { "id": "challenge-zone", "order": 90, "title": { "zh": "挑战场", "en": "Challenge Arena" } },
+  "stage": "challenge",
+  "difficulty": "intermediate",
+  "prerequisites": [{ "unit": "foundations", "topic": "sequence" }, { "unit": "routing", "topic": "breadth-first" }],
+  "title": { "zh": "光廊三 · 谁会碰到光？", "en": "Light Hall III · Who Hits the Beam?" },
+  "concept": { "zh": "摆镜子 · 双车竞走", "en": "Movable mirrors · Robot race" },
+  "brief": {
+    "zh": "摆好镜子，让最短路机器人碰到激光，让芽芽安全抵达出口。两面镜子都能移到空地上，也能转向。机器人绕开墙、镜子和发射器，沿步数最少的路线去出口，即使路上有光。几条路一样短时，机器人按上、右、下、左的顺序选路。两台同时从起点出发，每回合各走一格。碰到光就停机，到达出口就停下，全程限 12 回合。",
+    "en": "Arrange the mirrors so the shortest-path bot hits the laser and Sprout reaches the exit safely. You can move either mirror onto an empty floor square and turn it. The bot walks the fewest steps around walls, mirrors and the emitter, even across a beam. For equally short paths it prefers up, right, down, then left. Both robots start together and move one square per turn. Each stops when it hits light or reaches the exit. The race lasts up to 12 turns."
+  },
+  "hints": [],
+  "tiles": [
+    "##########",
+    "#####....#",
+    "###....#.#",
+    "###....#.#",
+    "#...##.#.#",
+    "######...#",
+    "##########"
+  ],
+  "start": { "x": 6, "y": 1 },
+  "turnLimit": 12,
+  "objectives": [{ "type": "exit", "x": 6, "y": 5 }],
+  "devices": [
+    { "kind": "laser", "id": "hall-light", "x": 1, "y": 4, "direction": "right" },
+    { "kind": "mirror", "id": "mirror-a", "x": 2, "y": 4, "orientation": "\\" },
+    { "kind": "mirror", "id": "mirror-b", "x": 4, "y": 2, "orientation": "\\" }
+  ],
+  "laserTrial": {
+    "kind": "race",
+    "mirrorIds": ["mirror-a", "mirror-b"],
+    "solutionMirrors": [{ "x": 3, "y": 4, "orientation": "/" }, { "x": 3, "y": 3, "orientation": "/" }]
+  },
+  "allowedApi": ["move"],
+  "cards": [
+    { "id": "up", "label": { "zh": "向上", "en": "Move up" }, "template": "move(\"up\")" },
+    { "id": "right", "label": { "zh": "向右", "en": "Move right" }, "template": "move(\"right\")" },
+    { "id": "down", "label": { "zh": "向下", "en": "Move down" }, "template": "move(\"down\")" },
+    { "id": "left", "label": { "zh": "向左", "en": "Move left" }, "template": "move(\"left\")" }
+  ],
+  "solutionCards": [
+    { "cardId": "right" }, { "cardId": "right" },
+    { "cardId": "down" }, { "cardId": "down" }, { "cardId": "down" }, { "cardId": "down" },
+    { "cardId": "left" }, { "cardId": "left" }
+  ]
+}

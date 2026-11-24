@@ -1,6 +1,7 @@
-import { useLayoutEffect, useRef, useSyncExternalStore, type ReactNode } from 'react'
+import { useId, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
 import type { Locale } from '../shared/types'
 import { tr } from './text'
+import { useArenaMapMode } from './ArenaMapMode'
 import './play-toolbar.css'
 
 const preferenceKey = 'pixel-repair-lab:show-trail'
@@ -36,10 +37,14 @@ export function useTrailPreference() {
   return { visible, toggle: toggleTrail }
 }
 
-export function PlayToolbar({ locale, children, trail, status, guided }: {
-  locale: Locale; children: ReactNode; trail?: ReturnType<typeof useTrailPreference>; status?: ReactNode; guided?: boolean
+export function PlayToolbar({ locale, children, trail, status, guided, quickActions }: {
+  locale: Locale; children: ReactNode; trail?: ReturnType<typeof useTrailPreference>; status?: ReactNode; guided?: boolean; quickActions?: ReactNode
 }) {
   const toolbar = useRef<HTMLDivElement>(null)
+  const mapMode = useArenaMapMode()
+  const [compact, setCompact] = useState(false)
+  const folded = mapMode && compact
+  const actionsId = useId()
   useLayoutEffect(() => {
     const element = toolbar.current
     if (!element) return
@@ -53,17 +58,18 @@ export function PlayToolbar({ locale, children, trail, status, guided }: {
     return () => observer.disconnect()
   }, [])
   const label = tr(locale, '运行工具条', 'Run toolbar')
-  return <div ref={toolbar} className={'play-toolbar' + (guided ? ' guided' : '')} data-testid="play-toolbar" role="toolbar" aria-label={label}
+  return <div ref={toolbar} className={'play-toolbar' + (guided ? ' guided' : '')} data-testid="play-toolbar" role="toolbar" aria-label={label} data-folded={folded || undefined}
     onKeyDown={event => {
       if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
-      const buttons = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('button:not(:disabled)'))
+      const buttons = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')).filter(button => button.getClientRects().length)
       const index = buttons.indexOf(event.target as HTMLButtonElement)
       if (index < 0) return
       event.preventDefault()
       buttons[(index + buttons.length + (event.key === 'ArrowRight' ? 1 : -1)) % buttons.length].focus()
     }}>
-    {status && <div className="play-toolbar__status" role="status">{status}</div>}
-    <div className="play-toolbar__actions">{children}
+    {!folded && quickActions}
+    {!folded && status && <div className="play-toolbar__status" role="status">{status}</div>}
+    <div className="play-toolbar__actions" id={actionsId}>{children}
       {trail && <button type="button" className="subtle-button play-toolbar__trail" aria-pressed={trail.visible}
         data-testid="trail-toggle" onClick={trail.toggle}
         title={tr(locale, '灰线是已经走过的路，绿线是刚走的一步。', 'Gray marks earlier moves. Green marks the latest step.')}>
@@ -74,5 +80,9 @@ export function PlayToolbar({ locale, children, trail, status, guided }: {
         {tr(locale, '显示路线', 'Show trail')}
       </button>}
     </div>
+    {mapMode && <button type="button" className="play-toolbar__fold" aria-expanded={!folded} aria-controls={actionsId}
+      onClick={() => setCompact(!compact)}>
+      <span aria-hidden="true">{folded ? '▴' : '▾'}</span> {folded ? tr(locale, '展开操作栏', 'Show controls') : tr(locale, '收起操作栏', 'Fold controls')}
+    </button>}
   </div>
 }

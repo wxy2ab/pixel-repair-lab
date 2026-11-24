@@ -1,6 +1,6 @@
 import type { Level } from '../shared/types'
 import { readGoalReplayDetails, type GoalReplayDetails, type GoalReplayEvidence } from './challengeGoalReview'
-import { challengeScoreSeries, challengeScoreSignature, readChallengeScore, scoreMetrics, type ChallengeScore, type ChallengeScoreHistory, type ChallengeScoreMetric } from './challengeScore'
+import { challengeScoreSeries, challengeScoreSignature, isArenaGoalKind, readChallengeScore, scoreMetrics, type ChallengeScore, type ChallengeScoreHistory, type ChallengeScoreMetric } from './challengeScore'
 
 export type ChallengeGoalMetricId = Exclude<ChallengeScoreMetric['id'], 'cases'>
 
@@ -315,7 +315,7 @@ function metricFitsSeries(metricId: ChallengeGoalMetricId, series: string): bool
   const [kind, mode, objective] = parts
   if (kind === 'arena') {
     return parts.length === 4 && (mode === 'relaxed' || mode === 'timed')
-      && (objective === 'score' || objective === 'escape')
+      && isArenaGoalKind(objective)
       && (metricId === 'turns' || (objective === 'score' && metricId === 'score'))
   }
   if (parts.length !== 2) return false
@@ -426,7 +426,7 @@ function legacyScore(seriesId: string, goal: ChallengeGoal, actual: number): Cha
     return
   }
   if (kind === 'arena') {
-    if ((variant !== 'relaxed' && variant !== 'timed') || (objective !== 'score' && objective !== 'escape')) return
+    if ((variant !== 'relaxed' && variant !== 'timed') || !isArenaGoalKind(objective)) return
     const total = Number(maps)
     return { kind, mode: variant, goal: objective, total, passed: total,
       turns: goal.metricId === 'turns' ? actual : 0, score: goal.metricId === 'score' ? actual : 0 }

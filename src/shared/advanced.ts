@@ -75,13 +75,16 @@ export type AlgorithmResult = {
 }
 
 export type PersonalAlgorithms = Partial<Record<string, string>>
-export type ArenaAction = 'move' | 'pick' | 'wait'
+export type ArenaAction = 'move' | 'pick' | 'wait' | 'shoot' | 'guard'
+export type ArenaBuff = { id: string; kind: 'power' | 'shield' }
+export type ArenaCombat = { health: number; range: number; buffs: ArenaBuff[] }
 export type ArenaOpponent = {
   id: string
   title: Localized
   start: Position
   policy: { kind: 'patrol'; path: Position[] } | { kind: 'pursue' } | { kind: 'collect' }
     | { kind: 'adaptive'; style: 'secure' | 'intercept' | 'flex' }
+    | { kind: 'duelist'; style: 'sentry' | 'hunter' }
 }
 export type ArenaShift = { turn: number; open?: Position[]; close?: Position[]; moveItems?: Item[] }
 export type ArenaShiftResult = {
@@ -98,6 +101,8 @@ export type ArenaScenario = {
   opponents: ArenaOpponent[]
   maxTurns: number
   objective: { kind: 'score' } | { kind: 'escape'; exit: Position; itemIds: string[] }
+    | { kind: 'eliminate' } | { kind: 'collect'; itemIds: string[] }
+  combat?: ArenaCombat
   shifts?: ArenaShift[]
 }
 export type ArenaLevel = LevelMetadata & ArenaScenario & {
@@ -108,15 +113,17 @@ export type ArenaLevel = LevelMetadata & ArenaScenario & {
   snippets: { label: Localized; code: string }[]
   variants?: Partial<ArenaScenario>[]
 }
-export type ArenaActor = Position & { id: string; score: number }
-export type ArenaSnapshot = { actors: ArenaActor[]; items: Item[]; turn: number; tiles?: string[] }
+export type ArenaActor = Position & { id: string; score: number; hp?: number; power?: number; shield?: number }
+export type ArenaSnapshot = { actors: ArenaActor[]; items: Item[]; turn: number; tiles?: string[]; collected?: string[] }
 export type ArenaEvent = {
   actorId: string; action: ArenaAction; direction?: Direction; itemId?: string; blocked?: boolean;
   tactic?: 'secure' | 'contest'; targetId?: string;
+  path?: Position[]; damage?: number; absorbed?: number; buff?: ArenaBuff['kind'];
 }
 export type ArenaReading = {
   tiles: string[]; player: number[]; opponents: ArenaActor[]; items: Item[]; turn: number; exit: number[] | null
   playerScore?: number; nextShift?: number | null
+  self?: ArenaActor; range?: number; buffs?: ArenaBuff[]; collected?: string[]
 }
 export type ArenaScan = { line: number; sourceName?: string; count: number; value: ArenaReading }
 export type ArenaProgramEvent = PythonFlowEvent | { kind: 'scan'; scan: ArenaScan }
@@ -125,10 +132,11 @@ export type ArenaFrame = {
   program?: ArenaProgramEvent[]
 }
 export type ArenaOutcome = 'win' | 'draw' | 'loss'
-export type ArenaReason = 'score' | 'escape' | 'caught' | 'timeout' | 'unfinished' | 'error'
+export type ArenaReason = 'score' | 'escape' | 'caught' | 'timeout' | 'unfinished' | 'error' | 'eliminate' | 'collect' | 'disabled'
 export type ArenaFailure = { turn: number; issue?: RunIssue } & (
   | { goal: 'score'; score: number; leaderScore: number }
   | { goal: 'escape'; remaining: number; atExit: boolean }
+  | { goal: 'eliminate' | 'collect'; remaining: number }
 )
 export type ArenaResult = {
   won: boolean

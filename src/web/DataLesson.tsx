@@ -11,6 +11,7 @@ import type { GoalReplayEvidence } from './challengeGoalReview'
 import type { ChallengeRunHandlers } from './challengeScore'
 import { tr } from './text'
 import { HintSteps } from './HintSteps'
+import { TaskProgress } from './TaskProgress'
 import './data-course.css'
 
 const loadArrayBench = () => import('./station3d/data-instrument').then(module => module.buildArrayInstrument)
@@ -322,12 +323,13 @@ export default function DataLesson({ level, locale, onComplete, onMistake, chall
             <ReadingTable table={current.output} locale={locale} kind="output" />
             {(step.operation === 'group' || step.operation === 'sql-group' || step.operation === 'report') &&
               <GroupChart table={current.output} locale={locale} />}
-            <p data-testid="data-feedback" role="status" className={passed ? 'win-message' : 'error-message'}>
+            <p data-testid="data-feedback" role="status" data-task-success={passed || undefined} className={passed ? 'win-message' : 'error-message'}>
               {finished ? level.courseFinal ? t('分析报告已完成。', 'Analysis report complete.') : t('实验已完成。', 'Experiment complete.')
                 : passed ? t('当前步骤通过。', 'This step passed.')
                 : current.output.rows.length !== step.goal?.rows.length ? t('结果的行数和目标不同。对照任务检查筛选或清洗条件。', 'The row count differs from the target. Check the filter or cleanup settings.')
                 : t('结果和目标还有差异。检查列、数值或排序。', 'The result still differs from the target. Check the columns, values, or order.')}
             </p>
+            <TaskProgress label={t('已完成步骤', 'Steps complete')} done={firstUnfinished} total={level.steps.length} />
             {finished && level.courseFinal && cursor === level.steps.length - 1 && <dl className="data-report-counts">
               {runs.map((entry, index) => <div key={index}>
                 <dt>{level.steps[index].label[locale]}</dt><dd>{t(`${entry.input.rows.length} → ${entry.output.rows.length} 行`, `${entry.input.rows.length} → ${entry.output.rows.length} rows`)}</dd>

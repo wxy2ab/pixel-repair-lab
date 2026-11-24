@@ -1,12 +1,13 @@
-import type { ApiName, GridMapRun, PythonFlowEvent, RackStep, RunFrame, RunIssue } from '../shared/types'
+import type { GridMapRun, PythonFlowEvent, RackStep, RunFrame, RunIssue } from '../shared/types'
 import type { ExecutionLocation } from './ExecutionSource'
-import { flowActivity } from './station3d/types'
+import { flowActivity, type StationAction } from './station3d/types'
 
-export function actionViewingDelay(action?: ApiName | PythonFlowEvent['kind'], stepCount = 1): number | undefined {
+export function actionViewingDelay(action?: StationAction, stepCount = 1): number | undefined {
   switch (action) {
     case 'scan': case 'read_map': case 'submit': return 540
     case 'call': case 'return': case 'if': case 'for': case 'while': case 'continue': case 'break':
       return Math.min(480, Math.max(250, 12_000 / stepCount))
+    case 'shoot': case 'guard': return 460
     case 'pick': case 'say': case 'load': case 'store': case 'step': case 'wait': return 380
     default: return undefined
   }

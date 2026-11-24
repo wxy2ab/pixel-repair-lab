@@ -23,6 +23,29 @@ body:has(.play-toolbar) {
   box-shadow: 0 5px 24px #07101ec9, inset 0 1px 0 #ffffff10;
 }
 .play-toolbar__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+.play-toolbar__fold {
+  position: absolute;
+  bottom: 100%;
+  right: 8px;
+  min-height: 25px;
+  padding: 2px 9px;
+  border: 1px solid #536b80;
+  border-radius: 8px 8px 0 0;
+  background: #162938;
+  color: #d7eee6;
+  font-size: .75rem;
+  font-weight: 650;
+  line-height: 1.25;
+}
+.arena-map-workspace.arena-layout .play-toolbar[data-folded] {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: max-content;
+}
+.play-toolbar[data-folded] .play-toolbar__actions > button:not(.primary-button, .arena-console-toggle) { display: none; }
+.play-toolbar[data-folded] .play-toolbar__actions > :is(button, button:first-child) { flex: none; min-width: 0; width: auto; }
+.play-toolbar[data-folded] .play-toolbar__fold { position: static; min-height: 36px; border-radius: 8px; }
 .play-toolbar .play-toolbar__actions > button { min-height: 40px; margin: 0; padding: 6px 12px; border-radius: 9px; font-size: .875rem; line-height: 1.25; }
 .play-toolbar .play-toolbar__actions > button:first-child { min-width: 6.4rem; }
 .play-toolbar .primary-button { background: #65efbd; color: #102e23; border-color: #65efbd; }

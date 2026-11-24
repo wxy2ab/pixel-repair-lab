@@ -7,6 +7,7 @@ import { useEffect, useId, useRef, useState, type CSSProperties, type PointerEve
 import { parseVisionRequest, visionFields, visionMeetsGoal, type RGB, type VisionBox, type VisionCase, type VisionField, type VisionFrame, type VisionLevel, type VisionMode, type VisionParameters, type VisionRequest, type VisionResult } from '../shared/vision'
 import type { Locale } from '../shared/types'
 import { tr } from './text'
+import { TaskProgress } from './TaskProgress'
 import { HintSteps } from './HintSteps'
 import './vision-course.css'
 
@@ -300,12 +301,12 @@ function VisionExperiment({ level, scenario, locale, scenarioPicker, onPass, onF
           <VisionOutput result={latest.result} selected={selected} locale={locale} params={params} mode={level.mode} pending={pending}
             preview={latest.request.action === 'prepare'} current={current} selectPixel={(x, y) => update({ x, y })}
             onDraw={([x, y, w, h]) => update({ x, y, w, h })} />
-          {current && latest.graded && <p role="status" data-testid="vision-feedback" className={passed ? 'win-message' : 'error-message'}>
+          {current && latest.graded && <p role="status" data-testid="vision-feedback" data-task-success={passed || undefined} className={passed ? 'win-message' : 'error-message'}>
             {passed ? project ? t('视觉巡查报告已完成。', 'Vision inspection report complete.') : t('当前图像通过。', 'This image passed.')
               : project ? t('两张图的处理或检测结果还不符合任务。核对尺寸、画面处理和保留的类别。', 'Check the size, image adjustment, and detections for both photos.')
                 : t('结果和目标还有差异。观察图像和读数，调整后再运行。', 'Compare the image and readings with the target, adjust the settings, and run again.')}
           </p>}
-          {project && latest.request.action === 'prepare' && preprocessed && <p role="status" className="vision-muted">
+          {project && latest.request.action === 'prepare' && preprocessed && <p role="status" className="vision-muted" data-task-success="true">
             {t('两张图片已预处理，可以把处理结果交给 YOLOX。', 'Both images are ready for YOLOX.')}
           </p>}
           {project && passed && <ul className="vision-report" aria-label={t('两张图片的巡查结果', 'Inspection results for both photos')}>
@@ -392,7 +393,7 @@ export default function VisionLesson({ level, locale, onComplete, onMistake, cha
   const scenarioPicker = level.cases.length > 1 && <div className="vision-switch" role="group" aria-label={tr(locale, '选择实验场景', 'Choose a scenario')}>
     {level.cases.map((scenario, caseIndex) => <button type="button" className="subtle-button" key={caseIndex} data-case={caseIndex}
       aria-pressed={index === caseIndex} onClick={() => { setIndex(caseIndex); setReview(undefined) }}>{passed.includes(caseIndex) && '✓ '}{scenario.label[locale]}</button>)}
-    <span>{tr(locale, '已完成', 'Passed')} {passed.length}/{level.cases.length}</span>
+    <TaskProgress label={tr(locale, '已完成', 'Passed')} done={passed.length} total={level.cases.length} />
   </div>
   return <div className="vision-workbench">
     <VisionExperiment key={attempt + '/' + index} level={level} scenario={level.cases[index]} locale={locale} onPass={() => record()}

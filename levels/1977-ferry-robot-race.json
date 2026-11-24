@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-ferry-robot-race",
+  "order": 1977,
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "stage": "challenge",
+  "difficulty": "intermediate",
+  "title": {"zh": "渡口三 · 谁会误船？", "en": "Ferry III · Who Misses the Boat?"},
+  "concept": {"zh": "摆电池 · 双车赶船", "en": "Battery placement · Ferry race"},
+  "brief": {
+    "zh": "摆一张地图，让芽芽带齐两块电池赶上船，同时让总捡最近电池的机器人误船。两块电池和一面活动墙可以拖动，也可以点选后点空地摆放。起点和码头要留空。两台机器人同时出发，各自在相同的地图上取电池。自动机器人按实际能走的最短距离挑电池，一样近就先捡 A。芽芽按你的指令行动。走一格、捡一块电池或等待各用一回合。船在第 11 回合结束时开走。",
+    "en": "Arrange the map so Sprout boards with both batteries and the nearest-battery robot misses the ferry. Drag the two batteries and movable wall, or select a piece and click an empty square. Keep the start and dock clear. The robots start together and each collects batteries on its own copy of the map. The automatic robot chooses the shortest walk to a battery, taking A first if tied. Sprout follows your commands. Moving one square, picking up a battery or waiting takes one turn. The ferry leaves at the end of turn 11."
+  },
+  "prerequisites": [{"unit": "foundations", "topic": "sequence"}],
+  "hints": [],
+  "tiles": [
+    "#######",
+    "#.....#",
+    "#.....#",
+    "#..#..#",
+    "#######"
+  ],
+  "start": {"x": 2, "y": 2},
+  "items": [{"id": "battery-a", "x": 4, "y": 3}, {"id": "battery-b", "x": 3, "y": 1}],
+  "objectives": [{"type": "collect", "itemIds": ["battery-a", "battery-b"]}, {"type": "exit", "x": 5, "y": 2}],
+  "turnLimit": 11,
+  "ferry": {
+    "kind": "race",
+    "wall": {"x": 1, "y": 2},
+    "solutionLayout": {"batteries": [{"x": 2, "y": 1}, {"x": 1, "y": 3}], "wall": {"x": 4, "y": 2}}
+  },
+  "allowedApi": ["move", "pick", "wait"],
+  "cards": [
+    {"id": "up", "label": {"zh": "向上", "en": "Move up"}, "template": "move(\"up\")"},
+    {"id": "right", "label": {"zh": "向右", "en": "Move right"}, "template": "move(\"right\")"},
+    {"id": "down", "label": {"zh": "向下", "en": "Move down"}, "template": "move(\"down\")"},
+    {"id": "left", "label": {"zh": "向左", "en": "Move left"}, "template": "move(\"left\")"},
+    {"id": "pick", "label": {"zh": "拾取电池", "en": "Pick up battery"}, "template": "pick()"},
+    {"id": "wait", "label": {"zh": "等一回合", "en": "Wait a turn"}, "template": "wait()"}
+  ],
+  "solutionCards": [
+    {"cardId": "left"}, {"cardId": "down"}, {"cardId": "pick"},
+    {"cardId": "up"}, {"cardId": "up"}, {"cardId": "right"}, {"cardId": "pick"},
+    {"cardId": "right"}, {"cardId": "right"}, {"cardId": "right"}, {"cardId": "down"}
+  ]
+}

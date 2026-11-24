@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
 import type { Locale } from '../shared/types'
+import type { ShortChallengeSeries } from '../shared/shortChallenges'
 import { challengeDifficultyLabels, challengeTypeLabels, type ChallengeEntry } from './challengeModel'
 import { scoreMetrics, type ChallengeScore, type ChallengeScoreComparison } from './challengeScore'
 import { goalDifference, metricLabel, modeOf, valueOf } from './challengeScoreDisplay'
@@ -29,8 +30,10 @@ function GoalResult({ result, score, locale }: { result: ChallengeGoalEvaluation
   </section>
 }
 
-export function ChallengeCompletion({ comparison, goalResult, replayFocusResult, locale, next, onReplay, onBrowse, onRoutes, onNext, onRecords }: {
+export function ChallengeCompletion({ missionTitle, outcome, comparison, goalResult, replayFocusResult, locale, next, seriesNext, onReplay, onBrowse, onRoutes, onNext, onRecords }: {
+  missionTitle: string; outcome?: string
   comparison: ChallengeScoreComparison; locale: Locale; next?: ChallengeEntry
+  seriesNext?: ShortChallengeSeries
   goalResult?: ChallengeGoalEvaluation
   replayFocusResult?: ReactNode
   onReplay: () => void; onBrowse: () => void; onRoutes?: () => void; onNext: (id: string) => void; onRecords: () => void
@@ -56,17 +59,26 @@ export function ChallengeCompletion({ comparison, goalResult, replayFocusResult,
     }]
   })
   useEffect(() => {
+    if (document.querySelector('.arena-map-workspace[data-map-fullscreen]')) return
     heading.current?.focus({ preventScroll: true })
     heading.current?.scrollIntoView({ block: 'start' })
   }, [comparison])
   const remaining = next?.preparation.missingLessons.length ?? 0
 
-  return <section className="panel challenge-completion" aria-labelledby="challenge-completion-title" tabIndex={-1} ref={heading}>
-    <div className="challenge-completion-heading">
-      <h2 id="challenge-completion-title">{t('通关总结', 'Challenge summary')}</h2>
-      {mode && <span>{mode}</span>}
-      {newBest && <strong className="challenge-new-best">{t('新纪录', 'New personal best')}</strong>}
-    </div>
+  return <section className="panel challenge-completion" aria-label={t('通关总结', 'Challenge summary')} tabIndex={-1} ref={heading}>
+    <header className="challenge-completion-heading" data-record={newBest || undefined}>
+      <div className="challenge-victory-mark" aria-hidden="true">
+        <span className="pixel-bot" /><i>✓</i>
+      </div>
+      <div className="challenge-victory-title">
+        <div><span>{t('挑战通关', 'Challenge cleared')}</span>
+          {mode && <span className="challenge-victory-mode">{mode}</span>}
+          {newBest && <strong className="challenge-new-best">{t('新纪录', 'New personal best')}</strong>}
+        </div>
+        <h2 id="challenge-completion-title">{missionTitle}</h2>
+        {outcome && <p>{outcome}</p>}
+      </div>
+    </header>
     <table className="challenge-score-table">
       <thead><tr>
         <th scope="col">{t('成绩', 'Result')}</th><th scope="col">{t('本次', 'This run')}</th>
@@ -87,9 +99,10 @@ export function ChallengeCompletion({ comparison, goalResult, replayFocusResult,
     {replayFocusResult}
     {next && <div className="challenge-completion-next">
       <div>
-        <h3>{t('下一关推荐', 'Suggested next challenge')}</h3>
+        <h3>{seriesNext === 'laserTrial' ? t('下一场激光挑战', 'Next laser challenge')
+          : seriesNext === 'ferry' ? t('下一场渡口挑战', 'Next ferry challenge') : t('下一关推荐', 'Suggested next challenge')}</h3>
         <p><strong>{next.level.title[locale]}</strong> <span>{challengeTypeLabels[next.type][locale]} · {challengeDifficultyLabels[next.difficulty][locale]}</span></p>
-        {remaining > 0 && <small>{t(`前序课程还差 ${remaining} 节`, `${remaining} prerequisite ${remaining === 1 ? 'lesson' : 'lessons'} left`)}</small>}
+        {!seriesNext && remaining > 0 && <small>{t(`前序课程还差 ${remaining} 节`, `${remaining} prerequisite ${remaining === 1 ? 'lesson' : 'lessons'} left`)}</small>}
       </div>
       <button type="button" className="primary-button" data-next-challenge={next.level.id} onClick={() => onNext(next.level.id)}>
         {t('挑战下一关', 'Play next challenge')}

@@ -75,6 +75,7 @@
 .board-trail-arm[data-direction="left"] { --trail-angle: 180deg; }
 .board-trail-arm[data-direction="up"] { --trail-angle: -90deg; }
 .board-trail-arm[data-trail="recent"] { border-top: 4px solid #67f196; }
+.ferry-dock-icon { width: 77%; height: 77%; pointer-events: none; }
 .exit-icon {
   display: grid;
   place-items: center;

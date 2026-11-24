@@ -4,6 +4,7 @@ import type { Issue, Level, Locale } from '../shared/types'
 import { mapScenarioAt } from '../shared/mapScenarios'
 import { challengeZoneId } from '../shared/coursePrerequisites'
 import { breadboardProgramIssues } from '../shared/breadboard'
+import { ferryGrid, initialFerryLayout } from '../shared/ferry'
 import type { parseLevel } from '../shared/validate'
 import { Board, MapTiles } from './Board'
 import MapScenarioPicker from './MapScenarioPicker'
@@ -55,7 +56,9 @@ export function LevelPreview({ locale, catalog }: { locale: Locale; catalog: Lev
   }
 
   const level = imported?.level
-  const map = level?.kind === 'grid' || level?.kind === 'arena' ? mapScenarioAt(level, mapIndex) : undefined
+  const map = level?.kind === 'grid' && level.ferry?.kind === 'race'
+    ? ferryGrid(level, initialFerryLayout(level))
+    : level?.kind === 'grid' || level?.kind === 'arena' ? mapScenarioAt(level, mapIndex) : undefined
   const complete = () => setImportedWin(true)
 
   return <>
@@ -91,9 +94,10 @@ export function LevelPreview({ locale, catalog }: { locale: Locale; catalog: Lev
             <div className="panel-heading"><h2>{t('初始棋盘', 'Initial board')}</h2></div>
             <MapScenarioPicker locale={locale} index={mapIndex} count={1 + (map.variants?.length ?? 0)} onChange={setMapIndex} />
             {map.kind === 'grid' ? <Board level={map} snapshot={initialSnapshot(map)} locale={locale} />
-              : <MapTiles location="arena" tiles={map.tiles} exit={map.objective.kind === 'escape' ? map.objective.exit : undefined}
+              : <MapTiles location="arena" tiles={map.tiles} arenaBuffs={map.combat?.buffs} exit={map.objective.kind === 'escape' ? map.objective.exit : undefined}
+                arenaTargetIds={map.combat && 'itemIds' in map.objective ? map.objective.itemIds : undefined}
                 gates={map.shifts?.flatMap(shift => [...(shift.open ?? []), ...(shift.close ?? [])])}
-                batteries={Boolean(map.shifts?.length)} playerPosition={map.start}
+                batteries={!map.combat && Boolean(map.shifts?.length)} playerPosition={map.start}
                 opponents={map.opponents.map((bot, index) => ({ ...bot.start, id: bot.id, name: bot.title[locale], label: String(index + 1), index }))}
                 items={map.items} locale={locale} />}
           </section>}

@@ -8,6 +8,9 @@ import MapScenarioPicker from './MapScenarioPicker'
 import { ArenaBoard, ArenaStateReference, ArenaTurnEvents, arenaResultText, describeEvent } from './ArenaPanels'
 import { arenaViewingDelay, firstArenaLine, useArenaActivities } from './arenaActivities'
 import { ArenaObservationBoard } from './ArenaObservationBoard'
+import { ArenaConsolePanel, ArenaConsoleToggle, useArenaConsole, type ArenaConsoleControl } from './ArenaConsole'
+import { ArenaMapWorkspace } from './ArenaMapWorkspace'
+import { ArenaMapOutcome, MapShortcutGuide } from './ArenaMapShortcuts'
 import { hasProgramCommands } from './MapObservation'
 import { useLessonWorker, useReplayCursor } from './lessonTools'
 import { ReplayControls } from './ReplayControls'
@@ -34,12 +37,12 @@ import { HintSteps } from './HintSteps'
 type PlayProps = { locale: Locale; onComplete: () => void; onMistake?: () => void }
 
 function PracticeEditor<Lesson extends AlgorithmLevel | ArenaLevel>({
-  level, locale, code, setCode, pending, children, personal, inputRef, toolbar, execution, onRun,
+  level, locale, code, setCode, pending, children, personal, inputRef, execution, onRun, showHeading = true,
 }: {
   level: Lesson; locale: Locale; code: string; setCode: (value: string) => void; pending: boolean;
   children?: ReactNode; personal?: PersonalAlgorithms;
   inputRef?: RefObject<HTMLTextAreaElement | null>;
-  toolbar?: ReactNode; execution?: ReactNode; onRun?: () => void;
+  execution?: ReactNode; onRun?: () => void; showHeading?: boolean;
 }) {
   const localField = useRef<HTMLTextAreaElement>(null)
   const field = inputRef ?? localField
@@ -63,7 +66,7 @@ function PracticeEditor<Lesson extends AlgorithmLevel | ArenaLevel>({
 
   const saved = Object.keys(personal ?? {}).filter(name => !level.helpers?.includes(name))
   return <section className="panel editor-panel advanced-editor">
-    <div className="panel-heading"><h2><span className="bracket-icon" aria-hidden="true">{'{ }'}</span>{t('程序控制台', 'Program console')}</h2></div>
+    {showHeading && <div className="panel-heading"><h2><span className="bracket-icon" aria-hidden="true">{'{ }'}</span>{t('程序控制台', 'Program console')}</h2></div>}
     <div className="editor-body">
       {execution}
       <label htmlFor="advanced-python" className="python-label">{t('编写 Python', 'Write Python')}</label>
@@ -83,7 +86,6 @@ function PracticeEditor<Lesson extends AlgorithmLevel | ArenaLevel>({
         {t('恢复起始代码', 'Restore starter code')}
       </button>
     </div>
-    {toolbar}
   </section>
 }
 
@@ -278,6 +280,7 @@ export function ArenaPlay({ initialDraft, onDraftChange, initialTimedCheckpoint,
     policy: initialDraft?.policy ?? 'def decide(state):\n    return "wait"\n',
   }))
   const timedCheckpoint = useRef(initialTimedCheckpoint)
+  const consoleControl = useArenaConsole()
   const replayProgress = useRef(initialReplayProgress)
   const timed = draft.mode === 'timed'
 
@@ -292,6 +295,10 @@ export function ArenaPlay({ initialDraft, onDraftChange, initialTimedCheckpoint,
     updateDraft({ ...draft, mode })
   }
   const secondsPerTurn = ARENA_TURN_MS / 1000
+  const paceControl = <div className="segmented" role="group" aria-label={t('选择对抗节奏', 'Choose arena pace')}>
+    <button type="button" aria-pressed={!timed} onClick={() => changePace('relaxed')}>{t('从容', 'Relaxed')}</button>
+    <button type="button" aria-pressed={timed} onClick={() => changePace('timed')}>{t('紧张', 'Timed')}</button>
+  </div>
   const paceRule = level.shifts?.length
     ? timed
       ? t(`每 ${secondsPerTurn} 秒结算一回合。可点按或启用 Python 策略。`, `Each turn takes ${secondsPerTurn} seconds. Play by clicking or enabling a Python policy.`)
@@ -305,32 +312,33 @@ export function ArenaPlay({ initialDraft, onDraftChange, initialTimedCheckpoint,
       <section className="panel arena-pace">
         <div className="arena-pace-heading">
           <h2>{t('对抗节奏', 'Arena pace')}</h2>
-          <div className="segmented" role="group" aria-label={t('选择对抗节奏', 'Choose arena pace')}>
-            <button type="button" aria-pressed={!timed} onClick={() => changePace('relaxed')}>{t('从容', 'Relaxed')}</button>
-            <button type="button" aria-pressed={timed} onClick={() => changePace('timed')}>{t('紧张', 'Timed')}</button>
-          </div>
+          {paceControl}
         </div>
         <p>{paceRule}</p>
       </section>
     </CommandDesk>
+    <ArenaMapWorkspace locale={locale} consoleControl={consoleControl} title={level.title[locale]}
+      modeControl={paceControl} shortcutHelp={<MapShortcutGuide locale={locale} timed={timed} combat={Boolean(level.combat)} />}>
     {timed
-      ? <RealtimeArena {...props} code={draft.policy} setCode={policy => updateDraft({ ...draft, policy })}
+      ? <RealtimeArena {...props} consoleControl={consoleControl} code={draft.policy} setCode={policy => updateDraft({ ...draft, policy })}
         initialCheckpoint={timedCheckpoint.current} onCheckpointChange={onTimedCheckpointChange && (checkpoint => {
           timedCheckpoint.current = checkpoint
           onTimedCheckpointChange(checkpoint)
         })} />
-      : <RelaxedArena {...props} code={draft.source} setCode={source => updateDraft({ ...draft, source })}
+      : <RelaxedArena {...props} consoleControl={consoleControl} code={draft.source} setCode={source => updateDraft({ ...draft, source })}
         initialReplayProgress={replayProgress.current} onReplayProgressChange={onReplayProgressChange && (progress => {
           replayProgress.current = progress
           onReplayProgressChange(progress)
         })} />}
+    </ArenaMapWorkspace>
   </>
 }
 
-function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, code, setCode, challenge,
+function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, code, setCode, challenge, consoleControl,
   initialReplayProgress, onReplayProgressChange }: ArenaProps & {
   code: string; setCode: (code: string) => void;
   initialReplayProgress?: ArenaReplayProgress; onReplayProgressChange?: (value?: ArenaReplayProgress) => void;
+  consoleControl: ArenaConsoleControl;
 }) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const [session, setSession] = useState<{ result: ArenaResult; runMap: number; source: string; input?: ArenaReplayInput }>()
@@ -399,7 +407,7 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
     : beat?.scan ? t(`第 ${beat.scan.value.turn} 回合 · 读取局势`, `Turn ${beat.scan.value.turn} · Scanned the board`) : previous && playerEvent && [
     t(`第 ${snapshot.turn} 回合`, `Turn ${snapshot.turn}`),
     previous.line > 0 && t(`第 ${previous.line} 行`, `Line ${previous.line}`),
-    describeEvent(playerEvent, locale, dynamic),
+    describeEvent(playerEvent, locale, dynamic, level),
   ].filter(Boolean).join(' · ')
   const stepDescription = failure ? runIssueText(locale, failure) : stepping && currentSession
     ? atEnd && caseIssue ? t(`第 ${snapshot.turn} 回合`, `Turn ${snapshot.turn}`) + ' · ' + runIssueText(locale, caseIssue)
@@ -549,12 +557,15 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
             setObserving(true)
           }}>{t('观察地图', 'Observe map')}</button>
       </>}
+    {consoleControl.mapMode && <ArenaConsoleToggle control={consoleControl} locale={locale} />}
   </PlayToolbar>
 
-  return <div className="lesson-layout">
+  return <>
+    <ArenaMapOutcome won={finishRun && result?.won && !failure} text={observing ? undefined : failure ? runIssueText(locale, failure)
+      : result && (atEnd || !frames) ? arenaResultText(result, locale, dynamic) : undefined} />
     <div className="play-column">
       {observing ? <ArenaObservationBoard level={level} locale={locale} initialMap={mapIndex} onExit={() => setObserving(false)} /> : <>
-      <ArenaBoard level={shownLevel} locale={locale} snapshot={snapshot} latestShift={latestShift} finished={atEnd} trail={route}
+      <ArenaBoard level={shownLevel} locale={locale} snapshot={snapshot} frame={previous} latestShift={latestShift} finished={atEnd} trail={route}
         activity={beat?.activity} scan={beat?.scan ?? (beat?.beforeTurn ? undefined : turnFrame?.scan)}
         mapPicker={<MapScenarioPicker locale={locale} index={mapIndex} count={1 + (level.variants?.length ?? 0)} onChange={changeMap} />}>
         {result && result.totalCases > 1 && <p data-testid="arena-map-result">{!frames
@@ -573,34 +584,35 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
         } }} count={count} locale={locale} />
       </ArenaBoard>
       {previous && <ArenaTurnEvents frame={previous} level={shownLevel} locale={locale} />}
+      <section className="panel teaching-panel">
+        <h2>{t('回合结果', 'Arena result')}</h2>
+        <p role="status" className={atEnd && result ? result.won ? 'win-message' : 'error-message' : failure ? 'error-message' : ''}>
+          {failure ? runIssueText(locale, failure) : result && (atEnd || !frames) ? arenaResultText(result, locale, dynamic) :
+            result ? replayPlaying ? t('正在回放。', 'Replay in progress.') : t('回放已暂停。', 'Replay paused.') :
+              t('尚未运行。', 'Ready to run.')}
+        </p>
+        {result && (atEnd || !frames) && result.totalCases > 1 && <p>{t('场景通过', 'Scenarios passed')} {result.passedCases}/{result.totalCases}</p>}
+        {review && <ChallengeFailureReview review={review} onRetry={retry} />}
+      </section>
       </>}
     </div>
-    <CommandDesk locale={locale}>
+    <ArenaConsolePanel control={consoleControl} locale={locale}><CommandDesk locale={locale}>
       <div className="play-column">
-        <PracticeEditor level={level} locale={locale} code={code} setCode={setCode} pending={worker.pending}
+        <PracticeEditor level={level} locale={locale} code={code} setCode={setCode} pending={worker.pending} showHeading={consoleControl.mapMode}
           onRun={hasCommands && !observing ? () => run() : undefined}
           execution={<ExecutionSource locale={locale} code={code} current={current} next={next} personal={runPersonal} course={runCourse} />}
-          personal={personal} inputRef={editor} toolbar={toolbar}>
+          personal={personal} inputRef={editor}>
           <CourseHelperPicker names={level.helpers} course={course} personal={personal} code={code} locale={locale}
             disabled={worker.pending} onChange={setCode} />
-          <div className="api-list">{['scan', 'move', 'pick', 'wait'].map(api => <code key={api}>{api}()</code>)}</div>
-          {dynamic && <ArenaStateReference locale={locale} />}
+          <div className="api-list">{['scan()', 'move()', 'pick()', 'wait()', ...(level.combat ? ['shoot(direction)', 'guard()'] : [])].map(api => <code key={api}>{api}</code>)}</div>
+          {(dynamic || level.combat) && <ArenaStateReference locale={locale} combat={Boolean(level.combat)} dynamic={dynamic} />}
         </PracticeEditor>
-        {!observing && <section className="panel teaching-panel">
-          <h2>{t('回合结果', 'Arena result')}</h2>
-          <p role="status" className={atEnd && result ? result.won ? 'win-message' : 'error-message' : failure ? 'error-message' : ''}>
-            {failure ? runIssueText(locale, failure) : result && (atEnd || !frames) ? arenaResultText(result, locale, dynamic) :
-              result ? replayPlaying ? t('正在回放。', 'Replay in progress.') : t('回放已暂停。', 'Replay paused.') :
-                dynamic ? t('尚未运行。', 'Ready to run.') :
-                  t('运行程序，看看你的机器人怎样应对多个对手。', 'Run your code to see how your robot handles several rivals.')}
-          </p>
-          {result && (atEnd || !frames) && result.totalCases > 1 && <p>{t('场景通过', 'Scenarios passed')} {result.passedCases}/{result.totalCases}</p>}
-          {review && <ChallengeFailureReview review={review} onRetry={retry} />}
-          {level.hints.length > 0 && <details><summary>{t('任务提示', 'Mission hints')}</summary><HintSteps hints={level.hints} locale={locale} /></details>}
-        </section>}
+        {!observing && level.hints.length > 0 && <details className="panel teaching-panel"><summary>{t('任务提示', 'Mission hints')}</summary>
+          <HintSteps hints={level.hints} locale={locale} /></details>}
       </div>
-    </CommandDesk>
-  </div>
+    </CommandDesk></ArenaConsolePanel>
+    {toolbar}
+  </>
 }
 
 function createArenaReplayWorker() {

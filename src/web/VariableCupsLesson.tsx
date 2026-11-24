@@ -102,7 +102,8 @@ function CupPractice({ execution, config, locale, t, onTrial, onComplete }: {
       </fieldset>)}</div>
       <button type="button" className="primary-button" data-testid="cup-verify" disabled={!guesses.source || !guesses.copy || !!actual}
         onClick={verify}>{t('运行验证', 'Run to check')}</button>
-      {actual && <p role="status" className="vc-feedback" data-testid="cup-feedback" data-match={matched}>{matched
+      {actual && <p role="status" className="vc-feedback" data-testid="cup-feedback" data-match={matched}
+        data-task-success={matched || undefined} data-task-pop={matched || undefined}>{matched
         ? t('两个都猜对了！你找到了每个名字现在对应的数。', 'Both match! You found the number each name now gives you.')
         : t('再看看最后一次写入的是哪张标签。你可以改选数字，再运行一次。', 'Look at the name that changed last. Pick another number and run again.')}</p>}
       {failed && <p role="alert" className="error-message">{t('程序没能读到两个数。请再运行一次。', 'The program could not read both numbers. Try running again.')}</p>}

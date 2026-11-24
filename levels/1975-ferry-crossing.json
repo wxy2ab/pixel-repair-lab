@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-ferry-crossing",
+  "order": 1975,
+  "difficulty": "starter",
+  "unit": {"id":"challenge-zone","order":90,"title":{"zh":"挑战场","en":"Challenge Arena"}},
+  "stage": "challenge",
+  "prerequisites": [{"unit":"foundations","topic":"sequence"}],
+  "title": {"zh":"渡口一 · 赶船","en":"Ferry I · Catch the Boat"},
+  "concept": {"zh":"脉冲桥与沿岸路","en":"Pulse bridge and shore path"},
+  "brief": {"zh":"在 8 回合内把芽芽停在东岸登船点，赶上渡船。北桥在第 2、6 回合有脉冲。回合结束时站在光束里会停机。南边的沿岸路全程开放。移动一格或原地等待都用一回合。","en":"Finish at the east dock within 8 turns to catch the ferry. The north bridge pulses on turns 2 and 6. Ending a turn in the beam stops Sprout. The southern shore path stays open. Each move or wait takes one turn."},
+  "hints": [],
+  "ferry": {"kind":"crossing","next":"challenge-ferry-early-pulse"},
+  "tiles": [
+    "#######",
+    "##....#",
+    "#..#..#",
+    "#.###.#",
+    "#.....#",
+    "#######"
+  ],
+  "start": {"x":1,"y":2},
+  "turnLimit": 8,
+  "allowedApi": ["move","wait"],
+  "devices": [{"id":"bridge-pulse","kind":"cannon","x":5,"y":1,"direction":"left","period":4,"phase":2}],
+  "objectives": [{"type":"exit","x":5,"y":2}],
+  "cards": [
+    {"id":"right","label":{"zh":"向右","en":"Move right"},"template":"move(\"right\")"},
+    {"id":"up","label":{"zh":"向上","en":"Move up"},"template":"move(\"up\")"},
+    {"id":"down","label":{"zh":"向下","en":"Move down"},"template":"move(\"down\")"},
+    {"id":"left","label":{"zh":"向左","en":"Move left"},"template":"move(\"left\")"},
+    {"id":"wait","label":{"zh":"原地等一回合","en":"Wait one turn"},"template":"wait()"}
+  ],
+  "solutionCards": [
+    {"cardId":"right"},
+    {"cardId":"wait"},
+    {"cardId":"up"},
+    {"cardId":"right"},
+    {"cardId":"right"},
+    {"cardId":"down"},
+    {"cardId":"right"}
+  ]
+}

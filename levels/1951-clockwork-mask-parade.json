@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "id": "challenge-clockwork-mask-parade",
+  "order": 1951,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": { "zh": "挑战场", "en": "Challenge Arena" }
+  },
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": { "zh": "发条花车巡游", "en": "Clockwork Mask Parade" },
+  "concept": { "zh": "追花车 · 三面巡游面具", "en": "Chase the floats · Three masks" },
+  "brief": { "zh": "收齐月兔、狐狸和猫头鹰三张巡游面具。每辆花车只运一张尚未被拾取的面具。兔车在第 7 回合结束后进站，狐狸车在第 14 回合结束后转进东街，猫头鹰车在第 23 回合结束后抵达南广场。两台追击机和一台固定哨兵也在场。第 45 回合结束前完成收集。", "en": "Collect the Rabbit, Fox and Owl parade masks. Each float carries its mask only while it remains unclaimed. The Rabbit float reaches the station after turn 7, Fox turns onto East Street after turn 14, and Owl reaches South Square after turn 23. Two hunters and a fixed sentry are on duty. Collect the set by the end of turn 45." },
+  "prerequisites": [
+    {
+      "unit": "structures",
+      "topic": "dictionaries"
+    },
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "####################",
+    "#..................#",
+    "#.#####.####..####.#",
+    "#.#####.####..####.#",
+    "#..................#",
+    "#..###.###.#.#.##..#",
+    "#..#.#.###.###.##..#",
+    "#..................#",
+    "#..................#",
+    "#.####..###..####..#",
+    "#.####..###..##.#..#",
+    "#.......#.#........#",
+    "#..................#",
+    "####################"
+  ],
+  "start": { "x": 2, "y": 7 },
+  "items": [
+    { "id": "rabbit", "x": 15, "y": 1 },
+    { "id": "fox", "x": 18, "y": 2 },
+    { "id": "owl", "x": 17, "y": 11 },
+    { "id": "power-1", "x": 3, "y": 7 },
+    { "id": "power-2", "x": 6, "y": 7 },
+    { "id": "power-3", "x": 14, "y": 8 },
+    { "id": "shield-1", "x": 2, "y": 8 },
+    { "id": "shield-2", "x": 11, "y": 7 },
+    { "id": "shield-3", "x": 16, "y": 11 }
+  ],
+  "opponents": [
+    {
+      "id": "ribbon",
+      "title": { "zh": "彩带", "en": "Ribbon" },
+      "start": { "x": 9, "y": 4 },
+      "policy": {
+        "kind": "duelist",
+        "style": "sentry"
+      }
+    },
+    {
+      "id": "tattoo",
+      "title": { "zh": "小鼓", "en": "Snare" },
+      "start": { "x": 17, "y": 8 },
+      "policy": {
+        "kind": "duelist",
+        "style": "hunter"
+      }
+    },
+    {
+      "id": "pom",
+      "title": { "zh": "绒球", "en": "Pom" },
+      "start": { "x": 12, "y": 12 },
+      "policy": {
+        "kind": "duelist",
+        "style": "hunter"
+      }
+    }
+  ],
+  "objective": {
+    "kind": "collect",
+    "itemIds": [
+      "rabbit",
+      "fox",
+      "owl"
+    ]
+  },
+  "maxTurns": 45,
+  "combat": {
+    "health": 6,
+    "range": 4,
+    "buffs": [
+      {
+        "id": "power-1",
+        "kind": "power"
+      },
+      {
+        "id": "power-2",
+        "kind": "power"
+      },
+      {
+        "id": "power-3",
+        "kind": "power"
+      },
+      {
+        "id": "shield-1",
+        "kind": "shield"
+      },
+      {
+        "id": "shield-2",
+        "kind": "shield"
+      },
+      {
+        "id": "shield-3",
+        "kind": "shield"
+      }
+    ]
+  },
+  "shifts": [
+    {
+      "turn": 7,
+      "moveItems": [
+        { "id": "rabbit", "x": 3, "y": 4 }
+      ]
+    },
+    {
+      "turn": 14,
+      "moveItems": [
+        { "id": "fox", "x": 17, "y": 7 }
+      ]
+    },
+    {
+      "turn": 23,
+      "moveItems": [
+        { "id": "owl", "x": 12, "y": 11 }
+      ]
+    }
+  ],
+  "starterCode": "state = scan()\n",
+  "solutionCode": "def walk(direction, squares):\n    for step in range(squares):\n        move(direction)\n\nmove(\"right\")\npick()\n\nmove(\"left\")\nwalk(\"up\", 3)\nmove(\"right\")\npick()\n\nwalk(\"right\", 2)\nshoot(\"right\")\n\nmove(\"right\")\nshoot(\"right\")\n\nwalk(\"right\", 2)\nshoot(\"right\")\n\nwalk(\"right\", 2)\nwalk(\"down\", 4)\nmove(\"right\")\nmove(\"down\")\nmove(\"right\")\nwalk(\"down\", 2)\npick()\n\nwalk(\"right\", 5)\nwalk(\"up\", 4)\npick()\n",
+  "snippets": [
+    {
+      "label": { "zh": "向上走", "en": "Move up" },
+      "code": "move(\"up\")"
+    },
+    {
+      "label": { "zh": "向右走", "en": "Move right" },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": { "zh": "向下走", "en": "Move down" },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": { "zh": "向左走", "en": "Move left" },
+      "code": "move(\"left\")"
+    },
+    {
+      "label": { "zh": "向上发脉冲", "en": "Pulse up" },
+      "code": "shoot(\"up\")"
+    },
+    {
+      "label": { "zh": "向右发脉冲", "en": "Pulse right" },
+      "code": "shoot(\"right\")"
+    },
+    {
+      "label": { "zh": "向下发脉冲", "en": "Pulse down" },
+      "code": "shoot(\"down\")"
+    },
+    {
+      "label": { "zh": "向左发脉冲", "en": "Pulse left" },
+      "code": "shoot(\"left\")"
+    },
+    {
+      "label": { "zh": "开启防御", "en": "Guard" },
+      "code": "guard()"
+    },
+    {
+      "label": { "zh": "拾取脚下道具", "en": "Pick up here" },
+      "code": "pick()"
+    },
+    {
+      "label": { "zh": "查看赛场", "en": "Scan arena" },
+      "code": "state = scan()"
+    },
+    {
+      "label": { "zh": "原地等一拍", "en": "Wait a beat" },
+      "code": "wait()"
+    }
+  ]
+}

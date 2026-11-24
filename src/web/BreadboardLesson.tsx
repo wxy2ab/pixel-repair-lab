@@ -458,7 +458,8 @@ function BreadboardWorkbench({ level, locale, sketch, onComplete, onMistake, sou
             <button type="button" className="primary-button" data-testid="bread-power" aria-pressed={powered}
               disabled={!powered && ((!fault && prediction === undefined) || (arduino && !program))} onClick={power}>{powered ? t('断电', 'Power off') : t('通电', 'Power on')}</button>
           </div>
-          {guess && <p className="breadboard-prediction" data-testid="bread-prediction-result" role="status">{guess.actual === undefined
+          {guess && <p className="breadboard-prediction" data-testid="bread-prediction-result" role="status"
+            data-task-success={guess.actual === guess.on || undefined} data-task-pop={guess.actual === guess.on || undefined}>{guess.actual === undefined
             ? t('等程序在这个按钮状态下写入 D13，再对照预测。', 'Let the sketch write D13 in this button position to check your prediction.')
             : (guess.actual === guess.on ? t('预测一致。', 'Your prediction matched. ') : t('再比一比。', 'Compare the two. '))
               + t('你猜', 'You predicted ') + lamp(guess.on) + t('，实测', '. You observed ') + lamp(guess.actual) + t('。', '.')}</p>}
@@ -486,7 +487,7 @@ function BreadboardWorkbench({ level, locale, sketch, onComplete, onMistake, sou
             </dd></div>
           })}</dl>
           <button type="button" className="primary-button" data-testid="bread-check" disabled={!mayCheck || verified} onClick={check}>{t('检查电路', 'Check the circuit')}</button>
-          {(checked !== undefined || verified) && <p data-testid="bread-feedback" role="status" className={verified ? 'win-message' : 'error-message'}>{verified
+          {(checked !== undefined || verified) && <p data-testid="bread-feedback" role="status" data-task-success={verified || undefined} className={verified ? 'win-message' : 'error-message'}>{verified
             ? fault ? t('故障判断和两次试灯都通过了。呼叫灯已修好！', 'Your diagnosis and both button tests passed. The call light is repaired!')
               : t('两种状态都验证了，外接灯按预期工作！', 'Both positions tested. Your external LED works as expected!')
             : retryMessage()}</p>}

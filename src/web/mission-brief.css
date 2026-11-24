@@ -56,6 +56,8 @@
   line-height: 1.55;
 }
 .mission-brief__rules li { position: relative; margin-bottom: 4px; padding-inline-start: 16px; break-inside: avoid; text-wrap: pretty; }
+.mission-brief[data-laser] .mission-brief__goal { flex: 1 1 290px; }
+.mission-brief[data-laser] .mission-brief__rules { margin-top: 0; }
 .mission-brief__rules li::before {
   content: '';
   position: absolute;

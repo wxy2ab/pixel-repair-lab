@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "id": "challenge-neon-pinball-cup",
+  "order": 1939,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": { "zh": "挑战场", "en": "Challenge Arena" }
+  },
+  "stage": "challenge",
+  "difficulty": "intermediate",
+  "title": { "zh": "霓虹弹球杯", "en": "Neon Pinball Cup" },
+  "concept": { "zh": "三机清场 · 弹球挡板间对射", "en": "Elimination · Three bots among the bumpers" },
+  "brief": { "zh": "在弹球馆里让三台对手全部停机。两台守点机看住上下边道，一台追击机会穿过中央球道。挡板会截住脉冲。每拾取一块威力芯片，脉冲多一格威力，最多叠三层。", "en": "Play the pinball cup and tag out all three rivals. Two sentries cover the side lanes and a hunter roams the middle. Bumpers stop pulses. Each power chip adds one pulse point, up to three layers." },
+  "prerequisites": [
+    {
+      "unit": "foundations",
+      "topic": "sequence"
+    },
+    {
+      "unit": "python-intermediate",
+      "topic": "for-loops"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "#################",
+    "#...#..####.#...#",
+    "#...#.......#...#",
+    "#...............#",
+    "#.##..##..##..#.#",
+    "#...............#",
+    "#.##..##..##..#.#",
+    "#...............#",
+    "#...#.......#...#",
+    "#...#..####.#...#",
+    "#################"
+  ],
+  "start": { "x": 1, "y": 5 },
+  "items": [
+    { "id": "power-1", "x": 2, "y": 5 },
+    { "id": "power-2", "x": 3, "y": 3 },
+    { "id": "power-3", "x": 10, "y": 7 },
+    { "id": "shield-1", "x": 5, "y": 5 },
+    { "id": "shield-2", "x": 3, "y": 7 },
+    { "id": "shield-3", "x": 14, "y": 5 }
+  ],
+  "opponents": [
+    {
+      "id": "north-bumper",
+      "title": { "zh": "薄荷挡板", "en": "Mint Bumper" },
+      "start": { "x": 8, "y": 3 },
+      "policy": {
+        "kind": "duelist",
+        "style": "sentry"
+      }
+    },
+    {
+      "id": "south-bumper",
+      "title": { "zh": "樱桃挡板", "en": "Cherry Bumper" },
+      "start": { "x": 12, "y": 7 },
+      "policy": {
+        "kind": "duelist",
+        "style": "sentry"
+      }
+    },
+    {
+      "id": "pinball",
+      "title": { "zh": "跳跳球", "en": "Bouncer" },
+      "start": { "x": 14, "y": 5 },
+      "policy": {
+        "kind": "duelist",
+        "style": "hunter"
+      }
+    }
+  ],
+  "objective": {
+    "kind": "eliminate"
+  },
+  "maxTurns": 42,
+  "combat": {
+    "health": 4,
+    "range": 5,
+    "buffs": [
+      { "id": "power-1", "kind": "power" },
+      { "id": "power-2", "kind": "power" },
+      { "id": "power-3", "kind": "power" },
+      { "id": "shield-1", "kind": "shield" },
+      { "id": "shield-2", "kind": "shield" },
+      { "id": "shield-3", "kind": "shield" }
+    ]
+  },
+  "starterCode": "state = scan()\n",
+  "solutionCode": "def walk(direction, squares):\n    for step in range(squares):\n        move(direction)\n\nmove(\"right\")\npick()\n\nwalk(\"right\", 2)\nwalk(\"down\", 2)\nmove(\"left\")\npick()\n\nmove(\"right\")\nguard()\nwalk(\"up\", 4)\nmove(\"left\")\npick()\n\nshoot(\"right\")\nmove(\"right\")\nfor beat in range(3):\n    shoot(\"right\")\nmove(\"right\")\nwalk(\"down\", 4)\nwalk(\"right\", 2)\nwhile scan()[\"opponents\"][1][\"hp\"] > 0:\n    shoot(\"right\")\n",
+  "snippets": [
+    {
+      "label": { "zh": "向上走", "en": "Move up" },
+      "code": "move(\"up\")"
+    },
+    {
+      "label": { "zh": "向右走", "en": "Move right" },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": { "zh": "向下走", "en": "Move down" },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": { "zh": "向左走", "en": "Move left" },
+      "code": "move(\"left\")"
+    },
+    {
+      "label": { "zh": "向上发脉冲", "en": "Pulse up" },
+      "code": "shoot(\"up\")"
+    },
+    {
+      "label": { "zh": "向右发脉冲", "en": "Pulse right" },
+      "code": "shoot(\"right\")"
+    },
+    {
+      "label": { "zh": "向下发脉冲", "en": "Pulse down" },
+      "code": "shoot(\"down\")"
+    },
+    {
+      "label": { "zh": "向左发脉冲", "en": "Pulse left" },
+      "code": "shoot(\"left\")"
+    },
+    {
+      "label": { "zh": "开启防御", "en": "Guard" },
+      "code": "guard()"
+    },
+    {
+      "label": { "zh": "拾取脚下道具", "en": "Pick up here" },
+      "code": "pick()"
+    },
+    {
+      "label": { "zh": "查看赛场", "en": "Scan arena" },
+      "code": "state = scan()"
+    },
+    {
+      "label": { "zh": "原地等一拍", "en": "Wait a beat" },
+      "code": "wait()"
+    }
+  ]
+}

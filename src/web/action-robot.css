@@ -16,6 +16,11 @@
   inset: 3%; border-radius: 50%; border: 2px solid #8bf5ce;
   opacity: 0; animation: robot-scan .68s ease-out;
 }
+.action-robot[data-robot-action=guard] .action-robot__effect {
+  inset: -7%; border-radius: 48%; border: 2px solid #7de3ff; background: #74d8fb40;
+}
+.action-robot[data-robot-action=shoot] .action-robot__body { animation: robot-reach .38s ease-out; }
+.action-robot[data-robot-action=shoot] .action-robot__badge { background: #ffd38a; }
 .action-robot[data-robot-action=read_map] .action-robot__badge {
   background: #b5e4ff; border-radius: 2px; transform-origin: bottom left;
   animation: robot-unfold .5s ease-out;

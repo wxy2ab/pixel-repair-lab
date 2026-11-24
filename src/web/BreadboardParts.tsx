@@ -1,4 +1,4 @@
-import type { DragEvent } from 'react'
+import type { DragEvent, PointerEvent } from 'react'
 import type { BreadboardPart, BreadboardPartKind } from '../shared/breadboard'
 import type { Locale } from '../shared/types'
 import { tr } from './text'
@@ -42,10 +42,11 @@ type TrayProps = {
   locale: Locale; parts: BreadboardPart[]; chosen?: BreadboardPartKind; locked?: boolean
   onChoose: (kind: BreadboardPartKind) => void
   onDrag: (event: DragEvent, kind: BreadboardPartKind) => void; onEnd: () => void
+  onPointer: (event: PointerEvent, kind: BreadboardPartKind) => void
   onFlip: () => void; onRemove: (kind: BreadboardPartKind) => void
 }
 
-export function BreadboardPartsTray({ locale, parts, chosen, locked, onChoose, onDrag, onEnd, onFlip, onRemove }: TrayProps) {
+export function BreadboardPartsTray({ locale, parts, chosen, locked, onChoose, onDrag, onEnd, onPointer, onFlip, onRemove }: TrayProps) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   return <section className="bread-bin" aria-label={t('元件盒', 'Parts box')}>
     <h3>{locked ? t('板上元件', 'Fitted components') : t('元件盒', 'Parts box')}</h3>
@@ -56,7 +57,7 @@ export function BreadboardPartsTray({ locale, parts, chosen, locked, onChoose, o
         return <div className="bread-compartment" key={kind} data-picked={chosen === kind}>
           <button type="button" className="bread-part-pick" data-testid={'bread-tray-' + kind}
             aria-pressed={chosen === kind} disabled={locked} draggable={!locked} onClick={() => onChoose(kind)}
-            onDragStart={event => onDrag(event, kind)} onDragEnd={onEnd}>
+            onPointerDown={event => onPointer(event, kind)} onDragStart={event => onDrag(event, kind)} onDragEnd={onEnd}>
             <svg viewBox="-30 -18 60 36" focusable="false" aria-hidden="true"><PartBody kind={kind} /></svg>
             <strong>{label}</strong>
             <span>{part ? kind === 'led' ? 'A+ ' + part.pins[0] + ' · K− ' + part.pins[1] : part.pins.join(' · ')

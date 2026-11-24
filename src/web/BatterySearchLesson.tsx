@@ -65,7 +65,8 @@ function ManualSearch({ demo, locale, onFound }: {
           </li>
         })}
       </ol>
-      {latest && <p role="status" className={found ? 'search-manual-feedback is-found' : 'search-manual-feedback'}>
+      {latest && <p role="status" data-task-success={found || undefined} data-task-pop={found || undefined}
+        className={found ? 'search-manual-feedback is-found' : 'search-manual-feedback'}>
         {found ? t(`找到了！${latest.name} 号电池有 ${latest.charge} 格电量。你一共检查了 ${revealed.length} 块。`,
           `Found it! Battery ${latest.name} has ${latest.charge} units of charge. You checked ${revealed.length}.`)
           : t(`${latest.name} 号电池有 ${latest.charge} 格电量。再找找。`,

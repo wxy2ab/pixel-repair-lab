@@ -1,0 +1,179 @@
+{
+  "version": 1,
+  "id": "challenge-gumball-conveyor-derby",
+  "order": 1943,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": { "zh": "挑战场", "en": "Challenge Arena" }
+  },
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": { "zh": "彩糖转盘抢分赛", "en": "Gumball Conveyor Derby" },
+  "concept": { "zh": "争分 · 双向输送带 · 抢芯片", "en": "Score race · Twin conveyors · Chip contest" },
+  "brief": { "zh": "比赛结束时独占最高分。每颗彩糖和每块芯片各算一分。两台收集机抢彩糖，一台追击机在传送带间游走，一台守点机守着交叉口。第 8 和第 16 回合结束时，传送带会把没取走的条纹糖和星星糖送到新的落点。道具收完或回合用完时结算。", "en": "Finish with the highest score. Each gumball and each chip is worth one point. Two collectors chase candy, a hunter roams the conveyors and a sentry guards the crossing. After turns 8 and 16 the conveyors transfer any unclaimed Stripe and Star gumballs to new drop points. Scoring closes when time or supplies run out." },
+  "prerequisites": [
+    {
+      "unit": "python-intermediate",
+      "topic": "branches"
+    },
+    {
+      "unit": "algorithm-advanced",
+      "topic": "rival-strategy"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "###################",
+    "#.......#.........#",
+    "#..####.#.#####...#",
+    "#.................#",
+    "#..####...#####...#",
+    "#.................#",
+    "#..####...#####...#",
+    "#.................#",
+    "#..####.#.#####...#",
+    "#.......#.........#",
+    "###################"
+  ],
+  "start": { "x": 1, "y": 5 },
+  "items": [
+    { "id": "power-1", "x": 1, "y": 4 },
+    { "id": "power-2", "x": 2, "y": 3 },
+    { "id": "power-3", "x": 14, "y": 5 },
+    { "id": "shield-1", "x": 1, "y": 6 },
+    { "id": "shield-2", "x": 2, "y": 7 },
+    { "id": "shield-3", "x": 16, "y": 5 },
+    { "id": "stripe", "x": 9, "y": 3 },
+    { "id": "star", "x": 15, "y": 7 },
+    { "id": "melon", "x": 3, "y": 5 },
+    { "id": "peach", "x": 5, "y": 5 },
+    { "id": "mint", "x": 6, "y": 3 },
+    { "id": "lime", "x": 6, "y": 7 },
+    { "id": "berry", "x": 15, "y": 3 },
+    { "id": "plum", "x": 15, "y": 9 },
+    { "id": "lemon", "x": 12, "y": 7 },
+    { "id": "grape", "x": 10, "y": 1 }
+  ],
+  "opponents": [
+    {
+      "id": "scoop",
+      "title": { "zh": "糖勺", "en": "Scoop" },
+      "start": { "x": 14, "y": 3 },
+      "policy": {
+        "kind": "collect"
+      }
+    },
+    {
+      "id": "tongs",
+      "title": { "zh": "糖夹", "en": "Tongs" },
+      "start": { "x": 14, "y": 7 },
+      "policy": {
+        "kind": "collect"
+      }
+    },
+    {
+      "id": "jelly",
+      "title": { "zh": "果冻", "en": "Jelly" },
+      "start": { "x": 12, "y": 5 },
+      "policy": {
+        "kind": "duelist",
+        "style": "hunter"
+      }
+    },
+    {
+      "id": "toffee",
+      "title": { "zh": "太妃", "en": "Toffee" },
+      "start": { "x": 8, "y": 5 },
+      "policy": {
+        "kind": "duelist",
+        "style": "sentry"
+      }
+    }
+  ],
+  "objective": {
+    "kind": "score"
+  },
+  "maxTurns": 32,
+  "combat": {
+    "health": 6,
+    "range": 4,
+    "buffs": [
+      { "id": "power-1", "kind": "power" },
+      { "id": "power-2", "kind": "power" },
+      { "id": "power-3", "kind": "power" },
+      { "id": "shield-1", "kind": "shield" },
+      { "id": "shield-2", "kind": "shield" },
+      { "id": "shield-3", "kind": "shield" }
+    ]
+  },
+  "shifts": [
+    {
+      "turn": 8,
+      "moveItems": [
+        { "id": "stripe", "x": 5, "y": 7 },
+        { "id": "star", "x": 7, "y": 3 }
+      ]
+    },
+    {
+      "turn": 16,
+      "moveItems": [
+        { "id": "stripe", "x": 2, "y": 9 },
+        { "id": "star", "x": 16, "y": 1 }
+      ]
+    }
+  ],
+  "starterCode": "state = scan()\n",
+  "solutionCode": "def walk(direction, squares):\n    for step in range(squares):\n        move(direction)\n\nmove(\"up\")\npick()\n\nmove(\"up\")\nmove(\"right\")\npick()\n\nwalk(\"down\", 4)\npick()\n\nmove(\"up\")\nmove(\"left\")\nmove(\"up\")\nwalk(\"right\", 2)\npick()\n\nwalk(\"right\", 2)\npick()\n\nwalk(\"right\", 2)\nmove(\"up\")\n",
+  "snippets": [
+    {
+      "label": { "zh": "向上走", "en": "Move up" },
+      "code": "move(\"up\")"
+    },
+    {
+      "label": { "zh": "向右走", "en": "Move right" },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": { "zh": "向下走", "en": "Move down" },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": { "zh": "向左走", "en": "Move left" },
+      "code": "move(\"left\")"
+    },
+    {
+      "label": { "zh": "向上发脉冲", "en": "Pulse up" },
+      "code": "shoot(\"up\")"
+    },
+    {
+      "label": { "zh": "向右发脉冲", "en": "Pulse right" },
+      "code": "shoot(\"right\")"
+    },
+    {
+      "label": { "zh": "向下发脉冲", "en": "Pulse down" },
+      "code": "shoot(\"down\")"
+    },
+    {
+      "label": { "zh": "向左发脉冲", "en": "Pulse left" },
+      "code": "shoot(\"left\")"
+    },
+    {
+      "label": { "zh": "开启防御", "en": "Guard" },
+      "code": "guard()"
+    },
+    {
+      "label": { "zh": "拾取脚下道具", "en": "Pick up here" },
+      "code": "pick()"
+    },
+    {
+      "label": { "zh": "查看赛场", "en": "Scan arena" },
+      "code": "state = scan()"
+    },
+    {
+      "label": { "zh": "原地等一拍", "en": "Wait a beat" },
+      "code": "wait()"
+    }
+  ]
+}

@@ -26,6 +26,8 @@ const DataLesson = lazy(() => import('./DataLesson'))
 const VisionLesson = lazy(() => import('./VisionLesson'))
 const LabDemo = lazy(() => import('../labs/LabDemo'))
 const AiLesson = lazy(() => import('../ai/AiLesson'))
+const FerryRace = lazy(() => import('./FerryRace').then(module => ({ default: module.FerryRace })))
+const MirrorRace = lazy(() => import('./MirrorRace').then(module => ({ default: module.MirrorRace })))
 const ChargingChallengeActivity = lazy(() => import('./ChargingChallengeActivity'))
 const BatteryDispatchActivity = lazy(() => import('./BatteryDispatchActivity'))
 const BatteryPipelineActivity = lazy(() => import('./BatteryPipelineActivity'))
@@ -66,8 +68,17 @@ function LessonContent({ level, locale, onComplete, onMistake, preview = false, 
   const reportMistake = !preview && isGradedPractice(level) ? onMistake : undefined
   const challengeRun = !preview && level.unit?.id === challengeZoneId ? challenge : undefined
   switch (level.kind) {
-    case 'grid': return <GridLesson level={level} locale={locale} onWin={onComplete} onMistake={reportMistake} personal={personal} course={resolveCourseHelpers(level, catalog)} challenge={challengeRun}
-      initialDraft={initialDraft?.kind === 'grid' ? initialDraft : undefined} onDraftChange={onDraftChange} />
+    case 'grid':
+      if (level.laserTrial?.kind === 'race') return <Suspense fallback={<p className="loading" role="status">{tr(locale, '正在打开光廊…', 'Opening the light hall…')}</p>}>
+        <MirrorRace key={level.id} level={level} locale={locale} onComplete={onComplete} onMistake={reportMistake} challenge={challengeRun}
+          initialDraft={initialDraft?.kind === 'grid' ? initialDraft : undefined} onDraftChange={onDraftChange} />
+      </Suspense>
+      if (level.ferry?.kind === 'race') return <Suspense fallback={<p className="loading" role="status">{tr(locale, '正在打开渡口…', 'Opening the ferry…')}</p>}>
+        <FerryRace key={level.id} level={level} locale={locale} onComplete={onComplete} onMistake={reportMistake} challenge={challengeRun}
+          initialDraft={initialDraft?.kind === 'grid' ? initialDraft : undefined} onDraftChange={onDraftChange} />
+      </Suspense>
+      return <GridLesson level={level} locale={locale} onWin={onComplete} onMistake={reportMistake} personal={personal} course={resolveCourseHelpers(level, catalog)} challenge={challengeRun}
+        initialDraft={initialDraft?.kind === 'grid' ? initialDraft : undefined} onDraftChange={onDraftChange} />
     case 'ai': return <Suspense fallback={<p className="loading" role="status">{tr(locale, '正在加载协作练习…', 'Loading the collaboration exercise…')}</p>}>
       <AiLesson level={level} locale={locale} preview={preview} onWin={onComplete} onMistake={reportMistake} challenge={challengeRun}
         replayMode={replayAiMode} />

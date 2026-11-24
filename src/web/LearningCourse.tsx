@@ -89,6 +89,14 @@ function requiredLessons(ordered: Level[]) {
   return ordered.filter(level => !isOptionalChallenge(level))
 }
 
+export function adjacentCoreLessons(ordered: Level[], level: Level) {
+  const index = ordered.indexOf(level)
+  return {
+    previous: ordered.slice(0, index).findLast(candidate => !isOptionalChallenge(candidate)),
+    next: ordered.slice(index + 1).find(candidate => !isOptionalChallenge(candidate)),
+  }
+}
+
 export function CourseStart({ course, ordered, completed, locale, onOpen }: {
   course: Course; ordered: Level[]; completed: string[]; locale: Locale; onOpen: (id: string) => void;
 }) {
@@ -119,11 +127,9 @@ export function CourseNavigation({ course, level, ordered, completed, locale, on
   onOpen: (id: string) => void; onHome: () => void;
 }) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
-  const index = ordered.indexOf(level)
   const required = requiredLessons(ordered)
   const done = required.filter(candidate => completed.includes(candidate.id)).length
-  const previous = ordered.slice(0, index).findLast(candidate => !isOptionalChallenge(candidate))
-  const next = ordered.slice(index + 1).find(candidate => !isOptionalChallenge(candidate))
+  const { previous, next } = adjacentCoreLessons(ordered, level)
   const endsStage = !isOptionalChallenge(level) && !isCourseFinal(level)
     && (!next || isCourseFinal(next) || next.unit?.id !== level.unit?.id)
   const optional = endsStage && ordered.find(candidate => candidate.unit?.id === level.unit?.id && isOptionalChallenge(candidate))

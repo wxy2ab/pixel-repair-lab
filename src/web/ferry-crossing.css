@@ -1,0 +1,13 @@
+.ferry-clock {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .45rem .75rem;
+  padding: .45rem .85rem;
+  color: #cddfe9;
+  font-size: .84rem;
+}
+.ferry-clock ol { display: flex; gap: .25rem; flex-wrap: wrap; list-style: none; margin: 0; padding: 0; }
+.ferry-clock li { padding: .14rem .4rem; text-align: center; border: 1px solid #4c6075; border-radius: .32rem; }
+.ferry-clock li[data-pulse] { color: #ffe0a1; background: #47371e; border-color: #9c763e; }
+.ferry-clock li[aria-current] { outline: 2px solid #8be1c1; outline-offset: 1px; }

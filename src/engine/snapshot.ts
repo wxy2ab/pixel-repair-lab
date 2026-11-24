@@ -55,13 +55,15 @@ export function gridObservationFrames(scenario: Scenario): GridSnapshot[] {
 }
 
 export function initialArenaSnapshot(scenario: ArenaScenario): ArenaSnapshot {
+  const stats = scenario.combat ? { hp: scenario.combat.health, power: 0, shield: 0 } : {}
   return {
     actors: [
-      { ...scenario.start, id: 'player', score: 0 },
-      ...scenario.opponents.map(({ id, start }) => ({ ...start, id, score: 0 })),
+      { ...scenario.start, id: 'player', score: 0, ...stats },
+      ...scenario.opponents.map(({ id, start }) => ({ ...start, id, score: 0, ...stats })),
     ],
     items: scenario.items.map((item) => ({ ...item })),
     turn: 0,
+    ...((scenario.combat || scenario.objective.kind === 'collect') && { collected: [] }),
     ...(scenario.shifts?.length ? { tiles: [...scenario.tiles] } : {}),
   }
 }

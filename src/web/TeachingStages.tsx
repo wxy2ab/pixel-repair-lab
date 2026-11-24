@@ -181,7 +181,8 @@ export function Lecture({ level, locale, onComplete, preview, done = false }: Le
         {option[locale]}
       </button>)}
     </div>
-    {selected !== undefined && <p role="status" className={(correct ? 'win-message' : 'error-message') + ' prediction-feedback'}>
+    {selected !== undefined && <p role="status" data-task-success={correct || undefined} data-task-pop={correct || undefined}
+      className={(correct ? 'win-message' : 'error-message') + ' prediction-feedback'}>
       {correct ? tr(locale, '答对了！', 'That’s right! ') + level.question.feedback[locale]
         : interfaceLesson ? tr(locale, '再看看刚才回放的步骤，然后试一次。', 'Check the steps in the replay, then try again.')
           : tr(locale, '再试一次。想想刚才的例子。', 'Try again. Think about the example.')}

@@ -1,5 +1,5 @@
 import { RealtimeArenaSession } from './realtimeArena'
-import { ARENA_TURN_MS, isArenaChoice, validateRealtimeArenaCheckpoint, type RealtimeArenaRequest, type RealtimeArenaResponse } from './realtimeProtocol'
+import { ARENA_TURN_MS, validateRealtimeArenaCheckpoint, type RealtimeArenaRequest, type RealtimeArenaResponse } from './realtimeProtocol'
 
 let session: RealtimeArenaSession | undefined
 let timer: ReturnType<typeof setTimeout> | undefined
@@ -30,7 +30,7 @@ self.addEventListener('message', (event: MessageEvent<RealtimeArenaRequest>) => 
   switch (request.type) {
     case 'prepare': {
       clearTimeout(timer)
-      const checkpoint = validateRealtimeArenaCheckpoint(request.checkpoint, request.level.maxTurns)
+      const checkpoint = validateRealtimeArenaCheckpoint(request.checkpoint, request.level.maxTurns, Boolean(request.level.combat))
       const restored = checkpoint && RealtimeArenaSession.restore(request.level, checkpoint, request.personal, request.course)
       session = restored ?? new RealtimeArenaSession(request.level, request.personal, request.course)
       firstTurnMs = restored && checkpoint ? checkpoint.remainingMs : ARENA_TURN_MS
@@ -59,8 +59,7 @@ self.addEventListener('message', (event: MessageEvent<RealtimeArenaRequest>) => 
       send({ type: 'policy', requestId: request.requestId, ...session.setPolicy(request.source), progress: session.progress })
       break
     case 'action':
-      if (phase !== 'playing' || !session || request.turn !== session.snapshot.turn + 1 || !isArenaChoice(request.action)) break
-      session.queueAction(request.action)
+      if (phase !== 'playing' || !session || request.turn !== session.snapshot.turn + 1 || !session.queueAction(request.action)) break
       send({ type: 'action', turn: request.turn, progress: session.progress })
   }
 })

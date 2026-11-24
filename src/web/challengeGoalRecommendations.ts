@@ -43,6 +43,8 @@ function fitsChallenge(level: Level, score: ChallengeScore, goal: ChallengeGoal)
     if (goal.metricId === 'score') return goal.target <= Math.min(level.items.length, level.maxTurns)
     const minimum = level.objective.kind === 'escape'
       ? distance(level.start, level.objective.exit) + new Set(level.objective.itemIds).size
+      : level.objective.kind === 'collect' ? level.objective.itemIds.length
+      : level.objective.kind === 'eliminate' ? 1
       : Math.min(level.maxTurns, Math.ceil(level.items.length / (level.opponents.length + 1)))
     return goal.target >= minimum && goal.target <= level.maxTurns
   }

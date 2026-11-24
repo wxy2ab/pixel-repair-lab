@@ -2,16 +2,20 @@ import { createPortal } from 'react-dom'
 import { createRoot } from 'react-dom/client'
 import { Fragment, lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { ArenaLevel } from '../shared/advanced'
-import type { Catalog, Level, Locale } from '../shared/types'
+import type { Catalog, Level, Locale, Localized } from '../shared/types'
 import type { RealtimeArenaCheckpoint } from '../engine/realtimeProtocol'
 import { AlgorithmLibrary, persistAlgorithms, readAlgorithms } from './AlgorithmLibrary'
 import { challengeZoneId } from '../shared/coursePrerequisites'
 import { ChallengePrerequisites } from './ChallengeCatalog'
 import { ChallengeBrief } from './ChallengeBrief'
 import { ChallengeCompletion } from './ChallengeCompletion'
+import { CompletionFeedback } from './CompletionFeedback'
+import { completionMilestone, type CompletionMilestone } from './completionMilestone'
 import { readArenaMatch, readArenaReload, saveArenaMatch, saveArenaReload, type ArenaReload } from './arenaMatchProgress'
 import type { ArenaReplayProgress } from './arenaReplayProgress'
 import { challengeDraftKey, parseChallengeDraft, supportsChallengeDraft, type ChallengeDraft } from './challengeDraft'
+import { carriedCrossingProgram } from './shortChallengeProgram'
+import { shortCrossing, shortSeries } from '../shared/shortChallenges'
 import { ChallengeReplayFocusResult } from './ChallengeReplayFocusResult'
 import { ChallengeStudyRoute } from './ChallengeStudyRoute'
 import { buildChallengeCatalog, buildChallengePreparation, challengeDifficulties, challengeDifficultyLabels, challengeType, challengeTypeLabels, challengeTypes, nextChallenge, type ChallengeFilters, type ChallengeType } from './challengeModel'
@@ -29,7 +33,8 @@ import { buildLearningRecord, learningRecordKey, readLearningLog, recordLesson, 
 import { groupLevels, isCourseFinal, isCourseOverview, isOptionalChallenge, levelStage, stageLabel } from './lessonTools'
 import { LessonNext, TopicSteps } from './LessonGuide'
 import { Icon } from './icons'
-import { courseFor, CourseNavigation, OverviewTopics } from './LearningCourse'
+import { adjacentCoreLessons, courseFor, CourseNavigation, OverviewTopics } from './LearningCourse'
+import { MissionRail, type MissionRailMode } from './MissionRail'
 import { modulesForCourse } from './roadmapModel'
 import { Robot } from './Board'
 import { WorkshopForLesson } from './station3d/LessonWorkbench'
@@ -39,6 +44,7 @@ import './styles.css'
 import './advanced.css'
 import './modules.css'
 import './python-course.css'
+import './mission-rail.css'
 
 const LearningRecord = lazy(() => import('./LearningRecord').then(module => ({ default: module.LearningRecord })))
 const LessonReviewNav = lazy(() => import('./LearningRecord').then(module => ({ default: module.LessonReviewNav })))
@@ -55,7 +61,7 @@ const challengeGoalsHash = '#challenge-goals'
 const unfinishedMatchesHash = '#unfinished-matches'
 type Section = 'modules' | 'campaign' | 'preview' | 'algorithms' | 'record' | 'challenge-records' | 'challenge-goals' | 'unfinished-matches'
 type StudyRoute = { challengeId: string; lessonId: string; mode?: 'review' }
-type RecordedChallenge = { levelId: string; comparison: ChallengeScoreComparison; goalResult?: ChallengeGoalEvaluation; replay: () => void }
+type RecordedChallenge = { levelId: string; comparison: ChallengeScoreComparison; goalResult?: ChallengeGoalEvaluation; outcome?: Localized; replay: () => void }
 type ActiveReplayFocus = { levelId: string; plan: ReplayFocusPlan; reference: ReplayFocusReference }
 type RecordedReplayFocus = { levelId: string; result: ReplayFocusEvaluation; reference: ReplayFocusReference }
 type ArenaMode = 'relaxed' | 'timed'
@@ -160,6 +166,8 @@ function resetChallengeDraft(level: Level, arenaMode?: ArenaMode) {
     writeChallengeDraft(level.id, mode === 'timed'
       ? { kind: 'arena', mode, source: stored?.source }
       : { kind: 'arena', mode, policy: stored?.policy })
+  } else if (shortCrossing(level)?.carryFrom) {
+    writeChallengeDraft(level.id, { kind: 'grid', mode: 'cards', cards: [] })
   } else {
     try { localStorage.removeItem(challengeDraftKey(level.id)) } catch { /* Storage may be unavailable. */ }
   }
@@ -176,7 +184,8 @@ function readCompleted(): string[] {
 
 function App() {
   const [locale, setLocale] = useState<Locale>(() => readStorage(localeKey) === 'en' ? 'en' : 'zh')
-  const [completed, setCompleted] = useState(readCompleted)
+  const [{ ids: completed, milestone }, setProgress] = useState<{ ids: string[]; milestone?: CompletionMilestone }>(() => ({ ids: readCompleted() }))
+  const dismissMilestone = useCallback(() => setProgress(previous => previous.milestone ? { ids: previous.ids } : previous), [])
   const [learningLog, setLearningLog] = useState(() => readLearningLog(readStorage(learningRecordKey)))
   const [lastLesson, setLastLesson] = useState(() => readStorage(lastLessonKey) ?? undefined)
   const [catalog, setCatalog] = useState<Catalog>()
@@ -211,9 +220,10 @@ function App() {
   const [review, setReview] = useState<{ sourceId: string; visit: number }>()
   const [personal, setPersonal] = useState(readAlgorithms)
   const [storageFailed, setStorageFailed] = useState(false)
-  const [routeOpen, setRouteOpen] = useState(false)
-  const [railHidden, setRailHidden] = useState(() => readStorage(railKey) === 'hidden')
-  const rail = useRef<HTMLElement>(null)
+  const [railMode, setRailMode] = useState<MissionRailMode>(() => {
+    const saved = readStorage(railKey)
+    return saved === 'hidden' || saved === 'compact' ? saved : 'pinned'
+  })
   const t = (zh: string, en: string) => tr(locale, zh, en)
 
   useEffect(() => {
@@ -254,11 +264,11 @@ function App() {
         saveArenaReload()
         setStudyRoute(undefined)
         setChallengeSummary(undefined)
+        dismissMilestone()
         setRouteChallengeId(undefined)
         activeReplayFocus.current = undefined
         setReplayFocusResult(undefined)
         setReview(undefined)
-        setRouteOpen(false)
         setSection(unfinished ? 'unfinished-matches' : goalTab ? 'challenge-goals' : 'challenge-records')
         window.scrollTo({ top: 0, behavior: 'instant' })
       } else {
@@ -268,7 +278,7 @@ function App() {
     }
     window.addEventListener('hashchange', followChallengePanelHash)
     return () => window.removeEventListener('hashchange', followChallengePanelHash)
-  }, [])
+  }, [dismissMilestone])
 
   useEffect(() => { writeStorage(progressKey, JSON.stringify(completed)) }, [completed])
   useEffect(() => { writeStorage(learningRecordKey, JSON.stringify(learningLog)) }, [learningLog])
@@ -319,11 +329,14 @@ function App() {
   const invalidArenaReload = Boolean(catalog && arenaReload && (reloadingArena?.kind !== 'arena'
     || !readArenaMatch(reloadingArena, arenaReload.mode)))
   const currentSummary = isChallenge && challengeSummary?.levelId === level.id ? challengeSummary : undefined
+  const series = shortSeries(level)
+  const seriesNextId = shortCrossing(level)?.next
+  const nextMission = seriesNextId ? levels.find(candidate => candidate.id === seriesNextId) : ordered[levelIndex + 1]
   const currentReplayFocus = isChallenge && replayFocusResult?.levelId === level.id ? replayFocusResult : undefined
   const challengeEntries = currentSummary && challenges && buildChallengeCatalog(challenges.levels, groups, completed).entries
-  const recommended = currentSummary && challengeEntries && (isRouteAttempt
+  const recommended = currentSummary && challengeEntries && (challengeEntries.find(entry => entry.level.id === seriesNextId) ?? (isRouteAttempt
     ? buildChallengeRoutes(challengeEntries, skippedRouteIds).find(route => route.type === challengeType(level))?.next
-    : nextChallenge(challengeEntries, currentSummary.levelId))
+    : nextChallenge(challengeEntries, currentSummary.levelId)))
   const scorePanel = section === 'challenge-records' || section === 'challenge-goals'
   const challengePanel = scorePanel || section === 'unfinished-matches'
   const scoreHistory = scorePanel ? currentChallengeScores(scoreCache.current, readStorage(challengeScoresKey)) : undefined
@@ -369,23 +382,28 @@ function App() {
     }
   }
 
-  const recordAttempt = useCallback((id: string, status: 'passed' | 'mistake') => {
+  const recordAttempt = useCallback((target: Level, status: 'passed' | 'mistake', visible = true) => {
     const at = Date.now()
-    if (status === 'passed') setCompleted(previous => previous.includes(id) ? previous : [...previous, id])
-    setLearningLog(previous => recordLesson(previous, id, status, at))
-  }, [])
-  const markWin = useCallback(() => { if (level) recordAttempt(level.id, 'passed') }, [level, recordAttempt])
-  const markMistake = useCallback(() => { if (level) recordAttempt(level.id, 'mistake') }, [level, recordAttempt])
+    if (status === 'passed') setProgress(previous => {
+      if (previous.ids.includes(target.id)) return previous
+      return { ids: [...previous.ids, target.id], milestone: visible
+        ? completionMilestone(target, catalog?.levels ?? [], previous.ids) : previous.milestone }
+    })
+    setLearningLog(previous => recordLesson(previous, target.id, status, at))
+  }, [catalog])
+  const markWin = useCallback(() => { if (level) recordAttempt(level, 'passed') }, [level, recordAttempt])
+  const markMistake = useCallback(() => { if (level) recordAttempt(level, 'mistake') }, [level, recordAttempt])
   const markChallengeWin = useCallback(() => {
-    if (retainedChallenge) recordAttempt(retainedChallenge.id, 'passed')
-  }, [retainedChallenge, recordAttempt])
+    if (retainedChallenge) recordAttempt(retainedChallenge, 'passed', retainedChallenge.id === level?.id)
+  }, [retainedChallenge, level, recordAttempt])
   const markChallengeMistake = useCallback(() => {
-    if (retainedChallenge) recordAttempt(retainedChallenge.id, 'mistake')
+    if (retainedChallenge) recordAttempt(retainedChallenge, 'mistake')
   }, [retainedChallenge, recordAttempt])
   const clearChallengeSummary = useCallback(() => {
     setChallengeSummary(undefined)
     setReplayFocusResult(undefined)
-  }, [])
+    dismissMilestone()
+  }, [dismissMilestone])
   const finishReplayFocus = useCallback((challenge: Level, score: ChallengeScore, evidence: GoalReplayEvidence | undefined, won: boolean) => {
     const focus = activeReplayFocus.current
     if (!focus || focus.levelId !== challenge.id) return
@@ -416,7 +434,7 @@ function App() {
     const goals = recordChallengeGoalFailure(store.goals, retainedChallenge.id, challengeScoreSignature(score), { score, evidence })
     if (goals !== store.goals) persistGoalStore(stored, { ...store, goals })
   }, [finishReplayFocus, goalCache, level, persistGoalStore, retainedChallenge])
-  const recordChallengeScore = useCallback<ChallengeRunHandlers['onWin']>((score, replay, evidence) => {
+  const recordChallengeScore = useCallback<ChallengeRunHandlers['onWin']>((score, replay, evidence, outcome) => {
     if (!retainedChallenge || retainedChallenge.id !== level?.id) return
     finishReplayFocus(retainedChallenge, score, evidence, true)
     const stored = readStorage(challengeScoresKey)
@@ -431,7 +449,7 @@ function App() {
       const achieved = evaluation.achievement ? archiveChallengeGoal(store.history, evaluation.achievement) : store.history
       persistGoalStore(storedGoals, { goals: evaluation.goals, history: achieved })
     }
-    setChallengeSummary({ levelId: retainedChallenge.id, comparison, goalResult: evaluation.result, replay })
+    setChallengeSummary({ levelId: retainedChallenge.id, comparison, goalResult: evaluation.result, outcome, replay })
   }, [finishReplayFocus, goalCache, level, persistGoalStore, retainedChallenge])
 
   function updateGoal(levelId: string, score: ChallengeScore, goal?: ChallengeGoal, source?: 'recommendation') {
@@ -475,7 +493,6 @@ function App() {
     arenaView.current = arenaMode ? { levelId: id, fromRoute: routeId === id, mode: arenaMode } : undefined
     activeReplayFocus.current = undefined
     clearChallengeSummary()
-    setRouteOpen(false)
     setRouteChallengeId(routeId)
     setChallengeReplay(replay)
     setSection('campaign')
@@ -495,6 +512,10 @@ function App() {
     let arenaMode: ArenaMode | undefined
     if (target?.unit?.id === challengeZoneId) {
       rememberChallenge(target)
+      if (target.kind === 'grid' && shortCrossing(target)?.carryFrom && !readChallengeDraft(target)) {
+        const inherited = carriedCrossingProgram(target)
+        if (inherited) writeChallengeDraft(target.id, inherited)
+      }
       if (target.kind === 'arena') {
         arenaMode = replay?.kind === 'arena' ? replay.mode : arenaDraftMode(target)
         if (replay?.kind === 'arena') {
@@ -583,7 +604,6 @@ function App() {
     activeReplayFocus.current = undefined
     clearChallengeSummary()
     if (studyRoute) updateStudyRoute()
-    setRouteOpen(false)
     setRouteChallengeId(undefined)
     setReview(undefined)
     setSection(section)
@@ -712,23 +732,9 @@ function App() {
     replayChallengeWithFocus(level.id, entry.score, retryReplayFocus(entry))
   }
 
-  const activeLevelId = section === 'campaign' ? level?.id : undefined
-  useEffect(() => {
-    // Keep the open lesson visible in a long mission list without moving the page itself.
-    const list = rail.current
-    const current = list?.querySelector<HTMLElement>('.mission-list [aria-current="step"]')
-    if (!list || !current || list.scrollHeight <= list.clientHeight) return
-    const frame = list.getBoundingClientRect()
-    const item = current.getBoundingClientRect()
-    if (item.top < frame.top + 8 || item.bottom > frame.bottom - 8) {
-      list.scrollTop += item.top - frame.top - (frame.height - item.height) / 2
-    }
-  }, [activeLevelId, railHidden])
-
-  function toggleRail() {
-    const next = !railHidden
-    setRailHidden(next)
-    writeStorage(railKey, next ? 'hidden' : 'shown')
+  function changeRailMode(mode: MissionRailMode) {
+    setRailMode(mode)
+    writeStorage(railKey, mode)
   }
 
   const progress = <div className="overview-progress">
@@ -739,12 +745,19 @@ function App() {
     </div>
   </div>
 
-  const showCourseRail = outline && level && course && !invalidStudyRoute && !invalidArenaReload
-    && !reviewSource && !(studyChallenge && studyPlan) && !railHidden
   const guidedLesson = outline && level && course && !invalidStudyRoute && !invalidArenaReload
     && !reviewSource && !(studyChallenge && studyPlan)
+  const showCompletionTag = isWon && (!guidedLesson || railMode !== 'pinned')
+  const adjacent = course ? adjacentCoreLessons(courseOrder, level) : { previous: ordered[levelIndex - 1], next: ordered[levelIndex + 1] }
+  function railLink(target: Level | undefined) {
+    if (!target) return
+    if (!isRouteAttempt) return () => openLevel(target.id)
+    if (challengeType(target) === challengeType(level)) return () => openRouteLevel(target.id)
+  }
 
   return <div className="app-shell">
+    <CompletionFeedback event={section === 'campaign' && milestone?.levelId === level?.id ? milestone : undefined}
+      locale={locale} onDismiss={dismissMilestone} />
     <header className="topbar">
       <button type="button" className="brand" onClick={() => goTo('modules')}>
         <span className="brand-mark"><Robot /></span>
@@ -774,14 +787,11 @@ function App() {
       </div>
     </header>
 
-    <div className={outline ? 'app-main' + (railHidden ? ' app-main--rail-hidden' : '') : 'app-main app-main--solo'}>
-      {outline && activeGroup && <aside ref={rail} className={'sidebar' + (routeOpen ? ' sidebar-open' : '') + (showCourseRail ? ' classroom-rail' : '')}
-        aria-label={t('学习进度与任务列表', 'Progress and mission list')}>
-        <button type="button" className="icon-button rail-toggle rail-toggle--show" onClick={toggleRail}
-          aria-label={t('展开任务列表栏', 'Show the mission list panel')} title={t('展开任务列表栏', 'Show the mission list panel')}>
-          <Icon name="expand" size={19} />
-        </button>
-        {showCourseRail && <CourseNavigation course={course} level={level} ordered={courseOrder} locale={locale} completed={completed}
+    <div className={outline ? 'app-main app-main--missions' : 'app-main app-main--solo'} data-rail-mode={outline ? railMode : undefined}>
+      {outline && activeGroup && <MissionRail locale={locale} mode={railMode} onModeChange={changeRailMode} levelId={level.id}
+        classroom={Boolean(guidedLesson)} isChallenge={inChallengeZone} onHome={() => inChallengeZone ? openChallenges() : goTo('modules')}
+        onPrevious={railLink(adjacent.previous)} onNext={railLink(adjacent.next)}>
+        {guidedLesson && <CourseNavigation course={course} level={level} ordered={courseOrder} locale={locale} completed={completed}
           onOpen={openLevel} onHome={() => goTo('modules')} />}
         <div className="sidebar-heading">
           {progress}
@@ -790,10 +800,6 @@ function App() {
             <span className="route-tools">
               <button type="button" className="icon-button" aria-label={t('刷新关卡列表', 'Refresh mission list')} title={t('刷新关卡列表', 'Refresh mission list')}
                 onClick={() => setRefresh(value => value + 1)}><Icon name="refresh" /></button>
-              <button type="button" className="icon-button rail-toggle" onClick={toggleRail}
-                aria-label={t('收起任务列表栏', 'Hide the mission list panel')} title={t('收起任务列表栏，给工作区更多空间', 'Hide the mission list panel for a wider workspace')}>
-                <Icon name="collapse" size={19} />
-              </button>
             </span>
           </div>
         </div>
@@ -832,11 +838,10 @@ function App() {
             </ol>
           </section>
         </div>
-      </aside>}
+      </MissionRail>}
 
       <main className="content">
         {!outline && <div className="content-progress">{progress}</div>}
-        {outline && <button type="button" className="mobile-missions subtle-button" aria-expanded={routeOpen} onClick={() => setRouteOpen(!routeOpen)}>{t('任务列表', 'Mission list')}</button>}
         {section === 'preview' ? <LevelPreview locale={locale} catalog={levels} /> : section === 'algorithms' ?
           <AlgorithmLibrary locale={locale} algorithms={personal} remove={removeAlgorithm} storageFailed={storageFailed}
             goToPractice={algorithmExercise ? () => openLevel(algorithmExercise.id) : undefined} /> : <>
@@ -895,9 +900,10 @@ function App() {
                 <h1>{level.title[locale]}</h1>
                 {level.kind !== 'ai' && !isChallenge && <p>{level.brief[locale]}</p>}
               </div>
-              {((isWon && !showCourseRail) || isRouteAttempt || canRestartChallenge) && <div className="mission-finish">
-                {isWon && !showCourseRail && <span className="complete-tag">{t('已完成', 'Complete')}</span>}
-                {isWon && !isRouteAttempt && !course && !reviewSource && !currentSummary && ordered[levelIndex + 1] && <button type="button" className="subtle-button" onClick={() => openLevel(ordered[levelIndex + 1].id)}>{t('下一关', 'Next mission')}</button>}
+              {(showCompletionTag || isRouteAttempt || canRestartChallenge) && <div className="mission-finish">
+                {showCompletionTag && <span className="complete-tag">{t('已完成', 'Complete')}</span>}
+                {isWon && (!isRouteAttempt || seriesNextId) && !course && !reviewSource && !currentSummary && nextMission && <button type="button" className="subtle-button"
+                  onClick={() => isRouteAttempt ? openRouteLevel(nextMission.id) : openLevel(nextMission.id)}>{t('下一关', 'Next mission')}</button>}
                 {isRouteAttempt && !currentSummary && <>
                   <button type="button" className="subtle-button" onClick={() => openChallenges('challenge-routes')}>{t('返回闯关路线', 'Back to challenge routes')}</button>
                   {!isWon && !skippedRouteIds.includes(level.id) && <button type="button" className="subtle-button"
@@ -907,11 +913,13 @@ function App() {
                   {t('重新开始', 'Start over')}
                 </button>}
               </div>}
-              {level.unit?.id === challengeZoneId && <WorkshopForLesson level={level} locale={locale} completed={isWon} />}
+              {level.unit?.id === challengeZoneId && !series && <WorkshopForLesson level={level} locale={locale} completed={isWon} />}
             </div>
             {isChallenge && level.kind !== 'ai' && <ChallengeBrief key={level.id} level={level} locale={locale} />}
             {guidedLesson && <TopicSteps level={level} ordered={ordered} completed={completed} locale={locale} onOpen={openLevel} />}
-            {currentSummary && <ChallengeCompletion comparison={currentSummary.comparison} goalResult={currentSummary.goalResult} locale={locale} next={recommended}
+            {currentSummary && <ChallengeCompletion missionTitle={level.title[locale]} comparison={currentSummary.comparison} goalResult={currentSummary.goalResult} locale={locale} next={recommended}
+              outcome={currentSummary.outcome?.[locale]}
+              seriesNext={seriesNextId && recommended?.level.id === seriesNextId ? series : undefined}
               replayFocusResult={currentReplayFocus && <ChallengeReplayFocusResult result={currentReplayFocus.result}
                 reference={currentReplayFocus.reference} locale={locale} inSummary />}
               onReplay={() => { clearChallengeSummary(); currentSummary.replay() }}
@@ -921,7 +929,7 @@ function App() {
                 currentSummary.comparison.current.kind === 'arena' ? currentSummary.comparison.current.mode : undefined)} />}
             {!currentSummary && currentReplayFocus && <ChallengeReplayFocusResult result={currentReplayFocus.result}
               reference={currentReplayFocus.reference} locale={locale} />}
-            {level.prerequisites && <ChallengePrerequisites level={level} groups={groups} locale={locale}
+            {level.prerequisites && !series && <ChallengePrerequisites level={level} groups={groups} locale={locale}
               completed={completed} onOpenLevel={openLevel} onStartPreparation={startPreparation} />}
             {reviewSource ? <Suspense fallback={null}>
               <LessonReviewNav source={reviewSource} current={level} materials={reviewMaterialsFor(reviewSource, levels)} locale={locale}
@@ -930,8 +938,7 @@ function App() {
               : studyChallenge && studyPlan
                 ? <ChallengeStudyRoute challenge={studyChallenge} preparation={studyPlan} locale={locale} lessonComplete={isWon}
                   review={studyRoute?.mode === 'review'} onNext={openLevel} onReturn={() => openLevel(studyChallenge.id)} />
-                : course && !showCourseRail && <CourseNavigation course={course} level={level} ordered={courseOrder} locale={locale} completed={completed}
-                onOpen={openLevel} onHome={() => goTo('modules')} />}
+                : null}
             {retainedChallenge && <RetainedChallenge visible={retainedChallenge.id === level.id}>
               <LessonView catalog={levels} key={JSON.stringify(retainedChallenge) + ':' + challengeRestart} level={retainedChallenge} locale={locale} completed={completed}
                 onComplete={markChallengeWin} onMistake={markChallengeMistake} personal={personal} onOpenLevel={openLevel}

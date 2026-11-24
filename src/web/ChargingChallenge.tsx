@@ -223,7 +223,7 @@ export function ChargingChallenge({ level, locale, personal, course, onReady, on
           </dl>
         </div>
         {trial?.issue ? <p className="error-message" role="alert">{runIssueText(locale, trial.issue)}</p>
-          : trial ? <p role="status" className={trial.passed ? 'win-message' : ''}>{trial.passed
+          : trial ? <p role="status" data-task-success={trial.passed || undefined} className={trial.passed ? 'win-message' : ''}>{trial.passed
             ? t('小例子通过了。可以换一架电池来预测。', 'The small example passed. Try predicting a different rack.')
             : t('结果和预期不同。逐步查看程序在哪儿交回了结果。', 'The results differ. Step through the program to see where it returns.')}</p>
           : moved && <p role="status">{t('return 已经与外层 for 对齐。再试跑一次。', 'return now lines up with the outer for. Run the example again.')}</p>}

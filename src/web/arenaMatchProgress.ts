@@ -26,7 +26,7 @@ function scenarioKey(level: ArenaLevel) {
 }
 
 function parseMatchProgress(level: ArenaLevel, mode: ArenaMatchMode, progress: unknown) {
-  return mode === 'timed' ? validateRealtimeArenaCheckpoint(progress, level.maxTurns) : parseArenaReplayProgress(progress, level)
+  return mode === 'timed' ? validateRealtimeArenaCheckpoint(progress, level.maxTurns, Boolean(level.combat)) : parseArenaReplayProgress(progress, level)
 }
 
 export function readArenaMatchRecord(level: ArenaLevel, mode: 'timed'): ArenaMatchRecord<RealtimeArenaCheckpoint> | undefined

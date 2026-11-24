@@ -1,0 +1,229 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-twin-freight-decks",
+  "order": 1932,
+  "difficulty": "advanced",
+  "unit": { "id": "challenge-zone", "order": 90, "title": { "zh": "挑战场", "en": "Challenge Arena" } },
+  "stage": "challenge",
+  "prerequisites": [
+    { "unit": "python-intermediate", "topic": "branches" },
+    { "unit": "python-intermediate", "topic": "for-loops" },
+    { "unit": "python-intermediate", "topic": "collections" }
+  ],
+  "title": { "zh": "双层货轮的通行印", "en": "Seals of the Twin Decks" },
+  "concept": { "zh": "镜像甲板 · 双锁货舱 · 同一份程序", "en": "Mirrored decks · Two locks · One program" },
+  "brief": {
+    "zh": "在两层甲板分别取出通行印，送到各自的卸货口。两层的房间和机关沿中间走廊上下对称。靠船头的钥匙开走廊门。踏板切断横跨走廊的激光。船尾的钥匙开货舱门和印章箱。扫描相邻格不会耗时。用同一份程序在每层的 31 回合内交货。",
+    "en": "Recover the dispatch seal on each deck and reach its unloading hatch. The decks mirror each other across the central corridor. The bow key opens the corridor door. The plate cuts power to the beam across the corridor. The stern key opens the hold door and the seal chest. Scanning nearby squares takes no turns. Use the same program to deliver each seal within 31 turns."
+  },
+  "hints": [],
+  "tiles": [
+    "############",
+    "#...####...#",
+    "#.#.####.#.#",
+    "#..........#",
+    "#####.#.##.#",
+    "#####...#..#",
+    "############"
+  ],
+  "start": { "x": 1, "y": 3 },
+  "turnLimit": 31,
+  "allowedApi": ["scan", "move", "pick"],
+  "devices": [
+    { "kind": "key", "id": "bridge-key", "x": 2, "y": 1 },
+    { "kind": "door", "id": "bridge-lock", "x": 4, "y": 3, "keyId": "bridge-key" },
+    { "kind": "switch", "id": "bridge-cutoff", "x": 6, "y": 5 },
+    { "kind": "laser", "id": "deck-beam", "x": 8, "y": 1, "direction": "down", "switchId": "bridge-cutoff" },
+    { "kind": "key", "id": "cargo-key", "x": 9, "y": 1 },
+    { "kind": "door", "id": "hold-lock", "x": 10, "y": 4, "keyId": "cargo-key" },
+    { "kind": "chest", "id": "dispatch-seal", "x": 9, "y": 5, "keyId": "cargo-key" }
+  ],
+  "objectives": [
+    { "type": "collect", "itemIds": ["dispatch-seal"] },
+    { "type": "exit", "x": 10, "y": 5 }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "############",
+        "#####...#..#",
+        "#####.#.##.#",
+        "#..........#",
+        "#.#.####.#.#",
+        "#...####...#",
+        "############"
+      ],
+      "devices": [
+        { "kind": "key", "id": "bridge-key", "x": 2, "y": 5 },
+        { "kind": "door", "id": "bridge-lock", "x": 4, "y": 3, "keyId": "bridge-key" },
+        { "kind": "switch", "id": "bridge-cutoff", "x": 6, "y": 1 },
+        { "kind": "laser", "id": "deck-beam", "x": 8, "y": 5, "direction": "up", "switchId": "bridge-cutoff" },
+        { "kind": "key", "id": "cargo-key", "x": 9, "y": 5 },
+        { "kind": "door", "id": "hold-lock", "x": 10, "y": 2, "keyId": "cargo-key" },
+        { "kind": "chest", "id": "dispatch-seal", "x": 9, "y": 1, "keyId": "cargo-key" }
+      ],
+      "objectives": [
+        { "type": "collect", "itemIds": ["dispatch-seal"] },
+        { "type": "exit", "x": 10, "y": 1 }
+      ]
+    }
+  ],
+  "cards": [
+    { "id": "up", "label": { "zh": "向上", "en": "Move up" }, "template": "move(\"up\")" },
+    { "id": "right", "label": { "zh": "向右", "en": "Move right" }, "template": "move(\"right\")" },
+    { "id": "down", "label": { "zh": "向下", "en": "Move down" }, "template": "move(\"down\")" },
+    { "id": "left", "label": { "zh": "向左", "en": "Move left" }, "template": "move(\"left\")" },
+    {
+      "id": "repeat",
+      "label": { "zh": "重复几次", "en": "Repeat moves" },
+      "template": "for step in range({{count}}):",
+      "block": true,
+      "parameters": [
+        {
+          "name": "count",
+          "label": { "zh": "次数", "en": "Times" },
+          "choices": [
+            { "id": "n2", "label": { "zh": "2", "en": "2" }, "code": "2" },
+            { "id": "n3", "label": { "zh": "3", "en": "3" }, "code": "3" },
+            { "id": "n4", "label": { "zh": "4", "en": "4" }, "code": "4" },
+            { "id": "n5", "label": { "zh": "5", "en": "5" }, "code": "5" },
+            { "id": "n6", "label": { "zh": "6", "en": "6" }, "code": "6" }
+          ]
+        }
+      ]
+    },
+    { "id": "pick", "label": { "zh": "打开脚下的宝箱", "en": "Open this chest" }, "template": "pick()" },
+    {
+      "id": "orient",
+      "label": { "zh": "设置两个方向", "en": "Set the two directions" },
+      "template": "axis = {{pair}}",
+      "parameters": [
+        {
+          "name": "pair",
+          "label": { "zh": "方向组合", "en": "Direction pair" },
+          "choices": [
+            { "id": "up-down", "label": { "zh": "上、下", "en": "Up, down" }, "code": "[\"up\", \"down\"]" },
+            { "id": "down-up", "label": { "zh": "下、上", "en": "Down, up" }, "code": "[\"down\", \"up\"]" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "if-wall",
+      "label": { "zh": "如果相邻格是墙", "en": "If a neighboring square is a wall" },
+      "template": "if scan()[{{direction}}] == \"wall\":",
+      "block": true,
+      "parameters": [
+        {
+          "name": "direction",
+          "label": { "zh": "查看哪边", "en": "Look towards" },
+          "choices": [
+            { "id": "up", "label": { "zh": "上", "en": "Up" }, "code": "\"up\"" },
+            { "id": "down", "label": { "zh": "下", "en": "Down" }, "code": "\"down\"" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "axis-move",
+      "label": { "zh": "沿选定的方向移动", "en": "Move in a stored direction" },
+      "template": "move(axis[{{direction}}])",
+      "parameters": [
+        {
+          "name": "direction",
+          "label": { "zh": "选择方向", "en": "Which direction" },
+          "choices": [
+            { "id": "first", "label": { "zh": "第一个", "en": "First" }, "code": "0" },
+            { "id": "second", "label": { "zh": "第二个", "en": "Second" }, "code": "1" }
+          ]
+        }
+      ]
+    }
+  ],
+  "solutionCards": [
+    { "cardId": "orient", "values": { "pair": "up-down" } },
+    {
+      "cardId": "if-wall",
+      "values": { "direction": "up" },
+      "children": [
+        { "cardId": "orient", "values": { "pair": "down-up" } }
+      ]
+    },
+    {
+      "cardId": "repeat",
+      "values": { "count": "n2" },
+      "children": [
+        { "cardId": "axis-move", "values": { "direction": "first" } }
+      ]
+    },
+    {
+      "cardId": "repeat",
+      "values": { "count": "n2" },
+      "children": [
+        { "cardId": "right" }
+      ]
+    },
+    {
+      "cardId": "repeat",
+      "values": { "count": "n2" },
+      "children": [
+        { "cardId": "axis-move", "values": { "direction": "second" } }
+      ]
+    },
+    {
+      "cardId": "repeat",
+      "values": { "count": "n2" },
+      "children": [
+        { "cardId": "right" }
+      ]
+    },
+    {
+      "cardId": "repeat",
+      "values": { "count": "n2" },
+      "children": [
+        { "cardId": "axis-move", "values": { "direction": "second" } }
+      ]
+    },
+    {
+      "cardId": "repeat",
+      "values": { "count": "n2" },
+      "children": [
+        { "cardId": "right" }
+      ]
+    },
+    {
+      "cardId": "repeat",
+      "values": { "count": "n2" },
+      "children": [
+        { "cardId": "axis-move", "values": { "direction": "first" } }
+      ]
+    },
+    {
+      "cardId": "repeat",
+      "values": { "count": "n3" },
+      "children": [
+        { "cardId": "right" }
+      ]
+    },
+    {
+      "cardId": "repeat",
+      "values": { "count": "n2" },
+      "children": [
+        { "cardId": "axis-move", "values": { "direction": "first" } }
+      ]
+    },
+    { "cardId": "left" },
+    { "cardId": "right" },
+    {
+      "cardId": "repeat",
+      "values": { "count": "n4" },
+      "children": [
+        { "cardId": "axis-move", "values": { "direction": "second" } }
+      ]
+    },
+    { "cardId": "left" },
+    { "cardId": "pick" },
+    { "cardId": "right" }
+  ]
+}

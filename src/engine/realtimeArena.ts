@@ -10,6 +10,7 @@ type LiveTurn = { frame: ArenaFrame; result?: ArenaResult; issue?: RunIssue; pol
 export class RealtimeArenaSession {
   private readonly arena: ArenaSession
   private readonly modules: PythonModules
+  private readonly combat: boolean
   private readonly actions: ArenaChoice[] = []
   private policy?: string
   private manual?: ArenaChoice
@@ -17,15 +18,17 @@ export class RealtimeArenaSession {
   constructor(level: ArenaLevel, personal?: PersonalAlgorithms, course?: PersonalAlgorithms) {
     this.arena = new ArenaSession(level)
     this.modules = arenaModules(level, personal, course)
+    this.combat = Boolean(level.combat)
   }
 
   static restore(level: ArenaLevel, progress: RealtimeArenaProgress, personal?: PersonalAlgorithms, course?: PersonalAlgorithms) {
     const session = new RealtimeArenaSession(level, personal, course)
     for (const action of progress.actions) {
-      if (!isArenaChoice(action)) return
+      if (!isArenaChoice(action, session.combat)) return
       const step = session.advance(action)
       if (!step || step.decision) return
     }
+    if (progress.queued !== undefined && !isArenaChoice(progress.queued, session.combat)) return
     session.policy = progress.policy
     session.manual = progress.queued
     return session
@@ -66,7 +69,9 @@ export class RealtimeArenaSession {
   }
 
   queueAction(action: ArenaChoice) {
-    if (isArenaChoice(action)) this.manual = action
+    if (!isArenaChoice(action, this.combat)) return false
+    this.manual = action
+    return true
   }
 
   tick(): LiveTurn | undefined {
@@ -118,7 +123,7 @@ export class RealtimeArenaSession {
       throw new ProgramError({ code: 'unknownName', detail: name, line })
     }, { modules: this.modules, stepBudget: 24_000, onLine, onFlow, onFlowTruncated, flowLimit: 80, traceModules: true })
     const choice = runner.runPureFunction('decide', [values.fromJson(this.arena.scan())], true).data
-    if (!isArenaChoice(choice)) throw new ProgramError({ code: 'wrongAnswer', detail: 'decide' })
+    if (!isArenaChoice(choice, this.combat)) throw new ProgramError({ code: 'wrongAnswer', detail: 'decide' })
     return choice
   }
 
