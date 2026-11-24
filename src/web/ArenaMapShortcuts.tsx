@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import type { ArenaChoice } from '../engine/realtimeProtocol'
 import type { Direction, Locale } from '../shared/types'
 import { isMapShortcutTarget, useArenaMapMode } from './ArenaMapMode'
+import { useVisibleMapWin } from './FullscreenVictory'
 import { tr } from './text'
 
 const arrowKeys = new Map<string, Direction>([
@@ -54,6 +55,7 @@ export function MapShortcutGuide({ locale, timed, combat }: { locale: Locale; ti
 
 export function ArenaMapOutcome({ text, won }: { text?: string; won?: boolean }) {
   const mapMode = useArenaMapMode()
+  useVisibleMapWin(Boolean(mapMode && text && won))
   return mapMode && text ? <p className="arena-map-outcome" role="status" data-victory={won || undefined}>
     {won && <span aria-hidden="true">✓</span>}{text}
   </p> : null

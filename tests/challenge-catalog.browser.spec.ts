@@ -45,7 +45,7 @@ test('standalone challenges open directly without changing learning roadmap prog
   const prerequisiteCount = challenges.reduce((count, challenge) => count + (challenge.prerequisites?.length ?? 0), 0)
   await expect(cards.locator('[data-prep-status="pending"]')).toHaveCount(prerequisiteCount)
   const tiers = { starter: 0, intermediate: 1, advanced: 2 }
-  const gridChallengeIds = challenges.filter(level => level.kind === 'grid' && level.difficulty)
+  const gridChallengeIds = challenges.filter(level => level.kind === 'grid' && !level.warehouse && level.difficulty)
     .sort((left, right) => tiers[left.difficulty!] - tiers[right.difficulty!] || left.order - right.order)
     .map(level => level.id)
   expect(await challengeIds(browse.locator('[data-challenge-level][data-type="grid"]'))).toEqual(gridChallengeIds)

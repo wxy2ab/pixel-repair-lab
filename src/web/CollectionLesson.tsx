@@ -6,6 +6,7 @@ import type { CollectionBattery, ProgramWalkthrough } from '../shared/programWal
 import type { Locale } from '../shared/types'
 import { tr } from './text'
 import { StepCount } from './LessonFrame'
+import { StepExplanation } from './LessonNotes'
 import './collection-lesson.css'
 
 type Run = NonNullable<ReturnType<typeof runCollectionLesson>>
@@ -155,7 +156,7 @@ export function CollectionLesson({ execution, locale, onReady }: {
             <dd><output data-testid="collection-output">{run?.output}</output></dd>
           </div>}
         </dl>}
-        {run ? <p className="collection-description" role="status">{describe(step, run, lesson.index, lesson.key, lesson.increment, t)}</p>
+        {run ? <StepExplanation locale={locale} className="collection-description">{describe(step, run, lesson.index, lesson.key, lesson.increment, t)}</StepExplanation>
           : <p className="error-message" role="alert">{t('程序没有产生可以展示的电量记录。', 'The program did not produce a charge record to show.')}</p>}
         {visible.length > 0 && <ol className="collection-code" data-testid="collection-code" aria-label={t('Python 代码', 'Python code')}>
           {visible.map(({ line, code }) => <li key={line} data-line={line} aria-current={line === step?.line ? 'step' : undefined}>

@@ -38,8 +38,13 @@ test('a walkthrough names its phases, counts its steps, and ends with its key po
   await expect(count).toHaveText(/^共 \d+ 步$/)
   await next.click()
   await expect(count).toHaveText(/^第 1 \/ \d+ 步$/)
-  // What the step did reads above the instrument, next to the buttons that advance it.
-  expect(await top(guide.locator('.for-description'))).toBeLessThan(await top(guide.locator('.for-board')))
+  // The battery row is readable without opening prose. The current step is available on request.
+  await expect(guide.locator('.for-board')).toBeVisible()
+  const explanation = guide.locator('.for-description')
+  await expect(explanation).not.toHaveAttribute('open')
+  await explanation.locator('summary').click()
+  await expect(explanation.locator('div')).toContainText('起始电量')
+  await explanation.locator('summary').click()
   while (await next.isEnabled()) await next.click()
   const total = Number((await count.innerText()).match(/\/ (\d+)/)?.[1])
   await expect(count).toHaveText(`第 ${total} / ${total} 步`)
@@ -61,6 +66,8 @@ test('a walkthrough names its phases, counts its steps, and ends with its key po
 
   // The lesson's own key points and question appear once it is passed.
   const recap = page.getByTestId('lesson-recap')
+  await expect(recap.getByRole('heading', { level: 3 })).toHaveCount(0)
+  await recap.getByText('查看讲解笔记', { exact: true }).click()
   await expect(recap.getByRole('heading', { level: 3 })).toHaveText(lesson.sections.map(section => section.title.zh))
   await expect(recap).toContainText(lesson.sections[0].body.zh)
   await expect(phases(page).nth(1)).toHaveAttribute('data-state', 'done')

@@ -1,4 +1,6 @@
 .sequence-lesson { min-width: 0; container-type: inline-size; }
+.sequence-lesson .program-tile-annotation { display: block; color: #c9f5da; font: 650 12px/1.35 var(--mono); overflow-wrap: anywhere; }
+.sequence-lesson[data-blocked] .program-graphic-tile[data-active] .program-tile-annotation { color: #ffcf9b; }
 .sequence-body { display: grid; gap: 12px; padding: 14px 15px; }
 .sequence-body > p { margin: 0; overflow-wrap: anywhere; }
 .sequence-body > p:first-child { color: #d7e5f4; }

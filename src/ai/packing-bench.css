@@ -1,0 +1,29 @@
+.packing-bench { width: 100%; table-layout: fixed; border-collapse: collapse; color: #e7f0ed; text-align: start; font-size: .88rem; }
+.packing-bench th, .packing-bench td { padding: 6px 4px; text-align: start; overflow-wrap: anywhere; border-bottom: 1px solid #49626b; }
+.packing-bench thead th { color: #c5d8d4; font-weight: 600; }
+.packing-bench th:first-child { width: 19%; }
+.packing-bench th:nth-child(4) { width: 19%; }
+.supply-tray { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 2px; min-height: 34px;
+  border: 1px solid #56716d; border-bottom-width: 3px; border-radius: 5px; padding: 3px 6px; background: #1c3037; }
+.packing-bench td:nth-child(2) .supply-tray { border-style: dashed; border-bottom-width: 1px; background: transparent; }
+.supply-tray__parts { min-width: 0; display: flex; flex-wrap: wrap; gap: 1px; }
+.supply-tray__parts i { font: normal 15px/1.1 system-ui, sans-serif; }
+.supply-tray__parts [data-symbol]::before { content: attr(data-symbol); }
+.supply-tray__parts svg { color: #f1d4a0; display: block; width: 15px; height: 16px; }
+.supply-tray[data-multiple] .supply-tray__parts::after { content: '×'; }
+.supply-tray strong { font: 700 .94rem var(--mono); }
+.supply-tray[data-pending] { color: #b7c5c7; border-style: dotted; }
+.packing-bench [data-check=match] td:nth-child(3) .supply-tray { border-color: #79bca9; }
+.packing-bench [data-check=revise] td:nth-child(3) .supply-tray { border-color: #dcac78; }
+.packing-bench .win-message, .packing-bench .ai-match { color: #a0edcc; }
+.packing-bench .error-message, .packing-bench .ai-mismatch { color: #ffce9a; }
+.packing-bench__flag { display: grid; width: fit-content; min-width: 38px; min-height: 38px; place-items: center; cursor: pointer; }
+.packing-bench__flag input { width: 19px; height: 19px; accent-color: #8be3c3; }
+.packing-delta { display: block; font: 650 .77rem var(--mono); color: #dfebe8; }
+@media (prefers-reduced-motion: no-preference) {
+  .packing-bench td:nth-child(3) .supply-tray:not([data-pending]) i { animation: supply-arrives .32s ease-out both; }
+  .supply-tray i:nth-child(2) { animation-delay: 50ms; }
+  .supply-tray i:nth-child(3) { animation-delay: 95ms; }
+  .supply-tray i:nth-child(4) { animation-delay: 140ms; }
+  @keyframes supply-arrives { from { opacity: .15; transform: translateY(-7px); } }
+}

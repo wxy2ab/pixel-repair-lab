@@ -30,6 +30,7 @@ test('touching address cups stores, reads and copies one card, keeping zero sepa
   await touchLabel(model, '@22')
   await shelf.locator('[data-kind="value"]').click()
   await touchLabel(model, '@20')
+  await expect(model.locator('.teaching-model-labels').getByText('复制 3', { exact: true })).toBeVisible()
   await touchLabel(model, '@22')
   const labels = model.locator('.teaching-model-labels')
   await expect(labels.getByText('0', { exact: true })).toHaveCount(1)

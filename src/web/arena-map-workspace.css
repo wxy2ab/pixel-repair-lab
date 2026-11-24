@@ -212,6 +212,8 @@ html:has(.arena-map-workspace[data-map-fullscreen]) { overflow: hidden; scrollba
   border-radius: 10px;
   background: #112534f5;
 }
+/* Keep the full-window board behind the replay controls inside a classroom monitor. */
+.arena-map-workspace[data-map-fullscreen] .board-panel > .teaching-screen { isolation: auto; }
 .arena-map-workspace[data-map-fullscreen] .station-tools {
   top: var(--map-gap);
   justify-content: start;

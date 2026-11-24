@@ -9,6 +9,7 @@ import { tr } from './text'
 import { boardDevice, describeDevice, deviceName, emittingRay, hazardName, rayArms } from './gridDeviceDisplay'
 import { GridDeviceGlyph } from './GridDeviceGlyph'
 import { FerryDockIcon } from './icons'
+import { CargoGlyph, CargoOverlay, LoadingPadGlyph, cargoLabel } from './WarehouseTiles'
 import './arena-chips.css'
 import { trailArmsByCell, visibleTrailEdges } from './boardTrail'
 
@@ -63,21 +64,26 @@ export function FlatMap({ frame, locale, selected, cellControl }: {
           const shots = frame.arenaShots?.filter(event => event.path?.some(cell => at(cell, x, y)))
           const changes = cellChanges?.filter(change => at(change.position, x, y)).map(change => change.state).join(' ')
           const device = frame.devices?.find(device => at(device, x, y))
+          const box = frame.warehouse?.boxes.some(box => at(box, x, y)) ?? false
+          const pad = frame.warehouse?.targets.some(pad => at(pad, x, y)) ?? false
           const emitter = emittingRay(device, frame.hazards)
           const hazards = frame.hazards?.filter(hazard => at(hazard, x, y))
           return <span key={x + ':' + y} className={'tile ' + (tile === '#' ? 'tile--wall' : 'tile--floor') + (goal ? ' tile--exit' : '')}
             data-x={x} data-y={y} data-item-id={item?.id} data-arena-change={changes || undefined}
             data-buff={buff?.kind} data-target-item={target || undefined}
             data-device-id={device?.id} data-device={device?.kind} data-device-state={device?.status}
+            data-crate={box ? (pad ? 'parked' : 'loose') : undefined} data-loading-pad={pad || undefined}
             data-hazard={hazards?.length ? [...new Set(hazards.map(h => h.kind))].join(' ') : undefined}
             data-inspected={selected && at(selected, x, y) || undefined}
-            title={device || hazards?.length ? [device && describeDevice(device, locale), ...new Set(hazards?.map(h => hazardName(h.kind, locale)))].filter(Boolean).join(' · ') : undefined}>
+            title={device || hazards?.length || box || pad ? [cargoLabel(box, pad, locale), device && describeDevice(device, locale),
+              ...new Set(hazards?.map(h => hazardName(h.kind, locale)))].filter(Boolean).join(' · ') : undefined}>
             {arms.get(y * columns + x)?.map(arm => <span key={arm.direction} className="board-trail-arm"
               data-trail={arm.recent ? 'recent' : 'history'} data-direction={arm.direction} aria-hidden="true" />)}
             {emitter && <span className="device-ray" data-kind={emitter.kind} data-arm={emitter.direction} aria-hidden="true" />}
             {hazards?.flatMap((hazard, i) => hazard.kind === 'bomb' ? <span key={i} className="device-burst" aria-hidden="true" />
               : rayArms(hazard, device).map(arm => <span key={i + arm} className="device-ray" data-kind={hazard.kind} data-arm={arm} aria-hidden="true" />))}
             {goal && (frame.ferryDock ? <FerryDockIcon /> : <span className="exit-icon" aria-hidden="true">↥</span>)}
+            {pad && <LoadingPadGlyph />}
             {device && <GridDeviceGlyph device={device} />}
             {shots?.map(shot => <i key={shot.actorId} className="arena-pulse-line" data-side={shot.actorId === 'player' ? 'player' : 'rival'}
               data-direction={shot.direction} aria-hidden="true" />)}
@@ -90,13 +96,15 @@ export function FlatMap({ frame, locale, selected, cellControl }: {
             {cellControl?.({ x, y })}
           </span>
         }))}
+        {frame.warehouse && <CargoOverlay {...frame.warehouse} arrival={frame.warehouseArrival} />}
       </div>
     </div>
   )
 }
 
-export function Board({ level, snapshot, locale, trail, activity, showHardware = true, exitLabel }: {
+export function Board({ level, snapshot, locale, trail, activity, warehouseArrival, showHardware = true, exitLabel }: {
   level: Scenario & Pick<GridLevel, 'ferry'>; snapshot: GridSnapshot; locale: Locale; trail?: readonly Position[]; activity?: StationFrame['activity']; showHardware?: boolean; exitLabel?: string
+  warehouseArrival?: StationFrame['warehouseArrival']
 }) {
   const mapMode = useArenaMapMode()
   const exit = level.objectives.find(goal => goal.type === 'exit')
@@ -107,6 +115,8 @@ export function Board({ level, snapshot, locale, trail, activity, showHardware =
   return (
     <>
       <MapTiles tiles={level.tiles} exit={exit} ferryDock={Boolean(level.ferry)} playerPosition={snapshot.player} opponents={snapshot.enemies} items={snapshot.items}
+        warehouse={level.warehouse && { boxes: snapshot.boxes ?? level.warehouse.boxes, targets: level.warehouse.targets }}
+        warehouseArrival={warehouseArrival}
         mapTargets={mapMode ? gridMapTargets(level, snapshot) : undefined}
         activity={activity}
         devices={devices} hazards={state?.hazards} locale={locale} trail={trail} />
@@ -114,6 +124,10 @@ export function Board({ level, snapshot, locale, trail, activity, showHardware =
         <span><i className="legend-player" />{tr(locale, '芽芽', 'Sprout')}</span>
         {exit && <span><i className="legend-exit" />{exitLabel ?? tr(locale, '出口', 'Exit')}</span>}
         {drops && <span><i className="legend-item" />{tr(locale, '零件', 'Part')}</span>}
+        {level.warehouse && <>
+          <span><CargoGlyph />{tr(locale, '货箱', 'Crate')}</span>
+          <span><LoadingPadGlyph />{tr(locale, '货位', 'Loading pad')}</span>
+        </>}
         {Boolean(level.enemies?.length) && <span><i className="legend-enemy" />{tr(locale, '巡逻机器人', 'Patrol bot')}</span>}
         {deviceLegend?.map(device => <span key={device.kind}><GridDeviceGlyph device={device} legend />{deviceName(device.kind, locale)}</span>)}
         <span className="turn-display" data-testid={level.turnLimit === undefined ? undefined : 'grid-turn-budget'}>

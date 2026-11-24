@@ -1,10 +1,9 @@
 .assignment-lesson { min-width: 0; container: assignment-lesson / inline-size; }
 .assignment-heading { flex-wrap: wrap; }
-.assignment-heading h2, .assignment-description, .assignment-body > .error-message { margin: 0; }
+.assignment-heading h2, .assignment-body > .error-message { margin: 0; }
 .assignment-navigation { display: flex; flex-wrap: wrap; gap: 6px; }
 .assignment-navigation button { min-height: 40px; white-space: normal; }
 .assignment-body { display: grid; gap: 11px; padding: 13px 15px 15px; }
-.assignment-description { color: #d8e6f8; overflow-wrap: anywhere; }
 
 .assignment-input-flow { display: flex; align-items: stretch; gap: 8px; min-width: 0; }
 .assignment-input {
@@ -71,13 +70,21 @@
   font: 12px/1.35 var(--mono);
 }
 .assignment-variable dd {
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
   min-height: 36px;
   padding: 2px 6px;
   margin: 0;
   text-align: center;
   font: 700 18px/1.35 var(--mono);
+}
+.assignment-before { color: #c1d5cb; font: 500 12px/1.3 var(--mono); }
+@media (prefers-reduced-motion: no-preference) {
+  .assignment-before + span { animation: assignment-token-arrive .4s ease-out both; }
+  @keyframes assignment-token-arrive { from { opacity: .2; transform: translateX(-6px); } }
 }
 .assignment-variable:not([data-filled]) dd { color: #9fb9d1; font-family: inherit; font-size: 13px; font-weight: 400; }
 

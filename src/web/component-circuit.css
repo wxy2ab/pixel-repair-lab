@@ -10,25 +10,7 @@
   margin-bottom: 0.75rem;
 }
 .component-bench-header h2 { margin: 0; }
-.component-output {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.3rem 0.65rem;
-  border: 1px solid #b6c5be;
-  border-radius: 2rem;
-  background: #f0f4ef;
-  color: #344b43;
-  font-size: 0.85rem;
-}
-.component-output > span {
-  width: 0.7rem;
-  height: 0.7rem;
-  border-radius: 50%;
-  background: #64786c;
-}
-.component-output[data-output="1"] { color: #832e20; background: #fff1e9; border-color: #e5a58c; }
-.component-output[data-output="1"] > span { background: #ed552f; box-shadow: 0 0 5px #ed552f; }
+.component-surface { position: relative; }
 .component-schematic {
   width: 100%;
   display: block;
@@ -65,30 +47,29 @@
 @media (prefers-reduced-motion: reduce) {
   .component-schematic .component-flow path, .component-schematic .component-base-flow { animation: none; }
 }
-.component-controls {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
-  gap: 0.5rem;
-  margin-top: 0.7rem;
-}
-.component-control {
+.component-schematic .component-stop { fill: #9e482e; }
+.component-schematic .component-pass { fill: #17674c; }
+.component-target {
+  position: absolute;
+  transform: translateX(-50%);
   display: flex;
-  gap: 0.18rem;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  min-height: 3.4rem;
-  padding: 0.5rem 0.8rem;
-  border: 1px solid #acbbb3;
-  border-radius: 0.55rem;
-  background: #f0f5ef;
-  color: #233d32;
-  text-align: start;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 44px;
+  min-height: 36px;
+  width: 21%;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
   cursor: pointer;
 }
-.component-control[aria-pressed="true"] { background: #d9efdf; border-color: #5d8c71; }
-.component-control:hover { border-color: #3b745a; }
-.component-control:focus-visible { outline: 3px solid #18729b; outline-offset: 2px; }
-.component-control span { font-size: 0.8rem; }
-.component-control strong { font-size: 1rem; }
-.component-reading { margin: 0.75rem 0 0; line-height: 1.65; }
+.component-target span { border: 1px solid #517d69; border-radius: 5px; padding: 2px 5px;
+  background: #f7faf0; color: #254338; font: 650 clamp(11px, 1.4vw, 13px)/1.2 system-ui, sans-serif; }
+.component-target[aria-pressed="true"] span { background: #d9efdf; }
+.component-target:hover span, .component-target:focus-visible span { background: #f7edcd; }
+.component-target:focus-visible { outline: 3px solid #18729b; outline-offset: 2px; }
+.component-switch-target { left: 27.2%; top: 3%; height: 29%; }
+.component-diode-target { left: 47.3%; top: 70.5%; height: 25%; justify-content: flex-end; }
+.component-base-target { left: 28.9%; top: 48.3%; height: 27%; }

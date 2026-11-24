@@ -63,6 +63,9 @@
 .station-minimap__surface:focus-visible { outline: 2px solid #a8fce6; outline-offset: 1px; }
 .station-minimap__footprint { stroke: #b1ecff; stroke-width: 2px; fill: #a8e9ff; fill-opacity: .13; }
 .station-minimap__target { fill: #ac7f301f; stroke: #ffd36a; stroke-width: .18; stroke-linejoin: round; }
+.station-minimap__pad { fill: none; stroke: #9bebdd; stroke-width: .13; }
+.station-minimap__crate { fill: #f3af62; }
+.station-minimap__crate[data-parked] { fill: #9bebbd; }
 .station-minimap__rival { fill: #ff907d; stroke: #582d34; stroke-width: .11; }
 .station-minimap__player { fill: #7ff8b2; stroke: #123e36; stroke-width: .15; }
 .station-minimap__cursor { display: none; }
@@ -81,6 +84,8 @@
 .station-minimap__legend [data-symbol="player"] { background: #7ff8b2; border-radius: 50%; }
 .station-minimap__legend [data-symbol="rival"] { background: #ff907d; }
 .station-minimap__legend [data-symbol="target"] { border: 2px solid #ffd36a; transform: rotate(45deg); }
+.station-minimap__legend [data-symbol="crate"] { background: #f3af62; }
+.station-minimap__legend [data-symbol="loading-pad"] { border: 1px solid #9bebdd; }
 .station-minimap__legend [data-symbol="view"] { width: 8px; border: 1px solid #b1ecff; }
 
 /* Leave the upper corners to the console and camera tools while a drawer is open. */

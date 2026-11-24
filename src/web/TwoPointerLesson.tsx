@@ -1,5 +1,6 @@
 import { CodingDevice } from './CodingDevice'
 import { AlgorithmBatteryRack } from './AlgorithmBatteryRack'
+import { StepExplanation } from './LessonNotes'
 import { useId, useMemo, useRef, useState } from 'react'
 import { runTwoPointer, type TwoPointerStep } from '../engine/programTwoPointer'
 import type { ProgramWalkthrough, TwoPointerCase, TwoPointerMove } from '../shared/programWalkthrough'
@@ -114,8 +115,7 @@ export function TwoPointerLesson({ execution, locale, onReady }: {
             if (index === right) move('right')
           } : undefined} onAdvance={next && next.kind !== 'move' ? () => goTo(position + 1) : undefined} />
         <p className="two-pointer-task">
-          {t(`电池已按电量从小到大排列。找两块电池，合起来正好是 ${target} 格。`,
-            `The batteries are sorted from lowest to highest charge. Find two that add up to exactly ${target} units.`)}
+          {t(`找两块，合计 ${target} 格`, `Find a pair totaling ${target}`)}
         </p>
         <ol className="search-battery-row two-pointer-row" data-testid="two-pointer-row"
           aria-label={t('按电量从小到大排列的电池', 'Batteries sorted by charge')}>
@@ -134,29 +134,30 @@ export function TwoPointerLesson({ execution, locale, onReady }: {
               aria-label={stateLabel ? t(`${name} 号，${charge} 格，${stateLabel}`, `Battery ${name}, charge ${charge}, ${stateLabel}`) : undefined}>
               <SearchBatteryFace name={name} charge={charge} index={index} locale={locale} />
               {marker && <small className="two-pointer-marker">
-                <span aria-hidden="true">↑ </span>{marker}
+                <span aria-hidden="true">{index === left ? '→ ' : '← '}</span>{marker}
               </small>}
-              {state === 'excluded' && <small className="two-pointer-marker">{t('排除', 'Out')}</small>}
+              {state === 'excluded' && <small className="two-pointer-marker">{removed === index
+                ? t('× 刚排除', '× Just ruled out') : t('排除', 'Out')}</small>}
             </li>
           })}
         </ol>
         <div className="two-pointer-step" data-testid="two-pointer-step" data-kind={step?.kind ?? 'start'}
           data-left={left} data-right={right} data-total={step?.total} data-move={step?.move}>
           <div className="two-pointer-status" role="status">
-            {!step && <p>{t('先拿最左和最右两块，算出它们的总电量。', 'Start with the leftmost and rightmost batteries. Add their charges.')}</p>}
             {compared && <p>
               {step?.kind === 'move' && <span className="two-pointer-prior">{t('刚才的总电量', 'Previous total')}</span>}
               <span className="two-pointer-equation" data-testid="two-pointer-equation" data-relation={relation}>
                 {batteries[compared.left].charge} + {batteries[compared.right].charge} = {total}{relation !== '=' && ` ${relation} ${target}`}
               </span>
             </p>}
-            {explanation && <p data-testid="two-pointer-explanation">{explanation}</p>}
+            {next?.kind === 'move' && <p>{t('移动哪一端？', 'Which end moves?')}</p>}
             {step?.kind === 'return' && <p data-testid="two-pointer-result">
               {pair ? t(`找到 ${pair[0]} 号和 ${pair[1]} 号。程序返回它们的位置 ${left} 和 ${right}。`,
                 `Found batteries ${pair[0]} and ${pair[1]}. The program returns their positions, ${left} and ${right}.`)
                 : t('两端相遇前没有凑出目标。程序返回空列表。', 'The pointers met without a match. The program returns an empty list.')}
             </p>}
           </div>
+          {explanation && <StepExplanation locale={locale}><p data-testid="two-pointer-explanation">{explanation}</p></StepExplanation>}
         </div>
         {run.issue && <p className="error-message" role="alert">{runIssueText(locale, run.issue)}</p>}
       </div>

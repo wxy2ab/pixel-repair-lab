@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import type { LectureLevel } from '../shared/advanced'
 import type { Locale, Localized } from '../shared/types'
 import { CommandDesk, TeachingScreen } from './Classroom'
+import { LessonNotes } from './LessonNotes'
 import { tr } from './text'
 import './lesson-frame.css'
 
@@ -46,8 +47,7 @@ function Recap({ level, locale }: { level: LectureLevel; locale: Locale }) {
   const correct = selected === question.correct
   return <div className="classroom-split lesson-recap" data-testid="lesson-recap">
     <TeachingScreen locale={locale} variant="blackboard" title={t('本课要点', 'Key points')}>
-      <div className="lesson-annotations">{level.sections.map((section, index) =>
-        <article key={index}><h3>{section.title[locale]}</h3><p>{section.body[locale]}</p></article>)}</div>
+      <LessonNotes level={level} locale={locale} />
     </TeachingScreen>
     <CommandDesk locale={locale} title={t('再想一想 · 选做', 'Think it over · optional')}>
       <section className="teaching-panel lesson-prediction">

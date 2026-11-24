@@ -30,10 +30,11 @@ function GoalResult({ result, score, locale }: { result: ChallengeGoalEvaluation
   </section>
 }
 
-export function ChallengeCompletion({ missionTitle, outcome, comparison, goalResult, replayFocusResult, locale, next, seriesNext, onReplay, onBrowse, onRoutes, onNext, onRecords }: {
+export function ChallengeCompletion({ missionTitle, outcome, comparison, goalResult, replayFocusResult, locale, next, seriesNext, keepBoardInView, onReplay, onBrowse, onRoutes, onNext, onRecords }: {
   missionTitle: string; outcome?: string
   comparison: ChallengeScoreComparison; locale: Locale; next?: ChallengeEntry
   seriesNext?: ShortChallengeSeries
+  keepBoardInView?: boolean
   goalResult?: ChallengeGoalEvaluation
   replayFocusResult?: ReactNode
   onReplay: () => void; onBrowse: () => void; onRoutes?: () => void; onNext: (id: string) => void; onRecords: () => void
@@ -59,10 +60,10 @@ export function ChallengeCompletion({ missionTitle, outcome, comparison, goalRes
     }]
   })
   useEffect(() => {
-    if (document.querySelector('.arena-map-workspace[data-map-fullscreen]')) return
+    if (keepBoardInView || document.querySelector('.arena-map-workspace[data-map-fullscreen]')) return
     heading.current?.focus({ preventScroll: true })
     heading.current?.scrollIntoView({ block: 'start' })
-  }, [comparison])
+  }, [comparison, keepBoardInView])
   const remaining = next?.preparation.missingLessons.length ?? 0
 
   return <section className="panel challenge-completion" aria-label={t('通关总结', 'Challenge summary')} tabIndex={-1} ref={heading}>

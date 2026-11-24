@@ -66,16 +66,17 @@
 .workshop-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .workshop-hub[data-ready='false'] canvas { opacity: 0; pointer-events: none; }
 .workshop-scene canvas:focus-visible { outline: 2px solid var(--hub-accent); outline-offset: -3px; }
-.workshop-scene-tools {
+.workshop-machine-tools, .workshop-scene-tools {
   position: absolute;
-  bottom: 10px;
   left: 12px;
   z-index: 1;
   display: flex;
   align-items: center;
   gap: 5px;
 }
-.workshop-scene-tools button {
+.workshop-scene-tools { bottom: 10px; }
+.workshop-machine-tools { top: 10px; }
+.workshop-machine-tools button, .workshop-scene-tools button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -90,6 +91,10 @@
   font-size: 12px;
   font-weight: 650;
 }
+.workshop-machine-tools button { padding: 5px; }
+.workshop-machine-tools svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.workshop-machine-tools button[aria-pressed="true"] { background: var(--hub-accent); color: #162d2e; }
+.workshop-machine-tools button:hover { border-color: var(--hub-accent); }
 .workshop-scene-tools .workshop-reset { font: 19px/1 system-ui, sans-serif; }
 .workshop-scene-tools button:hover { background: #29454b; }
 .workshop-signal { width: 7px; height: 7px; border-radius: 50%; background: #9ff2c6; box-shadow: 0 0 6px #96ffbd8f; }

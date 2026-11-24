@@ -1,53 +1,78 @@
 import { useEffect, useMemo, useState } from 'react'
-import { arduinoMeetsGoal, buildUnoProgram, pin2Level, powerOnUno, stepUno, type UnoState } from '../engine/arduino'
+import { arduinoMeetsGoal, buildUnoProgram, pin2Level, powerOnUno, stepUno, type UnoProgram, type UnoState } from '../engine/arduino'
 import type { ArduinoLevel, ArduinoSketch } from '../shared/arduino'
 import type { Locale } from '../shared/types'
 import { CommandDesk } from './Classroom'
 import { DeviceWindow } from './DeviceWindow'
+import { StepExplanation } from './LessonNotes'
 import { tr } from './text'
 import './arduino-lesson.css'
 
 type Translate = (zh: string, en: string) => string
 
-function PinBoard({ state, button, toggle, t }: { state: UnoState; button: boolean; toggle: () => void; t: Translate }) {
+type UnoInstruction = UnoProgram['steps'][number]['instruction']
+
+function PinBoard({ state, instruction, sketch, toggle, t }: {
+  state: UnoState; instruction?: UnoInstruction; sketch: ArduinoSketch; toggle: () => void; t: Translate
+}) {
   const input = pin2Level(state)
+  const waitingForRead = state.sample !== null && input !== state.sample
+  const button = sketch.mode === 'button'
+  const op = instruction?.op
+  const writing = op === 'write' || op === 'writeCondition'
+  const conditionVisible = op === 'compare' || op === 'writeCondition' || op === 'delay'
+  const bit = (value: number) => value ? 'HIGH · 1' : 'LOW · 0'
   return <div className="uno-station">
-    <div className="uno-board">
-      <div className="uno-pinrow" aria-hidden="true"><b>GND</b><b>D13</b><b>D2</b></div>
+    <div className="uno-board" data-uno-op={op} role="group" aria-label={t('开发板信号通路', 'Board signal path')}>
+      <div className="uno-board-top"><b>UNO R3</b><span>{t('模拟时间', 'Time')} <b data-testid="uno-time">{state.elapsedMs} ms</b></span></div>
       <div className="uno-board-face">
-        <span className="uno-usb" aria-hidden="true">USB</span>
-        <div className="uno-chip"><strong>UNO</strong><span>R3</span></div>
-        <div className="uno-lamp" data-on={state.led === 1} data-testid="uno-led">
-          <span aria-hidden="true" className="uno-led-core" /><strong>L</strong>
-          <span>{state.led ? t('灯亮', 'On') : t('灯灭', 'Off')}</span>
+        {button && <>
+          <div className="uno-input" data-focused={op === 'pullup' || op === 'read'}>
+            <strong>{t('D2 输入', 'D2 input')}</strong>
+            <output data-testid="uno-d2">{input === null ? t('悬空', 'Floating') : bit(input)}</output>
+            {state.pullup && <small>{t('↑ 内部上拉', '↑ Pull-up')}</small>}
+            <button type="button" className="uno-switch" aria-pressed={state.pressed} onClick={toggle} data-testid="uno-button">
+              <span className="uno-contact-pair" aria-hidden="true"><b>D2</b><i /><b>GND</b></span>
+              {state.pressed ? t('松开按钮', 'Release button') : t('按下按钮', 'Press button')}
+            </button>
+          </div>
+          <span className="uno-wire" data-transfer={op === 'read' && !waitingForRead || undefined} aria-hidden="true" />
+        </>}
+        <div className="uno-chip" data-focused={op === 'read' || op === 'compare' || (!button && op === 'delay')}>
+          {button ? <>
+            <strong>{t('采样', 'Sample')}</strong>
+            <code data-testid="uno-sample">button = {state.sample ?? '—'}</code>
+            {waitingForRead && <small className="uno-waiting">{t('等待读取 D2', 'Awaiting D2 read')}</small>}
+            {conditionVisible && <small data-testid="uno-compare">{state.sample ?? '—'} == {sketch.lightWhen === 'pressed' ? 0 : 1}
+              {' → '}{state.condition ? '1' : '0'}</small>}
+          </> : <>
+            <strong>{op === 'delay' ? 'delay' : 'UNO'}</strong>
+            <code>{instruction?.op === 'delay' ? instruction.ms + ' ms' : writing ? 'digitalWrite' : 'D13'}</code>
+          </>}
+        </div>
+        <span className="uno-wire" data-transfer={writing || undefined} aria-hidden="true" />
+        <div className="uno-lamp" data-focused={writing || op === 'delay' || op === 'output'} data-on={state.led === 1} data-testid="uno-led">
+          <strong>{t('D13 输出', 'D13 output')}</strong>
+          <output data-testid="uno-d13">{!state.output ? t('未配置', 'Not set') : bit(state.led)}</output>
+          <span aria-hidden="true" className="uno-led-core" />
+          <span>{state.led ? t('灯亮', 'Light on') : t('灯灭', 'Light off')}</span>
+          {!button && instruction?.op === 'delay' && <small data-testid="uno-lamp-hold">{t('保持', 'Hold')} {instruction.ms} ms</small>}
         </div>
       </div>
-      <div className="uno-pinrow uno-lower-pins" aria-hidden="true" />
     </div>
-    {button && <button type="button" className="uno-switch" aria-pressed={state.pressed} onClick={toggle} data-testid="uno-button">
-      <span className="uno-contact-pair" aria-hidden="true"><b>D2</b><i /><b>GND</b></span>
-      {state.pressed ? t('松开按钮', 'Release the button') : t('按下按钮', 'Press the button')}
-    </button>}
-    <dl className="uno-readout">
-      {button && <div><dt>{t('D2 输入', 'D2 input')}</dt><dd data-testid="uno-d2">{input === null ? t('悬空', 'Floating') : input ? 'HIGH · 1' : 'LOW · 0'}</dd></div>}
-      {button && <div><dt>{t('程序读到的 button', 'Sampled button')}</dt><dd>{state.sample === null ? '—' : state.sample ? 'HIGH · 1' : 'LOW · 0'}</dd></div>}
-      <div><dt>{t('D13 输出', 'D13 output')}</dt><dd data-testid="uno-d13">{!state.output ? t('尚未配置', 'Not set') : state.led ? 'HIGH · 1' : 'LOW · 0'}</dd></div>
-      <div><dt>{t('模拟时间', 'Simulated time')}</dt><dd data-testid="uno-time">{state.elapsedMs} ms</dd></div>
-    </dl>
   </div>
 }
 
 function taskText(sketch: ArduinoSketch, t: Translate) {
   if (sketch.mode === 'blink') {
     const goal = sketch.goal
-    return goal ? t(`让灯每次亮 ${goal.onMs} ms、灭 ${goal.offMs} ms。运行一个完整周期，再检查实测时间。`,
-      `Make the LED stay on for ${goal.onMs} ms and off for ${goal.offMs} ms. Run a full cycle, then check the measured times.`)
-      : t('运行一个完整的亮灭周期，看看两次 delay 各让灯保持了多久。', 'Run a full blink cycle. See how long each delay holds the light on or off.')
+    return goal ? t(`亮 ${goal.onMs} ms，灭 ${goal.offMs} ms。`, `On for ${goal.onMs} ms, off for ${goal.offMs} ms.`)
+      : t('运行一个亮灭周期。', 'Run one blink cycle.')
   }
   const active = sketch.goal?.lightWhen ?? sketch.lightWhen
   return active === 'pressed'
-    ? t('让指示灯在按钮按下时亮、松开时灭。分别试这两种状态，等程序把读数写到灯上再验收。', 'Make the light turn on when pressed and off when released. Try both positions and let the sketch write each reading to the LED before checking.')
-    : t('让待机灯在按钮松开时亮、按下时灭。分别试这两种状态，等程序把读数写到灯上再验收。', 'Make the standby light glow when released and go dark when pressed. Try both positions and let the sketch write each reading to the LED before checking.')
+    ? t('按下 → 灯亮，松开 → 灯灭。', 'Pressed → light on. Released → light off.')
+    : t('松开 → 灯亮，按下 → 灯灭。', 'Released → light on. Pressed → light off.')
 }
 
 export default function ArduinoLesson({ level, locale, onComplete, onMistake }: {
@@ -90,7 +115,7 @@ export default function ArduinoLesson({ level, locale, onComplete, onMistake }: 
   const filename = sketch.mode === 'blink' ? 'beacon.ino' : 'signal.ino'
   return <div className="classroom-split uno-workbench">
     <DeviceWindow locale={locale} kind="instrument" title={t('Arduino Uno R3 模拟板', 'Arduino Uno R3 simulator')}>
-      <PinBoard state={state} button={sketch.mode === 'button'} t={t} toggle={() => {
+      <PinBoard state={state} instruction={program.steps[currentStep]?.instruction} sketch={sketch} t={t} toggle={() => {
         setChecked(undefined)
         setState(previous => ({ ...previous, pressed: !previous.pressed }))
       }} />
@@ -126,8 +151,8 @@ export default function ArduinoLesson({ level, locale, onComplete, onMistake }: 
           }}>{t('执行一步', 'Step once')}</button>
           <button type="button" className="subtle-button" data-testid="uno-reset" onClick={reset}>{t('复位开发板', 'Reset board')}</button>
         </div>
-        <p className="uno-connection">{sketch.mode === 'button' ? t('D2 通过内部上拉电阻接高电平。按下按钮会接通 D2 和 GND。板载 L 灯接 D13。', 'D2 is pulled high by an internal resistor. Pressing the button connects D2 to GND. The onboard L light is on D13.')
-          : t('D13 控制板载 L 灯。setup() 在复位后运行一次，loop() 会重复。', 'D13 drives the onboard L light. After reset, setup() runs once, then loop() repeats.')}</p>
+        <StepExplanation locale={locale}>{sketch.mode === 'button' ? t('按下按钮会接通 D2 和 GND。松开时，上拉电阻让 D2 回到高电平。digitalRead 把当时的读数存进 button。执行 digitalWrite 后，板载 L 灯才显示结果。', 'Pressing the button connects D2 to GND. Releasing it lets the pull-up resistor bring D2 high. digitalRead saves that reading in button. The onboard light changes when digitalWrite runs.')
+          : t('D13 控制板载 L 灯。delay 期间灯保持当前状态。setup() 在复位后运行一次，loop() 会重复。', 'D13 drives the onboard light. During delay the light holds its current state. After reset, setup() runs once, then loop() repeats.')}</StepExplanation>
         <div className="uno-observation" data-testid="uno-observations">
           <h3>{t('实测记录', 'Observations')}</h3>
           {sketch.mode === 'blink' ? <p>{t('灯亮', 'Light on')} · <b>{state.onMs === undefined ? '—' : state.onMs + ' ms'}</b>

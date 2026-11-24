@@ -7,6 +7,7 @@ import { ProgramDiagram } from './ProgramDiagram'
 import { SequenceBench } from './ProgramFlowBenches'
 import { runIssueText, tr } from './text'
 import { StepCount } from './LessonFrame'
+import { StepExplanation } from './LessonNotes'
 import './sequence-lesson.css'
 
 type Phase = 'arrange' | 'debug' | 'repair'
@@ -43,8 +44,8 @@ export function SequenceLesson({ execution, locale, onComplete, onPhase }: {
   const repairSample = execution.cases[1]
   const sample = attempt?.sample ?? (phase === 'repair' ? repairSample : firstSample)
   const trace = attempt?.trace
-  const steps = phase === 'debug' ? trace?.steps.slice(0, step) ?? []
-    : phase === 'repair' ? trace?.steps ?? [] : []
+  const steps = phase === 'debug' ? trace?.steps.slice(0, step) ?? [] : trace?.steps ?? []
+  const codeSteps = phase === 'arrange' ? [] : steps
   const current = steps.at(-1)
   const currentCard = current && visual.main.find(card => card.id === current.cardId)
   const blocked = current?.issue ?? (phase === 'repair' && steps.length === 0 ? trace?.issue : undefined)
@@ -94,6 +95,19 @@ export function SequenceLesson({ execution, locale, onComplete, onPhase }: {
 
   const finishedDebug = phase === 'debug' && trace?.steps.length === step
   const nextStation = phase === 'debug' ? trace?.steps[step]?.cardId : undefined
+  const stopped = current?.issue ? current : undefined
+  const annotations: Record<string, string> = {}
+  for (const item of steps) {
+    const { frame, issue } = item
+    if (issue) annotations[item.cardId] = issue.code === 'unknownName' && issue.detail
+      ? t(`缺少 ${issue.detail}`, `Needs ${issue.detail}`) : t('停住', 'Stopped')
+    else if (frame.kind === 'assign' && frame.name && frame.value !== undefined) {
+      annotations[item.cardId] = `${frame.name} ← ${storedValue(frame.value)}`
+    } else if (frame.kind === 'output') annotations[item.cardId] = `→ ${frame.output.at(-1) ?? '—'}`
+  }
+  if (stopped) {
+    for (const id of order.slice(order.indexOf(stopped.cardId) + 1)) annotations[id] = t('未执行', 'Not run')
+  } else if (nextStation) annotations[nextStation] = t('↓ 下一步', '↓ Next')
   function pickStation(id: string) {
     if (phase === 'debug') {
       if (id === 'step' && nextStation) setStep(step + 1)
@@ -103,12 +117,6 @@ export function SequenceLesson({ execution, locale, onComplete, onPhase }: {
     const direction = Number(id.slice(0, divider))
     if (divider > 0 && (direction === -1 || direction === 1)) move(id.slice(divider + 1), direction)
   }
-  const instructions = {
-    arrange: t('点图卡上的箭头，把芽芽的动作排好顺序。', 'Use the arrows on the cards to put Sprout’s actions in order.'),
-    debug: t('显示已经移到补电前面。一步步看程序会怎么做。', 'The display card is now before charging. Follow the program one step at a time.'),
-    repair: t('这次起始电量变了。把打乱的图卡排好，再运行验证。', 'The starting charge has changed. Put these shuffled cards in order, then run the program to check.'),
-  }[phase]
-
   let feedback = ''
   if (phase === 'arrange' && attempt) {
     feedback = passed
@@ -135,9 +143,8 @@ export function SequenceLesson({ execution, locale, onComplete, onPhase }: {
   return <section className="classroom-demonstration panel sequence-lesson" aria-label={t('补电程序的指令顺序', 'Charging program order')}
     data-testid="sequence-lesson" data-phase={phase} data-step={phase === 'debug' ? step : undefined} data-blocked={!!blocked || undefined}>
     <CodingDevice device="debugger" locale={locale} controls={<>
-      <p>{instructions}</p>
       {phase !== 'debug' && <ProgramDiagram visual={visual} locale={locale} source={execution.source} order={order}
-        values={values} active={current?.cardId} onMove={move} showFunctions={false} />}
+        annotations={annotations} active={stopped?.cardId ?? current?.cardId} onMove={move} showFunctions={false} />}
       <div className="sequence-actions">
         {phase === 'arrange' && <>
           <button type="button" className={passed ? 'subtle-button' : 'primary-button'} onClick={() => setAttempt(evaluate(order, firstSample))}>
@@ -169,14 +176,14 @@ export function SequenceLesson({ execution, locale, onComplete, onPhase }: {
       </div>
       <div className="sequence-body">
         <SequenceBench locale={locale} onPick={phase !== 'debug' || nextStation ? pickStation : undefined}
-          state={{ input: sample.input, move: phase !== 'debug', active: current?.cardId,
-            blocked: blocked && (blocked.detail || t('停住', 'Stopped')), next: nextStation, output: output.at(-1),
+          state={{ input: sample.input, move: phase !== 'debug', active: stopped?.cardId ?? current?.cardId,
+            blocked: stopped && (stopped.issue?.detail || t('停住', 'Stopped')), next: nextStation, output: output.at(-1),
             cards: order.flatMap(id => {
               const card = visual.main.find(item => item.id === id)
-              return card ? [{ id, icon: card.icon, label: card.label[locale], reading: values[id] }] : []
+              return card ? [{ id, icon: card.icon, label: card.label[locale], reading: values[id], annotation: annotations[id] }] : []
             }) }} />
         {phase === 'debug' && <ProgramDiagram visual={visual} locale={locale} source={execution.source} order={order}
-          values={values} active={current?.cardId} showFunctions={false} compact />}
+          annotations={annotations} active={current?.cardId} showFunctions={false} compact />}
         <dl className="sequence-data" aria-label={t('电量的变化', 'How the charge changes')}>
           <div className="sequence-reading">
             <dt>{t('起始电量', 'Starting charge')}</dt>
@@ -193,18 +200,22 @@ export function SequenceLesson({ execution, locale, onComplete, onPhase }: {
             <dd><output data-testid="sequence-output">{output.length ? output.join(', ') : t('还没有输出', 'No output yet')}</output></dd>
           </div>
         </dl>
-        <section className="sequence-code" data-testid="sequence-code" aria-label={t('Python 代码', 'Python code')} hidden={!steps.length}>
+        <section className="sequence-code" data-testid="sequence-code" aria-label={t('Python 代码', 'Python code')} hidden={!codeSteps.length}>
           <h3>{t('Python 代码', 'Python code')}</h3>
-          <ol>{steps.map(({ cardId, line, code, issue }) => <li key={line} data-line={line} data-card-id={cardId}
+          <ol>{codeSteps.map(({ cardId, line, code, issue }) => <li key={line} data-line={line} data-card-id={cardId}
             data-blocked={!!issue || undefined} aria-current={current?.line === line ? 'step' : undefined}>
             <span aria-hidden="true">{line}</span><code>{code}</code>
             {issue && <small>{t('卡在这一步', 'Stopped here')}</small>}
           </li>)}</ol>
         </section>
-        <p className="sequence-feedback" role="status" data-testid="sequence-feedback" data-error={!!blocked || undefined}
+        {feedback && <div className="sequence-feedback" data-testid="sequence-feedback" data-error={!!stopped || undefined}
           data-task-success={(phase !== 'debug' && passed) || undefined} data-task-pop={(phase !== 'debug' && passed) || undefined}>
-          {feedback}
-        </p>
+          {(stopped || phase !== 'debug') && <span role="status">{stopped
+            ? t(`第 ${stopped.line} 步 · ${annotations[stopped.cardId]}`, `Step ${stopped.line} · ${annotations[stopped.cardId]}`)
+            : passed ? t('✓ 屏幕显示 ' + attempt?.trace.output.at(-1), '✓ Display · ' + attempt?.trace.output.at(-1))
+              : t('调整顺序再试', 'Change the order and retry')}</span>}
+          <StepExplanation locale={locale}>{feedback}</StepExplanation>
+        </div>}
       </div>
     </CodingDevice>
   </section>

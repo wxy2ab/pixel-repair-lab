@@ -7,10 +7,11 @@ import { algorithmModules } from './algorithms'
 import { mapScenarioAt } from '../shared/mapScenarios'
 import { blockingGridDevice, gridOffsets as offsets } from '../shared/gridDevices'
 import { readGridMap } from './readGridMap'
+import { warehouseParked } from '../shared/warehouse'
 import { RackRecorder } from './rackRecorder'
 import { executeCpuInstruction, isMemoryAddress } from './cpu'
 import { ProgramError, PythonProgram, type PythonModules } from './python'
-import { advanceGridTurn, initialSnapshot } from './snapshot'
+import { advanceGridTurn, initialSnapshot, moveGridPlayer } from './snapshot'
 import { addOrigin, bare, MAX_STRING, plain, Values, valuesEqual, type Value } from './values'
 
 export { initialSnapshot } from './snapshot'
@@ -73,6 +74,7 @@ class GridSession {
       if (this.complete(goal)) return []
       switch (goal.type) {
         case 'collect': return [{ type: 'collect', remaining: goal.itemIds.filter(id => !this.picked.has(id)).length }]
+        case 'parkBoxes': return [{ type: 'parkBoxes', remaining: this.boxesRemaining() }]
         case 'submit': return [{
           type: 'submit', remaining: goal.values.length - (this.submissionProgress.get(goal)?.count ?? 0), origin: goal.origin,
         }]
@@ -93,11 +95,17 @@ class GridSession {
     switch (objective.type) {
       case 'exit': return equals(this.state.player, objective)
       case 'collect': return objective.itemIds.every((id) => this.picked.has(id))
+      case 'parkBoxes': return !!this.scenario.warehouse && this.boxesRemaining() === 0
       case 'moves': return this.moves > 0
       case 'submit': return this.submissionProgress.get(objective)?.count === objective.values.length
       case 'memory': return this.state.memory[objective.address] === objective.value
       case 'halt': return this.state.halted
     }
+  }
+
+  private boxesRemaining(): number {
+    const targets = this.scenario.warehouse?.targets ?? []
+    return targets.length - warehouseParked(this.state.boxes ?? [], targets)
   }
 
   private fail(code: string, line: number, detail?: string, attemptedAction?: ApiName): never {
@@ -193,15 +201,10 @@ class GridSession {
         this.fail('requiredOrigin', line, objective.origin)
       }
     }
-    const offset = offsets[direction.data as Direction]
-    const next = { x: this.state.player.x + offset.x, y: this.state.player.y + offset.y }
-    const obstruction = blockingGridDevice(this.scenario, this.state.devices, next)
-    if (obstruction) this.fail(obstruction.kind === 'door' ? 'lockedDoor' : 'fixtureBlocked', line, obstruction.id)
-    if (!this.passable(next)) this.fail('blocked', line, direction.data)
-    this.state.player = next
-    if (this.state.enemies.some((enemy) => equals(next, enemy))) this.fail('enemy', line)
-    this.moves++
-    this.advanceTurn(line)
+    const turnBeforeMove = this.state.turn
+    const issue = moveGridPlayer(this.scenario, this.state, direction.data as Direction)
+    if (this.state.turn > turnBeforeMove) this.moves++
+    if (issue) this.fail(issue.code, line, issue.detail)
   }
 
   private pick(line: number): string {
@@ -235,8 +238,10 @@ class GridSession {
       let tile = 'floor'
       if (!this.passable(neighbor) || blockingGridDevice(this.scenario, this.state.devices, neighbor)) tile = 'wall'
       else if (this.state.enemies.some((position) => equals(position, neighbor))) tile = 'enemy'
+      else if (this.state.boxes?.some(box => equals(box, neighbor))) tile = 'box'
       else if (this.state.items.some((position) => equals(position, neighbor))) tile = 'item'
       else if (this.scenario.objectives.some((goal) => goal.type === 'exit' && equals(goal, neighbor))) tile = 'exit'
+      else if (this.scenario.warehouse?.targets.some(target => equals(target, neighbor))) tile = 'target'
       return [direction, tile]
     }))
   }

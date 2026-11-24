@@ -24,28 +24,28 @@
     "layout": "row",
     "frames": [
       {
-        "caption": { "zh": "拆开一个彩色像素，会得到三份读数。OpenCV 把蓝色放在最前。", "en": "Split a color pixel into three readings. OpenCV puts blue first." },
+        "caption": {"zh": "拆开一个彩色像素，会得到三份读数。OpenCV 把蓝色放在最前。", "en": "Split a color pixel into three readings. OpenCV puts blue first."},
         "items": [
-          { "id": "blue", "swatch": "#00002d", "label": { "zh": "蓝 B", "en": "Blue B" }, "value": { "zh": "45", "en": "45" }, "state": "active" },
-          { "id": "green", "swatch": "#005a00", "label": { "zh": "绿 G", "en": "Green G" }, "value": { "zh": "90", "en": "90" } },
-          { "id": "red", "swatch": "#d20000", "label": { "zh": "红 R", "en": "Red R" }, "value": { "zh": "210", "en": "210" } }
+          {"id": "blue", "swatch": "#00002d", "label": {"zh": "蓝 B", "en": "Blue B"}, "value": {"zh": "45", "en": "45"}, "state": "active", "annotation": {"zh": "BGR [0]", "en": "BGR [0]"}},
+          {"id": "green", "swatch": "#005a00", "label": {"zh": "绿 G", "en": "Green G"}, "value": {"zh": "90", "en": "90"}},
+          {"id": "red", "swatch": "#d20000", "label": {"zh": "红 R", "en": "Red R"}, "value": {"zh": "210", "en": "210"}}
         ]
       },
       {
-        "caption": { "zh": "转成 RGB，红色移到开头。读数依然是原来的三个数。", "en": "Convert to RGB and red moves first. The three readings keep their values." },
+        "caption": {"zh": "转成 RGB，红色移到开头。读数依然是原来的三个数。", "en": "Convert to RGB and red moves first. The three readings keep their values."},
         "items": [
-          { "id": "red", "swatch": "#d20000", "label": { "zh": "红 R", "en": "Red R" }, "value": { "zh": "210", "en": "210" }, "state": "active" },
-          { "id": "green", "swatch": "#005a00", "label": { "zh": "绿 G", "en": "Green G" }, "value": { "zh": "90", "en": "90" } },
-          { "id": "blue", "swatch": "#00002d", "label": { "zh": "蓝 B", "en": "Blue B" }, "value": { "zh": "45", "en": "45" }, "state": "active" }
+          {"id": "red", "swatch": "#d20000", "label": {"zh": "红 R", "en": "Red R"}, "value": {"zh": "210", "en": "210"}, "state": "active", "annotation": {"zh": "RGB [0]", "en": "RGB [0]"}},
+          {"id": "green", "swatch": "#005a00", "label": {"zh": "绿 G", "en": "Green G"}, "value": {"zh": "90", "en": "90"}},
+          {"id": "blue", "swatch": "#00002d", "label": {"zh": "蓝 B", "en": "Blue B"}, "value": {"zh": "45", "en": "45"}, "state": "active", "annotation": {"zh": "RGB [2]", "en": "RGB [2]"}}
         ]
       },
       {
-        "caption": { "zh": "灰度转换把这三份读数合成一个亮度。绿色的权重最大。", "en": "Grayscale conversion blends the three readings with weights. Green contributes the most per unit." },
+        "caption": {"zh": "灰度转换把这三份读数合成一个亮度。绿色的权重最大。", "en": "Grayscale conversion blends the three readings with weights. Green contributes the most per unit."},
         "items": [
-          { "id": "red", "swatch": "#d20000", "label": { "zh": "红 R", "en": "Red R" }, "value": { "zh": "210 × 0.299", "en": "210 × 0.299" }, "state": "muted" },
-          { "id": "green", "swatch": "#005a00", "label": { "zh": "绿 G", "en": "Green G" }, "value": { "zh": "90 × 0.587", "en": "90 × 0.587" }, "state": "muted" },
-          { "id": "blue", "swatch": "#00002d", "label": { "zh": "蓝 B", "en": "Blue B" }, "value": { "zh": "45 × 0.114", "en": "45 × 0.114" }, "state": "muted" },
-          { "id": "gray", "swatch": "#797979", "label": { "zh": "灰度", "en": "Grayscale" }, "value": { "zh": "121", "en": "121" }, "state": "done" }
+          {"id": "red", "swatch": "#d20000", "label": {"zh": "红 R", "en": "Red R"}, "value": {"zh": "210 × 0.299", "en": "210 × 0.299"}, "state": "muted"},
+          {"id": "green", "swatch": "#005a00", "label": {"zh": "绿 G", "en": "Green G"}, "value": {"zh": "90 × 0.587", "en": "90 × 0.587"}, "state": "muted"},
+          {"id": "blue", "swatch": "#00002d", "label": {"zh": "蓝 B", "en": "Blue B"}, "value": {"zh": "45 × 0.114", "en": "45 × 0.114"}, "state": "muted"},
+          {"id": "gray", "swatch": "#797979", "label": {"zh": "灰度", "en": "Grayscale"}, "value": {"zh": "121", "en": "121"}, "state": "done", "annotation": {"zh": "≈ 121", "en": "≈ 121"}}
         ]
       }
     ]

@@ -109,7 +109,8 @@
               "zh": "1",
               "en": "1"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "switch-closed"
           },
           {
             "id": "b",
@@ -121,7 +122,8 @@
               "zh": "0",
               "en": "0"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "switch-open"
           },
           {
             "id": "gate",
@@ -133,7 +135,11 @@
               "zh": "AND",
               "en": "AND"
             },
-            "state": "active"
+            "state": "active",
+            "annotation": {
+              "zh": "1 AND 0 = 0",
+              "en": "1 AND 0 = 0"
+            }
           },
           {
             "id": "lamp",
@@ -145,7 +151,8 @@
               "zh": "灭 · 0",
               "en": "Off · 0"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "lamp-off"
           }
         ]
       },
@@ -165,7 +172,8 @@
               "zh": "1",
               "en": "1"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "switch-closed"
           },
           {
             "id": "b",
@@ -177,7 +185,8 @@
               "zh": "0",
               "en": "0"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "switch-open"
           },
           {
             "id": "gate",
@@ -189,7 +198,11 @@
               "zh": "OR",
               "en": "OR"
             },
-            "state": "active"
+            "state": "active",
+            "annotation": {
+              "zh": "1 OR 0 = 1",
+              "en": "1 OR 0 = 1"
+            }
           },
           {
             "id": "lamp",
@@ -201,7 +214,8 @@
               "zh": "亮 · 1",
               "en": "On · 1"
             },
-            "state": "done"
+            "state": "done",
+            "glyph": "lamp-on"
           }
         ]
       },
@@ -221,7 +235,8 @@
               "zh": "1",
               "en": "1"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "switch-closed"
           },
           {
             "id": "b",
@@ -233,7 +248,8 @@
               "zh": "1",
               "en": "1"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "switch-closed"
           },
           {
             "id": "gate",
@@ -245,7 +261,11 @@
               "zh": "OR",
               "en": "OR"
             },
-            "state": "active"
+            "state": "active",
+            "annotation": {
+              "zh": "1 OR 1 = 1",
+              "en": "1 OR 1 = 1"
+            }
           },
           {
             "id": "lamp",
@@ -257,7 +277,8 @@
               "zh": "亮 · 1",
               "en": "On · 1"
             },
-            "state": "done"
+            "state": "done",
+            "glyph": "lamp-on"
           }
         ]
       },
@@ -277,7 +298,8 @@
               "zh": "1",
               "en": "1"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "switch-closed"
           },
           {
             "id": "b",
@@ -301,7 +323,11 @@
               "zh": "NOT",
               "en": "NOT"
             },
-            "state": "active"
+            "state": "active",
+            "annotation": {
+              "zh": "NOT 1 = 0",
+              "en": "NOT 1 = 0"
+            }
           },
           {
             "id": "lamp",
@@ -313,7 +339,8 @@
               "zh": "灭 · 0",
               "en": "Off · 0"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "lamp-off"
           }
         ]
       },
@@ -333,7 +360,8 @@
               "zh": "0",
               "en": "0"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "switch-open"
           },
           {
             "id": "b",
@@ -357,7 +385,11 @@
               "zh": "NOT",
               "en": "NOT"
             },
-            "state": "active"
+            "state": "active",
+            "annotation": {
+              "zh": "NOT 0 = 1",
+              "en": "NOT 0 = 1"
+            }
           },
           {
             "id": "lamp",
@@ -369,7 +401,8 @@
               "zh": "亮 · 1",
               "en": "On · 1"
             },
-            "state": "done"
+            "state": "done",
+            "glyph": "lamp-on"
           }
         ]
       }

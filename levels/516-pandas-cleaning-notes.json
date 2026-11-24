@@ -18,22 +18,31 @@
   "animation": {
     "layout": "row",
     "frames": [
-      { "caption": { "zh": "读到四行原始记录。编号 41 出现了两次。", "en": "Four raw rows come in. Record 41 appears twice." }, "items": [
-        { "id": "first", "label": { "zh": "编号 41", "en": "ID 41" }, "value": { "zh": "‘ 21 ’", "en": "' 21 '" } },
-        { "id": "missing", "label": { "zh": "编号 42", "en": "ID 42" }, "value": { "zh": "‘离线’", "en": "'offline'" } },
-        { "id": "repeat", "label": { "zh": "编号 41", "en": "ID 41" }, "value": { "zh": "‘ 21 ’", "en": "' 21 '" } },
-        { "id": "same", "label": { "zh": "编号 43", "en": "ID 43" }, "value": { "zh": "21", "en": "21" } }
-      ] },
-      { "caption": { "zh": "把能读懂的值转成数字，把离线的读数记为缺失。", "en": "Convert the readable values to numbers and mark the offline reading as missing." }, "items": [
-        { "id": "first", "label": { "zh": "编号 41", "en": "ID 41" }, "value": { "zh": "21", "en": "21" }, "state": "active" },
-        { "id": "missing", "label": { "zh": "编号 42", "en": "ID 42" }, "value": { "zh": "缺失", "en": "Missing" }, "state": "muted" },
-        { "id": "repeat", "label": { "zh": "编号 41", "en": "ID 41" }, "value": { "zh": "21", "en": "21" }, "state": "active" },
-        { "id": "same", "label": { "zh": "编号 43", "en": "ID 43" }, "value": { "zh": "21", "en": "21" }, "state": "active" }
-      ] },
-      { "caption": { "zh": "剔除缺测值，合并重复编号。编号 41 和 43 都进入分析。", "en": "Drop the missing reading and merge duplicate IDs. Both 41 and 43 enter the analysis." }, "items": [
-        { "id": "first", "label": { "zh": "编号 41", "en": "ID 41" }, "value": { "zh": "21", "en": "21" }, "state": "done" },
-        { "id": "same", "label": { "zh": "编号 43", "en": "ID 43" }, "value": { "zh": "21", "en": "21" }, "state": "done" }
-      ] }
+      {
+        "caption": {"zh": "读到四行原始记录。编号 41 出现了两次。", "en": "Four raw rows come in. Record 41 appears twice."},
+        "items": [
+          {"id": "first", "label": {"zh": "编号 41", "en": "ID 41"}, "value": {"zh": "‘ 21 ’", "en": "' 21 '"}},
+          {"id": "missing", "label": {"zh": "编号 42", "en": "ID 42"}, "value": {"zh": "‘离线’", "en": "'offline'"}},
+          {"id": "repeat", "label": {"zh": "编号 41", "en": "ID 41"}, "value": {"zh": "‘ 21 ’", "en": "' 21 '"}, "annotation": {"zh": "第二条 41", "en": "Second 41"}},
+          {"id": "same", "label": {"zh": "编号 43", "en": "ID 43"}, "value": {"zh": "21", "en": "21"}}
+        ]
+      },
+      {
+        "caption": {"zh": "把能读懂的值转成数字，把离线的读数记为缺失。", "en": "Convert the readable values to numbers and mark the offline reading as missing."},
+        "items": [
+          {"id": "first", "label": {"zh": "编号 41", "en": "ID 41"}, "value": {"zh": "21", "en": "21"}, "state": "active"},
+          {"id": "missing", "label": {"zh": "编号 42", "en": "ID 42"}, "value": {"zh": "缺失", "en": "Missing"}, "state": "muted", "annotation": {"zh": "NaN", "en": "NaN"}},
+          {"id": "repeat", "label": {"zh": "编号 41", "en": "ID 41"}, "value": {"zh": "21", "en": "21"}, "state": "active", "annotation": {"zh": "重复 ID", "en": "Duplicate ID"}},
+          {"id": "same", "label": {"zh": "编号 43", "en": "ID 43"}, "value": {"zh": "21", "en": "21"}, "state": "active"}
+        ]
+      },
+      {
+        "caption": {"zh": "剔除缺测值，合并重复编号。编号 41 和 43 都进入分析。", "en": "Drop the missing reading and merge duplicate IDs. Both 41 and 43 enter the analysis."},
+        "items": [
+          {"id": "first", "label": {"zh": "编号 41", "en": "ID 41"}, "value": {"zh": "21", "en": "21"}, "state": "done", "annotation": {"zh": "只留一条 41", "en": "One 41"}},
+          {"id": "same", "label": {"zh": "编号 43", "en": "ID 43"}, "value": {"zh": "21", "en": "21"}, "state": "done", "annotation": {"zh": "不同 ID", "en": "Different ID"}}
+        ]
+      }
     ]
   },
   "question": {

@@ -7,6 +7,7 @@ import type { Locale } from '../shared/types'
 import { Robot } from './Board'
 import { tr } from './text'
 import { StepCount } from './LessonFrame'
+import { StepExplanation } from './LessonNotes'
 import './branch-lesson.css'
 
 type Lesson = NonNullable<ProgramWalkthrough['branchLesson']>
@@ -167,11 +168,11 @@ export function BranchLesson({ execution, locale, onReady }: {
           </div>
         </div>}
         {error ? <p className="error-message" role="alert">{t('这次没有得到可以展示的分支结果。', 'These examples did not produce a branch to show.')}</p>
-          : <p className="branch-description" role="status">
+          : <StepExplanation className="branch-description" locale={locale}>
             {caption(stage, example, lesson, t)}
             {atEnd && t('在下面换一组电量和安全门状态，再预测会走哪条分支。',
               ' Try predicting the branch with a new charge and door state below.')}
-          </p>}
+          </StepExplanation>}
         {code.length > 0 && <ol className="branch-source" data-testid="branch-code" aria-label={t('Python 代码', 'Python code')}>
           {code.map(({ line, code: source }, index) => <li key={line} data-line={line}
             aria-current={index === code.length - 1 ? 'step' : undefined}>

@@ -15,6 +15,10 @@ function facts(level: Level, locale: Locale) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`
   const list: string[] = []
+  if (level.kind === 'grid' && level.warehouse) {
+    const count = level.warehouse.boxes.length
+    list.push(t(`${count} 只货箱`, plural(count, 'crate', 'crates')))
+  }
   const turns = level.kind === 'arena' ? level.maxTurns : level.kind === 'grid' ? level.turnLimit : undefined
   const rivals = level.kind === 'arena' ? level.opponents.length : level.kind === 'grid' ? level.enemies?.length ?? 0 : 0
   if (turns !== undefined) list.push(t(`回合上限 ${turns}`, `${turns}-turn budget`))

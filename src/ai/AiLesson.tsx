@@ -10,6 +10,7 @@ import type { ChallengeRunHandlers, ChallengeScore } from '../web/challengeScore
 import { checkAudit, gradeCandidate, maxPromptLength, parseCandidate, runPracticeTurn, simulateCandidate, type ItemCheck } from './core'
 import { BriefBody } from '../web/ChallengeBrief'
 import { HintSteps } from '../web/HintSteps'
+import { PackingBench } from './PackingBench'
 import './ai.css'
 
 const copy = {
@@ -332,14 +333,23 @@ function AiLessonSession({ level, locale, preview, onWin, onMistake, challenge, 
     else promptField.current?.focus()
   }
 
+  function toggleFlag(id: string) {
+    setSelected(previous => previous.includes(id) ? previous.filter(item => item !== id) : [...previous, id])
+    setAuditError(false)
+  }
+
+  const auditActions = <div className="ai-audit-actions">
+    <button className="ai-primary" type="button" onClick={submitAudit}>{t.audit}</button>
+    {auditError && <p role="status" className="ai-mismatch">{t.auditRetry}</p>}
+  </div>
+
   const mission = <aside className="ai-mission">
     <h2>{t.mission}</h2>
     <BriefBody text={level.brief[locale]} className="ai-brief" />
-    <p>{level.concept[locale]}</p>
-    <h3>{t.inventory}</h3>
-    <ul className="ai-inventory">
+    {!classroom && <><p>{level.concept[locale]}</p>
+    <h3>{t.inventory}</h3><ul className="ai-inventory">
       {level.inventory.map(({ id, label }) => <li key={id}>{label[locale]}</li>)}
-    </ul>
+    </ul></>}
     {draft && <><h3>{t.draft}</h3><ul className="ai-inventory" data-testid="ai-draft">
       {draft.items.map(({ id, quantity }) => <li key={id}>{level.inventory.find(item => item.id === id)?.label[locale]} ×{quantity}</li>)}
     </ul></>}
@@ -368,7 +378,7 @@ function AiLessonSession({ level, locale, preview, onWin, onMistake, challenge, 
             disabled={pending || accepted || needsReview || next.length > maxPromptLength || prompt.split('\n').includes(phrase)}>{phrase}</button>
         })}
       </div>}
-      {needsReview && <p className="ai-note">{t.auditHold}</p>}
+      {needsReview && !classroom && <p className="ai-note">{t.auditHold}</p>}
       {replayMode === 'mixed' && <p className="ai-note">{t.goalMixed}</p>}
       {replayMode && replayMode !== 'offline' && !available && <p className="ai-note">{t.goalOnlineSetup}</p>}
       {mode === 'online' && available && <p className="ai-note">{t.onlineNote}</p>}
@@ -382,22 +392,16 @@ function AiLessonSession({ level, locale, preview, onWin, onMistake, challenge, 
         }}>{latest ? t.correction : t.example}</button>}
         {(prompt || latest) && <button type="button" disabled={pending} onClick={restart}>{t.reset}</button>}
       </div>
-      {needsReview && <fieldset className="ai-audit" ref={auditField} disabled={pending}>
+      {needsReview && !classroom && <fieldset className="ai-audit" ref={auditField} disabled={pending}>
         <legend>{t.auditColumn}</legend>
         <p className="ai-review-hint">{standaloneChallenge ? t.challengeAuditHint : t.auditHint}</p>
         <div className="ai-audit-items">
           {level.inventory.map(({ id, label }) => <label key={id}>
             <input type="checkbox" className="ai-flag" data-ai-audit={id} aria-label={t.auditColumn + ' · ' + label[locale]}
-              checked={selected.includes(id)} onChange={() => {
-                setSelected(previous => previous.includes(id) ? previous.filter(item => item !== id) : [...previous, id])
-                setAuditError(false)
-              }} />{label[locale]}
+              checked={selected.includes(id)} onChange={() => toggleFlag(id)} />{label[locale]}
           </label>)}
         </div>
-        <div className="ai-audit-actions">
-          <button className="ai-primary" type="button" onClick={submitAudit}>{t.audit}</button>
-          {auditError && <p role="status" className="ai-mismatch">{t.auditRetry}</p>}
-        </div>
+        {auditActions}
       </fieldset>}
       {latest && !needsReview && latestPassed && !accepted && <button className="ai-primary" type="button" disabled={pending} onClick={confirm}>{t.confirm}</button>}
       {review && <ChallengeFailureReview review={review} onRetry={retry} />}
@@ -430,6 +434,7 @@ function AiLessonSession({ level, locale, preview, onWin, onMistake, challenge, 
       <ExperimentWindow locale={locale} title={locale === 'zh' ? '维修站 AI 对话' : 'Station AI chat'}>
         <div className="ai-workspace">
           {!classroom && mission}
+          {classroom && !latest && <PackingBench level={level} locale={locale} candidate={draft} />}
           {classroom && latest && <div className="ai-sent-message">
             <strong>{locale === 'zh' ? '你发出的任务' : 'Your message'}</strong>
             <p>{latest.prompt}</p>
@@ -439,7 +444,13 @@ function AiLessonSession({ level, locale, preview, onWin, onMistake, challenge, 
               <h3 id={resultId}>{t.attempt(attempts.length)}</h3>
               <span>{classroom && (locale === 'zh' ? 'AI 回复 · ' : 'AI reply · ')}{t[latest.mode]}</span>
             </div>
-            <CandidateTable level={level} locale={locale} candidate={latest.candidate} showGrades={!needsReview} />
+            {classroom ? <PackingBench level={level} locale={locale} candidate={latest.candidate}
+              previous={attempts.at(-2)?.candidate ?? draft} graded={!needsReview}
+              audit={needsReview ? { selected, toggle: toggleFlag } : undefined} />
+              : <CandidateTable level={level} locale={locale} candidate={latest.candidate} showGrades={!needsReview} />}
+            {classroom && needsReview && <><p className="ai-note">
+              {locale === 'zh' ? '勾出数量不同的货格，再提交核对。' : 'Flag bins with different counts, then submit your review.'}
+            </p>{auditActions}</>}
             {!needsReview && <>
               <p aria-live="polite" data-testid="ai-feedback" className={latestPassed ? 'ai-match' : 'ai-mismatch'}>
                 {accepted ? level.courseFinal ? t.projectAccepted : t.accepted : latestPassed ? t.correct : latest.injected ? t.fault : t.revise}

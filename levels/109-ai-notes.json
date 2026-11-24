@@ -31,30 +31,30 @@
     "feedback": { "zh": "物品和数量都确定了，每样列一行也方便逐项核对。", "en": "The items and counts are clear, and one item per line makes the list easy to check." }
   },
   "animation": {
-    "layout": "pipeline",
+    "layout": "row",
     "frames": [
       {
-        "caption": { "zh": "只有任务方向时，AI 还要猜用品和数量。", "en": "With only the general task, AI still has to guess the items and counts." },
+        "caption": {"zh": "给 AI 一张画图用品工单。物品和数量都还空着。", "en": "The drawing kit ticket has empty spaces for the items and counts."},
         "items": [
-          { "id": "goal", "label": { "zh": "任务", "en": "Task" }, "value": { "zh": "准备制图用品", "en": "Prepare drawing supplies" }, "state": "active" },
-          { "id": "counts", "label": { "zh": "物品和数量", "en": "Items and counts" }, "value": { "zh": "？", "en": "?" }, "state": "muted" },
-          { "id": "result", "label": { "zh": "交回的结果", "en": "Output" }, "value": { "zh": "？", "en": "?" }, "state": "muted" }
+          {"id": "task", "label": {"zh": "画图用品", "en": "Drawing kit"}, "symbol": "🎨"},
+          {"id": "markers", "label": {"zh": "物品", "en": "Item"}, "state": "muted", "value": {"zh": "?", "en": "?"}},
+          {"id": "paper", "label": {"zh": "数量", "en": "Count"}, "state": "muted", "value": {"zh": "?", "en": "?"}}
         ]
       },
       {
-        "caption": { "zh": "把需要的每样物品和具体数量写进提示词。", "en": "Put each required item and its exact count in the prompt." },
+        "caption": {"zh": "在工单上写两支记号笔、四张纸。", "en": "The ticket now specifies two markers and four sheets of paper."},
         "items": [
-          { "id": "goal", "label": { "zh": "任务", "en": "Task" }, "value": { "zh": "准备制图用品", "en": "Prepare drawing supplies" }, "state": "done" },
-          { "id": "counts", "label": { "zh": "物品和数量", "en": "Items and counts" }, "value": { "zh": "记号笔 ×2、纸 ×4", "en": "2 markers, 4 sheets of paper" }, "state": "active" },
-          { "id": "result", "label": { "zh": "交回的结果", "en": "Output" }, "value": { "zh": "？", "en": "?" }, "state": "muted" }
+          {"id": "task", "label": {"zh": "画图用品", "en": "Drawing kit"}, "symbol": "🎨"},
+          {"id": "markers", "label": {"zh": "记号笔", "en": "Markers"}, "symbol": "🖍️", "value": {"zh": "×2", "en": "×2"}, "state": "active"},
+          {"id": "paper", "label": {"zh": "纸", "en": "Paper"}, "symbol": "📄", "value": {"zh": "×4", "en": "×4"}, "state": "active"}
         ]
       },
       {
-        "caption": { "zh": "告诉 AI 用清单交回结果。拿到清单后，逐项对照任务。", "en": "Ask for a checklist as the output. Compare its lines with the assignment when it arrives." },
+        "caption": {"zh": "请 AI 逐项列清单，再和工单核对。", "en": "Ask for an itemized checklist and compare it to the ticket."},
         "items": [
-          { "id": "goal", "label": { "zh": "任务", "en": "Task" }, "value": { "zh": "准备制图用品", "en": "Prepare drawing supplies" }, "state": "done" },
-          { "id": "counts", "label": { "zh": "物品和数量", "en": "Items and counts" }, "value": { "zh": "记号笔 ×2、纸 ×4", "en": "2 markers, 4 sheets of paper" }, "state": "done" },
-          { "id": "result", "label": { "zh": "交回的结果", "en": "Output" }, "value": { "zh": "逐项列清单", "en": "Checklist by item" }, "state": "active" }
+          {"id": "task", "label": {"zh": "AI 清单", "en": "AI checklist"}, "symbol": "📋"},
+          {"id": "markers", "label": {"zh": "记号笔", "en": "Markers"}, "symbol": "🖍️", "value": {"zh": "×2", "en": "×2"}, "annotation": {"zh": "✓ 2 / 2", "en": "✓ 2 / 2"}, "state": "done"},
+          {"id": "paper", "label": {"zh": "纸", "en": "Paper"}, "symbol": "📄", "value": {"zh": "×4", "en": "×4"}, "annotation": {"zh": "✓ 4 / 4", "en": "✓ 4 / 4"}, "state": "done"}
         ]
       }
     ]

@@ -34,7 +34,7 @@ export function CpuDatapath({ state, previous = state, instruction, line, phase 
   const label = phase === 'fetch' ? t('取指', 'Fetch') : phase === 'decode' ? t('译码', 'Decode') : t('已执行', 'Executed')
   return <section className="cpu-datapath" data-phase={phase} data-op={op} aria-label={t('CPU 数据通路', 'CPU datapath')}>
     <TeachingModel sceneKey="cpu-transfer" locale={locale} label={t('维修站 CPU 数据通路', 'Repair station CPU datapath')}
-      load={loadModel} state={{ state, previous, instruction, phase, locale, pinned, canStep: !!onStep }}
+      load={loadModel} state={{ state, previous, instruction, phase, locale, pinned, equation, canStep: !!onStep }}
       onPick={key => {
         if (key === 'clock') onStep?.()
         else if (key.startsWith('ram:')) inspect(Number(key.slice(4)))
@@ -44,7 +44,7 @@ export function CpuDatapath({ state, previous = state, instruction, line, phase 
       <code aria-current="step">{sourceLine}</code>
       {running && <span className="cpu-counter-trace">PC {previous.pc} → {state.pc}</span>}
     </div>}
-    {instruction && <ol className="cpu-signal-flow" aria-label={t('本步数据传送', 'Data movement this step')}>
+    {instruction && <ol className="cpu-signal-flow" key={previous.pc + '-' + op + '-' + phase} aria-label={t('本步数据传送', 'Data movement this step')}>
       {phase === 'fetch' ? <>
         <li data-action="read">{t('取指地址', 'Instruction address')} <code>PC {state.pc}</code></li>
         <li data-action="decode">{t('读到指令', 'Fetched')} <code>{sourceLine}</code></li>

@@ -10,6 +10,7 @@ export type GridChallengeDraft = {
   source?: string
   ferryRace?: { layout: FerryRaceLayout; commands: FerryCommand[] }
   laserRace?: { mirrors: MirrorPlacement[]; commands: Direction[] }
+  warehouse?: { controls: 'direct' | 'program'; path: string }
 }
 
 export type ArenaChallengeDraft = {
@@ -92,6 +93,11 @@ export function parseChallengeDraft(level: Level, raw: string | null | undefined
   if (level.kind === 'grid' && (stored.mode === 'cards' || stored.mode === 'python')) {
     const source = readCode(stored.source)
     const draft: GridChallengeDraft = { kind: 'grid', mode: stored.mode, cards: readGridCards(level, stored.cards), ...(source !== undefined && { source }) }
+    const warehouse = stored.warehouse
+    if (level.warehouse && isRecord(warehouse) && (warehouse.controls === 'direct' || warehouse.controls === 'program')
+      && typeof warehouse.path === 'string' && warehouse.path.length <= 16384 && /^[udlr]*$/.test(warehouse.path)) {
+      draft.warehouse = { controls: warehouse.controls, path: warehouse.path }
+    }
     const race = stored.ferryRace
     if (level.ferry?.kind === 'race' && isRecord(race) && isFerryLayout(level, race.layout)
       && Array.isArray(race.commands) && race.commands.length <= 240 && race.commands.every(isFerryCommand)) {

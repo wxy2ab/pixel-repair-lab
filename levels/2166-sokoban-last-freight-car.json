@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-sokoban-last-freight-car",
+  "order": 2166,
+  "difficulty": "starter",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "stage": "challenge",
+  "prerequisites": [{"unit": "foundations", "topic": "sequence"}],
+  "title": {"zh": "末班货车", "en": "Last Freight Car"},
+  "concept": {"zh": "推箱子 · 2 箱 · 最少推 5 次", "en": "Sokoban · 2 crates · 5 pushes minimum"},
+  "brief": {
+    "zh": "把两箱备件都装进末班货车的标记货位。一次只能推一箱。箱子不能拉动。两个货位都放上箱子即通关。",
+    "en": "Load both crates of spare parts onto the marked bays in the last freight car. Push one crate at a time. Crates cannot be pulled. Fill both bays to finish."
+  },
+  "hints": [],
+  "tiles": [
+    "#######",
+    "#...###",
+    "#.....#",
+    "#...###",
+    "#...###",
+    "#######"
+  ],
+  "start": {"x": 2, "y": 4},
+  "warehouse": {
+    "boxes": [{"x": 3, "y": 2}, {"x": 2, "y": 3}],
+    "targets": [{"x": 4, "y": 2}, {"x": 5, "y": 2}]
+  },
+  "allowedApi": ["move", "read_map"],
+  "objectives": [{"type": "parkBoxes"}],
+  "cards": [
+    {"id": "up", "label": {"zh": "向上", "en": "Move up"}, "template": "move(\"up\")"},
+    {"id": "right", "label": {"zh": "向右", "en": "Move right"}, "template": "move(\"right\")"},
+    {"id": "down", "label": {"zh": "向下", "en": "Move down"}, "template": "move(\"down\")"},
+    {"id": "left", "label": {"zh": "向左", "en": "Move left"}, "template": "move(\"left\")"}
+  ],
+  "solutionCards": [
+    {"cardId": "left"}, {"cardId": "up"}, {"cardId": "up"}, {"cardId": "right"},
+    {"cardId": "right"}, {"cardId": "right"}, {"cardId": "left"}, {"cardId": "down"},
+    {"cardId": "down"}, {"cardId": "left"}, {"cardId": "up"}, {"cardId": "left"},
+    {"cardId": "up"}, {"cardId": "right"}, {"cardId": "right"}
+  ]
+}

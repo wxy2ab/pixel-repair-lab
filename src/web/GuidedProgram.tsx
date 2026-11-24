@@ -8,6 +8,7 @@ import {
 import type { Json, Locale } from '../shared/types'
 import { runIssueText, tr } from './text'
 import { StepCount } from './LessonFrame'
+import { StepExplanation } from './LessonNotes'
 import './guided-program.css'
 
 type Translate = (zh: string, en: string) => string
@@ -220,10 +221,10 @@ export function GuidedProgram({ execution, locale, onReady }: {
             </output>
           </div>
         </div>
-        <div className="guided-transfer-area" role="status">
-          {transfer && frame ? <div key={index} data-testid="guided-transfer" data-transfer-kind={frame.kind} className="guided-transfer">
+        <div className="guided-transfer-area">
+          {transfer && frame ? <div data-testid="guided-transfer" data-transfer-kind={frame.kind} className="guided-transfer">
             {action && <strong>{action}</strong>}
-            <div className="guided-transfer-path" aria-hidden="true">
+            <div className="guided-transfer-path" aria-hidden="true" key={index}>
               <span className="guided-transfer-side">{transfer.from}</span>
               <span className="guided-transfer-center">
                 {transfer.numbers.map(({ name, value }) => <span className="guided-transfer-token" key={name ?? value}>
@@ -232,16 +233,16 @@ export function GuidedProgram({ execution, locale, onReady }: {
               </span>
               <span className="guided-transfer-side">{transfer.to}</span>
             </div>
-            <p>{transfer.note}</p>
-          </div> : <p>{isFinished ? readyMessage : startMessage}</p>}
+            <StepExplanation locale={locale}>{transfer.note}</StepExplanation>
+          </div> : <StepExplanation locale={locale}>{isFinished ? readyMessage : startMessage}</StepExplanation>}
+          <span className="sr-only" role="status">{transfer?.note ?? (isFinished ? readyMessage : startMessage)}</span>
         </div>
         <div className="guided-workspace" data-has-code={seenLines.size > 0 || undefined} data-function-lesson={!!functionLesson || undefined}>
           <section className="guided-stack-panel">
-            <h3>{functionLesson ? scopeLabel : t('调用堆栈', 'Call stack')}</h3>
-            {functionLesson
-              ? displayedScopes.length > 1 && <p>{t(`两处各有一个叫 ${functionLesson.parameter} 的变量。`,
-                `The main program and the function each have a variable named ${functionLesson.parameter}.`)}</p>
-              : <p>{t('最上面的一层正在做事，下面的层等它交回结果。', 'The top frame runs while the frames below wait for a result.')}</p>}
+            <h3>{functionLesson ? scopeLabel : t('调用堆栈', 'Call stack')} <small className="guided-depth">
+              {previous && previous.stack.length !== stack.length && <>{previous.stack.length} → </>}
+              {t(`${stack.length} 层`, `${stack.length} ${stack.length === 1 ? 'frame' : 'frames'}`)}
+            </small></h3>
             <ol data-testid="walkthrough-stack" aria-label={scopeLabel} className="guided-stack" data-scope-comparison={!!functionLesson || undefined}>
               {displayedScopes.map(entry => <ScopeCard key={entry.id} entry={entry} scopeTitle={scopeTitle(entry.name)}
                 previous={previous?.stack.find(old => old.id === entry.id)} isActive={entry.id === activeScope?.id && !isFinished}

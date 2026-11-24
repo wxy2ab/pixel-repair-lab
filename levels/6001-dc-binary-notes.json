@@ -99,7 +99,8 @@
               "zh": "灭 · 0",
               "en": "Off · 0"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "lamp-off"
           },
           {
             "id": "lamp-1",
@@ -111,7 +112,8 @@
               "zh": "灭 · 0",
               "en": "Off · 0"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "lamp-off"
           },
           {
             "id": "lamp-2",
@@ -123,7 +125,8 @@
               "zh": "灭 · 0",
               "en": "Off · 0"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "lamp-off"
           },
           {
             "id": "number",
@@ -135,7 +138,11 @@
               "zh": "0",
               "en": "0"
             },
-            "state": "done"
+            "state": "done",
+            "annotation": {
+              "zh": "0 + 0 + 0",
+              "en": "0 + 0 + 0"
+            }
           }
         ]
       },
@@ -155,7 +162,8 @@
               "zh": "灭 · 0",
               "en": "Off · 0"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "lamp-off"
           },
           {
             "id": "lamp-1",
@@ -167,7 +175,8 @@
               "zh": "灭 · 0",
               "en": "Off · 0"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "lamp-off"
           },
           {
             "id": "lamp-2",
@@ -179,7 +188,8 @@
               "zh": "亮 · 1",
               "en": "On · 1"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "lamp-on"
           },
           {
             "id": "number",
@@ -191,7 +201,11 @@
               "zh": "1",
               "en": "1"
             },
-            "state": "done"
+            "state": "done",
+            "annotation": {
+              "zh": "0 + 0 + 1",
+              "en": "0 + 0 + 1"
+            }
           }
         ]
       },
@@ -211,7 +225,8 @@
               "zh": "亮 · 1",
               "en": "On · 1"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "lamp-on"
           },
           {
             "id": "lamp-1",
@@ -223,7 +238,8 @@
               "zh": "灭 · 0",
               "en": "Off · 0"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "lamp-off"
           },
           {
             "id": "lamp-2",
@@ -235,7 +251,8 @@
               "zh": "亮 · 1",
               "en": "On · 1"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "lamp-on"
           },
           {
             "id": "number",
@@ -247,7 +264,11 @@
               "zh": "5",
               "en": "5"
             },
-            "state": "done"
+            "state": "done",
+            "annotation": {
+              "zh": "4 + 0 + 1",
+              "en": "4 + 0 + 1"
+            }
           }
         ]
       },
@@ -267,7 +288,8 @@
               "zh": "亮 · 1",
               "en": "On · 1"
             },
-            "state": "active"
+            "state": "active",
+            "glyph": "lamp-on"
           },
           {
             "id": "lamp-1",
@@ -279,7 +301,8 @@
               "zh": "灭 · 0",
               "en": "Off · 0"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "lamp-off"
           },
           {
             "id": "lamp-2",
@@ -291,7 +314,8 @@
               "zh": "灭 · 0",
               "en": "Off · 0"
             },
-            "state": "muted"
+            "state": "muted",
+            "glyph": "lamp-off"
           },
           {
             "id": "number",
@@ -303,7 +327,11 @@
               "zh": "4",
               "en": "4"
             },
-            "state": "done"
+            "state": "done",
+            "annotation": {
+              "zh": "4 + 0 + 0",
+              "en": "4 + 0 + 0"
+            }
           }
         ]
       }

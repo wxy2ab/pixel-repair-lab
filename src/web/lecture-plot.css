@@ -1,0 +1,17 @@
+.lecture-plot { margin: 0; padding: clamp(12px, 3.5%, 24px); background: #111f30; color: #d7e8f3; }
+.lecture-plot__stage { display: block; width: 100%; height: auto; max-height: 295px; margin-inline: auto; overflow: visible; }
+.lecture-plot__symbol { font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; }
+.lecture-plot__tag { font: 700 17px/1 system-ui, sans-serif; stroke: #172636; stroke-width: 4px; paint-order: stroke fill; }
+.lecture-plot__readings { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 6px 16px; margin-top: 12px; }
+.lecture-plot__readings > span { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 4px; font-size: .85rem; }
+.lecture-plot__readings i { inline-size: 9px; block-size: 9px; border-radius: 2px; }
+.lecture-plot__readings b { color: #ffe3a7; font-variant-numeric: tabular-nums; }
+.lecture-plot__readings small { color: #b4cbdc; font-size: .77rem; }
+@media (max-width: 560px) {
+  .lecture-plot__tag { font-size: 22px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lecture-plot__box { transition: transform .48s ease-in-out; }
+  .lecture-plot__box rect { transition: width .48s, height .48s; }
+  .lecture-plot__overlap { transition: x .48s ease-in-out, y .48s ease-in-out, width .48s ease-in-out, height .48s ease-in-out; }
+}

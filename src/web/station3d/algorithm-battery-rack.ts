@@ -78,9 +78,10 @@ export const buildAlgorithmRack: ModelBuilder<AlgorithmRackState> = (state, kit,
     const step = width / (batteries.length + 1)
     prefix.forEach((value, i) => {
       const x = (i - batteries.length / 2) * step
-      const tint = state.operands?.includes(i) ? gold : '#aecbb7'
+      const subtract = state.operands?.[1] === i
+      const tint = subtract ? '#9abfde' : state.operands?.includes(i) ? gold : '#aecbb7'
       kit.casing([x, .39, 1.26], [step * .90, .15, .52], tint, .04)
-      tools.label(String(value), [x, .54, 1.26], .24)
+      tools.label(subtract ? '− (' + value + ')' : String(value), [x, .54, 1.26], .24)
       tools.pick('prefix-' + i, [x, .48, 1.26], [step * .97, .32, .61])
     })
   }

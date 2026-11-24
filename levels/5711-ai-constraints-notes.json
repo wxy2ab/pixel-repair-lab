@@ -34,26 +34,26 @@
     "layout": "row",
     "frames": [
       {
-        "caption": { "zh": "先读草稿。滤网数量合适，胶水却违反规定。", "en": "Read the draft. The filter count is right, but the glue breaks the rule." },
+        "caption": {"zh": "先读草稿。滤网数量合适，胶水却违反规定。", "en": "Read the draft. The filter count is right, but the glue breaks the rule."},
         "items": [
-          { "id": "filter", "label": { "zh": "滤网", "en": "Filters" }, "value": { "zh": "草稿 ×2", "en": "Draft ×2" }, "state": "done" },
-          { "id": "glue", "label": { "zh": "胶水", "en": "Glue" }, "value": { "zh": "草稿 ×1", "en": "Draft ×1" }, "state": "active" }
+          {"id": "filter", "label": {"zh": "滤网", "en": "Filters"}, "value": {"zh": "×2", "en": "×2"}, "state": "done"},
+          {"id": "glue", "label": {"zh": "胶水", "en": "Glue"}, "value": {"zh": "×1", "en": "×1"}, "state": "active", "annotation": {"zh": "禁放", "en": "Keep out"}}
         ]
       },
       {
-        "caption": { "zh": "只说“加一把刷子”，胶水可能还在。", "en": "If you only say “Add one brush,” the glue may remain." },
+        "caption": {"zh": "只说“加一把刷子”，胶水可能还在。", "en": "If you only say “Add one brush,” the glue may remain."},
         "items": [
-          { "id": "filter", "label": { "zh": "滤网", "en": "Filters" }, "value": { "zh": "×2", "en": "×2" }, "state": "done" },
-          { "id": "glue", "label": { "zh": "胶水", "en": "Glue" }, "value": { "zh": "×1，还在", "en": "×1, still listed" }, "state": "active" },
-          { "id": "brush", "label": { "zh": "刷子", "en": "Brush" }, "value": { "zh": "新增 ×1", "en": "Added ×1" }, "state": "done" }
+          {"id": "filter", "label": {"zh": "滤网", "en": "Filters"}, "value": {"zh": "×2", "en": "×2"}, "state": "done"},
+          {"id": "glue", "label": {"zh": "胶水", "en": "Glue"}, "value": {"zh": "×1", "en": "×1"}, "state": "active", "annotation": {"zh": "仍在箱内", "en": "Still packed"}},
+          {"id": "brush", "label": {"zh": "刷子", "en": "Brush"}, "value": {"zh": "×1", "en": "×1"}, "state": "done", "symbol": "🖌️"}
         ]
       },
       {
-        "caption": { "zh": "明确说出“去掉胶水，保留原来的 2 片滤网和 1 把刷子”，再核对结果。", "en": "Say “Remove the glue and keep the 2 filters and 1 brush.” Then check the result." },
+        "caption": {"zh": "明确说出“去掉胶水，保留原来的 2 片滤网和 1 把刷子”，再核对结果。", "en": "Say “Remove the glue and keep the 2 filters and 1 brush.” Then check the result."},
         "items": [
-          { "id": "filter", "label": { "zh": "滤网", "en": "Filters" }, "value": { "zh": "保留 ×2", "en": "Keep ×2" }, "state": "done" },
-          { "id": "brush", "label": { "zh": "刷子", "en": "Brush" }, "value": { "zh": "保留 ×1", "en": "Keep ×1" }, "state": "done" },
-          { "id": "glue", "label": { "zh": "胶水", "en": "Glue" }, "value": { "zh": "去掉", "en": "Remove" }, "state": "muted" }
+          {"id": "filter", "label": {"zh": "滤网", "en": "Filters"}, "value": {"zh": "×2", "en": "×2"}, "state": "done"},
+          {"id": "brush", "label": {"zh": "刷子", "en": "Brush"}, "value": {"zh": "×1", "en": "×1"}, "state": "done", "symbol": "🖌️"},
+          {"id": "glue", "label": {"zh": "胶水", "en": "Glue"}, "value": {"zh": "×0", "en": "×0"}, "state": "muted", "annotation": {"zh": "移出箱子", "en": "Unpack"}}
         ]
       }
     ]

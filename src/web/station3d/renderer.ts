@@ -5,9 +5,11 @@ import { gridOffsets } from '../../shared/gridDevices'
 import { emittingRay, rayArms } from '../gridDeviceDisplay'
 import { createStationModels } from './models'
 import { createRobotSignals } from './robotActivity'
+import { makeCargoArrival } from './cargoArrival'
+import { createBoardScenery, type BoardSceneryProp } from './boardScenery'
 import { createWorkshopSet } from './workshop'
 import { visibleMapFloor } from './mapFootprint'
-import type { StationCamera, StationFrame } from './types'
+import { cargoArrivalDuration, type StationCamera, type StationFrame, type WarehouseArrival } from './types'
 
 type RendererCallbacks = {
   onInspect: (cell: Position | undefined) => void
@@ -30,6 +32,8 @@ type Entity = {
   toYaw: number
   activeAt: number
   workingAt?: number
+  parked?: boolean
+  pushing?: boolean
   signature: string
 }
 const defaultYaw = 0.48
@@ -38,6 +42,9 @@ const wallHeight = 0.46
 const moveDuration = 210
 const effectDuration = 460
 const gestureDuration = 775
+const touchDuration = 760
+type TouchKind = 'robot' | 'crate' | 'item'
+type SceneHit = { prop: BoardSceneryProp } | { cell: Position; object?: THREE.Object3D } | undefined
 const positionKey = ({ x, y }: Position) => x + ',' + y
 const sameCell = (a: Position | undefined, b: Position | undefined) => a?.x === b?.x && a?.y === b?.y
 
@@ -154,8 +161,18 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
   let actionStarted = 0
   let openingLid: THREE.Object3D | undefined
   let signals: ReturnType<typeof createRobotSignals> | undefined
+  let deliverySeal: ReturnType<typeof makeCargoArrival> | undefined
+  let delivering: WarehouseArrival | undefined
+  let deliveryTimer: number | undefined
   let terrainKey = ''
   let environment: ReturnType<typeof createWorkshopSet> | undefined
+  let scenery: ReturnType<typeof createBoardScenery> | undefined
+  let sceneryBounds: THREE.Box3[] = []
+  let sceneryInView = false
+  let scenerySeconds = 0
+  let lastSceneryDraw: number | undefined
+  let touch: { object: THREE.Object3D; kind: TouchKind; at: number } | undefined
+  let touchTimer: number | undefined
   let environmentKey = ''
   let marksKey = ''
   let hazardKey = ''
@@ -163,11 +180,16 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
   let previousTrail: StationFrame['trailEdges']
   let trailMesh: THREE.InstancedMesh | undefined
   let request = 0
+  let idleFrame = false
+  let idleTimer: number | undefined
+  let hoverTimer: number | undefined
+  let hoverPoint: { x: number; y: number } | undefined
   let disposed = false
   let visible = true
   let exit: THREE.Group | undefined
   let selected: Position | undefined
-  let yaw = defaultYaw
+  const overviewYaw = () => frame.warehouse ? .13 : defaultYaw
+  let yaw = overviewYaw()
   let pitch = defaultPitch
   let magnification = 1
   let mapNavigation = false
@@ -202,11 +224,9 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
 
   function reportFootprint(columns: number, rows: number) {
     if (!mapNavigation || !callbacks.onMapFootprint) return
-    projectionView.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse)
     const previous = lastFootprint
     if (previous && projectionView.equals(lastProjectionView)) return
     lastProjectionView.copy(projectionView)
-    mapFrustum.setFromProjectionMatrix(projectionView)
     const points = visibleMapFloor(mapFrustum, columns, rows)
     if (previous && points.length === previous.length && points.every((p, i) =>
       Math.abs(p.x - previous[i].x) <= .0001 && Math.abs(p.y - previous[i].y) <= .0001)) return
@@ -232,7 +252,8 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
       // Fit each corner in perspective, including its depth relative to the lens.
       // This keeps the nearest edge visible for long, narrow imported maps as well.
       const halfFov = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))
-      const spanX = (columns + 2.0) / 2, spanZ = (rows + 2.0) / 2
+      const margin = frame.warehouse ? .65 : 2
+      const spanX = (columns + margin) / 2, spanZ = (rows + margin) / 2
       let fit = 0
       for (const x of [-spanX, spanX]) for (const z of [-spanZ, spanZ]) for (const y of [-1, 1.35]) {
         const front = x * Math.sin(yaw) + z * Math.cos(yaw)
@@ -263,13 +284,19 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     camera.far = Math.max(100, distance + 3 * Math.max(columns, rows))
     camera.updateProjectionMatrix()
     camera.updateMatrixWorld()
+    mapFrustum.setFromProjectionMatrix(projectionView.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse))
+    checkSceneryInView()
     environment?.updateView(camera)
     reportFootprint(columns, rows)
+  }
+  function checkSceneryInView() {
+    sceneryInView = sceneryBounds.some(bounds => mapFrustum.intersectsBox(bounds))
+    if (!sceneryInView) lastSceneryDraw = undefined
   }
 
   function resetCamera() {
     pinnedLens = undefined
-    yaw = cameraMode === 'follow' ? 0.40 : defaultYaw
+    yaw = cameraMode === 'follow' ? 0.40 : overviewYaw()
     pitch = cameraMode === 'follow' ? 0.55 : defaultPitch
     magnification = 1
     offsetX = offsetZ = 0
@@ -312,6 +339,7 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     const rows = frame.tiles.length
     const cx = (columns - 1) / 2, cz = (rows - 1) / 2
     const gates = new Set((frame.gates ?? []).map(positionKey))
+    const loadingPads = new Set(frame.warehouse?.targets.map(positionKey))
     const batches = { panels: [] as Block[], trim: [] as Block[], lamps: [] as Block[] }
     function part(batch: keyof typeof batches, x: number, y: number, z: number,
       width: number, height: number, depth: number, tint: number, cell?: Position) {
@@ -348,7 +376,7 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
       part('panels', x, -0.05, y, 0.977, 0.10, 0.977, wall ? 0x273746 :
         [0x315663, 0x365c68, 0x345865, 0x3b5e69][seed % 4], cell)
       if (wall) {
-        const lid = gate ? 0xcd8552 : !interior ? 0x617994 : seed % 2 ? 0x779d9b : 0xb2a079
+        const lid = gate ? 0xcd8552 : !interior || frame.warehouse ? 0x617994 : seed % 2 ? 0x779d9b : 0xb2a079
         part('panels', x, 0.18, y, 0.94, 0.36, 0.94, 0x374c60, cell)
         part('panels', x, 0.38, y, 0.96, 0.16, 0.96, lid, cell)
         if (gate) {
@@ -356,7 +384,7 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
             part('trim', x, 0.21, y + side * 0.471, 0.83, 0.115, 0.022, 0x734939, cell)
             part('lamps', x, 0.21, y + side * 0.486, 0.52, 0.037, 0.014, 0xffb65f, cell)
           }
-        } else if (interior && seed % 2) {
+        } else if (interior && !frame.warehouse && seed % 2) {
           // A service cabinet with drawer fronts, handles and a recessed top vent.
           for (const h of [0.14, 0.27]) {
             part('trim', x, h, y + 0.466, 0.72, 0.105, 0.033, 0x779995, cell)
@@ -365,7 +393,7 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
           for (const offset of [-0.20, -0.10, 0, 0.10]) {
             part('trim', x - 0.12, wallHeight + 0.006, y + offset, 0.46, 0.012, 0.039, 0x34505b, cell)
           }
-        } else if (interior) {
+        } else if (interior && !frame.warehouse) {
           // Two straps wrap the lids and sides of the parts crates.
           for (const offset of [-0.28, 0.28]) {
             part('trim', x + offset, 0.235, y, 0.075, 0.46, 0.974, 0x516070, cell)
@@ -380,6 +408,14 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
       } else {
         part('trim', x - 0.34, 0.004, y - 0.35, 0.13, 0.01, 0.023, 0x7497a4, cell)
         part('trim', x + 0.34, 0.004, y + 0.35, 0.13, 0.01, 0.023, 0x7497a4, cell)
+        if (loadingPads.has(positionKey(cell))) {
+          part('trim', x, .015, y, .88, .025, .88, 0x246467, cell)
+          for (const dx of [-1, 1]) for (const dz of [-1, 1]) {
+            part('lamps', x + dx * .29, .04, y + dz * .40, .27, .02, .057, 0x9ef8e3, cell)
+            part('lamps', x + dx * .40, .04, y + dz * .29, .057, .02, .27, 0x9ef8e3, cell)
+          }
+          part('lamps', x, .04, y, .13, .02, .13, 0x9ef8e3, cell)
+        }
       }
       if (gate) {
         const top = wall ? wallHeight + 0.017 : 0.014
@@ -425,6 +461,25 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     setSelection(cell)
     callbacks.onInspect(selected)
     redraw()
+  }
+  function clearTouch() {
+    window.clearTimeout(touchTimer)
+    if (touch && touch.kind !== 'robot') touch.object.rotation.z = 0
+    touch = undefined
+  }
+  function touchObject(object: THREE.Object3D | undefined) {
+    const kind: TouchKind | undefined = object?.userData.touchKind
+    if (!object || !kind) return
+    clearTouch()
+    touch = { object, kind, at: performance.now() }
+    // The still pose also needs a final draw when reduced motion disables idle frames.
+    touchTimer = window.setTimeout(redraw, touchDuration + 10)
+    redraw()
+  }
+  function activateCell(cell: Position) {
+    const entity = actors.children.find(object => object.userData.touchKind && sameCell(object.userData.cell, cell))
+    touchObject(entity)
+    inspectCell(cell)
   }
   function updateMarks() {
     const key = JSON.stringify(frame.cellChanges ?? [])
@@ -545,15 +600,24 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
 
   function update(next: StationFrame) {
     if (disposed) return
+    const previous = frame
     frame = next
     const columns = next.tiles[0].length, rows = next.tiles.length
     const location = next.location ?? 'workshop'
     const setKey = location + ':' + columns + 'x' + rows
     if (setKey !== environmentKey) {
       lastFootprint = undefined
+      clearTouch()
+      scenery?.dispose()
+      scenery = createBoardScenery(columns, rows)
+      scene.add(scenery.root)
       if (environment) { scene.remove(environment.group); environment.dispose() }
       environment = createWorkshopSet({ kind: 'field', variant: location, columns, rows })
       scene.add(environment.group)
+      sceneryBounds = [...scenery.ambientBounds, ...environment.fieldMotionBounds]
+      checkSceneryInView()
+      scenerySeconds = 0
+      lastSceneryDraw = undefined
       environmentKey = setKey
       const cx = (columns - 1) / 2, cz = (rows - 1) / 2
       const radius = Math.hypot(columns, rows) / 2 + 4
@@ -565,6 +629,7 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
       if (scene.fog instanceof THREE.FogExp2) scene.fog.density = 0.11 / Math.max(9, rows, columns)
     }
     const tilesKey = next.tiles.join('|') + ':' + (next.gates ?? []).map(positionKey).join(';')
+      + ':' + (next.warehouse?.targets.map(positionKey).join(';') ?? '')
     if (tilesKey !== terrainKey) {
       terrainKey = tilesKey
       buildTerrain()
@@ -578,6 +643,7 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     const now = performance.now()
     const newAction = next.activity?.token !== actionToken
     if (newAction) {
+      clearTouch()
       if (openingLid) {
         openingLid.rotation.x = -1.35
         openingLid = undefined
@@ -601,6 +667,7 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
       seen.add(id)
       let entry = entities.get(id)
       if (entry && entry.signature !== signature) {
+        if (touch?.object === entry.object) clearTouch()
         actors.remove(entry.object)
         entities.delete(id)
         entry = undefined
@@ -608,25 +675,35 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
       const target = new THREE.Vector3(cell.x + offsetX, 0.012, cell.y + offsetZ)
       if (!entry) {
         const object = model()
+        if (id.startsWith('bot:')) object.userData.touchKind = 'robot'
+        else if (id.startsWith('cargo:')) object.userData.touchKind = 'crate'
+        else if (id.startsWith('item:')) object.userData.touchKind = 'item'
         object.position.copy(target)
         entry = { object, cell, from: target.clone(), to: target, started: 0, fromYaw: 0, toYaw: 0, activeAt: now, signature }
         actors.add(object)
         entities.set(id, entry)
       } else if (!entry.to.equals(target)) {
+        if (touch?.object === entry.object) clearTouch()
         entry.from.copy(entry.object.position)
         entry.to.copy(target)
         entry.started = reducedMotion ? 0 : now
+        if (id.startsWith('cargo:') && Math.abs(entry.cell.x - cell.x) + Math.abs(entry.cell.y - cell.y) !== 1) entry.started = 0
         entry.activeAt = now
         entry.workingAt = undefined
         if (id.startsWith('bot:') && !sameCell(entry.cell, cell)) {
           entry.fromYaw = entry.object.rotation.y
           const facing = Math.atan2(cell.x - entry.cell.x, cell.y - entry.cell.y)
           entry.toYaw = entry.fromYaw + Math.atan2(Math.sin(facing - entry.fromYaw), Math.cos(facing - entry.fromYaw))
+          if (id === 'bot:player' && next.warehouse) {
+            const ahead = { x: 2 * cell.x - entry.cell.x, y: 2 * cell.y - entry.cell.y }
+            entry.pushing = previous.warehouse?.boxes.some((box, i) => sameCell(box, cell) && sameCell(next.warehouse?.boxes[i], ahead))
+          }
         }
       }
       entry.object.userData.cell = cell
       entry.object.scale.setScalar(scale)
       entry.cell = cell
+      return entry
     }
     const bots = [...(next.playerDown ? [] : [{ cell: next.playerPosition, key: 'bot:player', label: undefined, index: undefined, enemy: false }]),
       ...next.opponents.map((bot, i) => ({ cell: bot, key: 'bot:rival:' + (bot.id ?? i), label: bot.label, index: bot.index ?? i, enemy: true }))]
@@ -659,6 +736,29 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
         chip?.kind ?? (next.arenaBuffs ? (target ? 'parcel' : 'token') : 'battery'),
         () => chip ? models.chip(chip.kind) : next.arenaBuffs ? models.arenaLoot(target) : models.battery())
     }
+    const warehouse = next.warehouse
+    warehouse?.boxes.forEach((cell, index) => {
+      const entry = place('cargo:' + index, cell, 0, 0, 1, 'cargo', models.cargoCrate)
+      entry.parked = warehouse.targets.some(target => sameCell(target, cell))
+    })
+    const arrival = next.warehouseArrival
+    const liveArrival = arrival && now - arrival.id < cargoArrivalDuration && warehouse?.boxes.some(box => sameCell(box, arrival))
+      && warehouse.targets.some(pad => sameCell(pad, arrival)) ? arrival : undefined
+    if (liveArrival?.id !== delivering?.id) {
+      window.clearTimeout(deliveryTimer)
+      delivering = liveArrival
+      if (liveArrival) {
+        if (!deliverySeal) {
+          deliverySeal = makeCargoArrival()
+          scene.add(deliverySeal.group)
+        }
+        // A static reduced-motion frame also needs a last redraw when the seal expires.
+        deliveryTimer = window.setTimeout(redraw, Math.max(0, liveArrival.id + cargoArrivalDuration - now) + 5)
+      } else if (deliverySeal) {
+        deliverySeal.group.visible = false
+        delete canvas.dataset.cargoArrival
+      }
+    }
     for (const device of next.devices ?? []) {
       const signature = JSON.stringify(device)
       place('device:' + device.id, device, 0, 0, 1, signature, () => models.device(device))
@@ -667,6 +767,7 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
       }
     }
     for (const [id, entry] of entities) if (!seen.has(id)) {
+      if (touch?.object === entry.object) clearTouch()
       actors.remove(entry.object)
       entities.delete(id)
       if (!reducedMotion && id.startsWith('item:')) {
@@ -724,8 +825,20 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
 
   function draw(now: number) {
     request = 0
-    if (disposed || !visible) return
-    let moving = false
+    if (disposed || !visible || document.hidden) return
+    const ambient = sceneryInView && !reducedMotion
+    const elapsed = ambient && lastSceneryDraw !== undefined ? Math.max(0, now - lastSceneryDraw) / 1000 : 0
+    lastSceneryDraw = ambient ? now : undefined
+    scenerySeconds += elapsed
+    environment?.update(scenerySeconds)
+    let moving = scenery?.update(now, reducedMotion, elapsed, scenerySeconds) ?? false
+    if (idleFrame) {
+      // The hangar runs between game turns. Reuse the board pose and its shadow map.
+      if (render(false)) scheduleIdle()
+      return
+    }
+    const touchProgress = touch ? Math.max(0, (now - touch.at) / touchDuration) : 1
+    if (touch && touchProgress >= 1) clearTouch()
     if (openingLid) {
       const fraction = reducedMotion ? 1 : THREE.MathUtils.clamp((now - actionStarted) / 420, 0, 1)
       openingLid.rotation.x = -1.35 * fraction * (2 - fraction)
@@ -739,12 +852,14 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
       const step = !reducedMotion && entry.started ? THREE.MathUtils.clamp((now - entry.started) / moveDuration, 0, 1) : 1
       if (step < 1) {
         entry.object.position.lerpVectors(entry.from, entry.to, step * step * (3 - 2 * step))
-        entry.object.position.y += Math.sin(step * Math.PI) * (robot ? .024 : .07)
+        if (entry.parked === undefined) entry.object.position.y += Math.sin(step * Math.PI) * (robot ? .024 : .07)
         moving = true
       } else {
         entry.object.position.copy(entry.to)
         entry.started = 0
       }
+      if (entry.parked !== undefined) entry.object.userData.parkedBadge.visible = entry.parked && step >= .85
+      const tapped = touch?.object === entry.object && step === 1
       if (robot) {
         entry.object.rotation.y = THREE.MathUtils.lerp(entry.fromYaw, entry.toYaw, Math.min(1, step * 2.3))
         const workSeconds = entry.workingAt === undefined ? Infinity : Math.max(0, now - entry.workingAt) / 1000
@@ -758,21 +873,29 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
           const motion = reducedMotion ? 'still' : animating ? 'playing' : 'done'
           if (canvas.dataset.robotMotion !== motion) canvas.dataset.robotMotion = motion
         }
-        if (gesture && (reducedMotion || progress < 1)) {
+        if (gesture && (progress < 1 || (reducedMotion && !tapped))) {
           const moment = reducedMotion ? .47 : progress
           models.gesture(entry.object, gesture, moment, action?.flow?.condition)
           signals ??= createRobotSignals()
           if (signals.group.parent !== entry.object) entry.object.add(signals.group)
           signals.show(gesture, moment, action?.flow?.condition)
           if (!reducedMotion) moving = true
-        } else if (step < 1) models.pose(entry.object, 'walk', step * .5)
+        } else if (step < 1) models.pose(entry.object, entry.pushing ? 'push' : 'walk', step * .5)
         else if (!action && !reducedMotion && workSeconds < Math.PI / 5) {
           models.pose(entry.object, 'work', workSeconds)
           moving = true
+        } else if (tapped) {
+          models.pose(entry.object, 'wave', reducedMotion ? .3 : touchProgress * 1.2)
+          if (!reducedMotion) moving = true
         } else {
           models.pose(entry.object, 'idle', idleSeconds)
           if (!reducedMotion && idleSeconds < 1.2) moving = true
         }
+      } else if (tapped) {
+        const lift = reducedMotion ? 1 : Math.sin(touchProgress * Math.PI)
+        if (touch?.kind === 'item') entry.object.position.y += lift * .18
+        entry.object.rotation.z = reducedMotion ? .09 : .16 * Math.sin(touchProgress * Math.PI * 4) * lift
+        if (!reducedMotion) moving = true
       }
       const radius = entry.object.scale.x * (id.startsWith('item:') ? 0.71 : 0.98)
       contactTransform.position.set(entry.object.position.x + 0.067, 0.016, entry.object.position.z - 0.045)
@@ -791,17 +914,44 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
       } else removePulse(i)
     }
     if (cameraMode === 'follow') cameraFit()
+    if (deliverySeal && delivering) {
+      if (deliverySeal.draw(delivering, now, camera.quaternion, reducedMotion)) moving = true
+      if (deliverySeal.group.visible) {
+        const location = positionKey(delivering)
+        if (canvas.dataset.cargoArrival !== location) canvas.dataset.cargoArrival = location
+      } else {
+        delivering = undefined
+        delete canvas.dataset.cargoArrival
+      }
+    }
+    if (!render(true)) return
+    if (moving) redraw()
+    else scheduleIdle()
+  }
+  function render(updateShadows: boolean) {
     try {
+      gl.shadowMap.autoUpdate = updateShadows
       gl.render(scene, camera)
+      return true
     } catch {
       dispose()
       callbacks.onFailure()
-      return
+      return false
     }
-    if (moving) redraw()
+  }
+  function scheduleIdle() {
+    if (reducedMotion || !sceneryInView) return
+    idleTimer = window.setTimeout(() => {
+      if (!request && visible && !document.hidden && !disposed) {
+        idleFrame = true
+        request = requestAnimationFrame(draw)
+      }
+    }, 80)
   }
   function redraw() {
-    if (!request && !disposed && visible) request = requestAnimationFrame(draw)
+    idleFrame = false
+    window.clearTimeout(idleTimer)
+    if (!request && !disposed && visible && !document.hidden) request = requestAnimationFrame(draw)
   }
   function removePulse(index: number) {
     const { mesh } = pulses[index]
@@ -819,33 +969,74 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     }
     redraw()
   }
-  function pick(event: PointerEvent) {
+  function hitAt(x: number, y: number, hover = false): SceneHit {
     const rect = canvas.getBoundingClientRect()
-    pointer.set((event.clientX - rect.left) / rect.width * 2 - 1, 1 - (event.clientY - rect.top) / rect.height * 2)
+    pointer.set((x - rect.left) / rect.width * 2 - 1, 1 - (y - rect.top) / rect.height * 2)
     scene.updateMatrixWorld()
     raycaster.setFromCamera(pointer, camera)
-    const hits = raycaster.intersectObjects([terrain, actors], true)
+    const hits = raycaster.intersectObjects([actors, ...(scenery?.hitTargets ?? [])], true)
+    // Most of a large map is floor. Only check its instances on hover if a prop is in the ray.
+    if (hover && !hits.length) return
+    raycaster.intersectObject(terrain, true, hits)
     for (const hit of hits) {
+      let node: THREE.Object3D | null = hit.object
+      let cellObject: THREE.Object3D | undefined
+      while (node && node.visible) {
+        if (node.userData.cell) cellObject = node
+        node = node.parent
+      }
+      if (node) continue
+      const prop = scenery?.targetOf(hit.object)
+      if (prop) return { prop }
+      if (cellObject) return { cell: cellObject.userData.cell, object: cellObject }
       if (hit.instanceId !== undefined) {
         const cell = hit.object.userData.cells?.[hit.instanceId] as Position | undefined
-        if (cell) return inspectCell(cell)
-        return inspectCell(undefined)
-      }
-      let object: THREE.Object3D | null = hit.object
-      while (object && object !== actors) {
-        if (object.visible && object.userData.cell) return inspectCell(object.userData.cell)
-        object = object.parent
+        return cell ? { cell } : undefined
       }
     }
-    inspectCell(undefined)
+  }
+  function pick(event: PointerEvent) {
+    const hit = hitAt(event.clientX, event.clientY)
+    if (event.pointerType !== 'touch') showHover(hit)
+    if (hit && 'prop' in hit) {
+      scenery?.activate(hit.prop, performance.now())
+      redraw()
+    } else {
+      touchObject(hit?.object)
+      inspectCell(hit?.cell)
+    }
+  }
+  function stopHover() {
+    window.clearTimeout(hoverTimer)
+    hoverTimer = undefined
+    hoverPoint = undefined
+    delete canvas.dataset.touchTarget
+  }
+  function updateHover() {
+    hoverTimer = undefined
+    if (!hoverPoint || disposed || !visible || document.hidden) return
+    showHover(hitAt(hoverPoint.x, hoverPoint.y, true))
+  }
+  function showHover(hit: SceneHit) {
+    const target = hit && ('prop' in hit ? hit.prop : hit.object?.userData.touchKind)
+    if (target) canvas.dataset.touchTarget = target
+    else delete canvas.dataset.touchTarget
   }
   function pointerDown(event: PointerEvent) {
     if (event.button !== 0 || !event.isPrimary || drag) return
+    stopHover()
     drag = { id: event.pointerId, x: event.clientX, y: event.clientY, yaw, pitch, moved: false }
     canvas.setPointerCapture(event.pointerId)
   }
   function pointerMove(event: PointerEvent) {
-    if (!drag || drag.id !== event.pointerId) return
+    if (!drag) {
+      if (event.pointerType !== 'touch') {
+        hoverPoint = { x: event.clientX, y: event.clientY }
+        hoverTimer ??= window.setTimeout(updateHover, 85)
+      }
+      return
+    }
+    if (drag.id !== event.pointerId) return
     const dx = event.clientX - drag.x, dy = event.clientY - drag.y
     if (!drag.moved && Math.hypot(dx, dy) < 5) return
     drag.moved = true
@@ -870,7 +1061,21 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
   function cancelDrag(event: PointerEvent) {
     if (drag?.id === event.pointerId) drag = undefined
   }
-  function motionChanged() { reducedMotion = media.matches; redraw() }
+  function motionChanged() {
+    reducedMotion = media.matches
+    lastSceneryDraw = undefined
+    redraw()
+  }
+  function visibilityChanged() {
+    if (visible && !document.hidden) redraw()
+    else {
+      lastSceneryDraw = undefined
+      cancelAnimationFrame(request)
+      request = 0
+      window.clearTimeout(idleTimer)
+      stopHover()
+    }
+  }
   function lost(event: Event) {
     event.preventDefault()
     if (!disposed) { dispose(); callbacks.onFailure() }
@@ -878,27 +1083,36 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
   const size = new ResizeObserver(resize)
   const visibility = new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting
-    if (visible) redraw()
+    visibilityChanged()
   })
   function dispose() {
     if (disposed) return
     disposed = true
     cancelAnimationFrame(request)
+    window.clearTimeout(idleTimer)
+    stopHover()
+    clearTouch()
     size.disconnect()
     visibility.disconnect()
     media.removeEventListener('change', motionChanged)
+    document.removeEventListener('visibilitychange', visibilityChanged)
     canvas.removeEventListener('webglcontextlost', lost)
     canvas.removeEventListener('pointerdown', pointerDown)
     canvas.removeEventListener('pointermove', pointerMove)
+    canvas.removeEventListener('pointerleave', stopHover)
     canvas.removeEventListener('pointerup', pointerUp)
     canvas.removeEventListener('pointercancel', cancelDrag)
     canvas.removeEventListener('lostpointercapture', cancelDrag)
     releaseTerrain()
     environment?.dispose()
+    scenery?.dispose()
     keyLight.shadow.dispose()
     for (const { mesh } of pulses) mesh.material.dispose()
     for (const material of markerMaterials.values()) material.dispose()
     signals?.dispose()
+    window.clearTimeout(deliveryTimer)
+    deliverySeal?.dispose()
+    delete canvas.dataset.cargoArrival
     delete canvas.dataset.robotAction
     delete canvas.dataset.robotPickup
     delete canvas.dataset.robotMotion
@@ -922,10 +1136,12 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     canvas.addEventListener('webglcontextlost', lost)
     canvas.addEventListener('pointerdown', pointerDown)
     canvas.addEventListener('pointermove', pointerMove)
+    canvas.addEventListener('pointerleave', stopHover)
     canvas.addEventListener('pointerup', pointerUp)
     canvas.addEventListener('pointercancel', cancelDrag)
     canvas.addEventListener('lostpointercapture', cancelDrag)
     media.addEventListener('change', motionChanged)
+    document.addEventListener('visibilitychange', visibilityChanged)
     size.observe(canvas)
     visibility.observe(canvas)
     resize()
@@ -937,6 +1153,7 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
   return {
     update,
     inspectCell,
+    activateCell,
     zoom(factor: number) { magnification = THREE.MathUtils.clamp(magnification * factor, 0.65, mapNavigation ? 5 : 2.5); cameraFit(); redraw() },
     pan,
     centerMapOn,

@@ -66,12 +66,12 @@
     }
   ],
   "animation": {
-    "layout": "row",
+    "layout": "grid",
     "frames": [
       {
         "caption": {
-          "zh": "示例中，框 A 从 (0, 0) 开始，宽 4，高 3。它的面积是 12。",
-          "en": "A starts at (0, 0), is 4 units wide and 3 high, and has an area of 12."
+          "zh": "框 A 覆盖四列、三行，共十二格。",
+          "en": "Box A covers four columns and three rows, twelve cells in all."
         },
         "items": [
           {
@@ -80,18 +80,24 @@
               "zh": "框 A",
               "en": "Box A"
             },
+            "box": [
+              0,
+              0,
+              4,
+              3
+            ],
+            "swatch": "#73d6ff",
             "value": {
-              "zh": "(0, 0) · 4 × 3 = 12",
-              "en": "(0, 0) · 4 × 3 = 12"
-            },
-            "state": "active"
+              "zh": "4 × 3",
+              "en": "4 × 3"
+            }
           }
         ]
       },
       {
         "caption": {
-          "zh": "框 B 同样大，向右移动 2 格。两个框只共同覆盖中间两列。",
-          "en": "B is the same size, shifted 2 units right. The boxes share only the middle two columns."
+          "zh": "框 B 向右错开两格，斜纹处是两个框都盖住的六格。",
+          "en": "Box B is offset two cells to the right. Both boxes cover the six hatched cells."
         },
         "items": [
           {
@@ -100,9 +106,34 @@
               "zh": "框 A",
               "en": "Box A"
             },
+            "box": [
+              0,
+              0,
+              4,
+              3
+            ],
+            "swatch": "#73d6ff",
             "value": {
-              "zh": "(0, 0) · 面积 12",
-              "en": "(0, 0) · area 12"
+              "zh": "4 × 3",
+              "en": "4 × 3"
+            }
+          },
+          {
+            "id": "b",
+            "label": {
+              "zh": "框 B",
+              "en": "Box B"
+            },
+            "box": [
+              2,
+              0,
+              4,
+              3
+            ],
+            "swatch": "#ffc57a",
+            "value": {
+              "zh": "4 × 3",
+              "en": "4 × 3"
             }
           },
           {
@@ -114,8 +145,33 @@
             "value": {
               "zh": "2 × 3 = 6",
               "en": "2 × 3 = 6"
+            }
+          }
+        ]
+      },
+      {
+        "caption": {
+          "zh": "任意一个框盖住的区域一共有十八格。斜纹占其中的三分之一。",
+          "en": "Eighteen cells lie in either box. One third of those cells are hatched."
+        },
+        "items": [
+          {
+            "id": "a",
+            "label": {
+              "zh": "框 A",
+              "en": "Box A"
             },
-            "state": "active"
+            "box": [
+              0,
+              0,
+              4,
+              3
+            ],
+            "swatch": "#73d6ff",
+            "value": {
+              "zh": "4 × 3",
+              "en": "4 × 3"
+            }
           },
           {
             "id": "b",
@@ -123,19 +179,18 @@
               "zh": "框 B",
               "en": "Box B"
             },
+            "box": [
+              2,
+              0,
+              4,
+              3
+            ],
+            "swatch": "#ffc57a",
             "value": {
-              "zh": "(2, 0) · 面积 12",
-              "en": "(2, 0) · area 12"
+              "zh": "4 × 3",
+              "en": "4 × 3"
             }
-          }
-        ]
-      },
-      {
-        "caption": {
-          "zh": "共同部分只算一次。并集是 12 + 12 − 6 = 18，交并比是 6 ÷ 18，约 33%。",
-          "en": "Count the shared part only once. The union is 12 + 12 − 6 = 18. IoU is 6 ÷ 18, about 33%."
-        },
-        "items": [
+          },
           {
             "id": "overlap",
             "label": {
@@ -145,8 +200,7 @@
             "value": {
               "zh": "6",
               "en": "6"
-            },
-            "state": "done"
+            }
           },
           {
             "id": "union",
@@ -157,8 +211,7 @@
             "value": {
               "zh": "18",
               "en": "18"
-            },
-            "state": "done"
+            }
           },
           {
             "id": "iou",
@@ -167,19 +220,54 @@
               "en": "IoU"
             },
             "value": {
-              "zh": "约 33%",
-              "en": "About 33%"
-            },
-            "state": "active"
+              "zh": "6 / 18 ≈ 33%",
+              "en": "6 / 18 ≈ 33%"
+            }
           }
         ]
       },
       {
         "caption": {
-          "zh": "框 B 左移到和 A 完全重合。现在交集和并集都是 12。",
-          "en": "B moves left until it matches A. Now both the intersection and union are 12."
+          "zh": "框 B 左移两格，和 A 重合。十二格都出现斜纹，交并比变成 100%。",
+          "en": "Box B moves left onto A. All twelve cells are hatched, giving 100% IoU."
         },
         "items": [
+          {
+            "id": "a",
+            "label": {
+              "zh": "框 A",
+              "en": "Box A"
+            },
+            "box": [
+              0,
+              0,
+              4,
+              3
+            ],
+            "swatch": "#73d6ff",
+            "value": {
+              "zh": "4 × 3",
+              "en": "4 × 3"
+            }
+          },
+          {
+            "id": "b",
+            "label": {
+              "zh": "框 B",
+              "en": "Box B"
+            },
+            "box": [
+              0,
+              0,
+              4,
+              3
+            ],
+            "swatch": "#ffc57a",
+            "value": {
+              "zh": "4 × 3",
+              "en": "4 × 3"
+            }
+          },
           {
             "id": "overlap",
             "label": {
@@ -189,8 +277,7 @@
             "value": {
               "zh": "12",
               "en": "12"
-            },
-            "state": "done"
+            }
           },
           {
             "id": "union",
@@ -201,8 +288,7 @@
             "value": {
               "zh": "12",
               "en": "12"
-            },
-            "state": "done"
+            }
           },
           {
             "id": "iou",
@@ -211,14 +297,17 @@
               "en": "IoU"
             },
             "value": {
-              "zh": "100%",
-              "en": "100%"
-            },
-            "state": "active"
+              "zh": "12 / 12 = 100%",
+              "en": "12 / 12 = 100%"
+            }
           }
         ]
       }
-    ]
+    ],
+    "plot": {
+      "columns": 6,
+      "rows": 3
+    }
   },
   "question": {
     "prompt": {

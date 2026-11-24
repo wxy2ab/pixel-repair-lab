@@ -54,6 +54,9 @@ test('the prefix totals lesson adds a chosen range, builds cumulative values, th
 
   await cumulative('D').click()
   await expect(step).toHaveAttribute('data-kind', 'included')
+  const bands = guide.locator('.prefix-bands')
+  await expect(bands.locator('[data-band="through"] [data-covered] b')).toHaveText(['A', 'B', 'C', 'D'])
+  await expect(bands.locator('[data-band="before"]')).toHaveCount(0)
   await expect(code).toContainText('included = prefix[right + 1]')
   await click('上一步')
   await expect(step).toHaveAttribute('data-kind', 'prefix')
@@ -63,6 +66,8 @@ test('the prefix totals lesson adds a chosen range, builds cumulative values, th
   await expect(code).toContainText('before = prefix[left]')
   await click('相减')
   await expect(step).toHaveAttribute('data-kind', 'subtract')
+  await expect(bands.locator('[data-band="through"] [data-cancelled] b')).toHaveText(['A'])
+  await expect(bands.locator('[data-band="difference"] [data-covered] b')).toHaveText(['B', 'C', 'D'])
   await expect(code).toContainText('segment = included - before')
   await expect(prediction).toHaveCount(0)
   await click('核对结果')

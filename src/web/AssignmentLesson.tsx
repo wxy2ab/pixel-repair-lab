@@ -6,6 +6,7 @@ import { programSourceLines, type ProgramWalkthrough, type ProgramWalkthroughFra
 import type { Json, Locale } from '../shared/types'
 import { runIssueText, tr } from './text'
 import { StepCount } from './LessonFrame'
+import { StepExplanation } from './LessonNotes'
 import './assignment-lesson.css'
 
 const stages = ['start', 'read', 'evaluate', 'store', 'output'] as const
@@ -41,11 +42,14 @@ function substitutedSum(trace: AssignmentTrace, variable: string) {
   return reading !== undefined && addition?.[1] === variable ? format(reading) + ' + ' + addition[2] : undefined
 }
 
-function VariableBox({ name, value, active, t }: { name: string; value?: Json; active?: boolean; t: Translate }) {
+function VariableBox({ name, value, active, before, t }: { name: string; value?: Json; active?: boolean; before?: Json; t: Translate }) {
   return <div className="assignment-variable" data-binding={name} data-filled={value !== undefined || undefined}
     data-active={active || undefined}>
     <dt>{name}</dt>
-    <dd>{value === undefined ? t('待存入', 'Empty') : format(value)}</dd>
+    <dd>{active && <span className="assignment-before"><span className="sr-only">{t('写入前', 'Before writing')} </span>
+      {before === undefined ? t('空', 'Empty') : format(before)} <span aria-hidden="true">→</span>
+      <span className="sr-only"> {t('写入后', 'After writing')} </span></span>}
+      <span>{value === undefined ? t('待存入', 'Empty') : format(value)}</span></dd>
   </div>
 }
 
@@ -78,8 +82,10 @@ function CompareLane({ variant, trace, stage, inputVariable, resultVariable, t }
   return <article className="assignment-lane" data-assignment-lane={variant}>
     <h3>{createsVariable ? t('存到新变量', 'Store in a new variable') : t('写回原变量', 'Write back to the original variable')}</h3>
     <dl className="assignment-boxes">
-      <VariableBox name={inputVariable} value={binding(current, inputVariable)} active={stage === 'store' && !createsVariable} t={t} />
-      {createsVariable && <VariableBox name={resultVariable} value={binding(current, resultVariable)} active={stage === 'store'} t={t} />}
+      <VariableBox name={inputVariable} value={binding(current, inputVariable)} before={binding(trace.evaluate, inputVariable)}
+        active={stage === 'store' && !createsVariable} t={t} />
+      {createsVariable && <VariableBox name={resultVariable} value={binding(current, resultVariable)}
+        before={binding(trace.evaluate, resultVariable)} active={stage === 'store'} t={t} />}
     </dl>
     {stage === 'evaluate' && <div className="assignment-operations" data-evaluating>
       <span>{t('右边算出的值', 'Value from the right side')}</span>
@@ -187,7 +193,6 @@ export function AssignmentLesson({ execution, locale, onReady }: {
             </dl>
           </>}
         </div>
-        <p className="assignment-description" role="status">{description}</p>
         {stage === 'read' && left && <ol className="assignment-source" data-testid="assignment-code" aria-label={t('Python 代码', 'Python code')}>
           <CodeLine frame={left.read} source={left.source} current />
         </ol>}
@@ -197,6 +202,8 @@ export function AssignmentLesson({ execution, locale, onReady }: {
           {stage === 'evaluate' && <button type="button" className="device-charge-key device-battery-trigger assignment-store"
             onClick={() => goTo(index + 1)}>{t('把两个结果分别写入左边的变量', 'Store each result in its left-hand variable')}</button>}
         </div>}
+        <span className="sr-only" role="status">{description}</span>
+        <StepExplanation locale={locale}>{description}</StepExplanation>
         {(!left || !right) && <p className="error-message" role="alert">{issue ? runIssueText(locale, issue)
           : t('这两段程序没有产生可以比较的结果。', 'These programs did not produce results to compare.')}</p>}
       </div>

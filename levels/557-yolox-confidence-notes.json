@@ -74,7 +74,8 @@
               "zh": "88%",
               "en": "88%"
             },
-            "height": 88
+            "height": 88,
+            "symbol": "🐕"
           },
           {
             "id": "chair",
@@ -86,7 +87,8 @@
               "zh": "55%",
               "en": "55%"
             },
-            "height": 55
+            "height": 55,
+            "symbol": "🪑"
           },
           {
             "id": "bottle",
@@ -98,7 +100,8 @@
               "zh": "30%",
               "en": "30%"
             },
-            "height": 30
+            "height": 30,
+            "symbol": "🍶"
           }
         ]
       },
@@ -115,11 +118,12 @@
               "en": "Dog"
             },
             "value": {
-              "zh": "88% · 保留",
-              "en": "88% · keep"
+              "zh": "88%",
+              "en": "88%"
             },
             "state": "done",
-            "height": 88
+            "height": 88,
+            "symbol": "🐕"
           },
           {
             "id": "chair",
@@ -128,11 +132,16 @@
               "en": "Chair"
             },
             "value": {
-              "zh": "55% · 保留",
-              "en": "55% · keep"
+              "zh": "55%",
+              "en": "55%"
             },
             "state": "done",
-            "height": 55
+            "height": 55,
+            "annotation": {
+              "zh": "55 ≥ 50",
+              "en": "55 ≥ 50"
+            },
+            "symbol": "🪑"
           },
           {
             "id": "bottle",
@@ -141,11 +150,33 @@
               "en": "Bottle"
             },
             "value": {
-              "zh": "30% · 隐藏",
-              "en": "30% · hide"
+              "zh": "30%",
+              "en": "30%"
             },
             "state": "muted",
-            "height": 30
+            "height": 30,
+            "annotation": {
+              "zh": "30 < 50",
+              "en": "30 < 50"
+            },
+            "symbol": "🍶"
+          },
+          {
+            "id": "threshold",
+            "label": {
+              "zh": "门槛",
+              "en": "Cutoff"
+            },
+            "height": 50,
+            "state": "active",
+            "value": {
+              "zh": "50%",
+              "en": "50%"
+            },
+            "annotation": {
+              "zh": "留下 2 / 3",
+              "en": "Keep 2 / 3"
+            }
           }
         ]
       },
@@ -162,11 +193,16 @@
               "en": "Dog"
             },
             "value": {
-              "zh": "88% · 隐藏",
-              "en": "88% · hide"
+              "zh": "88%",
+              "en": "88%"
             },
             "state": "muted",
-            "height": 88
+            "height": 88,
+            "annotation": {
+              "zh": "88 < 90",
+              "en": "88 < 90"
+            },
+            "symbol": "🐕"
           },
           {
             "id": "chair",
@@ -175,11 +211,12 @@
               "en": "Chair"
             },
             "value": {
-              "zh": "55% · 隐藏",
-              "en": "55% · hide"
+              "zh": "55%",
+              "en": "55%"
             },
             "state": "muted",
-            "height": 55
+            "height": 55,
+            "symbol": "🪑"
           },
           {
             "id": "bottle",
@@ -188,11 +225,29 @@
               "en": "Bottle"
             },
             "value": {
-              "zh": "30% · 隐藏",
-              "en": "30% · hide"
+              "zh": "30%",
+              "en": "30%"
             },
             "state": "muted",
-            "height": 30
+            "height": 30,
+            "symbol": "🍶"
+          },
+          {
+            "id": "threshold",
+            "label": {
+              "zh": "门槛",
+              "en": "Cutoff"
+            },
+            "height": 90,
+            "state": "active",
+            "value": {
+              "zh": "90%",
+              "en": "90%"
+            },
+            "annotation": {
+              "zh": "留下 0 / 3",
+              "en": "Keep 0 / 3"
+            }
           }
         ]
       }

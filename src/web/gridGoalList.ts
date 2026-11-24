@@ -1,5 +1,6 @@
 import type { GridLevel, GridSnapshot, Locale, Origin, RunFrame, Scenario } from '../shared/types'
 import { initialSnapshot } from '../engine/snapshot'
+import { warehouseParked } from '../shared/warehouse'
 import { tr } from './text'
 
 export type GridGoal = { key: string; label: string; done: boolean; progress?: string }
@@ -23,6 +24,12 @@ export function gridGoals(scenario: Scenario & Pick<GridLevel, 'ferry'>, shown: 
   return scenario.objectives.map((objective, index): GridGoal => {
     const key = objective.type + index
     switch (objective.type) {
+      case 'parkBoxes': {
+        const targets = scenario.warehouse?.targets ?? []
+        const parked = warehouseParked(snapshot.boxes ?? [], targets)
+        return { key, label: t('把货箱推上所有货位', 'Fill every loading pad'), done: targets.length > 0 && parked === targets.length,
+          progress: parked + ' / ' + targets.length }
+      }
       case 'exit': return {
         key, label: scenario.ferry ? t('到码头登船', 'Board at the dock') : t('停在出口', 'Stop at the exit'),
         done: snapshot.player.x === objective.x && snapshot.player.y === objective.y,

@@ -140,6 +140,12 @@
   animation: guided-token-arrive 290ms ease-out;
 }
 .guided-transfer[data-transfer-kind='return'] .guided-transfer-token { border-color: #dfa96b; background: #483222; color: #ffe0b7; }
+.guided-depth { display: inline-block; margin-inline-start: 4px; padding: 1px 5px; border-radius: 4px; background: #294455; color: #d8edde; font: 600 12px/1.5 var(--mono); }
+.guided-transfer[data-transfer-kind=return] .guided-transfer-path { direction: rtl; }
+.guided-transfer[data-transfer-kind=return] .guided-transfer-path > span { direction: ltr; }
+.guided-transfer[data-transfer-kind=return] .guided-transfer-center::after { left: 2px; right: auto; transform: rotate(-135deg); }
+.guided-transfer[data-transfer-kind=return] .guided-transfer-token { animation-name: guided-token-return; }
+@keyframes guided-token-return { from { opacity: .45; transform: translateX(13px); } }
 
 .guided-workspace { display: grid; gap: 10px; align-items: start; }
 .guided-workspace[data-has-code] { grid-template-columns: minmax(0, 1fr) minmax(0, 1.13fr); }

@@ -62,7 +62,7 @@ test('fullscreen map floats the same editor over the board and preserves a runni
   await expect(editor).toBeVisible()
   await expect(turn).toHaveText('回合 1/42')
   await enterMap(page)
-  await expect.poll(() => page.evaluate(() => document.fullscreenElement?.getAttribute('data-testid'))).toBe('arena-map-workspace')
+  await expect.poll(() => root.evaluate(board => document.fullscreenElement?.contains(board))).toBe(true)
   await page.evaluate(() => document.exitFullscreen())
   await expect(root).not.toHaveAttribute('data-map-fullscreen', 'true')
   await expect(page.getByRole('button', { name: '全屏地图', exact: true })).toBeFocused()

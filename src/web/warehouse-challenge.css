@@ -1,0 +1,17 @@
+.warehouse-challenge { min-width: 0; }
+.warehouse-play-modes { display: inline-flex; margin: 0 0 .65rem; }
+.warehouse-play-modes button[aria-pressed="true"] { color: #d9fff0; background: #265149; box-shadow: inset 0 -2px #84dbae; }
+.warehouse-readout { display: flex; align-items: baseline; flex-wrap: wrap; gap: .2rem 1rem; }
+.warehouse-readout b { color: #ffda97; font-variant-numeric: tabular-nums; }
+.warehouse-readout strong { color: #ffcfac; }
+.warehouse-readout[data-won] strong, .warehouse-readout[data-won] b { color: #9cf1c6; }
+.warehouse-pad { display: grid; grid-template-columns: repeat(3, 2.65rem); grid-template-rows: repeat(2, 2.35rem); gap: 3px; }
+.warehouse-pad button { font: bold 1.2rem/1 system-ui, sans-serif; padding: 0; min-width: 0; }
+.warehouse-pad button[data-push-direction="up"] { grid-column: 2; }
+.warehouse-pad button[data-push-direction="left"] { grid-column: 1; }
+.warehouse-challenge .play-toolbar:has(.warehouse-pad) .play-toolbar__actions { align-items: center; flex-wrap: wrap; justify-content: center; }
+@media (max-width: 600px) {
+  .warehouse-challenge .play-toolbar:has(.warehouse-pad) .play-toolbar__actions { display: grid; grid-template-columns: auto 1fr 1fr; }
+  .warehouse-pad { grid-row: span 2; grid-template-rows: repeat(2, 2.75rem); grid-template-columns: repeat(3, 2.75rem); }
+  .warehouse-challenge .play-toolbar:has(.warehouse-pad) .play-toolbar__trail { grid-column: span 2; }
+}

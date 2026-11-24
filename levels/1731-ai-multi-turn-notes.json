@@ -56,7 +56,7 @@
     }
   ],
   "animation": {
-    "layout": "pipeline",
+    "layout": "row",
     "frames": [
       {
         "caption": {
@@ -85,7 +85,8 @@
             "value": {
               "zh": "目标 1",
               "en": "Target 1"
-            }
+            },
+            "symbol": "🔦"
           },
           {
             "id": "coil",
@@ -113,10 +114,14 @@
               "en": "Filter"
             },
             "value": {
-              "zh": "第 1 轮 · 0",
-              "en": "Round 1 · 0"
+              "zh": "AI 0 · 目标 1",
+              "en": "AI 0 · Goal 1"
             },
-            "state": "active"
+            "state": "active",
+            "annotation": {
+              "zh": "漏装",
+              "en": "Missing"
+            }
           },
           {
             "id": "lamp",
@@ -125,9 +130,10 @@
               "en": "Work lamp"
             },
             "value": {
-              "zh": "第 1 轮 · 1",
-              "en": "Round 1 · 1"
-            }
+              "zh": "AI 1 · 目标 1",
+              "en": "AI 1 · Goal 1"
+            },
+            "symbol": "🔦"
           },
           {
             "id": "coil",
@@ -136,8 +142,8 @@
               "en": "Spare coil"
             },
             "value": {
-              "zh": "第 1 轮 · 0",
-              "en": "Round 1 · 0"
+              "zh": "AI 0 · 目标 0",
+              "en": "AI 0 · Goal 0"
             }
           }
         ]
@@ -155,8 +161,12 @@
               "en": "Filter"
             },
             "value": {
-              "zh": "第 2 轮 · 1",
-              "en": "Round 2 · 1"
+              "zh": "AI 1 · 目标 1",
+              "en": "AI 1 · Goal 1"
+            },
+            "annotation": {
+              "zh": "✓",
+              "en": "✓"
             }
           },
           {
@@ -166,9 +176,10 @@
               "en": "Work lamp"
             },
             "value": {
-              "zh": "第 2 轮 · 1",
-              "en": "Round 2 · 1"
-            }
+              "zh": "AI 1 · 目标 1",
+              "en": "AI 1 · Goal 1"
+            },
+            "symbol": "🔦"
           },
           {
             "id": "coil",
@@ -177,10 +188,14 @@
               "en": "Spare coil"
             },
             "value": {
-              "zh": "第 2 轮 · 1",
-              "en": "Round 2 · 1"
+              "zh": "AI 1 · 目标 0",
+              "en": "AI 1 · Goal 0"
             },
-            "state": "active"
+            "state": "active",
+            "annotation": {
+              "zh": "多装",
+              "en": "Extra"
+            }
           }
         ]
       },
@@ -197,8 +212,8 @@
               "en": "Filter"
             },
             "value": {
-              "zh": "第 3 轮 · 1",
-              "en": "Round 3 · 1"
+              "zh": "AI 1 · 目标 1",
+              "en": "AI 1 · Goal 1"
             }
           },
           {
@@ -208,9 +223,10 @@
               "en": "Work lamp"
             },
             "value": {
-              "zh": "第 3 轮 · 1",
-              "en": "Round 3 · 1"
-            }
+              "zh": "AI 1 · 目标 1",
+              "en": "AI 1 · Goal 1"
+            },
+            "symbol": "🔦"
           },
           {
             "id": "coil",
@@ -219,10 +235,14 @@
               "en": "Spare coil"
             },
             "value": {
-              "zh": "第 3 轮 · 0",
-              "en": "Round 3 · 0"
+              "zh": "AI 0 · 目标 0",
+              "en": "AI 0 · Goal 0"
             },
-            "state": "active"
+            "state": "active",
+            "annotation": {
+              "zh": "✓",
+              "en": "✓"
+            }
           }
         ]
       }

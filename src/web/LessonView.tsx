@@ -12,6 +12,7 @@ import type { ChallengeDraft } from './challengeDraft'
 import type { ArenaReplayProgress } from './arenaReplayProgress'
 import type { ChallengeRunHandlers, ChallengeScore } from './challengeScore'
 import { GridLesson } from './GridLesson'
+import WarehouseChallenge, { isDirectWarehouse } from './WarehouseChallenge'
 import { Classroom } from './Classroom'
 import { lessonRoomFor } from './station3d/lessonRoom'
 import { isGradedPractice } from './learningRecordModel'
@@ -69,6 +70,9 @@ function LessonContent({ level, locale, onComplete, onMistake, preview = false, 
   const challengeRun = !preview && level.unit?.id === challengeZoneId ? challenge : undefined
   switch (level.kind) {
     case 'grid':
+      if (isDirectWarehouse(level)) return <WarehouseChallenge key={level.id} level={level} locale={locale} onWin={onComplete}
+        onMistake={reportMistake} personal={personal} course={resolveCourseHelpers(level, catalog)} challenge={challengeRun}
+        initialDraft={initialDraft?.kind === 'grid' ? initialDraft : undefined} onDraftChange={onDraftChange} />
       if (level.laserTrial?.kind === 'race') return <Suspense fallback={<p className="loading" role="status">{tr(locale, '正在打开光廊…', 'Opening the light hall…')}</p>}>
         <MirrorRace key={level.id} level={level} locale={locale} onComplete={onComplete} onMistake={reportMistake} challenge={challengeRun}
           initialDraft={initialDraft?.kind === 'grid' ? initialDraft : undefined} onDraftChange={onDraftChange} />

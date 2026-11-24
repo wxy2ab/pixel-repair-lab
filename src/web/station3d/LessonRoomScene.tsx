@@ -4,13 +4,13 @@ import { tr } from '../text'
 import { roomNames, type LessonRoomFamily } from './lessonRoom'
 import { describeRoomActivity, initialRoomActivity, roomActivityReading, updateRoomActivity, type RoomActivityState, type RoomTarget } from './roomActivity'
 import { RoomPosterGlyph } from './RoomPosterGlyph'
-import type { createLessonRoomRenderer } from './lesson-room-renderer'
+import type { createLessonRoomRenderer, RoomProp } from './lesson-room-renderer'
 import './lesson-room.css'
 
 const roomPosters = import.meta.glob<string>('./room-*.webp', { import: 'default', query: '?url', eager: true })
 const targets = ['sample', 'setting', 'run'] as const
 const posterAnchors = { sample: { x: .24, y: .53 }, setting: { x: .5, y: .53 }, run: { x: .76, y: .53 } }
-type Anchors = typeof posterAnchors
+type Anchors = typeof posterAnchors & Partial<Record<RoomProp, { x: number; y: number }>>
 type RoomSession = { state: RoomActivityState; target?: RoomTarget }
 
 export function LessonRoomScene({ family, unitId, locale, completed }: {
@@ -22,6 +22,7 @@ export function LessonRoomScene({ family, unitId, locale, completed }: {
   const [session, setSession] = useState<RoomSession>(() => ({ state: initialRoomActivity(unitId) }))
   const [ready, setReady] = useState(false)
   const [anchors, setAnchors] = useState<Anchors>(posterAnchors)
+  const [propOn, setPropOn] = useState({ lamp: true, fan: true })
   const latest = useRef({ session, completed })
   const operate = useCallback((target: RoomTarget) => {
     setSession(previous => ({ state: updateRoomActivity(family, previous.state, target), target }))
@@ -53,6 +54,7 @@ export function LessonRoomScene({ family, unitId, locale, completed }: {
         engine.current = createLessonRoomRenderer(surface, family, latest.current.completed, {
           ready: () => { if (active) setReady(true) }, failed, onPick: operate, initialActivity: latest.current.session.state,
           onProject: positions => { if (active) setAnchors(positions) },
+          onToggle: (prop, on) => { if (active) setPropOn(previous => ({ ...previous, [prop]: on })) },
         })
       }).catch(failed)
     }, { rootMargin: '150px' })
@@ -91,6 +93,15 @@ export function LessonRoomScene({ family, unitId, locale, completed }: {
             onClick={() => operate(target)}>
             {posterReading && <RoomPosterGlyph target={target} reading={posterReading} />}
           </button>
+        })}
+        {ready && (['lamp', 'fan'] as const).map(prop => {
+          const anchor = anchors[prop]
+          if (!anchor) return null
+          return <button key={prop} type="button" className="room-scene-control" data-room-prop={prop}
+            aria-label={prop === 'lamp' ? t('工作灯', 'Desk lamp') : t('换气扇', 'Extractor fan')}
+            aria-pressed={propOn[prop]}
+            style={{ '--anchor-x': anchor.x * 100 + '%', '--anchor-y': anchor.y * 100 + '%' } as CSSProperties}
+            onClick={() => engine.current?.toggleProp(prop)} />
         })}
       </div>
       {session.state.revision > 0 && <button type="button" className="room-reset" data-room-reset aria-label={t('复位', 'Reset')}

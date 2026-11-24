@@ -1,9 +1,12 @@
-import type { ApiName, GridHazard, Item, Json, Position, PythonFlowEvent } from '../../shared/types'
+import type { ApiName, GridHazard, Item, Json, Position, PythonFlowEvent, Scenario } from '../../shared/types'
 import type { BoardDevice } from '../gridDeviceDisplay'
 import type { TrailEdge } from '../boardTrail'
 import type { ArenaScenario, ArenaEvent } from '../../shared/advanced'
 
 export type ArenaCellChange = { position: Position; state: 'opened' | 'closed' | 'blocked' | 'relocated' }
+// A live push stamps performance.now() here. Saved positions and backward steps have no arrival.
+export type WarehouseArrival = Position & { id: number }
+export const cargoArrivalDuration = 960
 export type StationCamera = 'overview' | 'follow'
 export type StationCommand = ApiName | 'shoot' | 'guard'
 export type StationAction = StationCommand | PythonFlowEvent['kind']
@@ -23,6 +26,8 @@ export type StationFrame = {
   ferryDock?: boolean
   gates?: readonly Position[]
   playerPosition: Position
+  warehouse?: Scenario['warehouse']
+  warehouseArrival?: WarehouseArrival
   mapTargets?: readonly (Position & { id?: string })[]
   playerDown?: boolean
   arenaBuffs?: NonNullable<ArenaScenario['combat']>['buffs']

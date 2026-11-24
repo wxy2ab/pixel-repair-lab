@@ -6,6 +6,7 @@ import type { ProgramWalkthrough } from '../shared/programWalkthrough'
 import type { Locale } from '../shared/types'
 import { tr } from './text'
 import { StepCount } from './LessonFrame'
+import { StepExplanation } from './LessonNotes'
 import './for-lesson.css'
 import './nested-loops-lesson.css'
 
@@ -152,7 +153,7 @@ export function NestedLoopsLesson({ execution, locale, onReady }: {
               <dd><output data-testid="nested-loops-output">{run.output}</output></dd>
             </div>}
           </dl>
-          <p className="nested-description" role="status">{describe(step, lesson.increment, t)}</p>
+          <StepExplanation locale={locale} className="nested-description">{describe(step, lesson.increment, t)}</StepExplanation>
         </> : <p className="error-message" role="alert">{t('这次没有得到可以展示的补电结果。', 'The program did not produce a charging trace to show.')}</p>}
         {revealed.length > 0 && <ol className="for-source" data-testid="nested-loops-code" aria-label={t('Python 代码', 'Python code')}>
           {revealed.map(([line, code]) => <li key={line} data-line={line} aria-current={line === step?.line ? 'step' : undefined}>

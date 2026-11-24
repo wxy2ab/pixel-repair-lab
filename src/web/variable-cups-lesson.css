@@ -8,6 +8,7 @@
   display: grid;
   grid-auto-columns: minmax(64px, 1fr);
   grid-auto-flow: column;
+  grid-template-rows: 23px auto;
   align-items: end;
   gap: clamp(4px, 1.5cqw, 14px);
   padding: 16px clamp(7px, 2.8cqw, 25px) 6px;
@@ -23,7 +24,8 @@
   display: grid;
   position: relative;
   justify-items: center;
-  grid-template-rows: 26px 72px 30px;
+  grid-row: 2;
+  grid-template-rows: 18px 26px 72px 30px;
   align-items: end;
   min-width: 0;
   width: 100%;
@@ -37,6 +39,28 @@
   perspective: 260px;
 }
 .vc-cup:focus-visible { outline: 2px solid #ffeea1; outline-offset: 1px; }
+.vc-cup[data-missed] .vc-glass { border-color: #ffb182; border-style: dashed; }
+.vc-cup-note { align-self: start; color: #ffe6a7; font: 700 12px/1.25 var(--mono); white-space: nowrap; }
+.vc-copy-path {
+  display: flex; align-items: center; justify-content: space-between; align-self: center;
+  grid-row: 1; position: relative; height: 18px; margin-inline: calc(50% / var(--path-cups));
+  border-bottom: 2px dashed #a5ebcd; color: #c5f9dd;
+}
+.vc-copy-path[data-direction='left'] { flex-direction: row-reverse; }
+.vc-copy-path b { align-self: end; line-height: 0; }
+.vc-copy-path small { position: absolute; left: 50%; bottom: 2px; transform: translateX(-50%); font-size: 11px; font-weight: 700; }
+.vc-copy-path span { position: absolute; left: 100%; transform: translate(-50%, -4px); border-radius: 3px; padding: 1px 5px; background: #bbefcf; color: #183b35; font: 700 13px var(--mono); }
+.vc-copy-path[data-direction='left'] span { left: 0; }
+.vc-copy-path[data-direction='right'] b { margin-left: auto; }
+.vc-copy-path[data-direction='left'] b { margin-right: auto; }
+.vc-trial-path { display: flex; flex-wrap: wrap; gap: 5px; list-style: none; padding: 0; margin: 0; }
+.vc-trial-path li { padding: 3px 7px; border: 1px solid currentColor; border-radius: 4px; font-size: 13px; }
+@media (prefers-reduced-motion: no-preference) {
+  .vc-copy-path span { animation: vc-copy-right .8s ease-out; }
+  .vc-copy-path[data-direction='left'] span { animation-name: vc-copy-left; }
+  @keyframes vc-copy-right { from { left: 0; } }
+  @keyframes vc-copy-left { from { left: 100%; } }
+}
 .vc-socket {
   position: absolute; z-index: -1; bottom: 28px; left: 50%; transform: translateX(-50%) rotate(-1deg);
   width: min(98%,99px); height: 21px; border-radius: 50%; border: 1px solid #8f7f61;

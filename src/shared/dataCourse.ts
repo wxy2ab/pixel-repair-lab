@@ -30,7 +30,11 @@ export const dataFields = {
 export type DataOperation = keyof typeof dataFields
 export type DataStepRequest = { operation: DataOperation; input: DataInput; params: DataParameters }
 export type DataRequest = { steps: DataStepRequest[] }
-export type DataResult = { steps: { engine: string; code: string; input: DataTable; output: DataTable }[] }
+export type DataRun = {
+  engine: string; code: string; input: DataTable; output: DataTable; sourceRows?: number[]
+  removedRows?: ({ index: number; reason: 'invalid-reading' } | { index: number; reason: 'repeated-id'; keptRow: number })[]
+}
+export type DataResult = { steps: DataRun[] }
 type DataStep = {
   operation: DataOperation; input: DataInput; label: Localized; prompt: Localized;
   initial: DataParameters; goal?: DataTable; solution?: DataParameters;

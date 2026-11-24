@@ -1,10 +1,12 @@
-import { useState, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useEffectEvent, useState, type CSSProperties, type ReactNode } from 'react'
 import { runProgramWalkthrough } from '../engine/programWalkthrough'
 import type { ProgramWalkthrough } from '../shared/programWalkthrough'
 import type { Locale } from '../shared/types'
 import { tr } from './text'
 import { CommandDesk, TeachingScreen } from './Classroom'
 import { DeviceWindow } from './DeviceWindow'
+import { ChargeChange } from './ChargeChange'
+import { StepExplanation } from './LessonNotes'
 import { TeachingModel } from './station3d/TeachingModel'
 import './program-basics.css'
 
@@ -21,6 +23,7 @@ export function ProgramBasics({ execution, locale, onReady, onNewInput, notes, e
   const [result, setResult] = useState<string>()
   const [observations, setObservations] = useState<{ input: number; output: string }[]>([])
   const [failed, setFailed] = useState(false)
+  const [playing, setPlaying] = useState(false)
   const sample = execution.cases[selected]
   const rule = execution.intro?.rule[locale] ?? t('按预先定好的步骤处理', 'Follow the predefined steps')
   const completed = step === 'output'
@@ -32,6 +35,7 @@ export function ProgramBasics({ execution, locale, onReady, onNewInput, notes, e
 
   function choose(index: number) {
     onNewInput()
+    setPlaying(false)
     setSelected(index)
     setStep('input')
     setResult(undefined)
@@ -45,15 +49,23 @@ export function ProgramBasics({ execution, locale, onReady, onNewInput, notes, e
       if (!run.issue && run.output.length === 1) {
         setResult(run.output[0])
         setStep('process')
-      }
+      } else setPlaying(false)
     } else if (step === 'process' && result !== undefined) {
       setStep('output')
+      setPlaying(false)
       setObservations(previous => [...previous.filter(row => row.input !== sample.input), { input: sample.input, output: result }])
       if (observations.length === 0) onReady()
     } else {
       choose(selected)
     }
   }
+
+  const playStep = useEffectEvent(advance)
+  useEffect(() => {
+    if (!playing) return
+    const timer = window.setTimeout(() => playStep(), 1500)
+    return () => window.clearTimeout(timer)
+  }, [playing, step])
 
   const status = step === 'input' ? t(`读数槽装入了 ${sample.input} 格电池。按按钮，让程序读入这个数。`,
     `The cradle holds a ${sample.input}-unit battery. Press the button to send its charge to the program.`)
@@ -65,7 +77,7 @@ export function ProgramBasics({ execution, locale, onReady, onNewInput, notes, e
     <div className="classroom-split">
       <DeviceWindow kind="instrument" locale={locale} title={t('维修站补电机', 'Workshop battery charger')} className="charger-device">
         <fieldset className="charger-tray">
-          <legend>{t('选择一块电池装入读数槽', 'Choose a battery for the cradle')}</legend>
+          <legend>{t('选一块电池', 'Choose a battery')}</legend>
           <div className="charger-stock">
             {execution.cases.map(({ input }, index) => <button type="button" key={index} aria-pressed={index === selected}
               data-basic-case={input} onClick={() => choose(index)}>
@@ -75,8 +87,8 @@ export function ProgramBasics({ execution, locale, onReady, onNewInput, notes, e
           </div>
         </fieldset>
         <TeachingModel sceneKey="program-charger" label={t('补电机里的数据流向', 'Follow the charge through the machine')}
-          locale={locale} load={loadCharger} state={{ input: sample.input, output: completed ? result : undefined, step, locale }}
-          onPick={advance} />
+          locale={locale} load={loadCharger} state={{ input: sample.input, output: step !== 'input' ? result : undefined, step, locale }}
+          onPick={() => { setPlaying(false); advance() }} />
         <ol className="charger-circuit" aria-label={t('输入、处理、输出', 'Input, processing, output')}>
           <li data-testid="program-basic-input" aria-current={step === 'input' ? 'step' : undefined}>
             <h3>{t('读数槽', 'Reader')} <small>{t('输入', 'Input')}</small></h3>
@@ -89,7 +101,8 @@ export function ProgramBasics({ execution, locale, onReady, onNewInput, notes, e
             <h3>{t('补电模块', 'Charger')} <small>{t('处理', 'Process')}</small></h3>
             <div className="charger-processor">
               <span className="charger-coil" aria-hidden="true"><i /><i /><i /><i /><i /></span>
-              <span className="charger-rule">{rule}</span>
+              {step !== 'input' && result !== undefined && <ChargeChange input={sample.input} output={result} locale={locale} />}
+              <span className={step === 'input' ? 'charger-rule' : 'sr-only'}>{rule}</span>
             </div>
           </li>
           <li data-testid="program-basic-output" aria-current={completed ? 'step' : undefined}>
@@ -102,17 +115,29 @@ export function ProgramBasics({ execution, locale, onReady, onNewInput, notes, e
           </li>
         </ol>
         <div className="charger-controls">
-          <button type="button" className="charger-run" onClick={advance}>
+          <button type="button" className="charger-back" disabled={step === 'input'} onClick={() => {
+            setPlaying(false)
+            setStep(completed ? 'process' : 'input')
+          }}>{t('上一步', 'Previous step')}</button>
+          <button type="button" className="charger-run" onClick={() => { setPlaying(false); advance() }}>
             <span aria-hidden="true">{step === 'output' ? '↺' : '▶'}</span>
             {step === 'input' ? t('按规则处理', 'Apply the rule') : step === 'process' ? t('查看输出', 'Show the output') : t('重新运行', 'Run again')}
           </button>
-          <p role="status" data-task-success={completed || undefined}>{status}</p>
+          <button type="button" className="charger-play" aria-pressed={playing} onClick={() => {
+            if (playing) setPlaying(false)
+            else {
+              if (completed) choose(selected)
+              setPlaying(true)
+            }
+          }}>{playing ? t('暂停', 'Pause') : t('自动播放', 'Auto-play')}</button>
+          <span role="status" className="sr-only">{status}</span>
         </div>
+        <StepExplanation locale={locale}>{status}</StepExplanation>
         {failed && <p role="alert" className="error-message">{t('这次没有得到结果。重新运行一次试试。', 'The program did not return a result. Try running it again.')}</p>}
       </DeviceWindow>
       <CommandDesk locale={locale} title={t('补电记录', 'Charge log')}>
         {observations.length === 0
-          ? <p className="charger-ticket-empty">{t('电量屏亮起后，这里会记下你装入的电量和屏上显示的结果。', 'Once the display lights up, this log pairs the charge you put in with the result you saw.')}</p>
+          ? <p className="charger-ticket-empty">{t('输入', 'Input')} <b>—</b> <span aria-hidden="true">→</span> {t('输出', 'Output')} <b>—</b></p>
           : <ul className="charger-tickets">
             {observations.map(({ input, output }) =>
               <li key={input} aria-current={completed && input === sample.input ? 'true' : undefined}>

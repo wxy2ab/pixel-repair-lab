@@ -1,6 +1,10 @@
 .program-interfaces { min-width: 0; }
 .program-interfaces .teaching-screen__body { padding: clamp(12px, 1.3vw, 20px); }
 .program-interface-instruction { margin: 0 0 12px; }
+.program-device[data-phase=command] .device-client,
+.program-device[data-phase=input] .device-client,
+.program-device [data-current=true] { outline: 2px solid #5aab8b; outline-offset: 2px; border-radius: 4px; }
+.program-device .device-readout[data-current] { padding: 4px 6px; }
 .program-interface-replay h2 { margin: 0 0 10px; font-size: 16px; }
 .program-replay-steps { display: grid; gap: 4px; list-style: none; padding: 0; margin: 0; }
 .program-replay-steps li {

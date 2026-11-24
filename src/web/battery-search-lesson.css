@@ -189,6 +189,14 @@
 .search-method h3 { font-size: .97rem; }
 .search-method .search-battery-row { flex-wrap: nowrap; gap: 3px; overflow-x: auto; }
 .search-method .search-battery-tile { flex: 1 0 30px; }
+.search-method .search-battery-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 40px), 1fr)); overflow: visible; }
+.search-tile-note { color: #ffdf9d; font: 700 .72rem/1.18 var(--mono); text-align: center; }
+.search-range-direction { color: var(--mint); font: 750 1.1rem/1 var(--mono); }
+.search-battery-row [data-just-excluded] { border-style: dashed; }
+.search-method-metrics s { margin-inline-end: 4px; color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) {
+  .search-range-direction { animation: search-battery-highlight .25s ease-out; }
+}
 
 .search-method-metrics {
   display: flex;

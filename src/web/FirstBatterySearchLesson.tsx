@@ -1,5 +1,6 @@
 import { CodingDevice } from './CodingDevice'
 import { AlgorithmBatteryRack } from './AlgorithmBatteryRack'
+import { StepExplanation } from './LessonNotes'
 import { useId, useMemo, useState, type CSSProperties } from 'react'
 import { runBatterySearch, type BatterySearchStep } from '../engine/programBatterySearch'
 import { runFirstBatterySearch, type FirstBatterySearchStep } from '../engine/programFirstBatterySearch'
@@ -67,9 +68,9 @@ function actionLabel(step: SearchStep | undefined, t: Translate) {
   }
 }
 
-function SearchRow({ sample, locale, first, last, middle, found, saved, stopped, added, onPick }: {
+function SearchRow({ sample, locale, first, last, middle, found, saved, stopped, added, relation, onPick }: {
   sample: FirstBatterySearchInput; locale: Locale; first: number; last: number; middle?: number;
-  found?: number; saved?: number; stopped: boolean; added: string[]; onPick?: (index: number) => void;
+  found?: number; saved?: number; stopped: boolean; added: string[]; relation?: string; onPick?: (index: number) => void;
 }) {
   const t: Translate = (zh, en) => tr(locale, zh, en)
   return <ol className="first-search-row" style={{ '--first-search-count': sample.batteries.length } as CSSProperties}
@@ -97,7 +98,8 @@ function SearchRow({ sample, locale, first, last, middle, found, saved, stopped,
       }
       const face = <>
         <SearchBatteryFace name={name} charge={charge} index={index} locale={locale} />
-        {state === 'saved' && <small className="first-search-marker" aria-hidden="true">{t('记下', 'Saved')}</small>}
+        {(state === 'saved' || state === 'checking' || state === 'found') && <small className="first-search-marker">{status}</small>}
+        {index === middle && relation && <small className="first-search-marker" data-testid="first-battery-search-relation">{relation}</small>}
       </>
       return <li key={name}>
         {onPick && inRange
@@ -131,6 +133,7 @@ function SearchReplay({ sample, source, firstMatch, added, locale, onReady, onSw
   const picking = next?.kind === 'select'
   const action = actionLabel(next, t)
   const compared = step?.kind === 'compare' ? step.charge : undefined
+  const relation = compared === undefined ? undefined : compared + (compared === sample.target ? ' = ' : compared < sample.target ? ' < ' : ' > ') + sample.target
 
   function goTo(index: number) {
     setWrongTile(false)
@@ -149,12 +152,10 @@ function SearchReplay({ sample, source, firstMatch, added, locale, onReady, onSw
     <CodingDevice device="scanner" locale={locale} workbench controls={<>
       {/* The task, the buttons and what the last step did stay together, beside the row the learner taps. */}
       <p className="first-search-task">{firstMatch
-        ? t(`加入 ${added.length} 块电量同为 ${sample.target} 格的电池（${added.join('、')}），整排仍然有序。这次要找最靠左的一块。`,
-          `We added ${added.length} batteries with ${sample.target} units of charge (${added.join(', ')}). The row is still sorted. Find the leftmost match.`)
-        : t(`电池已按电量从小到大排列。找一块有 ${sample.target} 格电量的电池。`,
-          `The batteries are sorted by charge. Find one with ${sample.target} units.`)}</p>
+        ? t(`找最左边的 ${sample.target} 格电池`, `Find the leftmost battery with ${sample.target} units`)
+        : t(`找一块 ${sample.target} 格电池`, `Find a battery with ${sample.target} units`)}</p>
       <SearchRow sample={sample} locale={locale} first={first} last={last} middle={step?.index} found={found}
-        saved={saved} stopped={stopped} added={added} onPick={picking ? pick : undefined} />
+        saved={saved} stopped={stopped} added={added} relation={relation} onPick={picking ? pick : undefined} />
       <div className="search-step-controls first-search-controls">
         <button type="button" className="subtle-button" onClick={() => goTo(position - 1)} disabled={position < 0}>
           {t('上一步', 'Previous step')}
@@ -167,13 +168,9 @@ function SearchReplay({ sample, source, firstMatch, added, locale, onReady, onSw
       </div>
       <div className="first-search-step" data-testid="first-battery-search-step" data-kind={step?.kind ?? 'start'}
         data-line={step?.line} data-index={step?.index} data-first={first} data-last={last} data-saved={saved}>
-        <p role="status" data-testid={stopped ? 'first-battery-search-result' : undefined}>
-          {compared !== undefined && <span className="search-relation" data-testid="first-battery-search-relation">
-            {compared} {compared === sample.target ? '=' : compared < sample.target ? '<' : '>'} {sample.target}
-          </span>}
-          {describeStep(step, sample, firstMatch, found, t)}
-        </p>
-        {picking && step && <p className="first-search-hint">{t('点新的中点。', 'Tap the new midpoint.')}</p>}
+        {stopped ? <p role="status" data-testid="first-battery-search-result">{describeStep(step, sample, firstMatch, found, t)}</p>
+          : <StepExplanation locale={locale}>{describeStep(step, sample, firstMatch, found, t)}</StepExplanation>}
+        {picking && <p className="first-search-hint">{t('点待查范围的中点', 'Tap the middle of the range')}</p>}
         {wrongTile && <p className="first-search-hint" role="status" data-testid="first-battery-search-hint">
           {t('再找一下待查范围的中间。有两个中间位置时，选靠左的那格。',
             'Try the middle of the search range. If there are two middle positions, pick the left one.')}
@@ -198,7 +195,7 @@ function SearchReplay({ sample, source, firstMatch, added, locale, onReady, onSw
           marked={[found, saved, picking ? undefined : step?.index].filter((i): i is number => i !== undefined && i >= 0)}
           badges={{ ...(step?.kind === 'select' || step?.kind === 'compare' ? { [step.index!]: t('中点', 'Mid') } : {}),
             ...(saved === undefined ? {} : { [saved]: t('记下', 'Saved') }), ...(found === undefined ? {} : { [found]: t('找到', 'Found') }) }}
-          readout={compared === undefined ? undefined : compared + (compared === sample.target ? ' = ' : compared < sample.target ? ' < ' : ' > ') + sample.target}
+          readout={relation}
           onCell={picking ? index => { if (index >= first && index <= last) pick(index) } : undefined}
           onAdvance={action ? () => goTo(position + 1) : undefined} />
         {trial.issue && <p className="error-message" role="alert">{runIssueText(locale, trial.issue)}</p>}

@@ -121,6 +121,9 @@ test('manual review requires marking both a missing item and a forbidden extra b
   const tape = page.locator('[data-ai-audit="tape"]')
   const magnet = page.locator('[data-ai-audit="magnet"]')
   await expect(tape).toBeVisible()
+  const bench = page.getByRole('table', { name: '装箱核对台' })
+  await expect(bench.locator('[data-supply="tape"]').getByRole('checkbox')).toBeVisible()
+  await expect(bench.locator('[data-check]')).toHaveCount(0)
   await expect(page.locator('.ai-result .ai-mismatch')).toHaveCount(0)
   await tape.check()
   await action(page, '提交核对').click()
@@ -129,6 +132,7 @@ test('manual review requires marking both a missing item and a forbidden extra b
 
   await magnet.check()
   await action(page, '提交核对').click()
+  await expect(bench.locator('[data-supply="tape"]')).toHaveAttribute('data-check', 'revise')
   await action(page, '填入修正示例').click()
   await action(page, '发送修正').click()
   await expect(page.getByRole('heading', { name: '第 2 次清单', exact: true })).toBeVisible()

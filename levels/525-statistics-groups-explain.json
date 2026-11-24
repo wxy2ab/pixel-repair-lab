@@ -17,22 +17,31 @@
   "animation": {
     "layout": "grid",
     "frames": [
-      { "caption": { "zh": "四条记录按到达顺序排着。找一找哪些读数来自同一个区域。", "en": "Four observations are arranged in arrival order. Find the readings that belong to the same area." }, "items": [
-        { "id": "a", "label": { "zh": "机库", "en": "Hangar" }, "value": { "zh": "18°C", "en": "18°C" } },
-        { "id": "b", "label": { "zh": "车间", "en": "Workshop" }, "value": { "zh": "21°C", "en": "21°C" } },
-        { "id": "c", "label": { "zh": "机库", "en": "Hangar" }, "value": { "zh": "27°C", "en": "27°C" } },
-        { "id": "d", "label": { "zh": "机库", "en": "Hangar" }, "value": { "zh": "18°C", "en": "18°C" } }
-      ] },
-      { "caption": { "zh": "机库的三个读数靠在一起，车间的一个读数另成一组。", "en": "The hangar's three readings move together. The workshop's single reading forms its own group." }, "items": [
-        { "id": "a", "label": { "zh": "机库", "en": "Hangar" }, "value": { "zh": "18°C", "en": "18°C" }, "state": "active" },
-        { "id": "c", "label": { "zh": "机库", "en": "Hangar" }, "value": { "zh": "27°C", "en": "27°C" }, "state": "active" },
-        { "id": "d", "label": { "zh": "机库", "en": "Hangar" }, "value": { "zh": "18°C", "en": "18°C" }, "state": "active" },
-        { "id": "b", "label": { "zh": "车间", "en": "Workshop" }, "value": { "zh": "21°C", "en": "21°C" }, "state": "muted" }
-      ] },
-      { "caption": { "zh": "汇总表每区一行。两个平均值都是 21°C，样本数分别是 3 和 1。", "en": "The summary has one row per area. Both means are 21°C, but their counts are 3 and 1." }, "items": [
-        { "id": "a", "label": { "zh": "机库 · 3 条", "en": "Hangar · 3 readings" }, "value": { "zh": "(18 + 27 + 18) ÷ 3 = 21°C", "en": "(18 + 27 + 18) ÷ 3 = 21°C" }, "state": "done" },
-        { "id": "b", "label": { "zh": "车间 · 1 条", "en": "Workshop · 1 reading" }, "value": { "zh": "21 ÷ 1 = 21°C", "en": "21 ÷ 1 = 21°C" }, "state": "done" }
-      ] }
+      {
+        "caption": {"zh": "四条记录按到达顺序排着。找一找哪些读数来自同一个区域。", "en": "Four observations are arranged in arrival order. Find the readings that belong to the same area."},
+        "items": [
+          {"id": "a", "label": {"zh": "机库", "en": "Hangar"}, "value": {"zh": "18°C", "en": "18°C"}},
+          {"id": "b", "label": {"zh": "车间", "en": "Workshop"}, "value": {"zh": "21°C", "en": "21°C"}},
+          {"id": "c", "label": {"zh": "机库", "en": "Hangar"}, "value": {"zh": "27°C", "en": "27°C"}},
+          {"id": "d", "label": {"zh": "机库", "en": "Hangar"}, "value": {"zh": "18°C", "en": "18°C"}}
+        ]
+      },
+      {
+        "caption": {"zh": "机库的三个读数靠在一起，车间的一个读数另成一组。", "en": "The hangar's three readings move together. The workshop's single reading forms its own group."},
+        "items": [
+          {"id": "a", "label": {"zh": "机库", "en": "Hangar"}, "value": {"zh": "18°C", "en": "18°C"}, "state": "active", "annotation": {"zh": "机库 ×3", "en": "Hangar ×3"}},
+          {"id": "c", "label": {"zh": "机库", "en": "Hangar"}, "value": {"zh": "27°C", "en": "27°C"}, "state": "active"},
+          {"id": "d", "label": {"zh": "机库", "en": "Hangar"}, "value": {"zh": "18°C", "en": "18°C"}, "state": "active"},
+          {"id": "b", "label": {"zh": "车间", "en": "Workshop"}, "value": {"zh": "21°C", "en": "21°C"}, "state": "muted", "annotation": {"zh": "车间 ×1", "en": "Workshop ×1"}}
+        ]
+      },
+      {
+        "caption": {"zh": "汇总表每区一行。两个平均值都是 21°C，样本数分别是 3 和 1。", "en": "The summary has one row per area. Both means are 21°C, but their counts are 3 and 1."},
+        "items": [
+          {"id": "a", "label": {"zh": "机库 · 3 条", "en": "Hangar · 3 readings"}, "value": {"zh": "21°C", "en": "21°C"}, "state": "done", "annotation": {"zh": "63 ÷ 3", "en": "63 ÷ 3"}},
+          {"id": "b", "label": {"zh": "车间 · 1 条", "en": "Workshop · 1 reading"}, "value": {"zh": "21°C", "en": "21°C"}, "state": "done", "annotation": {"zh": "21 ÷ 1", "en": "21 ÷ 1"}}
+        ]
+      }
     ]
   },
   "question": {

@@ -39,8 +39,13 @@ export const buildCharger: ModelBuilder<ChargerState> = ({ input, output, step, 
     kit.cylinder([i * .17, .83, .01], .32, .32, .09, step === 'process' ? gold : '#ae8260', [0, 0, Math.PI / 2])
   }
   monitor(kit, 2.08)
+  if (step === 'process' && output !== undefined) tools.label(input + ' → ' + output, [0, 1.43, .02], .28)
   for (const [left, right, active] of [[-1.63, -.82, step === 'process'], [.82, 1.60, step === 'output']] as const) {
     kit.rod([left, .31, .05], [right, .31, .05], .052, active ? mint : dark, active ? 'glow' : 'metal')
+    if (active) {
+      const middle = (left + right) / 2
+      for (const side of [-.11, .11]) kit.rod([middle - .12, .35, .05 + side], [middle + .08, .35, .05], .035, gold)
+    }
   }
   tools.label(step === 'output' && output !== undefined ? output : '—', [2.08, 1.03, -.25], .32)
   const ports = [zh ? '输入' : 'Input', zh ? '补电' : 'Charge', zh ? '输出' : 'Output']

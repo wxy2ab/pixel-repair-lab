@@ -58,6 +58,38 @@ async function runExperiment(page: Page, button: Locator, action: VisionRequest[
   return (await response.json() as { result: VisionResult }).result
 }
 
+test('the camera keeps a missed subject visible and IoU follows the actual overlapping cells', async ({ page, request }) => {
+  const levels = await catalog(request)
+  const detection = levels.find(level => level.id === 'yolox-object-detection-notes')!
+  const boxes = levels.find(level => level.id === 'yolox-boxes-lesson')!
+  await page.goto('/#track-vision')
+  await page.locator('[data-unit="yolox"]').click()
+  await mission(page, detection).click()
+  const plot = page.locator('.lecture-plot')
+  const next = page.locator('.lecture-animation').getByRole('button', { name: '下一步', exact: true })
+  await expect(plot.locator('[data-object]')).toHaveCount(2)
+  await expect(plot.locator('[data-box]')).toHaveCount(0)
+  await next.click()
+  await expect(plot.locator('[data-box]')).toHaveCount(2)
+  await next.click()
+  await expect(plot.locator('[data-object="subject-chair"]')).toBeVisible()
+  await expect(plot.locator('[data-object="crate"]')).toBeVisible()
+  await expect(plot.locator('[data-box="chair"]')).toHaveCount(0)
+
+  await mission(page, boxes).click()
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await expect(plot.locator('[data-box]')).toHaveCount(1)
+  await next.click()
+  await expect(plot.locator('[data-cells]')).toHaveAttribute('data-cells', '6')
+  await next.click()
+  await expect(plot.locator('[data-reading="iou"]')).toContainText('6 / 18')
+  await next.click()
+  await expect(plot.locator('[data-cells]')).toHaveAttribute('data-cells', '12')
+  await expect(plot.locator('[data-reading="iou"]')).toContainText('100%')
+  expect(await plot.evaluate(node => node.getBoundingClientRect().right)).toBeLessThanOrEqual(390)
+})
+
 test('vision groups six animated topics before separate stage challenges and the final project', async ({ page, request }) => {
   const levels = await catalog(request)
   await page.goto('/#track-vision')

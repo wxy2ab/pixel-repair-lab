@@ -136,7 +136,11 @@
               "zh": "False",
               "en": "False"
             },
-            "state": "muted"
+            "state": "muted",
+            "annotation": {
+              "zh": "17 < 25",
+              "en": "17 < 25"
+            }
           },
           {
             "id": "b",
@@ -148,7 +152,11 @@
               "zh": "True",
               "en": "True"
             },
-            "state": "active"
+            "state": "active",
+            "annotation": {
+              "zh": "31 ≥ 25",
+              "en": "31 ≥ 25"
+            }
           },
           {
             "id": "c",
@@ -160,7 +168,11 @@
               "zh": "False",
               "en": "False"
             },
-            "state": "muted"
+            "state": "muted",
+            "annotation": {
+              "zh": "23 < 25",
+              "en": "23 < 25"
+            }
           },
           {
             "id": "d",
@@ -172,7 +184,11 @@
               "zh": "True",
               "en": "True"
             },
-            "state": "active"
+            "state": "active",
+            "annotation": {
+              "zh": "25 = 25",
+              "en": "25 = 25"
+            }
           }
         ]
       },
@@ -192,7 +208,11 @@
               "zh": "31 °C",
               "en": "31 °C"
             },
-            "state": "done"
+            "state": "done",
+            "annotation": {
+              "zh": "✓ True",
+              "en": "✓ True"
+            }
           },
           {
             "id": "d",
@@ -204,7 +224,11 @@
               "zh": "25 °C",
               "en": "25 °C"
             },
-            "state": "done"
+            "state": "done",
+            "annotation": {
+              "zh": "✓ True",
+              "en": "✓ True"
+            }
           }
         ]
       }

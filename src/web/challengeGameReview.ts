@@ -21,6 +21,10 @@ function issueWithoutLine(issue: RunIssue): Localized {
 
 function gridGap(gap: GridGoalGap): Localized {
   switch (gap.type) {
+    case 'parkBoxes': return {
+      zh: `还有 ${gap.remaining} 个货位没有放上箱子。`,
+      en: `Empty loading pads: ${gap.remaining}.`,
+    }
     case 'collect': return {
       zh: `还有 ${gap.remaining} 件目标物品未拾取。`,
       en: `Required pickups remaining: ${gap.remaining}.`,
@@ -60,7 +64,8 @@ export function gridFailureReview(result: RunResult) {
     ? [dictionary, branch]
     : issue.code.startsWith('cpu') || issue.code === 'memoryAddress' || failure.gaps.some(gap => gap.type === 'memory' || gap.type === 'halt')
       ? [cpu]
-      : ['enemy', 'blocked', 'turnLimit'].includes(issue.code) ? [route, sequence] : [sequence, branch]
+      : ['enemy', 'blocked', 'boxBlocked', 'turnLimit'].includes(issue.code) || failure.gaps.some(gap => gap.type === 'parkBoxes')
+        ? [route, sequence] : [sequence, branch]
   return { location: location(result, turn, issue), gaps, topics }
 }
 
