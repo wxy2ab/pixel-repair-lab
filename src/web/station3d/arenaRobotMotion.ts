@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import type { ArenaEvent } from '../../shared/advanced'
 import { gridOffsets } from '../../shared/gridDevices'
-import { arenaMotionMs, type ArenaTurnMotion } from '../arenaTurnMotion'
+import type { ArenaTurnMotion } from '../arenaTurnMotion'
 import type { RobotRig } from './robotActivity'
 
 export type ArenaStrike = { at: number; dx: number; dz: number; damage: number }
@@ -45,25 +45,33 @@ export function poseArenaRobot(body: THREE.Group, rig: RobotRig, turn: ArenaTurn
   }
   if (event?.action === 'shoot' && event.direction) {
     const age = time - turn.fireAtMs
-    const aim = smooth(age, -arenaMotionMs.windup, -10) * (1 - smooth(age, 70, arenaMotionMs.recoil))
-    const kick = beat(age, -6, 65, arenaMotionMs.recoil)
+    const recoil = age / turn.recoilMs
+    const aim = smooth(age / turn.windupMs, -1, -.25) * (1 - smooth(recoil, .28, 1))
+    const kick = beat(recoil, 0, .22, 1)
     const direction = gridOffsets[event.direction]
-    spine.position.y -= .040 * aim
-    spine.rotation.x += .13 * aim - .27 * kick
-    head.rotation.x -= .12 * aim
-    arms[1].rotation.x -= 1.53 * aim
-    arms[1].rotation.z -= .18 * aim
-    hands[1].rotation.x -= .14 * aim
-    arms[0].rotation.x -= .67 * aim
-    legs[0].rotation.x += .22 * aim
-    legs[1].rotation.x -= .21 * aim
-    body.position.x -= direction.x * .075 * kick
-    body.position.z -= direction.y * .075 * kick
+    // Wind the firing shoulder forward and turn the head back onto the line of fire.
+    // The other arm opens to balance it, giving the stance a distinct silhouette from above.
+    spine.position.y -= .065 * aim
+    spine.rotation.x += .20 * aim - .38 * kick
+    spine.rotation.y -= .28 * aim
+    head.rotation.x -= .16 * aim
+    head.rotation.y += .26 * aim
+    arms[1].position.z += .12 * aim - .16 * kick
+    arms[1].rotation.x -= 1.63 * aim + .19 * kick
+    arms[1].rotation.z += .20 * aim
+    hands[1].rotation.x -= .18 * aim
+    arms[0].position.z -= .065 * aim
+    arms[0].rotation.x -= .63 * aim
+    arms[0].rotation.z -= .72 * aim
+    legs[0].rotation.x += .30 * aim
+    legs[1].rotation.x -= .29 * aim
+    body.position.x -= direction.x * .135 * kick
+    body.position.z -= direction.y * .135 * kick
   }
   for (const hit of hits ?? []) {
-    const age = time - hit.at
+    const impact = (time - hit.at) / turn.impactMs
     const weight = hit.damage > 0 ? 1 : .35
-    const kick = weight * (beat(age, 0, 80, 260) - .20 * beat(age, 180, 245, arenaMotionMs.impact))
+    const kick = weight * (beat(impact, 0, .22, .80) - .20 * beat(impact, .56, .78, 1))
     const yaw = body.rotation.y
     const side = hit.dx * Math.cos(yaw) - hit.dz * Math.sin(yaw)
     const forward = hit.dx * Math.sin(yaw) + hit.dz * Math.cos(yaw)
@@ -77,7 +85,7 @@ export function poseArenaRobot(body: THREE.Group, rig: RobotRig, turn: ArenaTurn
     arms[1].rotation.z += .23 * kick
   }
   if (downAt === undefined) return 0
-  const shutdown = THREE.MathUtils.clamp((time - downAt) / arenaMotionMs.shutdown, 0, 1)
+  const shutdown = THREE.MathUtils.clamp((time - downAt) / turn.shutdownMs, 0, 1)
   const buckle = smooth(shutdown, .09, .70)
   spine.position.y -= .175 * buckle
   spine.rotation.x += .52 * buckle

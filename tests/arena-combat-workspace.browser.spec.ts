@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
+import { ARENA_TURN_MS } from '../src/engine/realtimeProtocol'
 
 test.use({ launchOptions: { args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] } })
 
@@ -33,6 +34,73 @@ async function expectMapControls(page: Page) {
   }
   return toggle
 }
+
+test('starting a phone duel from the editor uncovers the shot and keeps the editor preference', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.addInitScript(() => localStorage.setItem('pixel-repair-lab:board-view', '2d'))
+  await page.goto('/#challenge-browse')
+  await page.locator('[data-challenge-level="challenge-brass-bell-lane"]').click()
+  const editor = page.locator('#advanced-python')
+  const toggle = page.getByTestId('arena-console-toggle')
+  const source = 'shoot("right")\nshoot("right")'
+  await editor.fill(source)
+  const shooter = page.locator('.station-flat-board .tile[data-x="1"][data-y="3"]')
+  const covered = () => shooter.evaluate(tile => {
+    const rect = tile.getBoundingClientRect()
+    const top = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2)
+    return !top || Boolean(top.closest('.arena-console'))
+  })
+  expect(await covered()).toBe(true)
+  // The floating Run toolbar and editor shortcut also work when the page is scrolled away from the map.
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
+  await expect(shooter).not.toBeInViewport()
+  await page.keyboard.press('Control+Enter')
+  await expect(page.getByTestId('arena-turn')).toHaveText('回合 1/12')
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+  expect(await covered()).toBe(false)
+  expect(await page.evaluate(() => localStorage.getItem('pixel-repair-lab:arena-console'))).toBeNull()
+  await toggle.click()
+  await expect(editor).toBeVisible()
+  await expect(editor).toHaveValue(source)
+})
+
+test('an unobstructed desktop duel keeps the inline console open while firing', async ({ page }) => {
+  await page.setViewportSize({ width: 1366, height: 900 })
+  await page.addInitScript(() => localStorage.setItem('pixel-repair-lab:board-view', '2d'))
+  await page.goto('/#challenge-browse')
+  await page.locator('[data-challenge-level="challenge-brass-bell-lane"]').click()
+  const editor = page.locator('#advanced-python')
+  await editor.fill('shoot("right")')
+  await page.getByTestId('play-toolbar').getByRole('button', { name: '运行', exact: true }).click()
+  await expect(page.getByTestId('arena-turn')).toHaveText('回合 1/12')
+  await expect(page.getByTestId('arena-console-toggle')).toHaveAttribute('aria-expanded', 'true')
+  await expect(editor).toBeVisible()
+})
+
+test('a desktop single step uncovers the whole duel and waits if only a strip of the field remains onscreen', async ({ page }) => {
+  await page.setViewportSize({ width: 1791, height: 750 })
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await page.goto('/#challenge-browse')
+  await page.locator('[data-challenge-level="challenge-brass-bell-lane"]').click()
+  await page.locator('#advanced-python').fill('shoot("right")\nshoot("right")')
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
+  const canvas = page.getByTestId('station-3d-canvas')
+  await expect(canvas).toBeAttached()
+  const step = page.getByTestId('play-toolbar').getByRole('button', { name: '单步执行' })
+  await step.click()
+  await expect(page.getByTestId('arena-console-toggle')).toHaveAttribute('aria-expanded', 'false')
+  await expect(canvas).toBeInViewport({ ratio: .6 })
+  await expect(canvas).toHaveAttribute('data-arena-motion', 'windup')
+  // Leave a sliver of the canvas onscreen, behind the fixed run toolbar.
+  await canvas.evaluate(surface => window.scrollBy({
+    top: surface.getBoundingClientRect().top - window.innerHeight + 18, behavior: 'instant',
+  }))
+  await page.waitForTimeout(4100)
+  await expect(step).toBeDisabled()
+  await canvas.scrollIntoViewIfNeeded()
+  await expect(canvas).toHaveAttribute('data-arena-motion', 'flight', { timeout: 5000 })
+  await expect(step).toBeEnabled()
+})
 
 test('map controls sit above the board and the floating console preserves Python combat, replay position and draft', async ({ page }) => {
   await openCup(page)
@@ -98,6 +166,7 @@ test('the folded console leaves all combat controls on screen on a phone and res
   await bar.locator('[data-arena-action="right"]').click()
   await expect(turn).toHaveText('回合 1/42')
   await bar.locator('[data-arena-action="shoot-right"]').click()
+  await expect(turn).toHaveText('回合 2/42')
   await expect(page.getByTestId('arena-turn-events').locator('[data-actor-id="player"]')).toContainText('向右发射')
   await bar.locator('[data-arena-action="guard"]').click()
   await expect(page.locator('[data-robot-id="player"]')).toContainText('防守中')
@@ -108,6 +177,38 @@ test('the folded console leaves all combat controls on screen on a phone and res
   await expect(page.getByTestId('arena-console-toggle')).toHaveAttribute('aria-expanded', 'false')
   await expect(bar.getByRole('button', { name: '继续对局' })).toBeEnabled()
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390)
+})
+
+test('timed volleys keep a full decision window, accept queued actions and save that window when interrupted', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await openCup(page)
+  await page.getByRole('button', { name: '紧张', exact: true }).click()
+  const bar = page.getByTestId('play-toolbar')
+  await bar.getByRole('button', { name: '开始', exact: true }).click()
+  const turn = page.getByTestId('arena-turn')
+  const clock = bar.locator('.arena-clock')
+  const timer = clock.getByRole('progressbar')
+  const shoot = bar.locator('[data-arena-action="shoot-right"]')
+  await shoot.click()
+  await expect(turn).toHaveText('回合 1/42')
+  await expect(clock).toContainText('交火中')
+  await expect(timer).toHaveAttribute('value', String(ARENA_TURN_MS))
+  await shoot.click()
+  await expect(shoot).toHaveAttribute('aria-pressed', 'true')
+  await expect(clock).toHaveAttribute('data-paused', 'false', { timeout: 15_000 })
+  await expect(turn).toHaveText('回合 1/42')
+
+  await expect(turn).toHaveText('回合 2/42')
+  await expect(clock).toContainText('交火中')
+  const guard = bar.locator('[data-arena-action="guard"]')
+  await guard.click()
+  await expect(guard).toHaveAttribute('aria-pressed', 'true')
+  await page.reload()
+  await expect(turn).toHaveText('回合 2/42')
+  await expect(page.getByRole('progressbar', { name: '距离下一回合' })).toHaveAttribute('value', String(ARENA_TURN_MS))
+  await bar.getByRole('button', { name: '继续对局' }).click()
+  await expect(turn).toHaveText('回合 3/42')
+  await expect(page.locator('[data-robot-id="player"]')).toContainText('防守中')
 })
 
 test('the 3D combat board stays full width, follows Sprout and shows firing and guarding gestures', async ({ page }) => {

@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { ArenaFrame, ArenaProgramEvent, ArenaScan } from '../shared/advanced'
 import { flowActivity, type StationActivity } from './station3d/types'
 import type { ExecutionLocation } from './ExecutionSource'
 import { actionViewingDelay } from './gridExecution'
-import { arenaTurnTiming } from './arenaTurnMotion'
 
-const programBeatMs = 340
+export const programBeatMs = 340
 
 // A long calculation can still be inspected one event at a time. During autoplay
 // show its first four and final three events so the subsequent move stays in view.
@@ -78,16 +77,12 @@ export function useArenaActivities(frame: ArenaFrame | undefined, trailing: Aren
   const manual = stepping && hasFlow
   const more = index + 1 < beats.length
   const next = manual ? index + 1 : preview.find(position => position > index)
-  const visibleBeat = beats[index]
-  const dwell = frame && visibleBeat?.activity && !visibleBeat.flow && !visibleBeat.scan
-    ? Math.max(programBeatMs, arenaTurnTiming(frame.events, frame.state.actors).durationMs) : programBeatMs
-  useEffect(() => {
+  const autoAdvance = useMemo(() => {
     if (next === undefined || manual) return
-    const timer = window.setTimeout(() => setShown({ beats, index: next }), dwell)
-    return () => window.clearTimeout(timer)
-  }, [beats, next, manual, dwell])
+    return () => setShown({ beats, index: next })
+  }, [beats, next, manual])
   return {
-    beat: beats[index], nextBeat: next === undefined ? undefined : beats[next], more,
+    beat: beats[index], nextBeat: next === undefined ? undefined : beats[next], more, autoAdvance,
     shortened: !manual && preview.length < beats.length,
     rewind() { setShown({ beats, index: 0 }) },
     advance() {

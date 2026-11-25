@@ -6,7 +6,7 @@ import { initialArenaSnapshot } from '../engine/snapshot'
 import { mapScenarioAt } from '../shared/mapScenarios'
 import MapScenarioPicker from './MapScenarioPicker'
 import { ArenaBoard, ArenaStateReference, ArenaTurnEvents, arenaResultText, describeEvent } from './ArenaPanels'
-import { arenaViewingDelay, firstArenaLine, useArenaActivities } from './arenaActivities'
+import { arenaViewingDelay, firstArenaLine, programBeatMs, useArenaActivities } from './arenaActivities'
 import { useArenaFinishPresentation, useArenaTurnPresentation } from './useArenaTurnPresentation'
 import { ArenaObservationBoard } from './ArenaObservationBoard'
 import { ArenaConsolePanel, ArenaConsoleToggle, useArenaConsole, type ArenaConsoleControl } from './ArenaConsole'
@@ -313,8 +313,8 @@ export function ArenaPlay({ initialDraft, onDraftChange, initialTimedCheckpoint,
     <button type="button" aria-pressed={timed} onClick={() => changePace('timed')}>{t('紧张', 'Timed')}</button>
   </div>
   const paceRule = timed
-    ? t(`每 ${secondsPerTurn} 秒一回合。写好 decide(state)，点「开始」让 Python 从第 1 回合接手。键盘和按钮可用来练习。`,
-      `Each turn takes ${secondsPerTurn} seconds. Write decide(state) and choose Start to let Python play from turn 1. Use keys or buttons for practice.`)
+    ? t(`每回合有 ${secondsPerTurn} 秒选动作。${level.combat ? '交火播完后开始下一次倒计时。' : ''}写好 decide(state)，点「开始」让 Python 从第 1 回合接手。键盘和按钮可用来练习。`,
+      `You have ${secondsPerTurn} seconds to choose each action. ${level.combat ? 'The next countdown starts when the volley ends. ' : ''}Write decide(state) and choose Start to let Python play from turn 1. Use keys or buttons for practice.`)
     : t('可以逐行写动作，也可以写 decide(state)，让它每回合返回一个动作。点「运行」或「单步执行」看结果。',
       'Write a sequence of actions or define decide(state) to return one action per turn. Choose Run or Step once to see what happens.')
 
@@ -397,10 +397,12 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
   const presentation = useArenaTurnPresentation(mapIndex, snapshot, previous, !observing && !suppressed && (!turnOnly || sought.animate))
   const dwell = arenaViewingDelay(turnFrame, !!presentation.motion)
   useEffect(() => {
-    if (!cursor.playing || program.more || presentation.inFlight) return
-    const timer = window.setTimeout(() => restartCursor(true, cursor.step + 1), dwell)
+    if (presentation.inFlight) return
+    const advance = program.autoAdvance ?? (cursor.playing && !program.more ? () => restartCursor(true, cursor.step + 1) : undefined)
+    if (!advance) return
+    const timer = window.setTimeout(advance, program.autoAdvance ? programBeatMs : dwell)
     return () => window.clearTimeout(timer)
-  }, [cursor.playing, cursor.step, program.more, presentation.inFlight, dwell, restartCursor])
+  }, [cursor.playing, cursor.step, program.autoAdvance, program.more, presentation.inFlight, dwell, restartCursor])
   const route = useMemo(() => trail.visible && frames ? [shownLevel.start, ...frames.slice(0, shownTurns).map(frame => frame.state.actors[0])] : undefined,
     [trail.visible, frames, shownLevel.start, shownTurns])
   useEffect(() => { if (!suppressed) silentStop.current = undefined }, [suppressed, result, mapIndex, cursor.step])
@@ -537,6 +539,7 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
     worker.run(createArenaReplayWorker, { level, source: code, personal, course }, outcome => {
       setSession({ result: outcome, runMap: mapIndex, source: code, input })
       const sameMap = viewedMap.current === mapIndex
+      if (sameMap && arenaReplayCase(outcome, mapIndex).frames?.length) consoleControl.revealBoard()
       const firstStep = sameMap && singleStep && arenaReplayCase(outcome, mapIndex).count > 0 ? 1 : 0
       cursor.restart(sameMap && !singleStep, firstStep)
       if (!outcome.won && outcome.issue?.code !== 'internal') {
@@ -548,12 +551,14 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
 
   function stepOnce() {
     if (!currentSession) return run(true)
+    consoleControl.revealBoard()
     setStepping(true)
     if (program.advance()) { cursor.seek(cursor.step); return }
     cursor.seek(cursor.step + 1)
   }
 
   function seekTurn(step: number, animate = false) {
+    if (animate) consoleControl.revealBoard()
     if (result) soughtTurn.current = { result, map: mapIndex, step, animate }
     cursor.seek(step)
   }
@@ -563,6 +568,7 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
       setStepping(true)
       cursor.seek(cursor.step)
     } else if (currentSession && frames && stepping && !atEnd) {
+      consoleControl.revealBoard()
       setStepping(false)
       cursor.restart(true, cursor.step)
     } else run()
@@ -591,7 +597,7 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
     <ArenaMapOutcome won={finishRun && showEnd && result?.won && !failure} text={observing ? undefined : failure ? runIssueText(locale, failure)
       : result && (showEnd || !frames) ? arenaResultText(result, locale, dynamic) : undefined} />
     <div className="play-column">
-      {observing ? <ArenaObservationBoard level={level} locale={locale} initialMap={mapIndex} onExit={() => setObserving(false)} /> : <>
+      {observing ? <ArenaObservationBoard level={level} locale={locale} initialMap={mapIndex} onExit={() => setObserving(false)} revealBoard={consoleControl.revealBoard} /> : <>
       <ArenaBoard level={shownLevel} locale={locale} snapshot={snapshot} frame={previous} presentation={presentation} latestShift={latestShift} finished={showEnd} trail={route}
         activity={beat?.activity} scan={beat?.scan ?? (beat?.beforeTurn ? undefined : turnFrame?.scan)}
         mapPicker={<MapScenarioPicker locale={locale} index={mapIndex} count={1 + (level.variants?.length ?? 0)} onChange={changeMap} />}>
@@ -606,6 +612,7 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
         {result?.programTruncated?.[mapIndex] && atEnd && <p>{t('这次运算较长，程序动画只记录了前段。所有回合均已执行。',
           'This calculation was long. The replay shows its first program steps and every match turn.')}</p>}
         <ReplayControls nextBusy={presentation.inFlight} onNext={() => seekTurn(cursor.step + 1, true)} cursor={{ ...cursor, seek: seekTurn, toggle: () => {
+          if (!cursor.playing) consoleControl.revealBoard()
           setStepping(cursor.playing)
           cursor.toggle()
         } }} count={count} locale={locale} />

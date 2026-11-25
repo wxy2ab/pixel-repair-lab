@@ -1,4 +1,4 @@
-import { memo, type ReactNode } from 'react'
+import { memo, useMemo, type ReactNode } from 'react'
 import type { ArenaEvent, ArenaFrame, ArenaLevel, ArenaResult, ArenaScan, ArenaSnapshot } from '../shared/advanced'
 import type { Locale, Position } from '../shared/types'
 import { MapTiles, type ArenaCellChange } from './Board'
@@ -181,16 +181,18 @@ type ArenaPlayfieldProps = {
   trail?: readonly Position[]; activity?: StationActivity
 }
 
-// Applying a hit to a health meter does not rebuild every tile or reposition the WebGL models.
-const ArenaPlayfield = memo(function ArenaPlayfield({ level, locale, snapshot, frame, latestShift, trail, activity, motion }: ArenaPlayfieldProps & {
-  motion: ArenaTurnPresentation['motion']
+const ArenaPlayfield = memo(function ArenaPlayfield({ level, locale, snapshot, frame, latestShift, trail, activity, motion, integrity, onSurfaceVisible }: ArenaPlayfieldProps & {
+  motion: ArenaTurnPresentation['motion']; integrity?: ArenaSnapshot['actors']
+  onSurfaceVisible?: (visible: boolean) => void
 }) {
   const mapMode = useArenaMapMode()
+  const namedActors = useMemo(() => integrity?.map(actor => ({ ...actor, name: actorTitle(level, locale, actor.id) })), [integrity, level, locale])
   const changedCells = latestShift?.turn === snapshot.turn ? shiftChanges(latestShift) : []
   for (const event of frame?.events ?? []) {
     for (const position of event.opened ?? []) changedCells.push({ position, state: 'opened' })
   }
-  return <MapTiles location="arena" activity={activity} arenaMotion={motion} tiles={snapshot.tiles ?? level.tiles}
+  return <MapTiles location="arena" activity={activity} arenaMotion={motion} tiles={snapshot.tiles ?? level.tiles} onSurfaceVisible={onSurfaceVisible}
+    arenaIntegrity={namedActors} arenaMaxHealth={level.combat?.health}
     exit={level.objective.kind === 'escape' ? level.objective.exit : undefined} items={snapshot.items} trail={trail}
     mapTargets={mapMode ? arenaMapTargets(level, snapshot) : undefined}
     arenaBuffs={level.combat?.buffs} arenaSwitches={level.combat?.switches} arenaShots={frame?.events.filter(event => event.action === 'shoot')} playerDown={snapshot.actors[0].hp === 0}
@@ -207,7 +209,8 @@ export function ArenaBoard({ level, locale, snapshot, frame, presentation, lates
   const dynamic = Boolean(level.shifts?.length)
   const next = finished ? undefined : level.shifts?.find(shift => shift.turn > snapshot.turn)?.turn
   const mapMode = useArenaMapMode()
-  const hud = arenaHudSnapshot(snapshot, presentation)
+  const { pendingShots, motion } = presentation
+  const hud = useMemo(() => arenaHudSnapshot(snapshot, { pendingShots, motion }), [snapshot, pendingShots, motion])
   return <section className="panel board-panel" data-testid={dynamic || level.combat?.switches?.length ? 'arena-dynamic-board' : undefined}>
     <TeachingScreen locale={locale} variant="monitor" title={t('回合现场', 'Match view')}>
       <div className="panel-heading"><h2>{t('对抗棋盘', 'Arena board')}</h2>
@@ -221,7 +224,8 @@ export function ArenaBoard({ level, locale, snapshot, frame, presentation, lates
       {next !== undefined && <p className="arena-shift-countdown" data-testid="arena-shift-countdown" data-next-turn={next} data-turns-remaining={next - snapshot.turn}>
         <strong>{t(`第 ${next} 回合变阵`, `Shift on turn ${next}`)}</strong><span>{t(`还剩 ${next - snapshot.turn} 回合`, `${next - snapshot.turn} turns to go`)}</span>
       </p>}
-      <ArenaPlayfield level={level} locale={locale} snapshot={snapshot} frame={frame} motion={presentation.motion}
+      <ArenaPlayfield level={level} locale={locale} snapshot={snapshot} frame={frame} motion={motion} integrity={level.combat && hud.actors}
+        onSurfaceVisible={level.combat && presentation.setSurfaceVisible}
         latestShift={latestShift} trail={trail} activity={activity} />
       {scan && <ArenaSensor scan={scan} locale={locale} />}
       {!level.combat && <ul className="scoreboard" aria-label={dynamic ? t('已收集电池数', 'Batteries collected') : t('对抗比分', 'Arena scores')}>

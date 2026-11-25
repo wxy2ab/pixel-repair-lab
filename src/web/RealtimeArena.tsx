@@ -93,7 +93,11 @@ function CombatPad({ locale, queued, choose }: { locale: Locale; queued?: ArenaC
 }
 
 type Phase = 'preparing' | 'ready' | 'paused' | 'starting' | 'playing' | 'done' | 'failed'
-type Clock = { deadline: number } | { remainingMs: number }
+type Clock = { deadline: number } | { remainingMs: number; presenting?: boolean }
+
+function decisionClock(nextAt?: number): Clock {
+  return nextAt === undefined ? { remainingMs: ARENA_TURN_MS, presenting: true } : { deadline: nextAt }
+}
 
 function usePolicyPlayback(step: RealtimePolicyStep | undefined, paused: boolean) {
   const [selection, setSelection] = useState<{ step: RealtimePolicyStep; index: number; manual: boolean }>()
@@ -103,7 +107,7 @@ function usePolicyPlayback(step: RealtimePolicyStep | undefined, paused: boolean
   const event = events[index]
   useEffect(() => {
     if (!step || !event || manual || paused) return
-    // A long policy must leave time to see the chosen move before the next 1.8s turn.
+    // Leave time to see the chosen move within the decision window.
     // All captured steps remain available on the slider, including the ones fast-forwarded here.
     const next = index === 4 ? Math.max(index + 1, events.length - 1) : index + 1
     const timer = window.setTimeout(() => setSelection({ step, index: next, manual: false }), 215)
@@ -134,6 +138,7 @@ function TurnTimer({ clock, locale }: { clock: Clock; locale: Locale }) {
   const [remaining, setRemaining] = useState(() => remainingTime(clock))
   const running = 'deadline' in clock
   const displayed = running ? remaining : clock.remainingMs
+  const volley = !running && clock.presenting ? tr(locale, '交火中', 'Volley') : undefined
   useEffect(() => {
     if (!running) return
     const pulse = () => setRemaining(remainingTime(clock))
@@ -142,8 +147,8 @@ function TurnTimer({ clock, locale }: { clock: Clock; locale: Locale }) {
     return () => window.clearInterval(interval)
   }, [clock, running])
   return <div className="arena-clock" data-paused={!running}>
-    <progress value={displayed} max={ARENA_TURN_MS} aria-label={tr(locale, '距离下一回合', 'Time until next turn')} />
-    <span aria-hidden="true">{(displayed / 1000).toFixed(1)}{tr(locale, ' 秒', ' s')}</span>
+    <progress value={displayed} max={ARENA_TURN_MS} aria-label={tr(locale, '距离下一回合', 'Time until next turn')} aria-valuetext={volley} />
+    <span aria-hidden="true">{volley ?? (displayed / 1000).toFixed(1) + tr(locale, ' 秒', ' s')}</span>
   </div>
 }
 
@@ -206,6 +211,11 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
   const readOnlyMap = observing || preview
   const visibleSnapshot = preview ? initialArenaSnapshot(shownLevel) : snapshot
   const presentation = useArenaTurnPresentation(mapIndex, visibleSnapshot, preview ? undefined : frame, !readOnlyMap && frame === activityFrame)
+  useEffect(() => {
+    if (frame && !presentation.inFlight && frame.events.some(event => event.action === 'shoot')) {
+      worker.current?.postMessage({ type: 'presented', turn: frame.state.turn } satisfies RealtimeArenaRequest)
+    }
+  }, [frame, presentation.inFlight])
   const showResult = phase === 'done' && !presentation.inFlight
   useArenaFinishPresentation(level.id, phase === 'done' && presentation.inFlight)
   const playerControls = keyboardMode === 'player' && !readOnlyMap
@@ -316,7 +326,7 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
           break
         }
         case 'started': {
-          const clock = { deadline: message.nextAt }
+          const clock = decisionClock(message.nextAt)
           setClock(clock)
           setQueued(message.progress.queued)
           setPhase('playing')
@@ -347,7 +357,7 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
           updateProgress(message.progress)
           break
         case 'turn': {
-          const clock = message.nextAt !== undefined ? { deadline: message.nextAt } : undefined
+          const clock = message.result ? undefined : decisionClock(message.nextAt)
           setFrame(message.frame)
           setActivityFrame(message.frame)
           setPolicyStep(message.policyStep)
@@ -409,6 +419,7 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
   }
 
   function start(firstAction?: ArenaChoice) {
+    consoleControl.revealBoard()
     if (phase !== 'paused') challenge?.onStart()
     setPhase('starting')
     if (phase === 'ready' && firstAction === undefined) {
@@ -493,7 +504,7 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
     {consoleControl.mapMode && keyboardCue && <p className="arena-keyboard-cue" role="status">{keyboardCue}</p>}
     <ArenaMapOutcome won={showResult && result?.policyOnly && result.won} text={!observing && !preview && (phase === 'failed' || showResult) ? status : undefined} />
     <div className="play-column">
-      {observing ? <ArenaObservationBoard level={level} locale={locale} initialMap={mapIndex} onExit={() => setObserving(false)} /> : <>
+      {observing ? <ArenaObservationBoard level={level} locale={locale} initialMap={mapIndex} onExit={() => setObserving(false)} revealBoard={consoleControl.revealBoard} /> : <>
       <ArenaBoard level={shownLevel} locale={locale} snapshot={visibleSnapshot} frame={preview ? undefined : frame} presentation={presentation}
         activity={!preview ? activity : undefined}
         trail={trail.visible && !preview ? playerPositions : undefined}
@@ -578,11 +589,12 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
           {t('停用策略', 'Disable policy')}
         </button>}
         {!preview && showResult && result && !result.policyOnly && <button type="button" className="primary-button" onClick={() => {
-          if (!consoleControl.open) consoleControl.toggle()
           if (hasDraftPolicy) {
+            consoleControl.revealBoard()
             clearCheckpoint()
             reset(code)
           } else {
+            if (!consoleControl.open) consoleControl.toggle()
             requestAnimationFrame(() => policyEditor.current?.focus())
           }
         }}>{hasDraftPolicy ? t('用 Python 从头挑战', 'Retry with Python') : t('编写通关策略', 'Write a Python policy')}</button>}

@@ -4,6 +4,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 import { deviceModel } from './deviceModels'
 import type { BoardDevice } from '../gridDeviceDisplay'
 import { poseGesture, type RobotGesture, type RobotRig } from './robotActivity'
+import { damagedHelmet, damagedHull, robotWreckParts } from './arenaDamageModels'
 
 type XYZ = [number, number, number]
 type Finish = 'shell' | 'light'
@@ -90,13 +91,17 @@ const liveries = [
   { enamel: '#32798f', crown: '#9cd7df', accent: '#ff9c4e', lamp: '#ffea9c' },
 ]
 
-type Livery = typeof liveries[number]
+export type Livery = typeof liveries[number]
 
-function helmet(style: number, { enamel, crown, lamp, accent }: Livery) {
+function helmet(style: number, colors: Livery, damaged = false) {
   const head = new ModelParts()
+  const { enamel, crown, lamp, accent } = colors
   const heavy = style === 2
-  head.box([heavy ? .65 : .61, .326, .438], [0, .157, 0], enamel, .10)
-  head.box([heavy ? .66 : .624, .161, .445], [0, .262, -.007], crown, .065)
+  if (damaged) damagedHelmet(head, colors)
+  else {
+    head.box([heavy ? .65 : .61, .326, .438], [0, .157, 0], enamel, .10)
+    head.box([heavy ? .66 : .624, .161, .445], [0, .262, -.007], crown, .065)
+  }
   head.box([.527, .245, .108], [0, .153, .183], graphite, .05)
   head.box([.493, .212, .075], [0, .156, .218], darkGlass, .032)
   // The edge bead, cheek lamps and glass glint read both in close-ups and on a distant helmet.
@@ -154,13 +159,17 @@ function eyes(style: number, lamp: string) {
   return face
 }
 
-function chassis({ enamel, crown, accent, lamp }: Livery) {
+function chassis(colors: Livery, damaged = false) {
   const body = new ModelParts()
+  const { enamel, crown, accent, lamp } = colors
   body.box([.279, .123, .224], [0, .238, 0], graphite, .043)
-  body.box([.392, .266, .298], [0, .38, 0], enamel, .065)
-  body.box([.271, .162, .046], [0, .403, .136], crown, .021)
-  body.box([.162, .034, .014], [0, .420, .163], graphite, .006)
-  for (const x of [-.047, 0, .047]) body.box([.026, .011, .006], [x, .422, .173], lamp, 0, [0, 0, 0], 'light')
+  if (damaged) damagedHull(body, colors)
+  else {
+    body.box([.392, .266, .298], [0, .38, 0], enamel, .065)
+    body.box([.271, .162, .046], [0, .403, .136], crown, .021)
+    body.box([.162, .034, .014], [0, .420, .163], graphite, .006)
+    for (const x of [-.047, 0, .047]) body.box([.026, .011, .006], [x, .422, .173], lamp, 0, [0, 0, 0], 'light')
+  }
   body.box([.338, .056, .275], [0, .278, .003], graphite, .018)
   body.box([.094, .047, .020], [0, .281, .144], accent, .009)
   body.cylinder(.093, .109, .076, [0, .525, 0], graphite)
@@ -393,6 +402,10 @@ export function createStationModels() {
   const templates = new Map<string, THREE.Group>()
   const labels = new Map<string, THREE.SpriteMaterial>()
   const rigs = new WeakMap<THREE.Group, RobotRig>()
+  const shells = new WeakMap<THREE.Group, {
+    style: number; original: THREE.Object3D[]; damaged?: { helmet: THREE.Group; hull: THREE.Group }
+  }>()
+  const robotStyle = (enemy: boolean, index = 0) => enemy ? 1 + index % (liveries.length - 1) : 0
   function instance(name: string, make: () => ModelParts) {
     let template = templates.get(name)
     if (!template) {
@@ -416,13 +429,15 @@ export function createStationModels() {
   }
   return {
     robot(enemy = false, index?: number, label?: string) {
-      const style = enemy ? 1 + (index ?? 0) % (liveries.length - 1) : 0
+      const style = robotStyle(enemy, index)
       const colors = liveries[style]
       const robot = new THREE.Group()
       robot.name = enemy ? 'rival-' + style : 'sprout'
       const spine = instance(robot.name + '-chassis', () => chassis(colors))
       robot.add(spine)
       const head = instance(robot.name + '-helmet', () => helmet(style, colors))
+      // Keep the original shell meshes separate from anything subsequently mounted on these joints.
+      shells.set(robot, { style, original: [...spine.children, ...head.children] })
       head.position.y = .554
       spine.add(head)
       const face = instance(robot.name + '-eyes', () => eyes(style, colors.lamp))
@@ -453,6 +468,33 @@ export function createStationModels() {
       return robot
     },
     robotRig(robot: THREE.Group) { return rigs.get(robot) },
+    setRobotDamaged(robot: THREE.Group, damaged: boolean) {
+      const rig = rigs.get(robot)
+      const armor = shells.get(robot)
+      if (!rig || !armor || Boolean(robot.userData.damaged) === damaged) return
+      if (!armor.damaged) {
+        const colors = liveries[armor.style]
+        const hull = instance(robot.name + '-damaged-hull', () => chassis(colors, true))
+        const cap = instance(robot.name + '-damaged-helmet', () => helmet(armor.style, colors, true))
+        hull.name = 'arena-damaged-hull'
+        cap.name = 'arena-damaged-helmet'
+        rig.spine.add(hull)
+        rig.head.add(cap)
+        armor.damaged = { hull, helmet: cap }
+      }
+      // Only the baked shell meshes are replaced. Joints, emitter, eyes and ID stay attached.
+      for (const mesh of armor.original) mesh.visible = !damaged
+      armor.damaged.hull.visible = armor.damaged.helmet.visible = damaged
+      robot.userData.damaged = damaged
+    },
+    robotWreck(enemy = false, index?: number, label?: string) {
+      const style = robotStyle(enemy, index)
+      const wreck = instance('wreck-' + style, () => robotWreckParts(new ModelParts(), liveries[style], !enemy))
+      wreck.name = 'arena-wreck'
+      const number = label || (index === undefined ? '' : String(index + 1))
+      if (enemy && number) addNumber(wreck, number, .47)
+      return wreck
+    },
     pose(robot: THREE.Group, action: RobotAction, seconds: number) {
       const rig = rigs.get(robot)
       if (rig) poseRobot(rig, action, seconds)

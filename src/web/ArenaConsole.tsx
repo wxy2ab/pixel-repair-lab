@@ -2,6 +2,7 @@ import { useId, useState, type ReactNode } from 'react'
 import type { Locale } from '../shared/types'
 import { Icon } from './icons'
 import { tr } from './text'
+import { arenaBoardInView, arenaBoardSurface } from './arenaBoardVisibility'
 
 export function useArenaConsole(storageKey = 'pixel-repair-lab:arena-console') {
   const id = useId()
@@ -17,7 +18,26 @@ export function useArenaConsole(storageKey = 'pixel-repair-lab:arena-console') {
     setStandardOpen(!standardOpen)
     try { localStorage.setItem(storageKey, standardOpen ? 'hidden' : 'shown') } catch { /* The switch still works for this visit. */ }
   }
-  return { id, open: mapConsoleOpen ?? standardOpen, toggle, mapMode: mapConsoleOpen !== null, setMapConsoleOpen }
+
+  function revealBoard() {
+    const panel = document.getElementById(id)
+    const workspace = panel?.closest('.arena-map-workspace')
+    const surface = workspace && arenaBoardSurface(workspace)
+    if (!panel || !surface) return
+    const board = surface.getBoundingClientRect()
+    const popup = panel.getBoundingClientRect()
+    const coveredWidth = Math.min(board.right, popup.right) - Math.max(board.left, popup.left)
+    const coveredHeight = Math.min(board.bottom, popup.bottom) - Math.max(board.top, popup.top)
+    // A panel covering even one side of a duel can hide the entire hit. Panels
+    // placed alongside the field stay open.
+    if (coveredWidth > 1 && coveredHeight > 1) {
+      if (panel.contains(document.activeElement)) document.getElementById(id + '-toggle')?.focus({ preventScroll: true })
+      if (mapConsoleOpen !== null) setMapConsoleOpen(false)
+      else setStandardOpen(false) // Manual toggles own the saved preference.
+    }
+    if (mapConsoleOpen === null && !arenaBoardInView(surface)) surface.scrollIntoView({ block: 'center', behavior: 'instant' })
+  }
+  return { id, open: mapConsoleOpen ?? standardOpen, toggle, revealBoard, mapMode: mapConsoleOpen !== null, setMapConsoleOpen }
 }
 
 export type ArenaConsoleControl = ReturnType<typeof useArenaConsole>

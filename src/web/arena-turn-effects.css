@@ -18,18 +18,18 @@
   --pulse-core: #e7fff4;
   --pulse-edge: #46dfc3;
   --pulse-heading: 0deg;
-  --port-x: 29%;
+  --port-x: 36%;
   --port-y: 0%;
   --contact-x: -18%;
   --contact-y: 0%;
 }
 .arena-shot[data-side='rival'] { --pulse-core: #ffedf2; --pulse-edge: #fa83af; }
-.arena-shot[data-direction='left'] { --pulse-heading: 180deg; --port-x: -29%; --contact-x: 18%; }
+.arena-shot[data-direction='left'] { --pulse-heading: 180deg; --port-x: -36%; --contact-x: 18%; }
 .arena-shot[data-direction='up'] {
-  --pulse-heading: -90deg; --port-x: 0%; --port-y: -29%; --contact-x: 0%; --contact-y: 18%;
+  --pulse-heading: -90deg; --port-x: 0%; --port-y: -36%; --contact-x: 0%; --contact-y: 18%;
 }
 .arena-shot[data-direction='down'] {
-  --pulse-heading: 90deg; --port-x: 0%; --port-y: 29%; --contact-x: 0%; --contact-y: -18%;
+  --pulse-heading: 90deg; --port-x: 0%; --port-y: 36%; --contact-x: 0%; --contact-y: -18%;
 }
 .arena-pulse-charge, .arena-pulse-flight, .arena-pulse-muzzle, .arena-pulse-impact,
 .arena-hit-core, .arena-fallen-art, .arena-guard-ring, .arena-wreck-chip, .arena-pulse-wake { opacity: 0; }
@@ -43,19 +43,50 @@
 .arena-contact-point { translate: var(--contact-x) var(--contact-y); }
 .arena-contact-point[data-shielded] { --pulse-edge: #7dcfff; --pulse-core: #dbf6ff; }
 .arena-pulse-heading { rotate: var(--pulse-heading); }
+.arena-pulse-emitter {
+  position: absolute;
+  left: 52%;
+  width: 36%;
+  height: max(4px, 23%);
+  transform-origin: 0 50%;
+  opacity: 0;
+  clip-path: polygon(0 18%, 25% 0, 61% 0, 68% 13%, 100% 13%, 100% 87%, 68% 87%, 61% 100%, 24% 100%, 0 85%);
+  background: linear-gradient(90deg, transparent 72%, var(--pulse-core) 73% 85%, var(--pulse-edge) 86% 98%, #12272d 99%),
+    linear-gradient(#9fb8b6 0 14%, #253d4a 15% 37%, var(--pulse-edge) 38% 54%, #183236 55% 79%, #748787 80%);
+}
+.arena-shot-marker { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.arena-shot-marker .arena-pulse-emitter { opacity: 1; }
+.arena-shot-marker .arena-pulse-heading::after {
+  content: '';
+  position: absolute;
+  left: 84%;
+  width: 13%;
+  height: 22%;
+  background: var(--pulse-core);
+  clip-path: polygon(0 0, 100% 50%, 0 100%, 26% 50%);
+}
+.tilemap:not([data-motion-turn]) .arena-pulse-line {
+  z-index: 1;
+  opacity: .68;
+  inset: 55% 0 39%;
+  box-shadow: 0 0 3px var(--pulse-edge, #39e7c9);
+}
+.tilemap:not([data-motion-turn]) .arena-pulse-line[data-side='rival'] { --pulse-edge: #f366a2; inset: 39% 0 55%; }
+.tilemap:not([data-motion-turn]) .arena-pulse-line:is([data-direction='up'], [data-direction='down']) { inset: 0 39% 0 55%; }
+.tilemap:not([data-motion-turn]) .arena-pulse-line[data-side='rival']:is([data-direction='up'], [data-direction='down']) { inset: 0 55% 0 39%; }
+.tile:has(> .arena-shot-marker) .action-robot[data-robot-action='shoot'] :is(.action-robot__effect, .action-robot__badge) { visibility: hidden; }
 .arena-pulse-bolt {
-  width: 17%;
-  height: 11%;
-  min-height: 2px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 3px 1px var(--pulse-core), 0 0 7px 2px var(--pulse-edge);
+  width: 37%;
+  height: max(3px, 17%);
+  border-radius: 70% 95% 95% 70%;
+  background: linear-gradient(90deg, var(--pulse-edge), var(--pulse-core) 42%, #fff 73%, var(--pulse-edge));
+  box-shadow: 0 0 1px 1px #173a48, 0 0 6px 2px var(--pulse-edge);
 }
 .arena-pulse-wake {
   position: absolute;
   right: 50%;
-  width: 74%;
-  height: 13%;
+  width: 83%;
+  height: 19%;
   border-radius: 100% 35% 35% 100%;
   transform-origin: 100% 50%;
   background: linear-gradient(90deg, transparent, var(--pulse-edge) 65%, var(--pulse-core));
@@ -74,7 +105,17 @@
   border: 1px solid var(--pulse-edge);
   border-radius: 50%;
 }
-.arena-pulse-muzzle { width: 62%; }
+.arena-pulse-muzzle {
+  width: 66%;
+  aspect-ratio: 1.35;
+  rotate: var(--pulse-heading);
+  clip-path: polygon(12% 50%, 0 25%, 32% 32%, 36% 0, 51% 33%, 72% 12%, 63% 40%, 100% 50%, 63% 59%, 75% 89%, 50% 67%, 39% 100%, 32% 68%, 0 79%);
+  background: radial-gradient(ellipse at 41% 50%, white 0 17%, var(--pulse-core) 30%, var(--pulse-edge) 58%);
+}
+.arena-shot[data-point-blank] .arena-pulse-bolt { width: 15%; }
+.arena-shot[data-point-blank] .arena-pulse-wake { width: 25%; }
+.arena-contact-point[data-miss] .arena-pulse-impact { width: 37%; height: 37%; border-width: 1px; }
+.arena-contact-point[data-miss] .arena-hit-core { width: 28%; }
 .arena-guard-ring, .arena-pulse-impact {
   position: absolute;
   width: 88%;
@@ -97,16 +138,31 @@
 }
 .arena-wreck-chip:nth-of-type(2n) { background: #ffb76c; box-shadow: 0 0 3px #ffb76c99; }
 .arena-fallen-art { transform-origin: 50% 70%; }
-@media (prefers-reduced-motion: no-preference) {
-  .tilemap[data-motion-turn] .arena-pulse-line { opacity: 0; }
-  /* Arena chassis and muzzle share one clock. The normal grid gestures still play for pickups and code. */
-  .tilemap[data-motion-turn] .action-robot:is([data-robot-action=move], [data-robot-action=shoot], [data-robot-action=guard]) .action-robot__body {
-    animation: none;
-  }
-  .tilemap[data-motion-turn] .action-robot:is([data-robot-action=move], [data-robot-action=shoot], [data-robot-action=guard]) :is(.action-robot__effect, .action-robot__badge) {
-    visibility: hidden;
-  }
+.tile[data-arena-player] > .pixel-bot:not(.action-robot),
+.tile[data-arena-player] .action-robot__body,
+.rival-marker[data-arena-rival] .pixel-bot,
+.arena-fallen-art .pixel-bot,
+.tile .arena-wreck-model {
+  background: url('./station3d/arena-robot-states.webp') var(--arena-livery-x) var(--arena-state-y) / 500% 300% no-repeat;
 }
-@media (prefers-reduced-motion: reduce) {
-  .arena-motion-layer { display: none; }
+.tile[data-arena-player] > .pixel-bot, .rival-marker[data-arena-rival] .pixel-bot, .arena-fallen-art .pixel-bot {
+  width: 94%;
+  max-width: 60px;
+}
+.tile .arena-wreck-model {
+  position: absolute;
+  translate: -50% -50%;
+  max-width: 62px;
+  aspect-ratio: 1;
+  pointer-events: none;
+  background-position-y: 100%;
+  filter: drop-shadow(0 1px 1px #0b1625);
+}
+/* The presentation supplies motion only for turns the player has chosen to animate. */
+.tilemap[data-motion-turn] .arena-pulse-line { opacity: 0; }
+.tilemap[data-motion-turn] .action-robot:is([data-robot-action=move], [data-robot-action=shoot], [data-robot-action=guard]) .action-robot__body {
+  animation: none;
+}
+.tilemap[data-motion-turn] .action-robot:is([data-robot-action=move], [data-robot-action=shoot], [data-robot-action=guard]) :is(.action-robot__effect, .action-robot__badge) {
+  visibility: hidden;
 }

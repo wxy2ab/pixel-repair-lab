@@ -1,7 +1,7 @@
 import type { ApiName, GridHazard, Item, Json, Position, PythonFlowEvent, Scenario } from '../../shared/types'
 import type { BoardDevice } from '../gridDeviceDisplay'
 import type { TrailEdge } from '../boardTrail'
-import type { ArenaScenario, ArenaEvent } from '../../shared/advanced'
+import type { ArenaActor, ArenaScenario, ArenaEvent } from '../../shared/advanced'
 import type { ArenaTurnMotion } from '../arenaTurnMotion'
 
 export type ArenaCellChange = { position: Position; state: 'opened' | 'closed' | 'blocked' | 'relocated' }
@@ -35,6 +35,9 @@ export type StationFrame = {
   arenaSwitches?: NonNullable<ArenaScenario['combat']>['switches']
   arenaTargetIds?: readonly string[]
   arenaShots?: readonly ArenaEvent[]
+  /** Visible health at this point in the volley, including robots that have powered down. */
+  arenaIntegrity?: readonly (ArenaActor & { name?: string })[]
+  arenaMaxHealth?: number
   arenaMotion?: ArenaTurnMotion
   opponents: readonly (Position & { id?: string; label?: string; index?: number; name?: string })[]
   items: readonly Item[]
