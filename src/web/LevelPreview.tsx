@@ -10,7 +10,7 @@ import { Board, MapTiles } from './Board'
 import { arenaGateCells } from './arenaGates'
 import MapScenarioPicker from './MapScenarioPicker'
 import { WorkshopForLesson } from './station3d/LessonWorkbench'
-import { initialSnapshot } from '../engine/snapshot'
+import { initialArenaSnapshot, initialSnapshot } from '../engine/snapshot'
 import { LessonView } from './LessonView'
 import { groupLevels, stageLabel } from './lessonTools'
 import { ChallengePrerequisites } from './ChallengeCatalog'
@@ -96,6 +96,7 @@ export function LevelPreview({ locale, catalog }: { locale: Locale; catalog: Lev
             <MapScenarioPicker locale={locale} index={mapIndex} count={1 + (map.variants?.length ?? 0)} onChange={setMapIndex} />
             {map.kind === 'grid' ? <Board level={map} snapshot={initialSnapshot(map)} locale={locale} />
               : <MapTiles location="arena" tiles={map.tiles} arenaBuffs={map.combat?.buffs} exit={map.objective.kind === 'escape' ? map.objective.exit : undefined}
+                arenaMaxHealth={map.combat?.health} arenaIntegrity={map.combat && initialArenaSnapshot(map).actors}
                 arenaTargetIds={map.combat && 'itemIds' in map.objective ? map.objective.itemIds : undefined}
                 gates={arenaGateCells(map)} arenaSwitches={map.combat?.switches}
                 batteries={!map.combat && Boolean(map.shifts?.length)} playerPosition={map.start}

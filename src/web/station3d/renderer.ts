@@ -8,6 +8,7 @@ import { createRobotSignals } from './robotActivity'
 import { makeCargoArrival } from './cargoArrival'
 import { createArenaPulses } from './arenaPulses'
 import { arenaTravel, fadeDisabledRobot, poseArenaRobot } from './arenaRobotMotion'
+import { arenaElapsed } from '../arenaTurnMotion'
 import { createBoardScenery, type BoardSceneryProp } from './boardScenery'
 import { createWorkshopSet } from './workshop'
 import { visibleMapFloor } from './mapFootprint'
@@ -31,6 +32,7 @@ type Entity = {
   to: THREE.Vector3
   started: number
   travelMs: number
+  wreck?: { actorId: string; scale: number }
   fade?: ReturnType<typeof fadeDisabledRobot>
   fromYaw: number
   toYaw: number
@@ -509,8 +511,9 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
 
   function updateHazards() {
     const mirrors = frame.devices?.filter(device => device.kind === 'mirror') ?? []
-    const stillShots = !frame.arenaMotion || reducedMotion ? frame.arenaShots : undefined
-    const key = JSON.stringify([frame.hazards ?? [], mirrors, stillShots])
+    const stillShots = frame.arenaMotion ? undefined : frame.arenaShots
+    const emitters = stillShots?.map(shot => frame.arenaIntegrity?.find(actor => actor.id === shot.actorId))
+    const key = JSON.stringify([frame.hazards ?? [], mirrors, stillShots, emitters?.map(actor => actor && [actor.x, actor.y])])
     if (key === hazardKey) return
     hazardKey = key
     if (hazardMesh) {
@@ -519,11 +522,19 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
       hazardMesh = undefined
     }
     const blocks: Block[] = []
-    for (const shot of stillShots ?? []) {
-      const horizontal = shot.direction === 'left' || shot.direction === 'right'
+    for (const [index, shot] of (stillShots ?? []).entries()) {
+      if (!shot.direction) continue
+      const delta = gridOffsets[shot.direction]
+      const horizontal = delta.x !== 0
+      const tint = shot.actorId === 'player' ? 0x54ffe2 : 0xff78a6
+      const source = emitters?.[index]
+      if (source) {
+        blocks.push({ x: source.x + .42 * delta.x, y: .46, z: source.y + .42 * delta.y,
+          width: horizontal ? .32 : .17, height: .14, depth: horizontal ? .17 : .32, color: tint, cell: source })
+      }
       for (const cell of shot.path ?? []) {
-        blocks.push({ x: cell.x, y: .39, z: cell.y, width: horizontal ? .90 : .095, height: .08,
-          depth: horizontal ? .095 : .90, color: shot.actorId === 'player' ? 0x54ffe2 : 0xff78a6, cell })
+        blocks.push({ x: cell.x, y: .39, z: cell.y, width: horizontal ? .90 : .16, height: .10,
+          depth: horizontal ? .16 : .90, color: tint, cell })
       }
     }
     for (const device of frame.devices ?? []) {
@@ -611,11 +622,12 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     const previous = frame
     frame = next
     const now = performance.now()
-    const motion = !reducedMotion && next.arenaMotion && now - next.arenaMotion.startedAt < next.arenaMotion.durationMs
+    const motion = next.arenaMotion && arenaElapsed(next.arenaMotion, now) < next.arenaMotion.durationMs
       ? next.arenaMotion : undefined
-    const newMotion = motion !== arenaMotion
+    // Visibility changes rebase the clock of the same volley. Keep its muzzle origins and rigs.
+    const newMotion = motion?.events !== arenaMotion?.events
+    arenaMotion = motion
     if (newMotion) {
-      arenaMotion = motion
       if (motion && !volley) {
         volley = createArenaPulses()
         scene.add(volley.group)
@@ -706,7 +718,8 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
         if (touch?.object === entry.object) clearTouch()
         entry.from.copy(entry.object.position)
         entry.to.copy(target)
-        entry.started = reducedMotion || (location === 'arena' && !motion) ? 0 : motion?.startedAt ?? now
+        const animateTravel = location === 'arena' ? motion && (!reducedMotion || id.startsWith('bot:')) : !reducedMotion
+        entry.started = animateTravel ? motion?.startedAt ?? now : 0
         entry.travelMs = motion ? Math.max(1, motion.moveMs) : moveDuration
         if (id.startsWith('cargo:') && Math.abs(entry.cell.x - cell.x) + Math.abs(entry.cell.y - cell.y) !== 1) entry.started = 0
         entry.activeAt = now
@@ -755,14 +768,39 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
       const entry = place(bot.key, bot.cell, radius * Math.cos(angle), radius * Math.sin(angle),
         group.length > 1 ? Math.min(0.68, 1.45 / Math.sqrt(group.length)) : 1,
         bot.label ?? '', () => models.robot(bot.enemy, bot.index, bot.label))
+      const actorId = bot.enemy ? bot.key.slice('bot:rival:'.length) : 'player'
+      const hull = next.arenaIntegrity?.find(actor => actor.id === actorId)
+      models.setRobotDamaged(entry.object, hull?.hp !== undefined && next.arenaMaxHealth !== undefined && hull.hp < next.arenaMaxHealth)
       if (newMotion && motion && !entry.started) {
-        const source = motion.from.find(actor => actor.id === (bot.enemy ? bot.key.slice('bot:rival:'.length) : 'player'))
+        const source = motion.from.find(actor => actor.id === actorId)
         if (source && !sameCell(source, bot.cell)) {
           entry.from.set(source.x, entry.to.y, source.y)
           entry.started = motion.startedAt
           entry.travelMs = Math.max(1, motion.moveMs)
         }
       }
+    })
+    // Wrecks are scenery. An active robot or a pickup can still use the same square.
+    const wreckCells = new Map<string, number[]>()
+    const roster = next.arenaIntegrity ?? []
+    roster.forEach((actor, index) => {
+      if (actor.hp !== 0) return
+      const cell = positionKey(actor)
+      const group = wreckCells.get(cell) ?? []
+      group.push(index)
+      wreckCells.set(cell, group)
+    })
+    for (const [cell, indices] of wreckCells) indices.forEach((index, slot) => {
+      const actor = roster[index]
+      const shared = indices.length > 1 || next.items.some(item => sameCell(item, actor))
+        || roster.some(other => other.hp !== 0 && sameCell(other, actor))
+      const angle = slot * 2 * Math.PI / indices.length + Math.PI / 4
+      const radius = shared ? .31 : 0
+      const scale = shared ? .62 : 1
+      const entry = place('wreck:' + actor.id, actor, radius * Math.cos(angle), radius * Math.sin(angle), scale,
+        String(index), () => models.robotWreck(index !== 0, index ? index - 1 : undefined, index ? String(index) : undefined))
+      entry.wreck = { actorId: actor.id, scale }
+      entry.object.userData.actorId = actor.id
     })
     for (const event of motion?.events ?? next.arenaShots ?? []) {
       if (!event.direction || !(event.action === 'shoot' || (event.action === 'move' && event.blocked))) continue
@@ -907,13 +945,14 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     let contactIndex = 0
     if (signals) signals.group.visible = false
     const turn = arenaMotion
-    const turnTime = turn ? Math.max(0, now - turn.startedAt) : 0
-    const liveTurn = !!turn && !reducedMotion && turnTime < turn.durationMs
+    const turnTime = turn ? arenaElapsed(turn, now) : 0
+    const liveTurn = !!turn && turnTime < turn.durationMs
     if (volley) volley.group.visible = liveTurn
     for (const [id, entry] of entities) {
       const robot = id.startsWith('bot:')
       let shadowScale = 1
-      const step = !reducedMotion && entry.started ? THREE.MathUtils.clamp((now - entry.started) / entry.travelMs, 0, 1) : 1
+      const travelTime = robot && liveTurn ? turnTime : now - entry.started
+      const step = entry.started && (!reducedMotion || (robot && liveTurn)) ? THREE.MathUtils.clamp(travelTime / entry.travelMs, 0, 1) : 1
       if (step < 1) {
         const arenaStep = robot && liveTurn
         entry.object.position.lerpVectors(entry.from, entry.to, arenaStep ? arenaTravel(step) : step * step * (3 - 2 * step))
@@ -950,7 +989,7 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
         const progress = frame.location === 'arena' && physical && !liveTurn ? 1 : Math.max(0, (now - actionStarted) / gestureDuration)
         if (action) {
           const animating = gesture ? progress < 1 : step < 1
-          const motion = reducedMotion ? 'still' : animating ? 'playing' : 'done'
+          const motion = reducedMotion && !liveTurn ? 'still' : animating ? 'playing' : 'done'
           if (canvas.dataset.robotMotion !== motion) canvas.dataset.robotMotion = motion
         }
         if (event?.action === 'shoot' || event?.action === 'move') {
@@ -985,6 +1024,12 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
             shadowScale = 1 - THREE.MathUtils.smoothstep(shutdown, .45, 1)
           }
         }
+      } else if (entry.wreck) {
+        const downAt = liveTurn ? volley?.shutdowns.get(entry.wreck.actorId) : undefined
+        const reveal = !turn || downAt === undefined ? 1 : THREE.MathUtils.smoothstep((turnTime - downAt) / turn.shutdownMs, .42, .94)
+        entry.object.visible = reveal > 0
+        if (!entry.object.visible) continue
+        entry.object.scale.setScalar(entry.wreck.scale * reveal)
       } else if (tapped) {
         const lift = reducedMotion ? 1 : Math.sin(touchProgress * Math.PI)
         if (touch?.kind === 'item') entry.object.position.y += lift * .18

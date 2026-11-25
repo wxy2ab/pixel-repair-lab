@@ -57,6 +57,7 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
   const bar = useRef<HTMLDivElement>(null)
   const toggle = useRef<HTMLButtonElement>(null)
   const fullscreenSurface = useRef<HTMLElement | null>(null)
+  const nativeFullscreen = useRef(false)
   const savedScroll = useRef(0)
   const keysId = useId()
 
@@ -84,6 +85,7 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
     const surface = fullscreenSurface.current
     if (!surface) return
     fullscreenSurface.current = null
+    nativeFullscreen.current = false
     setMapConsoleOpen(null)
     setDrawer(undefined)
     if (document.fullscreenElement === surface) {
@@ -108,7 +110,11 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
     // The same surface fills the application window when the embed disallows native fullscreen.
     if (document.fullscreenEnabled && surface.requestFullscreen) {
       void surface.requestFullscreen().then(() => {
-        if (!fullscreenSurface.current && document.fullscreenElement === surface && !surface.querySelector('[data-map-fullscreen]')) {
+        if (fullscreenSurface.current === surface) {
+          // Entry and exit can both complete before the browser delivers its first fullscreenchange.
+          nativeFullscreen.current = true
+          if (document.fullscreenElement !== surface) leave()
+        } else if (!fullscreenSurface.current && document.fullscreenElement === surface && !surface.querySelector('[data-map-fullscreen]')) {
           void document.exitFullscreen().catch(() => {})
         }
       }).catch(() => {})
@@ -121,6 +127,7 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
     const stage = element?.closest<HTMLElement>(mapStageSelector)
     if (element && stage && advancingMapStages.delete(stage)) {
       fullscreenSurface.current = stage
+      nativeFullscreen.current = document.fullscreenElement === stage
       savedScroll.current = window.scrollY
       setMapConsoleOpen(false)
       element.focus({ preventScroll: true })
@@ -129,6 +136,7 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
       const surface = fullscreenSurface.current
       if (!surface) return
       fullscreenSurface.current = null
+      nativeFullscreen.current = false
       if (!advancingMapStages.has(surface) && document.fullscreenElement === surface) {
         void document.exitFullscreen().catch(() => {})
       }
@@ -137,13 +145,9 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
   }, [setMapConsoleOpen])
 
   useEffect(() => {
-    let native = !!fullscreenSurface.current && document.fullscreenElement === fullscreenSurface.current
     function observeFullscreen() {
-      if (fullscreenSurface.current && document.fullscreenElement === fullscreenSurface.current) native = true
-      else if (native) {
-        native = false
-        leave()
-      }
+      if (fullscreenSurface.current && document.fullscreenElement === fullscreenSurface.current) nativeFullscreen.current = true
+      else if (nativeFullscreen.current) leave()
     }
     const onNavigate = () => leave(false)
     document.addEventListener('fullscreenchange', observeFullscreen)

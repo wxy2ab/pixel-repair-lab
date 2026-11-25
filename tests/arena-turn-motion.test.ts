@@ -1,8 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { ARENA_TURN_MS } from '../src/engine/realtimeProtocol'
 import type { ArenaActor, ArenaEvent } from '../src/shared/advanced'
-import { arenaMotionMs, arenaShotImpactMs, arenaTurnTiming } from '../src/web/arenaTurnMotion'
+import { arenaMotionMs, arenaPulseFlightMs, arenaShotImpactMs, arenaTurnTiming } from '../src/web/arenaTurnMotion'
 
 const actor = (id: string, hp: number): ArenaActor => ({ id, x: 0, y: 0, score: 0, hp })
 const shot = (actorId: string, targetId: string, distance: number): ArenaEvent => ({
@@ -20,12 +19,28 @@ test('a shared volley gives each target time to react at its own point of impact
   assert.equal(timing.durationMs, Math.max(first + arenaMotionMs.shutdown, second + arenaMotionMs.impact))
 })
 
-test('a long-distance knockout after a move settles before the next live turn', () => {
+test('the moving target settles before impact, and the round includes the complete shutdown at every speed', () => {
   const pulse = shot('rival', 'player', 20)
   const nearby = shot('other', 'player', 1)
-  const timing = arenaTurnTiming([{ actorId: 'player', action: 'move', direction: 'left' }, pulse, nearby], [actor('player', 0)])
-  assert.ok(timing.fireAtMs < timing.moveMs)
-  assert.ok(arenaShotImpactMs(timing, nearby) > timing.moveMs)
-  assert.equal(timing.durationMs, arenaShotImpactMs(timing, pulse) + arenaMotionMs.shutdown)
-  assert.ok(timing.durationMs < ARENA_TURN_MS)
+  for (const speed of [0.5, 1, 2] as const) {
+    const timing = arenaTurnTiming([{ actorId: 'player', action: 'move', direction: 'left' }, pulse, nearby], [actor('player', 0)], speed)
+    assert.equal(timing.moveMs, arenaMotionMs.move)
+    assert.ok(arenaShotImpactMs(timing, nearby) > timing.moveMs)
+    assert.equal(timing.durationMs, arenaShotImpactMs(timing, pulse) + arenaMotionMs.shutdown / speed)
+  }
+})
+
+test('a four-square attack has time to aim, track the pulse and see the hit even without a knockout', () => {
+  const pulse = shot('player', 'bell', 4)
+  const roster = [actor('player', 2), actor('bell', 1)]
+  const normal = arenaTurnTiming([pulse], roster)
+  assert.ok(normal.fireAtMs >= 750)
+  assert.ok(arenaPulseFlightMs(pulse) >= 1500)
+  assert.ok(normal.durationMs - arenaShotImpactMs(normal, pulse) >= 800)
+  assert.ok(normal.durationMs <= 3100)
+  for (const speed of [0.5, 2] as const) {
+    const timing = arenaTurnTiming([pulse], roster, speed)
+    assert.equal(arenaShotImpactMs(timing, pulse), arenaShotImpactMs(normal, pulse) / speed)
+    assert.equal(timing.durationMs, normal.durationMs / speed)
+  }
 })

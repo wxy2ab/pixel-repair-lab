@@ -6,6 +6,8 @@ import { switchDescription } from '../arenaGates'
 import type { createStationRenderer } from './renderer'
 import type { StationCamera, StationFrame } from './types'
 import { StationActionCue } from '../StationActionCue'
+import { ArenaAttackSpeedControl } from '../ArenaAttackSpeed'
+import { arenaBoardInView } from '../arenaBoardVisibility'
 import { ArenaMapControlsContext, isWorkspaceShortcut, useArenaKeyboardMode, useArenaMapMode } from '../ArenaMapMode'
 import { useMapCameraControls } from './useMapCameraControls'
 import { StationMinimap } from './StationMinimap'
@@ -24,9 +26,19 @@ function preferredView(): View {
 function cellContents(frame: StationFrame, cell: Position, locale: Locale, batteries: boolean) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const here = (position?: Position) => position?.x === cell.x && position.y === cell.y
-  const labels = [
+  const robots = frame.arenaIntegrity ? frame.arenaIntegrity.flatMap((actor, index) => {
+    if (!here(actor)) return []
+    const name = actor.name ?? frame.opponents.find(bot => bot.id === actor.id)?.name
+      ?? (index ? t(`对手 ${index}`, `Rival ${index}`) : t('芽芽', 'Sprout'))
+    if (actor.hp === 0) return t(`${name}的残骸`, `${name} wreck`)
+    if (actor.hp !== undefined && frame.arenaMaxHealth !== undefined && actor.hp < frame.arenaMaxHealth) return t(`${name} · 机体受损`, `${name} · damaged hull`)
+    return name
+  }) : [
     !frame.playerDown && here(frame.playerPosition) && t('芽芽', 'Sprout'),
     ...frame.opponents.filter(here).map(bot => bot.name ?? (bot.label ? t(`对手 ${bot.label}`, `Rival ${bot.label}`) : t('巡逻机器人', 'Patrol bot'))),
+  ]
+  const labels = [
+    ...robots,
     ...frame.items.filter(here).map(item => {
       const control = frame.arenaSwitches?.find(control => control.itemId === item.id)
       if (control) return switchDescription(control.open, locale)
@@ -46,8 +58,9 @@ function cellContents(frame: StationFrame, cell: Position, locale: Locale, batte
   return labels.length ? labels.join(' · ') : frame.tiles[cell.y]?.[cell.x] === '#' ? t('墙', 'Wall') : t('地板', 'Floor')
 }
 
-export function StationViewport({ frame, locale, batteries = false, children }: {
+export function StationViewport({ frame, locale, batteries = false, children, onSurfaceVisible }: {
   frame: StationFrame; locale: Locale; batteries?: boolean; children: (selected: Position | undefined, visible: boolean) => ReactNode
+  onSurfaceVisible?: (visible: boolean) => void
 }) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const [view, setView] = useState<View>(preferredView)
@@ -76,6 +89,38 @@ export function StationViewport({ frame, locale, batteries = false, children }: 
   const inspected = cell && frame.tiles[cell.y]?.[cell.x] !== undefined ? cell : undefined
   const selectionOnOpen = useRef<Position | undefined>(undefined)
   const flatContent = useMemo(() => children(flatInteractive ? inspected : undefined, view === '2d'), [children, flatInteractive, inspected, view])
+
+  useLayoutEffect(() => {
+    if (!onSurfaceVisible) return
+    const surface = view === '3d' ? canvas.current : mapNavigation ? mapCamera.flat.current : mapCamera.flat.current?.querySelector<HTMLElement>('.tilemap')
+    if (!surface || (view === '3d' && !ready)) {
+      onSurfaceVisible(false)
+      return
+    }
+    const publish = () => onSurfaceVisible(!document.hidden && arenaBoardInView(surface))
+    const observer = new IntersectionObserver(publish, { threshold: [0, .2, .4, .6, .8, 1] })
+    const sizes = new ResizeObserver(publish)
+    sizes.observe(surface)
+    const workspace = surface.closest('.arena-map-workspace')
+    workspace?.querySelectorAll('.play-toolbar, .arena-console').forEach(panel => sizes.observe(panel))
+    // Closing the editor can expose a held shot without resizing the board.
+    const consoleChanges = new MutationObserver(publish)
+    if (workspace) consoleChanges.observe(workspace, { attributes: true, attributeFilter: ['data-console'] })
+    publish()
+    observer.observe(surface)
+    window.addEventListener('scroll', publish, { capture: true, passive: true })
+    window.addEventListener('resize', publish)
+    document.addEventListener('visibilitychange', publish)
+    return () => {
+      observer.disconnect()
+      sizes.disconnect()
+      consoleChanges.disconnect()
+      window.removeEventListener('scroll', publish, true)
+      window.removeEventListener('resize', publish)
+      document.removeEventListener('visibilitychange', publish)
+      onSurfaceVisible(false)
+    }
+  }, [view, ready, mapNavigation, mapCamera.flat, onSurfaceVisible])
 
   useLayoutEffect(() => {
     latest.current = frame
@@ -194,6 +239,7 @@ export function StationViewport({ frame, locale, batteries = false, children }: 
         {(view === '3d' ? tools : tools.slice(2)).map(tool => <button key={tool.mark} type="button" aria-label={tool.label} title={tool.label}
           disabled={view === '3d' && !ready} onClick={tool.action}>{tool.mark}</button>)}
       </div>}
+      {keyboardMode && frame.arenaMaxHealth !== undefined && <ArenaAttackSpeedControl locale={locale} />}
       {workspaceControls}
     </div>
     <StationActionCue activity={frame.activity} locale={locale} showValue={frame.location !== 'arena' || frame.activity?.action !== 'scan'} />

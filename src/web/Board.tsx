@@ -1,7 +1,8 @@
 import { useMemo, useRef, type CSSProperties, type ReactNode } from 'react'
 import type { GridLevel, GridSnapshot, Locale, Position, Scenario } from '../shared/types'
 import { ActionRobot } from './ActionRobot'
-import { ArenaTurnEffects } from './ArenaTurnEffects'
+import { ArenaShotMarker, ArenaTurnEffects } from './ArenaTurnEffects'
+import { ArenaWreck, arenaPortraitStyle, isArenaDamaged } from './ArenaRobotPortrait'
 import { StationViewport } from './station3d/StationViewport'
 import { gridMapTargets } from './station3d/mapTargets'
 import { useArenaMapMode } from './ArenaMapMode'
@@ -27,13 +28,13 @@ function literal(value: unknown) {
   return JSON.stringify(value, null, 0)
 }
 
-export function MapTiles({ locale, batteries, trail, ...scene }: Omit<StationFrame, 'trailEdges'> & {
-  locale: Locale; batteries?: boolean; trail?: readonly Position[]
+export function MapTiles({ locale, batteries, trail, onSurfaceVisible, ...scene }: Omit<StationFrame, 'trailEdges'> & {
+  locale: Locale; batteries?: boolean; trail?: readonly Position[]; onSurfaceVisible?: (visible: boolean) => void
 }) {
   const trailEdges = useMemo(() => visibleTrailEdges(trail), [trail])
   const frame: StationFrame = { ...scene, trailEdges }
   return (
-    <StationViewport frame={frame} locale={locale} batteries={batteries}>
+    <StationViewport frame={frame} locale={locale} batteries={batteries} onSurfaceVisible={onSurfaceVisible}>
       {(cell, visible) => <FlatMap frame={frame} locale={locale} selected={cell} showMotion={visible} />}
     </StationViewport>
   )
@@ -46,6 +47,9 @@ export function FlatMap({ frame, locale, selected, cellControl, showMotion = tru
   const columns = tiles[0].length
   const board = useRef<HTMLDivElement>(null)
   const arms = useMemo(() => trailArmsByCell(frame.trailEdges ?? [], columns), [frame.trailEdges, columns])
+  const roster = useMemo(() => new Map(frame.arenaIntegrity?.map((actor, index) => [actor.id, { actor, index }])), [frame.arenaIntegrity])
+  const wrecks = useMemo(() => [...roster.values()].filter(({ actor }) => actor.hp === 0), [roster])
+  const stillShots = !frame.arenaMotion && frame.arenaShots?.map(shot => ({ shot, source: roster.get(shot.actorId)?.actor }))
   return (
     <div className="map-well" style={{ '--cols': tiles[0].length, '--rows': tiles.length } as CSSProperties}>
       <div className="map-coordinate map-coordinate--x" aria-hidden="true">
@@ -62,6 +66,8 @@ export function FlatMap({ frame, locale, selected, cellControl, showMotion = tru
           const rivalsHere = opponents.filter(opponent => at(opponent, x, y))
           const item = items.find(candidate => at(candidate, x, y))
           const player = !frame.playerDown && at(playerPosition, x, y)
+          const playerHull = player ? roster.get('player') : undefined
+          const damagedPlayer = isArenaDamaged(playerHull?.actor, frame.arenaMaxHealth)
           const buff = item && frame.arenaBuffs?.find(chip => chip.id === item.id)
           const control = item && frame.arenaSwitches?.find(control => control.itemId === item.id)
           const gate = frame.arenaSwitches?.find(control => control.open.some(cell => at(cell, x, y)))
@@ -76,6 +82,8 @@ export function FlatMap({ frame, locale, selected, cellControl, showMotion = tru
           const hazards = frame.hazards?.filter(hazard => at(hazard, x, y))
           return <span key={x + ':' + y} className={'tile ' + (tile === '#' ? 'tile--wall' : 'tile--floor') + (goal ? ' tile--exit' : '')}
             data-x={x} data-y={y} data-item-id={item?.id} data-arena-change={changes || undefined}
+            data-arena-player={playerHull ? true : undefined} data-damaged-actor={damagedPlayer ? 'player' : undefined}
+            style={playerHull && arenaPortraitStyle(0, damagedPlayer)}
             data-buff={buff?.kind} data-target-item={target || undefined}
             data-gate-switch={control?.itemId} data-switch-gate={gateState}
             data-device-id={device?.id} data-device={device?.kind} data-device-state={device?.status}
@@ -94,21 +102,32 @@ export function FlatMap({ frame, locale, selected, cellControl, showMotion = tru
             {pad && <LoadingPadGlyph />}
             {device && <GridDeviceGlyph device={device} />}
             {gate && gateState && <GridDeviceGlyph device={{ x, y, id: gate.itemId, kind: 'door', status: gateState }} />}
+            {wrecks.filter(({ actor }) => at(actor, x, y)).map(({ actor, index }, slot, here) => <ArenaWreck key={actor.id} id={actor.id} index={index} slot={slot} count={here.length}
+              title={tr(locale, (actor.name ?? (index ? '对手 ' + index : '芽芽')) + ' · 已停机', (actor.name ?? (index ? 'Rival ' + index : 'Sprout')) + ' · Offline')}
+              occupied={Boolean(player || rivalsHere.length || item || goal || gate)} motion={showMotion ? frame.arenaMotion : undefined} />)}
             {shots?.map(shot => <i key={shot.actorId} className="arena-pulse-line" data-shot-actor={shot.actorId} data-side={shot.actorId === 'player' ? 'player' : 'rival'}
               data-direction={shot.direction} aria-hidden="true" />)}
+            {stillShots && stillShots.map(({ shot, source }) => source && at(source, x, y) && <ArenaShotMarker key={shot.actorId} shot={shot} />)}
             {control ? <GridDeviceGlyph device={{ x, y, id: control.itemId, kind: 'switch', status: 'off' }} />
               : buff ? <span className="arena-chip" data-kind={buff.kind} aria-hidden="true">{buff.kind === 'power' ? 'ϟ' : '◆'}</span>
               : item && <span className={frame.arenaBuffs ? (target ? 'arena-parcel' : 'arena-token') : 'gem'} aria-hidden="true" />}
-            {rivalsHere.map((rival, index) => rival.label
-              ? <span key={rival.id ?? index} className="rival-marker" data-rival-id={rival.id} style={{ '--rival-index': rival.index ?? index } as CSSProperties}><Robot enemy /><small>{rival.label}</small></span>
-              : <Robot key={index} enemy />)}
+            {rivalsHere.map((rival, index) => {
+              const hull = rival.id ? roster.get(rival.id) : undefined
+              if (!rival.label && !hull) return <Robot key={index} enemy />
+              const damaged = hull && isArenaDamaged(hull.actor, frame.arenaMaxHealth)
+              return <span key={rival.id ?? index} className="rival-marker" data-rival-id={rival.id}
+                data-arena-rival={hull ? true : undefined} data-damaged-actor={damaged ? rival.id : undefined}
+                style={{ '--rival-index': rival.index ?? index, ...(hull && arenaPortraitStyle(hull.index, damaged)) } as CSSProperties}>
+                <Robot enemy />{rival.label && <small>{rival.label}</small>}
+              </span>
+            })}
             {player && <ActionRobot activity={frame.activity} locale={locale} />}
             {cellControl?.({ x, y })}
           </span>
         }))}
         {frame.warehouse && <CargoOverlay {...frame.warehouse} arrival={frame.warehouseArrival} />}
       </div>
-      {showMotion && frame.arenaMotion && <ArenaTurnEffects board={board} motion={frame.arenaMotion} />}
+      {showMotion && frame.arenaMotion && <ArenaTurnEffects board={board} motion={frame.arenaMotion} integrity={frame.arenaIntegrity} maxHealth={frame.arenaMaxHealth} />}
     </div>
   )
 }

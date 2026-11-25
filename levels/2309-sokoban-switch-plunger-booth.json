@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-sokoban-switch-plunger-booth",
+  "order": 2309,
+  "difficulty": "starter",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "stage": "challenge",
+  "prerequisites": [{"unit": "foundations", "topic": "sequence"}],
+  "title": {"zh": "触头校正间", "en": "Switch Plunger Booth"},
+  "concept": {"zh": "推箱子 · 1 箱 · 最少推 3 次", "en": "Sokoban · 1 crate · 3 pushes minimum"},
+  "brief": {
+    "zh": "把开关触头箱送到校正间的标记处。一次只能推一箱。箱子不能拉动。",
+    "en": "Deliver the switch plunger crate to the marked calibration bay. Push one crate at a time. Crates cannot be pulled."
+  },
+  "hints": [],
+  "tiles": [
+    "#######",
+    "#.....#",
+    "#.##..#",
+    "#....##",
+    "#..#.##",
+    "#######"
+  ],
+  "start": {"x": 3, "y": 1},
+  "warehouse": {
+    "boxes": [{"x": 2, "y": 3}],
+    "targets": [{"x": 4, "y": 4}]
+  },
+  "allowedApi": ["move", "read_map"],
+  "objectives": [{"type": "parkBoxes"}],
+  "cards": [
+    {"id": "up", "label": {"zh": "向上", "en": "Move up"}, "template": "move(\"up\")"},
+    {"id": "right", "label": {"zh": "向右", "en": "Move right"}, "template": "move(\"right\")"},
+    {"id": "down", "label": {"zh": "向下", "en": "Move down"}, "template": "move(\"down\")"},
+    {"id": "left", "label": {"zh": "向左", "en": "Move left"}, "template": "move(\"left\")"}
+  ],
+  "solutionCards": [
+    {"cardId": "left"}, {"cardId": "left"}, {"cardId": "down"}, {"cardId": "down"},
+    {"cardId": "right"}, {"cardId": "right"}, {"cardId": "left"}, {"cardId": "left"},
+    {"cardId": "up"}, {"cardId": "up"}, {"cardId": "right"}, {"cardId": "right"},
+    {"cardId": "right"}, {"cardId": "down"}, {"cardId": "down"}
+  ]
+}

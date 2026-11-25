@@ -34,6 +34,7 @@ export type RealtimeArenaRequest =
   | { type: 'prepare'; level: ArenaLevel; personal?: PersonalAlgorithms; course?: PersonalAlgorithms; checkpoint?: RealtimeArenaCheckpoint }
   | { type: 'start'; firstAction?: ArenaChoice }
   | { type: 'pause' }
+  | { type: 'presented'; turn: number }
   | { type: 'policy'; source: string; requestId: number; startOnSuccess?: boolean }
   | { type: 'action'; action: ArenaChoice; turn: number }
 
@@ -41,7 +42,7 @@ export type RealtimeArenaResponse =
   | { type: 'ready'; snapshot: ArenaSnapshot; restored?: {
     checkpoint: RealtimeArenaCheckpoint; frame?: ArenaFrame; latestShift?: ArenaFrame['shift']; playerPositions: Position[]
   } }
-  | { type: 'started'; nextAt: number; progress: RealtimeArenaProgress }
+  | { type: 'started'; nextAt?: number; progress: RealtimeArenaProgress }
   | { type: 'paused'; checkpoint: RealtimeArenaCheckpoint }
   | { type: 'policy'; requestId: number; active: boolean; issue?: RunIssue; progress: RealtimeArenaProgress }
   | { type: 'action'; turn: number; progress: RealtimeArenaProgress }

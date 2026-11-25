@@ -33,6 +33,11 @@
 .station-view-switch button[aria-pressed='true'] { background: #2d574f; color: #c6ffe4; }
 .station-camera button { border-color: #36515e; background: #182d3d; font: 600 19px/1 system-ui, sans-serif; }
 .station-tools button:not(:disabled):hover { background: #30505a; color: white; }
+.arena-attack-speed { display: inline-flex; align-items: center; gap: 5px; color: #c5d6df; font-size: .78rem; }
+.arena-attack-speed select {
+  width: auto; min-height: 30px; margin: 0; padding: 2px 4px; border: 1px solid #395463;
+  border-radius: 5px; background: #101b28; color: #d8eee6; font: 650 12px var(--mono);
+}
 .station-stage {
   position: relative;
   width: 100%;

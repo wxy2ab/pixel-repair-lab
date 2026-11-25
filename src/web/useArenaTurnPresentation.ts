@@ -1,65 +1,97 @@
-import { createContext, useContext, useLayoutEffect, useState, useSyncExternalStore, type Dispatch, type SetStateAction } from 'react'
+import { createContext, useContext, useEffectEvent, useLayoutEffect, useMemo, useState, type Dispatch, type SetStateAction } from 'react'
 import type { ArenaFrame, ArenaSnapshot } from '../shared/advanced'
-import { arenaShotImpactMs, arenaTurnTiming, type ArenaTurnMotion } from './arenaTurnMotion'
+import { arenaElapsed, arenaShotImpactMs, arenaTurnTiming, ArenaVolleyClock, type ArenaTurnMotion } from './arenaTurnMotion'
+import { readArenaAttackPlayback, useSystemReducedMotion } from './ArenaAttackSpeed'
 
-const reduceQuery = '(prefers-reduced-motion: reduce)'
-function subscribeMotionPreference(update: () => void) {
-  const media = window.matchMedia(reduceQuery)
-  media.addEventListener('change', update)
-  return () => media.removeEventListener('change', update)
+type ShownTurn = {
+  scene: number; snapshot: ArenaSnapshot; frame?: ArenaFrame; previousFrame?: ArenaFrame; allowMotion: boolean; motion?: ArenaTurnMotion
+  explicitAttack?: boolean
+  volleyFrame?: ArenaFrame
+  resumeOffset?: number
 }
-const prefersReducedMotion = () => window.matchMedia(reduceQuery).matches
 
-type ShownTurn = { scene: number; snapshot: ArenaSnapshot; frame?: ArenaFrame; previousFrame?: ArenaFrame; animate: boolean; motion?: ArenaTurnMotion }
+function timedMotion(fields: Omit<ArenaTurnMotion, 'startedAt'>, offset = 0, held = false): ArenaTurnMotion {
+  let origin: number | undefined
+  const clock = fields.fireAtMs && !held ? new ArenaVolleyClock(offset, fields.durationMs) : undefined
+  return { ...fields, clock, heldAt: held ? offset : undefined, get startedAt() { return origin ??= performance.now() - offset } }
+}
 
 /** Only animate an actual advance from the board the child was looking at. */
-export function useArenaTurnPresentation(scene: number, snapshot: ArenaSnapshot, frame?: ArenaFrame, allowMotion = true) {
-  const reduced = useSyncExternalStore(subscribeMotionPreference, prefersReducedMotion)
-  const animate = allowMotion && !reduced
-  const [last, setLast] = useState<ShownTurn>({ scene, snapshot, frame, animate })
+export function useArenaTurnPresentation(scene: number, snapshot: ArenaSnapshot, frame: ArenaFrame | undefined, allowMotion: boolean, onVolleyStart: () => void) {
+  const reduced = useSystemReducedMotion()
+  const [surfaceVisible, setSurfaceVisible] = useState(false)
+  const [last, setLast] = useState<ShownTurn>({ scene, snapshot, frame, allowMotion })
   let shown = last
-  if (scene !== last.scene || frame !== last.frame || animate !== last.animate || snapshot.turn !== last.snapshot.turn) {
-    shown = { scene, snapshot, frame, animate }
-    if (animate && frame?.state === snapshot && scene === last.scene && snapshot.turn === last.snapshot.turn + 1) {
-      const timing = arenaTurnTiming(frame.events, snapshot.actors)
+  if (scene !== last.scene || frame !== last.frame || allowMotion !== last.allowMotion || snapshot.turn !== last.snapshot.turn
+    || (reduced && last.motion && !last.explicitAttack)) {
+    shown = { scene, snapshot, frame, allowMotion }
+    if (allowMotion && frame?.state === snapshot && scene === last.scene && snapshot.turn === last.snapshot.turn + 1) {
+      const { speed, explicit } = readArenaAttackPlayback()
+      const timing = arenaTurnTiming(frame.events, snapshot.actors, speed)
+      if (timing.fireAtMs) shown.volleyFrame = frame
       shown.previousFrame = last.frame
-      if (timing.durationMs) {
-        let startedAt: number | undefined
-        shown.motion = {
+      shown.explicitAttack = explicit && timing.fireAtMs > 0
+      if (timing.durationMs && (!reduced || shown.explicitAttack)) {
+        const hold = timing.fireAtMs > 0 && !surfaceVisible
+        shown.motion = timedMotion({
           ...timing, turn: snapshot.turn, from: last.snapshot.actors, to: snapshot.actors, events: frame.events,
-          // Both renderers first read the clock during layout, once the new board actually exists.
-          get startedAt() { return startedAt ??= performance.now() },
-        }
+        }, 0, hold)
       }
     }
-    setLast(shown)
+  } else if (last.motion?.fireAtMs) {
+    // Count the volley only while the board can display it. Rebase both renderers and
+    // the HP milestones onto the same elapsed time when the child returns.
+    if (!surfaceVisible && last.motion.heldAt === undefined) {
+      const elapsed = arenaElapsed(last.motion, performance.now())
+      if (elapsed < last.motion.durationMs) shown = { ...last, motion: timedMotion(last.motion, elapsed, true) }
+    } else if (surfaceVisible && last.motion.heldAt !== undefined) {
+      shown = { ...last, motion: timedMotion(last.motion, last.motion.heldAt), resumeOffset: last.motion.heldAt }
+    }
   }
+  if (shown !== last) setLast(shown)
 
-  const { motion } = shown
+  const { volleyFrame } = shown
+  const uncoverVolley = useEffectEvent(onVolleyStart)
+  useLayoutEffect(() => {
+    if (volleyFrame) uncoverVolley()
+  }, [volleyFrame])
+
+  const { motion, resumeOffset = 0 } = shown
+  const heldAt = motion?.heldAt
   const [mark, setMark] = useState<{ motion: ArenaTurnMotion; elapsed: number }>()
   useLayoutEffect(() => {
-    if (!motion) return
-    const start = motion.startedAt
-    // Geometry runs in the renderers. React only updates when a hit lands or the turn settles.
-    const milestones = new Set([motion.durationMs])
-    for (const shot of motion.events) {
-      if (shot.action === 'shoot' && shot.targetId) milestones.add(arenaShotImpactMs(motion, shot))
+    if (!motion || heldAt !== undefined) return
+    const { clock } = motion
+    if (clock) {
+      const milestones = [motion.durationMs, ...motion.events
+        .filter(shot => shot.action === 'shoot' && shot.targetId)
+        .map(shot => arenaShotImpactMs(motion, shot))]
+      const draw = (now: number) => {
+        const previous = clock.elapsed
+        clock.draw(now)
+        // React only updates when a hit is visible or the turn settles.
+        if (milestones.some(time => previous < time && clock.elapsed >= time)) {
+          setMark({ motion, elapsed: clock.elapsed })
+        }
+        if (clock.elapsed < motion.durationMs) request = requestAnimationFrame(draw)
+      }
+      let request = requestAnimationFrame(draw)
+      return () => cancelAnimationFrame(request)
     }
-    const timers = [...milestones].map(elapsed => window.setTimeout(() => {
-      setMark({ motion, elapsed: Math.max(elapsed, performance.now() - start) })
-    }, Math.max(0, start + elapsed - performance.now())))
-    return () => timers.forEach(timer => window.clearTimeout(timer))
-  }, [motion])
-  const elapsed = motion && mark?.motion === motion ? mark.elapsed : 0
-  const pendingShots = motion?.events.filter(shot => shot.action === 'shoot' && shot.targetId
-    && elapsed < arenaShotImpactMs(motion, shot)) ?? []
+    const timer = window.setTimeout(() => setMark({ motion, elapsed: motion.durationMs }),
+      Math.max(0, motion.durationMs - arenaElapsed(motion, performance.now())))
+    return () => window.clearTimeout(timer)
+  }, [motion, heldAt])
+  const elapsed = heldAt ?? (motion && mark?.motion === motion ? mark.elapsed : resumeOffset)
+  const pendingShots = useMemo(() => motion?.events.filter(shot => shot.action === 'shoot' && shot.targetId
+    && elapsed < arenaShotImpactMs(motion, shot)) ?? [], [motion, elapsed])
   const inFlight = !!motion && elapsed < motion.durationMs
-  return { motion, pendingShots, inFlight, reportedFrame: inFlight ? shown.previousFrame : frame }
+  return { motion, pendingShots, inFlight, setSurfaceVisible, reportedFrame: inFlight ? shown.previousFrame : frame }
 }
 
 export type ArenaTurnPresentation = ReturnType<typeof useArenaTurnPresentation>
 
-export function arenaHudSnapshot(snapshot: ArenaSnapshot, { pendingShots, motion }: ArenaTurnPresentation): ArenaSnapshot {
+export function arenaHudSnapshot(snapshot: ArenaSnapshot, { pendingShots, motion }: Pick<ArenaTurnPresentation, 'pendingShots' | 'motion'>): ArenaSnapshot {
   if (!pendingShots.length) return snapshot
   const actors = snapshot.actors.map(actor => {
     const incoming = pendingShots.filter(shot => shot.targetId === actor.id)

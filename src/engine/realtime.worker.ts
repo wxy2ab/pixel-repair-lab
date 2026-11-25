@@ -6,6 +6,7 @@ let timer: ReturnType<typeof setTimeout> | undefined
 let phase: 'empty' | 'ready' | 'paused' | 'playing' | 'done' = 'empty'
 let firstTurnMs = ARENA_TURN_MS
 let deadline = 0
+let awaitingVolley: number | undefined
 
 function send(response: RealtimeArenaResponse) {
   self.postMessage(response)
@@ -21,15 +22,18 @@ function start(firstAction?: ArenaChoice) {
   if (!session || (phase !== 'ready' && phase !== 'paused')) return
   if (firstAction !== undefined && (phase !== 'ready' || !session.queueAction(firstAction))) return
   phase = 'playing'
-  send({ type: 'started', nextAt: schedule(firstTurnMs), progress: session.progress })
+  send({ type: 'started', nextAt: awaitingVolley === undefined ? schedule(firstTurnMs) : undefined, progress: session.progress })
 }
 
 function tick() {
   if (!session || phase !== 'playing') return
   const turn = session.tick()
   if (!turn) return
+  firstTurnMs = ARENA_TURN_MS
+  // Actions can be queued during a volley. Its time on screen is separate from the next decision.
+  awaitingVolley = !turn.result && turn.frame.events.some(event => event.action === 'shoot') ? turn.frame.state.turn : undefined
   if (turn.result) phase = 'done'
-  send({ type: 'turn', ...turn, nextAt: turn.result ? undefined : schedule(), progress: session.progress })
+  send({ type: 'turn', ...turn, nextAt: !turn.result && awaitingVolley === undefined ? schedule() : undefined, progress: session.progress })
 }
 
 self.addEventListener('message', (event: MessageEvent<RealtimeArenaRequest>) => {
@@ -37,6 +41,7 @@ self.addEventListener('message', (event: MessageEvent<RealtimeArenaRequest>) => 
   switch (request.type) {
     case 'prepare': {
       clearTimeout(timer)
+      awaitingVolley = undefined
       const checkpoint = validateRealtimeArenaCheckpoint(request.checkpoint, request.level.maxTurns, Boolean(request.level.combat))
       const restored = checkpoint && RealtimeArenaSession.restore(request.level, checkpoint, request.personal, request.course)
       session = restored ?? new RealtimeArenaSession(request.level, request.personal, request.course)
@@ -55,9 +60,14 @@ self.addEventListener('message', (event: MessageEvent<RealtimeArenaRequest>) => 
     case 'pause':
       if (phase !== 'playing' || !session) break
       clearTimeout(timer)
-      firstTurnMs = Math.max(0, Math.min(ARENA_TURN_MS, deadline - Date.now()))
+      firstTurnMs = awaitingVolley === undefined ? Math.max(0, Math.min(ARENA_TURN_MS, deadline - Date.now())) : ARENA_TURN_MS
       phase = 'paused'
       send({ type: 'paused', checkpoint: { ...session.progress, remainingMs: firstTurnMs } })
+      break
+    case 'presented':
+      if (!session || request.turn !== awaitingVolley) break
+      awaitingVolley = undefined
+      if (phase === 'playing') send({ type: 'started', nextAt: schedule(), progress: session.progress })
       break
     case 'policy': {
       if (!session || (phase !== 'ready' && phase !== 'paused' && phase !== 'playing')) break
