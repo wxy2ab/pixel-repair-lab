@@ -94,8 +94,55 @@ test('a timed score run ends with the normal race score and result', () => {
   for (let turn = 0; turn < 7; turn++) assert.equal(match.tick()?.result, undefined)
   const victory = match.tick()?.result
   assert.equal(victory?.won, true)
+  assert.equal(victory?.policyOnly, true)
   assert.equal(victory?.reason, 'score')
   assert.deepEqual(victory?.final.actors.map(({ score }) => score), [4, 1, 2])
+})
+
+test('winning the same race with one or more manual turns is a practice win', () => {
+  const actions = ['right', 'pick', 'right', 'pick', 'right', 'pick', 'down', 'pick'] as const
+  for (const manualTurns of [[0], [7], actions.map((_, turn) => turn)]) {
+    const match = new RealtimeArenaSession(score)
+    match.setPolicy(winningPolicy)
+    const turns = actions.map((action, index) => {
+      if (manualTurns.includes(index)) match.queueAction(action)
+      return match.tick()!
+    })
+    assert.equal(turns.at(-1)?.result?.won, true)
+    assert.equal(turns.at(-1)?.result?.policyOnly, false)
+  }
+})
+
+test('fallback waits are practice, even if a policy is enabled again before the match ends', () => {
+  const match = new RealtimeArenaSession(score)
+  match.tick()
+  match.setPolicy(winningPolicy)
+  match.tick()
+  assert.equal(match.progress.policyOnly, false)
+
+  const broken = new RealtimeArenaSession(score)
+  broken.setPolicy('def decide(state):\n    if state["turn"] == 0:\n        return "wait"\n    return "invalid"')
+  broken.tick()
+  assert.equal(broken.progress.policyOnly, true)
+  assert.equal(broken.tick()?.issue?.detail, 'decide')
+  broken.setPolicy(winningPolicy)
+  assert.equal(broken.progress.policyOnly, false)
+})
+
+test('policy-only, mixed and legacy histories keep their eligibility when loaded', () => {
+  const match = new RealtimeArenaSession(score)
+  match.setPolicy(winningPolicy)
+  match.tick()
+  const { policyOnly, ...legacy } = match.progress
+  assert.equal(policyOnly, true)
+  for (const [progress, eligible] of [[match.progress, true], [{ ...legacy, policyOnly: false }, false], [legacy, false]] as const) {
+    const checkpoint = validateRealtimeArenaCheckpoint({ ...progress, remainingMs: 650 }, score.maxTurns)!
+    const restored = RealtimeArenaSession.restore(score, checkpoint)!
+    let turn = restored.tick()!
+    while (!turn.result) turn = restored.tick()!
+    assert.equal(turn.result.won, true)
+    assert.equal(turn.result.policyOnly, eligible)
+  }
 })
 
 test('restoring replays actual choices and resumes the queued move and live policy', () => {
@@ -148,6 +195,7 @@ test('checkpoint data requires valid choices, timing and a pending turn', () => 
     { ...bare, actions: ['jump'] },
     { ...bare, policy: ' '.repeat(10) },
     { ...bare, policy: 'a'.repeat(12_001) },
+    { ...bare, policyOnly: 'true' },
     { ...bare, queued: 'jump' },
     { ...bare, remainingMs: NaN },
     { ...bare, remainingMs: -1 },

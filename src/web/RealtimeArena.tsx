@@ -1,17 +1,19 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import {
-  ARENA_TURN_MS, type ArenaChoice, type RealtimeArenaCheckpoint, type RealtimeArenaProgress, type RealtimePolicyStep,
+  ARENA_TURN_MS, type ArenaChoice, type RealtimeArenaCheckpoint, type RealtimeArenaProgress, type RealtimeArenaResult, type RealtimePolicyStep,
   type RealtimeArenaRequest, type RealtimeArenaResponse,
 } from '../engine/realtimeProtocol'
 import { initialArenaSnapshot } from '../engine/snapshot'
 import { mapScenarioAt } from '../shared/mapScenarios'
-import type { ArenaFrame, ArenaLevel, ArenaResult, PersonalAlgorithms } from '../shared/advanced'
+import type { ArenaFrame, ArenaLevel, PersonalAlgorithms } from '../shared/advanced'
 import type { Locale, Position, RunIssue } from '../shared/types'
 import { ArenaBoard, ArenaStateReference, ArenaTurnEvents, arenaResultText } from './ArenaPanels'
 import { arenaPlayerActivity } from './arenaActivities'
+import { useArenaFinishPresentation, useArenaTurnPresentation } from './useArenaTurnPresentation'
 import { ArenaObservationBoard } from './ArenaObservationBoard'
 import { ArenaConsolePanel, ArenaConsoleToggle, type ArenaConsoleControl } from './ArenaConsole'
 import { ArenaMapOutcome, ArenaMatchKeys } from './ArenaMapShortcuts'
+import { focusArenaBoard, useArenaKeyboardMode } from './ArenaMapMode'
 import MapScenarioPicker from './MapScenarioPicker'
 import { runIssueText, tr } from './text'
 import { CourseHelperPicker } from './CourseHelperPicker'
@@ -29,8 +31,11 @@ import { CodeField } from './CodeField'
 import { HintSteps } from './HintSteps'
 import './realtimeArena.css'
 
+export const starterArenaPolicy = 'def decide(state):\n    return "wait"\n'
+
 type Props = {
   consoleControl: ArenaConsoleControl
+  onReadOnlyMapChange: (value: boolean) => void
   level: ArenaLevel
   locale: Locale
   onComplete: () => void
@@ -58,23 +63,31 @@ const pulseDirections = [
   { dir: 'down', icon: '↓', zh: '下', en: 'down' }, { dir: 'right', icon: '→', zh: '右', en: 'right' },
 ] as const
 
+function arenaActionLabel(action: ArenaChoice, locale: Locale) {
+  const direction = pulseDirections.find(({ dir }) => action === dir || action === 'shoot-' + dir)
+  if (direction) {
+    return action === direction.dir ? tr(locale, '向' + direction.zh, 'Move ' + direction.en)
+      : tr(locale, '向' + direction.zh + '发射', 'Fire ' + direction.en)
+  }
+  if (action === 'pick') return tr(locale, '拾取', 'Pick')
+  if (action === 'guard') return tr(locale, '防守', 'Guard')
+  return tr(locale, '等待', 'Wait')
+}
+
 function CombatPad({ locale, queued, choose }: { locale: Locale; queued?: ArenaChoice; choose: (action: ArenaChoice) => void }) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
-  function button(action: ArenaChoice, label: string, face: string) {
+  function button(action: ArenaChoice, face?: string) {
+    const label = arenaActionLabel(action, locale)
     return <button type="button" key={action} className="subtle-button" aria-label={label} title={label}
-      data-arena-action={action} aria-pressed={queued === action} onClick={() => choose(action)}>{face}</button>
+      data-arena-action={action} aria-pressed={queued === action} onClick={() => choose(action)}>{face ?? label}</button>
   }
   return <div className="arena-combat-pad" role="group" aria-label={t('下一回合动作', 'Action for the next turn')}>
     <div className="arena-combat-axes">{(['move', 'shoot'] as const).map(kind =>
       <div key={kind} data-action-group={kind}><span>{kind === 'shoot' ? t('发射', 'Fire') : t('移动', 'Move')}</span>
-        {pulseDirections.map(({ dir, icon, zh, en }) => kind === 'shoot'
-          ? button(`shoot-${dir}`, t('向' + zh + '发射', 'Fire ' + en), icon)
-          : button(dir, t('向' + zh, 'Move ' + en), icon))}
+        {pulseDirections.map(({ dir, icon }) => button(kind === 'shoot' ? `shoot-${dir}` : dir, icon))}
       </div>)}</div>
     <div className="arena-combat-utility">
-      {button('guard', t('防守', 'Guard'), t('防守', 'Guard'))}
-      {button('pick', t('拾取', 'Pick'), t('拾取', 'Pick'))}
-      {button('wait', t('等待', 'Wait'), t('等待', 'Wait'))}
+      {button('guard')}{button('pick')}{button('wait')}
     </div>
   </div>
 }
@@ -135,37 +148,46 @@ function TurnTimer({ clock, locale }: { clock: Clock; locale: Locale }) {
 }
 
 export function RealtimeArena(props: Props) {
-  const [attempt, setAttempt] = useState(0)
+  const [attempt, setAttempt] = useState<{ index: number; initialPolicy?: string }>({ index: 0 })
   const startAttempt = props.challenge?.onStart
-  const reset = useCallback(() => {
+  const reset = useCallback((initialPolicy?: string) => {
     startAttempt?.()
-    setAttempt(value => value + 1)
+    setAttempt(last => ({ index: last.index + 1, initialPolicy }))
   }, [startAttempt])
-  return <RealtimeMatch key={attempt} {...props} initialCheckpoint={attempt === 0 ? props.initialCheckpoint : undefined} reset={reset} />
+  return <RealtimeMatch key={attempt.index} {...props} initialPolicy={attempt.initialPolicy}
+    initialCheckpoint={attempt.index === 0 ? props.initialCheckpoint : undefined} reset={reset} />
 }
 
-function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course, code, setCode, challenge, initialCheckpoint, onCheckpointChange, reset, consoleControl }: Props & { reset: () => void }) {
+function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course, code, setCode, challenge, initialCheckpoint, onCheckpointChange, reset, consoleControl, initialPolicy, onReadOnlyMapChange }: Props & {
+  reset: (initialPolicy?: string) => void; initialPolicy?: string
+}) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const [phase, setPhase] = useState<Phase>('preparing')
   const [mapIndex, setMapIndex] = useState(0)
   const [observing, setObserving] = useState(false)
+  const keyboardMode = useArenaKeyboardMode()
+  const openingKey = useRef<ArenaChoice | undefined>(undefined)
   const [initial, setInitial] = useState(() => initialArenaSnapshot(level))
   const [frame, setFrame] = useState<ArenaFrame>()
   const [activityFrame, setActivityFrame] = useState<ArenaFrame>()
   const [playerPositions, setPlayerPositions] = useState<Position[]>(() => [level.start])
   const trail = useTrailPreference()
   const [latestShift, setLatestShift] = useState<ArenaFrame['shift']>()
-  const [result, setResult] = useState<ArenaResult>()
+  const [result, setResult] = useState<RealtimeArenaResult>()
+  const [practice, setPractice] = useState(initialCheckpoint !== undefined && initialCheckpoint.policyOnly !== true)
   const [clock, setClock] = useState<Clock>()
   const [queued, setQueued] = useState<ArenaChoice>()
-  const [policyActive, setPolicyActive] = useState(false)
+  const [appliedPolicy, setAppliedPolicy] = useState<string>()
+  const [disabledDraft, setDisabledDraft] = useState<string>()
   const [policyPending, setPolicyPending] = useState(false)
   const [policyIssue, setPolicyIssue] = useState<RunIssue>()
   const [policyStep, setPolicyStep] = useState<RealtimePolicyStep>()
+  const policyEditor = useRef<HTMLTextAreaElement>(null)
+  const focusPolicyIssue = useRef(false)
   const worker = useRef<Worker | null>(null)
   const requestId = useRef(0)
   const completion = useRef(onComplete)
-  const creditedResult = useRef<ArenaResult | undefined>(undefined)
+  const creditedResult = useRef<RealtimeArenaResult | undefined>(undefined)
   const mistake = useRef(onMistake)
   const runModules = useRef(personal)
   const runCourse = useRef(course)
@@ -178,10 +200,29 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
   }, [snapshot.turn])
   const active = phase === 'ready' || phase === 'paused' || phase === 'playing'
   const dynamic = Boolean(level.shifts?.length)
-  const shownLevel = mapScenarioAt(level, mapIndex)
+  const shownLevel = useMemo(() => mapScenarioAt(level, mapIndex), [level, mapIndex])
+  const activity = useMemo(() => arenaPlayerActivity(activityFrame), [activityFrame])
   const preview = mapIndex > 0
-  const policyCursor = usePolicyPlayback(policyStep, phase === 'paused' || observing || preview)
-  const review = phase === 'done' && result && !result.won ? arenaFailureReview(result) : undefined
+  const readOnlyMap = observing || preview
+  const visibleSnapshot = preview ? initialArenaSnapshot(shownLevel) : snapshot
+  const presentation = useArenaTurnPresentation(mapIndex, visibleSnapshot, preview ? undefined : frame, !readOnlyMap && frame === activityFrame)
+  const showResult = phase === 'done' && !presentation.inFlight
+  useArenaFinishPresentation(level.id, phase === 'done' && presentation.inFlight)
+  const playerControls = keyboardMode === 'player' && !readOnlyMap
+  const preparingFresh = phase === 'preparing' && !initialCheckpoint && initialPolicy === undefined
+  const canOpenWithKey = !policyPending && (preparingFresh || phase === 'ready')
+  const policyCursor = usePolicyPlayback(policyStep, phase === 'paused' || readOnlyMap)
+  const review = showResult && result && !result.won ? arenaFailureReview(result) : undefined
+
+  useLayoutEffect(() => {
+    if (!readOnlyMap) return
+    onReadOnlyMapChange(true)
+    return () => onReadOnlyMapChange(false)
+  }, [readOnlyMap, onReadOnlyMapChange])
+
+  useLayoutEffect(() => {
+    if (!playerControls) openingKey.current = undefined
+  }, [playerControls])
 
   useEffect(() => { completion.current = onComplete }, [onComplete])
   useEffect(() => { mistake.current = onMistake }, [onMistake])
@@ -203,7 +244,7 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
   }, [clearCheckpoint, reset])
 
   useEffect(() => {
-    if (!challenge || !result || creditedResult.current === result) return
+    if (!challenge || !result?.policyOnly || creditedResult.current === result) return
     creditedResult.current = result
     const score: ChallengeScore = {
       kind: 'arena', mode: 'timed', goal: level.objective.kind,
@@ -213,6 +254,24 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
     if (result.won) challenge.onWin(score, resetMatch, arenaGoalReplayEvidence(result))
     else if (result.issue?.code !== 'internal') challenge.onFailure(score, arenaGoalReplayEvidence(result))
   }, [challenge, level.objective.kind, resetMatch, result])
+
+  const finishPreparation = useEffectEvent(() => {
+    const action = openingKey.current
+    openingKey.current = undefined
+    if (action !== undefined && playerControls) start(action)
+    else setPhase('ready')
+  })
+  const revealPolicyIssue = useEffectEvent(() => {
+    focusPolicyIssue.current = true
+    if (!consoleControl.open) consoleControl.toggle()
+  })
+  useLayoutEffect(() => {
+    if (policyIssue && consoleControl.open && focusPolicyIssue.current) {
+      focusPolicyIssue.current = false
+      policyEditor.current?.focus()
+    }
+  }, [policyIssue, consoleControl.open])
+
   useEffect(() => {
     let runner: Worker
     try {
@@ -224,6 +283,7 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
     worker.current = runner
 
     function updateProgress(progress: RealtimeArenaProgress, nextClock = saved.current?.clock) {
+      setPractice(progress.policyOnly !== true)
       if (nextClock) {
         saved.current = { progress, clock: nextClock }
         saveCheckpoint()
@@ -244,19 +304,21 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
             setPlayerPositions([level.start, ...message.restored.playerPositions])
             setLatestShift(latestShift)
             setQueued(progress.queued)
-            setPolicyActive(Boolean(progress.policy))
+            setAppliedPolicy(progress.policy)
             setClock(clock)
             setPhase('paused')
             updateProgress(progress, clock)
           } else {
             if (resumeFrom.current) clearCheckpoint()
-            setPhase('ready')
+            setPractice(false)
+            finishPreparation()
           }
           break
         }
         case 'started': {
           const clock = { deadline: message.nextAt }
           setClock(clock)
+          setQueued(message.progress.queued)
           setPhase('playing')
           updateProgress(message.progress, clock)
           break
@@ -273,8 +335,12 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
           updateProgress(message.progress)
           if (requestId.current !== message.requestId) break
           setPolicyPending(false)
-          setPolicyActive(message.active)
+          setAppliedPolicy(message.progress.policy)
           setPolicyIssue(message.issue)
+          if (message.issue) {
+            setPhase(current => current === 'starting' ? 'ready' : current)
+            revealPolicyIssue()
+          }
           break
         case 'action':
           setQueued(message.progress.queued)
@@ -291,15 +357,17 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
           setQueued(message.progress.queued)
           if (message.issue) {
             setPolicyIssue(message.issue)
-            setPolicyActive(false)
+            setAppliedPolicy(undefined)
           }
           if (message.result) {
             clearCheckpoint()
             setResult(message.result)
             setPolicyPending(false)
             setPhase('done')
-            if (message.result.won) completion.current()
-            else if (message.result.issue?.code !== 'internal') mistake.current?.()
+            if (message.result.policyOnly) {
+              if (message.result.won) completion.current()
+              else if (message.result.issue?.code !== 'internal') mistake.current?.()
+            }
           } else if (clock) updateProgress(message.progress, clock)
           break
         }
@@ -323,6 +391,10 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
       type: 'prepare', level, personal: runModules.current, course: runCourse.current, checkpoint: resumeFrom.current,
     }
     runner.postMessage(request)
+    if (initialPolicy !== undefined) {
+      setPolicyPending(true)
+      runner.postMessage({ type: 'policy', source: initialPolicy, requestId: ++requestId.current, startOnSuccess: true } satisfies RealtimeArenaRequest)
+    }
     window.addEventListener('pagehide', saveCheckpoint)
     return () => {
       window.removeEventListener('pagehide', saveCheckpoint)
@@ -330,16 +402,30 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
       worker.current = null
       runner.terminate()
     }
-  }, [clearCheckpoint, level, saveCheckpoint])
+  }, [clearCheckpoint, initialPolicy, level, saveCheckpoint])
 
   function send(request: RealtimeArenaRequest) {
     worker.current?.postMessage(request)
   }
 
-  function start() {
-    if (phase === 'ready') challenge?.onStart()
+  function start(firstAction?: ArenaChoice) {
+    if (phase !== 'paused') challenge?.onStart()
     setPhase('starting')
-    send({ type: 'start' })
+    if (phase === 'ready' && firstAction === undefined) {
+      // A fresh Start runs the visible draft. Resume uses the saved match's applied policy.
+      const desiredPolicy = code !== disabledDraft && (hasDraftPolicy || code === appliedPolicy) ? code : undefined
+      if (desiredPolicy !== appliedPolicy) {
+        applyPolicy(desiredPolicy ?? '', true)
+        return
+      }
+    }
+    send({ type: 'start', firstAction })
+  }
+
+  function handleMatchKey(action: ArenaChoice) {
+    if (phase === 'playing') queueAction(action)
+    else if (phase === 'ready') start(action)
+    else if (preparingFresh) openingKey.current ??= action
   }
 
   function changeMap(index: number) {
@@ -350,11 +436,12 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
     setMapIndex(index)
   }
 
-  function applyPolicy(source: string) {
+  function applyPolicy(source: string, startOnSuccess = false) {
+    setDisabledDraft(source ? undefined : code)
     setPolicyPending(true)
     setPolicyIssue(undefined)
     setPolicyStep(undefined)
-    send({ type: 'policy', source, requestId: ++requestId.current })
+    send({ type: 'policy', source, requestId: ++requestId.current, startOnSuccess })
   }
 
   function insertImport(module: 'algorithms' | 'my_algorithms', name: string) {
@@ -362,39 +449,59 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
     if (!code.split('\n').includes(statement)) setCode(`${statement}\n\n${code}`)
   }
 
-  const policyFeedback = policyIssue?.detail === 'decide'
-    ? t('策略需要写成 decide(state)，并返回一个可用动作。', 'Define decide(state) and return one of the available actions.')
-    : policyIssue ? runIssueText(locale, policyIssue) : undefined
+  let policyFeedback = policyIssue && runIssueText(locale, policyIssue)
+  if (policyIssue?.detail === 'decide') {
+    const line = policyIssue.line ? t(`第 ${policyIssue.line} 行 · `, `Line ${policyIssue.line} · `) : ''
+    policyFeedback = line + t('策略需要写成 decide(state)，并返回一个可用动作。', 'Define decide(state) and return one of the available actions.')
+  }
 
   const canStart = phase === 'ready' || phase === 'paused'
   const canReset = phase === 'paused' || phase === 'playing' || phase === 'done' || phase === 'failed'
-  const observeButton = (canStart || phase === 'done') && <button type="button" className="subtle-button" data-testid="map-observe-start"
+  const observeButton = (canStart || showResult) && <button type="button" className="subtle-button" data-testid="map-observe-start"
     onClick={() => { setActivityFrame(undefined); setObserving(true) }}>{t('观察地图', 'Observe map')}</button>
   const resume = clock && 'remainingMs' in clock
-  const status = result ? arenaResultText(result, locale, dynamic) : {
+  const readyHint = t('按方向键或 WASD，第一步就能开局。', 'Press an arrow key or WASD to make your first move and start.')
+  const pausedHint = t('已暂停。点「继续对局」后可控制芽芽。', 'Paused. Choose Resume match to control Sprout.')
+  const nextAction = phase === 'playing' && queued ? arenaActionLabel(queued, locale) : undefined
+  const keyboardCue = playerControls ? nextAction ? t(`下一回合 · ${nextAction}`, `Next turn · ${nextAction}`)
+    : canOpenWithKey ? readyHint : phase === 'paused' ? pausedHint : undefined : undefined
+  const matchResult = result && arenaResultText(result, locale, dynamic)
+  const outcome = result && !result.policyOnly
+    ? t(`练习结束 · ${matchResult} 让 Python 从第 1 回合独立达成目标，就能通关。`,
+      `Practice complete · ${matchResult} To clear the level, reach the goal with Python from turn 1.`) : matchResult
+  const status = (showResult ? outcome : undefined) ?? {
     preparing: resumeFrom.current ? t('正在恢复棋盘…', 'Restoring the board…') : t('正在准备棋盘…', 'Setting up the board…'),
     ready: t('尚未开始。准备好再出发。', 'Waiting to start. Begin when you are ready.'),
     paused: t('对局已暂停。点继续对局后再计时。', 'Match paused. The timer resumes when you continue.'),
     starting: t('正在开始…', 'Starting…'),
-    playing: t('对抗进行中', 'Match in progress'),
-    done: undefined,
+    playing: practice ? t('对抗练习进行中', 'Practice match in progress') : t('对抗进行中', 'Match in progress'),
+    done: presentation.inFlight ? t('本回合进行中', 'Turn in progress') : undefined,
     failed: t('赛场连接中断。重新准备再试。', 'The arena stopped responding. Set up a new round to retry.'),
   }[phase]
 
-  const showPad = Boolean(level.combat && phase === 'playing' && !preview && !observing)
+  const acceptsActions = phase === 'playing' && !readOnlyMap
+  const showPad = Boolean(level.combat && acceptsActions)
+  const hasDraftPolicy = Boolean(code.trim()) && code.trim() !== starterArenaPolicy.trim()
+  const draftStartsMatch = hasDraftPolicy && code !== disabledDraft
+  let policyStatus = t('尚未启用策略', 'No active policy')
+  if (policyPending) policyStatus = t('正在检查策略…', 'Checking policy…')
+  else if (code === appliedPolicy) policyStatus = t('策略已启用', 'Policy active')
+  else if (phase === 'ready' && draftStartsMatch) policyStatus = t('点「开始」从第 1 回合运行这段代码。', 'Choose Start to run this code from turn 1.')
+  else if (appliedPolicy) policyStatus = t('草稿已修改。点「替换策略」可启用当前代码。', 'Draft edited. Choose Replace policy to use this code.')
   return <>
-    <ArenaMatchKeys playing={phase === 'playing' && !preview && !observing} combat={Boolean(level.combat)} onChoose={queueAction} />
-    <ArenaMapOutcome won={phase === 'done' && result?.won} text={!observing && !preview && (phase === 'failed' || phase === 'done') ? status : undefined} />
+    <ArenaMatchKeys playing={!readOnlyMap && (phase === 'playing' || canOpenWithKey)} combat={Boolean(level.combat)} onChoose={handleMatchKey} />
+    {consoleControl.mapMode && keyboardCue && <p className="arena-keyboard-cue" role="status">{keyboardCue}</p>}
+    <ArenaMapOutcome won={showResult && result?.policyOnly && result.won} text={!observing && !preview && (phase === 'failed' || showResult) ? status : undefined} />
     <div className="play-column">
       {observing ? <ArenaObservationBoard level={level} locale={locale} initialMap={mapIndex} onExit={() => setObserving(false)} /> : <>
-      <ArenaBoard level={shownLevel} locale={locale} snapshot={preview ? initialArenaSnapshot(shownLevel) : snapshot} frame={preview ? undefined : frame}
-        activity={!preview ? arenaPlayerActivity(activityFrame) : undefined}
+      <ArenaBoard level={shownLevel} locale={locale} snapshot={visibleSnapshot} frame={preview ? undefined : frame} presentation={presentation}
+        activity={!preview ? activity : undefined}
         trail={trail.visible && !preview ? playerPositions : undefined}
         latestShift={preview ? undefined : latestShift} finished={!preview && (phase === 'done' || phase === 'failed')}
         mapPicker={<MapScenarioPicker locale={locale} count={1 + (level.variants?.length ?? 0)} index={mapIndex} onChange={changeMap} />}>
         {preview ? <p role="status">{t('地图预览。紧张模式在地图 1 进行。', 'Map preview. Timed matches take place on Map 1.')}</p> : <div className="timed-arena-controls">
-          <p role="status" className={result?.won ? 'win-message' : result || phase === 'failed' ? 'error-message' : undefined}>
-            {status}
+          <p role="status" className={showResult && result?.won ? 'win-message' : showResult || phase === 'failed' ? 'error-message' : undefined}>
+            {consoleControl.mapMode ? status : keyboardCue ?? status}
           </p>
           {clock && !showPad && <TurnTimer clock={clock} locale={locale} />}
           {frame && policyStep && policyCursor.count > 0 && <PolicyPlayback step={policyStep} frame={frame} cursor={policyCursor} locale={locale} />}
@@ -407,7 +514,7 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
         </div>}
       </ArenaBoard>
       {!preview && review && <ChallengeFailureReview review={review} onRetry={resetMatch} />}
-      {!preview && frame && <ArenaTurnEvents frame={frame} level={level} locale={locale} />}
+      {!preview && presentation.reportedFrame && <ArenaTurnEvents frame={presentation.reportedFrame} level={level} locale={locale} />}
       </>}
     </div>
     <ArenaConsolePanel control={consoleControl} locale={locale}><CommandDesk locale={locale}>
@@ -416,19 +523,21 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
           <div className="panel-heading"><h2><span className="bracket-icon" aria-hidden="true">{'{ }'}</span>{t('实时 Python 策略', 'Live Python policy')}</h2></div>
           <div className="editor-body">
             <label htmlFor="realtime-python" className="python-label">{dynamic ? 'decide(state)' : t('编写 decide(state)', 'Write decide(state)')}</label>
-            <CodeField id="realtime-python" locale={locale} maxLength={12000} value={code} onChange={setCode} />
+            <CodeField id="realtime-python" inputRef={policyEditor} locale={locale} maxLength={12000} value={code} onChange={setCode}
+              onRun={!readOnlyMap && phase === 'ready' && !policyPending ? () => start() : undefined} />
+            <p role={policyFeedback ? 'alert' : 'status'} className={'timed-policy-status' + (policyFeedback ? ' error-message' : '')}>
+              {policyFeedback ?? policyStatus}
+            </p>
             {!preview && !observing && phase !== 'failed' && frame && policyStep?.source === code &&
               <ExecutionSource locale={locale} code={code} current={policyCursor.event ?? policyStep}
                 personal={runModules.current} course={runCourse.current} />}
-            <p className="timed-policy-note">{dynamic
-              ? t('每回合执行一个动作。点按优先于策略，两者均无时原地等待。',
-                'One action per turn. A button press overrides the policy. Sprout waits if neither supplies an action.')
-              : t('每回合把最新的赛场交给策略。返回一个动作。没有策略或接管指令时，芽芽会原地等待。',
-                'Your policy gets the latest arena each turn. Return one action. Sprout waits whenever there is no policy or button press.')}</p>
+            <p className="timed-policy-note">{t('键盘和按钮可以接管下一回合。正式通关时，让 Python 从第 1 回合起选择每一步。',
+              'Use the keyboard or buttons to take over the next turn. To clear the level, let Python choose every move from turn 1.')}</p>
             <div className="api-list">{[...commands.map(({ action }) => action), ...(level.combat ? ['guard', ...pulseDirections.map(({ dir }) => 'shoot-' + dir)] : [])]
               .map(action => <code key={action}>{JSON.stringify(action)}</code>)}</div>
             <CourseHelperPicker names={level.helpers} course={course} personal={personal} code={code} locale={locale} onChange={setCode} />
-            {(dynamic || level.combat) && <ArenaStateReference locale={locale} timed dynamic={dynamic} combat={Boolean(level.combat)} />}
+            {(dynamic || level.combat) && <ArenaStateReference locale={locale} timed dynamic={dynamic} combat={Boolean(level.combat)}
+              hasSwitches={Boolean(level.combat?.switches?.length)} />}
             {(!dynamic || Object.keys(personal).some(name => !level.helpers?.includes(name))) && <details className="timed-policy-note">
               <summary>{dynamic ? t('我的算法', 'My algorithms') : t('查看赛场数据和算法', 'Arena data and algorithms')}</summary>
               {!dynamic && <p>{t('state 包含棋盘 tiles、自己的坐标 player、对手 opponents、零件 items、回合 turn，以及出口 exit。坐标顺序是 x、y。',
@@ -441,9 +550,6 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
               </div>
             </details>}
           </div>
-          <p role="status" className={'timed-policy-status' + (policyFeedback ? ' error-message' : '')}>
-            {policyFeedback ?? (policyPending ? t('正在检查策略…', 'Checking policy…') : policyActive ? t('策略已启用', 'Policy active') : t('尚未启用策略', 'No active policy'))}
-          </p>
         </section>
         {level.hints.length > 0 && <details className="panel teaching-panel">
           <summary>{t('任务提示', 'Mission hints')}</summary><HintSteps hints={level.hints} locale={locale} />
@@ -455,7 +561,10 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
       <CombatPad locale={locale} queued={queued} choose={queueAction} />
     </>}>
       {observing ? <button type="button" className="primary-button" onClick={() => setObserving(false)}>{t('返回对局', 'Return to match')}</button> : <>
-        {!preview && (canStart || phase === 'preparing' || phase === 'starting') && <button type="button" className="primary-button" disabled={!canStart} onClick={start}>
+        {!preview && (canStart || phase === 'preparing' || phase === 'starting') && <button type="button" className="primary-button" disabled={!canStart || policyPending} onClick={event => {
+          if (playerControls) focusArenaBoard(event.currentTarget.closest<HTMLElement>('.arena-map-workspace'))
+          start()
+        }}>
           {resume ? t('继续对局', 'Resume match') : t('开始', 'Start')}
         </button>}
         {!preview && phase === 'playing' && <button type="button" className="primary-button" onClick={() => send({ type: 'pause' })}>
@@ -463,11 +572,20 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
         </button>}
         {preview && <button type="button" className="primary-button" onClick={() => changeMap(0)}>{t('返回对局地图', 'Return to match map')}</button>}
         {!preview && active && <button type="button" className="subtle-button" disabled={policyPending || !code.trim()} onClick={() => applyPolicy(code)}>
-          {policyActive ? t('替换策略', 'Replace policy') : t('应用策略', 'Apply policy')}
+          {appliedPolicy ? t('替换策略', 'Replace policy') : t('应用策略', 'Apply policy')}
         </button>}
-        {!preview && active && policyActive && <button type="button" className="subtle-button" disabled={policyPending} onClick={() => applyPolicy('')}>
+        {!preview && active && appliedPolicy && <button type="button" className="subtle-button" disabled={policyPending} onClick={() => applyPolicy('')}>
           {t('停用策略', 'Disable policy')}
         </button>}
+        {!preview && showResult && result && !result.policyOnly && <button type="button" className="primary-button" onClick={() => {
+          if (!consoleControl.open) consoleControl.toggle()
+          if (hasDraftPolicy) {
+            clearCheckpoint()
+            reset(code)
+          } else {
+            requestAnimationFrame(() => policyEditor.current?.focus())
+          }
+        }}>{hasDraftPolicy ? t('用 Python 从头挑战', 'Retry with Python') : t('编写通关策略', 'Write a Python policy')}</button>}
         {!preview && canReset && <button type="button" className="subtle-button" onClick={resetMatch}>{t('重新准备', 'Reset match')}</button>}
         {observeButton}
       </>}

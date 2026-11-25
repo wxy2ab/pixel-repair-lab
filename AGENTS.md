@@ -63,6 +63,8 @@
 - 「目标推荐」参考同一关卡、玩法和测试范围最近两到三次有时间记录的通关成绩。推荐以上次通关为起点改善一个单位，优先选近期曾达到的门槛。已有进行中目标的玩法不再推荐。
 - 动态竞技可在 `shifts` 依回合填写 `turn`、`open`、`close` 和 `moveItems`。指定回合结束时先开门，再移动尚未被收集的电池，最后关门。机器人或电池占住的门本次保持开启。策略通过 `scan()` 读取更新后的 `tiles` 和 `items`。`adaptive` 对手可选 `secure`、`intercept` 或 `flex`，行动取决于比分、目标位置和当前通道。
 - 脉冲对抗用 `combat.health`、`combat.range` 设置双方耐久和射程。`combat.buffs` 每项用 `id` 引用同场景的道具，`kind` 可选 `power` 或 `shield`。会发射和防御的对手用 `policy.kind: "duelist"`，配 `style: "sentry"` 驻守或 `"hunter"` 追击。目标可用 `eliminate` 击退全部对手，`collect` 拿齐 `itemIds`，或 `escape` 抵达 `exit`。`escape.itemIds` 为空数组时只需抵达。参考 [霓虹弹球杯](levels/1939-neon-pinball-cup.json) 和 [浪尖栈桥冲刺](levels/1940-tidal-boardwalk-sprint.json)。
+- 脉冲对抗的可选一次性开关写在 `combat.switches`。每项用 `itemId` 引用独立道具，`open` 列出要打开的墙格。任一机器人在开关格成功 `pick()` 后，闸门在该回合末打开。
+- 机器人对抗允许键盘或按钮练习。正式通关用从容模式的 Python 程序验证全部地图，或在紧张模式的地图 1 由 `decide(state)` 从第一回合控制到胜利。两种模式分别记成绩。
 - 网格的 `solutionCards` 必须能完成主场景和所有变体。算法与竞技场按 Schema 提供 `starterCode`、`solutionCode` 和补写片段，参考代码必须通过全部用例或变体。AI 任务的 `examplePrompts` 包含首轮请求和每次模拟错误后的参考修正。写完运行 `npm run levels:check -- levels/你的关卡.json`，需要机器可读结果时加 `--json`。
 - `circuit` 配置二进制、逻辑门和组合实验。每个案例提供初始开关 `bits`，有门时再提供初始 `gate`。练习和挑战声明 `goal` 与可通过的 `solution`。
 - 电路模式 `diode` 和 `transistor` 都用两位 `bits`。第一位表示开关闭合，第二位分别表示二极管正向或晶体管基极为高电平。`goal.output` 是指示灯的亮灭，可再指定开关、方向或基极状态。

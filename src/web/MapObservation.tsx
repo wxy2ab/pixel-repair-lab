@@ -38,18 +38,20 @@ function advance<T>(view: Observation<T>) {
 
 // Step zero always shows the configured initial board. Maps without moving parts
 // have no turn frames and advance straight to the next map after a viewing pause.
-export function useMapObservation<T>(mapCount: number, framesForMap: (index: number) => readonly T[]) {
+export function useMapObservation<T>(mapCount: number, framesForMap: (index: number) => readonly T[], frameDuration?: (frame: T) => number) {
   const [view, setView] = useState<Observation<T>>()
   const atEnd = !!view && onLastFrame(view)
   const playing = !!view?.playing && !atEnd
+  const frame = view?.frames[view.step - 1]
+  const dwell = frame && frameDuration ? Math.max(750, frameDuration(frame)) : 750
   useEffect(() => {
     if (!view || !playing) return
-    const delay = view.step === view.frames.length ? 1600 : 750
+    const delay = view.step === view.frames.length ? Math.max(1600, dwell) : dwell
     const timer = window.setTimeout(() => {
       setView(current => current === view ? advance(view) : current)
     }, delay)
     return () => window.clearTimeout(timer)
-  }, [view, playing])
+  }, [view, playing, dwell])
 
   const start = useCallback((index: number) => {
     const cache = new Map<number, readonly T[]>()
@@ -93,8 +95,8 @@ export function useMapObservation<T>(mapCount: number, framesForMap: (index: num
   }
 }
 
-export function MapObservationControls<T>({ observation: o, locale }: {
-  observation: ReturnType<typeof useMapObservation<T>>; locale: Locale
+export function MapObservationControls<T>({ observation: o, locale, nextBusy }: {
+  observation: ReturnType<typeof useMapObservation<T>>; locale: Locale; nextBusy?: boolean
 }) {
   const playButton = useRef<HTMLButtonElement>(null)
   useEffect(() => {
@@ -124,7 +126,7 @@ export function MapObservationControls<T>({ observation: o, locale }: {
       <button type="button" ref={playButton} className="primary-button" aria-pressed={o.playing} onClick={o.toggle} data-testid="map-observe-play">
         {o.atEnd ? t('再看一次', 'Replay') : o.playing ? t('暂停', 'Pause') : t('继续播放', 'Resume')}
       </button>
-      <button type="button" className="subtle-button" disabled={o.atEnd} onClick={o.next} data-testid="map-observe-next">{t('下一步', 'Next')}</button>
+      <button type="button" className="subtle-button" disabled={o.atEnd || nextBusy} onClick={o.next} data-testid="map-observe-next">{t('下一步', 'Next')}</button>
     </div>
   </section>
 }

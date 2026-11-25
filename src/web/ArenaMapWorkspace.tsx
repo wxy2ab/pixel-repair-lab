@@ -1,7 +1,8 @@
-import { useCallback, useContext, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useContext, useEffect, useEffectEvent, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { flushSync } from 'react-dom'
 import type { Locale } from '../shared/types'
 import { ArenaConsoleToggle, type ArenaConsoleControl } from './ArenaConsole'
-import { advancingMapStages, ArenaMapControlsContext, ArenaMapModeContext, mapStageSelector } from './ArenaMapMode'
+import { advancingMapStages, arenaControlKey, ArenaKeyboardModeContext, ArenaMapControlsContext, ArenaMapModeContext, focusArenaBoard, mapStageSelector, type ArenaKeyboardMode } from './ArenaMapMode'
 import { FullscreenVictoryActions, FullscreenVictoryContext, MapVictoryReporter } from './FullscreenVictory'
 import { Icon } from './icons'
 import { tr } from './text'
@@ -12,6 +13,12 @@ type Props = {
   title: string
   consoleControl: ArenaConsoleControl
   modeControl?: ReactNode
+  keyboardControl?: {
+    mode: ArenaKeyboardMode
+    choose: (mode: ArenaKeyboardMode) => void
+    viewOnly: boolean
+    playerTitle: string
+  }
   shortcutHelp?: ReactNode
   dockedConsole?: boolean
   hasConsole?: boolean
@@ -40,7 +47,7 @@ function anchorConsole(controls: HTMLDivElement | null) {
   return () => observer.disconnect()
 }
 
-export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, shortcutHelp, dockedConsole, hasConsole = true, className = '', children }: Props) {
+export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, keyboardControl, shortcutHelp, dockedConsole, hasConsole = true, className = '', children }: Props) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const { mapMode, open, setMapConsoleOpen } = consoleControl
   const navigation = useContext(FullscreenVictoryContext)
@@ -52,6 +59,26 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
   const fullscreenSurface = useRef<HTMLElement | null>(null)
   const savedScroll = useRef(0)
   const keysId = useId()
+
+  function chooseKeyboard(mode: ArenaKeyboardMode) {
+    // Switching from the program to timed practice replaces the board. Focus its new surface in this gesture.
+    flushSync(() => keyboardControl?.choose(mode))
+    focusArenaBoard(host.current)
+  }
+
+  const switchKeyboard = useEffectEvent((event: KeyboardEvent) => {
+    if (!keyboardControl || keyboardControl.viewOnly || event.shiftKey || event.repeat) return
+    if (arenaControlKey(event, host.current) !== 'm') return
+    event.preventDefault()
+    chooseKeyboard(keyboardControl.mode === 'map' ? 'player' : 'map')
+  })
+  const hasKeyboardSwitch = Boolean(keyboardControl)
+  useEffect(() => {
+    if (!hasKeyboardSwitch) return
+    const handle = (event: KeyboardEvent) => switchKeyboard(event)
+    window.addEventListener('keydown', handle)
+    return () => window.removeEventListener('keydown', handle)
+  }, [hasKeyboardSwitch])
 
   const leave = useCallback((restoreFocus = true) => {
     const surface = fullscreenSurface.current
@@ -192,13 +219,22 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
     onClick={() => mapMode ? leave() : enter()}>
     <Icon name={mapMode ? 'close' : 'fullscreen'} /><span>{sizeLabel}</span>
   </button>
+  const keyboardSwitch = keyboardControl && <div className="segmented arena-keyboard-switch" role="group"
+    aria-label={t('键盘控制对象', 'Keyboard controls')} aria-keyshortcuts={keyboardControl.viewOnly ? undefined : 'M'}>
+    {!keyboardControl.viewOnly && <kbd aria-hidden="true">M</kbd>}
+    <button type="button" aria-pressed={keyboardControl.mode === 'map'} onClick={() => chooseKeyboard('map')}
+      title={t('用方向键查看格子', 'Inspect cells with the arrow keys')}>{t('查看地图', 'View map')}</button>
+    <button type="button" disabled={keyboardControl.viewOnly} aria-pressed={keyboardControl.mode === 'player'}
+      onClick={() => chooseKeyboard('player')} title={keyboardControl.playerTitle}>{t('控制芽芽', 'Control Sprout')}</button>
+  </div>
   const inlineControls = !mapMode && <div className="arena-map-controls" ref={dockedConsole || !hasConsole ? undefined : anchorConsole}
     role="group" aria-label={t('地图显示', 'Map display')}>
+    {keyboardSwitch}
     {fullscreenButton}
     {hasConsole && <ArenaConsoleToggle control={consoleControl} locale={locale} />}
   </div>
 
-  return <ArenaMapModeContext.Provider value={mapMode}>
+  return <ArenaKeyboardModeContext.Provider value={keyboardControl?.mode ?? null}><ArenaMapModeContext.Provider value={mapMode}>
     <div ref={host} className={'lesson-layout arena-layout arena-map-workspace ' + (dockedConsole ? 'arena-map-docked ' : 'arena-map-floating ') + className}
       data-testid="arena-map-workspace" data-console={hasConsole && open ? 'open' : 'closed'} data-map-fullscreen={mapMode || undefined}
       data-map-drawer={mapMode ? drawer : undefined} role={mapMode ? 'dialog' : undefined}
@@ -210,6 +246,7 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
         <strong className="arena-map-title">{title}</strong>
         <FullscreenVictoryActions locale={locale} mapWon={mapWon} />
         {modeControl}
+        {keyboardSwitch}
         <button type="button" className="subtle-button" data-testid="arena-map-report-toggle"
           aria-expanded={drawer === 'report'} onClick={() => showDrawer('report')}>
           <Icon name="record" />{t('战况', 'Status')}
@@ -220,5 +257,5 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
       </div>}
       {mapMode && drawer === 'keys' && <div id={keysId} className="arena-map-keys">{shortcutHelp}</div>}
     </div>
-  </ArenaMapModeContext.Provider>
+  </ArenaMapModeContext.Provider></ArenaKeyboardModeContext.Provider>
 }

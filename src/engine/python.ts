@@ -169,6 +169,17 @@ export class PythonProgram {
     })
   }
 
+  /** A function-only file can be driven by the game. Scripts with top-level actions run themselves. */
+  isFunctionModule(name: string): boolean {
+    if (!this.context.source.includes(name)) return false
+    const statements = significant(this.parse())
+    return statements.every(node => node.name === 'FunctionDefinition' || node.name === 'ImportStatement')
+      && statements.some(node => {
+        const identifier = node.name === 'FunctionDefinition' && node.getChild('VariableName')
+        return identifier && this.text(identifier) === name
+      })
+  }
+
   private emitTrace({ value, ...event }: TraceEvent): void {
     const trace = this.options.trace
     if (!trace || !this.traceScopes) return
@@ -192,14 +203,14 @@ export class PythonProgram {
     trace({ ...(sourceName && { sourceName }), ...event, stack, ...(value !== undefined && { value: snapshot(value) }) })
   }
 
-  runPureFunction(name: string, args: Value[], allowImports = false): Value {
+  runPureFunction(name: string, args: Value[], allowImports = false, onReturn?: (line: number) => void): Value {
     if (this.options.trace) this.traceScopes = [{ id: 0, name: '<module>', scope: this.scope }]
     return this.withLimits(() => {
       if (this.traceScopes) this.emitTrace({ kind: 'start' })
       const definitions = this.defineModule(this.context.source, allowImports, this.context.sourceName)
       const target = definitions.bindings.get(name)
       if (!target || 'data' in target) this.fail('unknownName', undefined, name)
-      const value = this.invoke(target, args, this.traceScopes ? target.definitionLine : 1, name, target.definitionLine)
+      const value = this.invoke(target, args, this.traceScopes ? target.definitionLine : 1, name, target.definitionLine, onReturn)
       if (this.traceScopes) this.emitTrace({ kind: 'end' })
       return value
     })
@@ -463,7 +474,7 @@ export class PythonProgram {
     return this.scope.bindings.get(name) ?? this.scope.parent?.bindings.get(name)
   }
 
-  private invoke(target: UserFunction, args: Value[], line: number, name: string, callSite = line): Value {
+  private invoke(target: UserFunction, args: Value[], line: number, name: string, callSite = line, onReturn?: (line: number) => void): Value {
     const caller = this.options.rack?.current
     if (this.calls >= MAX_CALL_DEPTH) this.failAtLine('limit', line)
     if (target.parameters.length !== args.length) this.failAtLine('wrongArguments', line, name)
@@ -520,6 +531,7 @@ export class PythonProgram {
       })
     }
     this.options.rack?.resume(caller, scope.bindings)
+    onReturn?.(returnLine ?? lastBodyLine)
     return value
   }
 

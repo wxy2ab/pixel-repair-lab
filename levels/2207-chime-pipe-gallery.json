@@ -1,0 +1,162 @@
+{
+  "version": 1,
+  "id": "challenge-chime-pipe-gallery",
+  "order": 2207,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": { "zh": "挑战场", "en": "Challenge Arena" }
+  },
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": { "zh": "风琴排管赛", "en": "The Pipe Organ Match" },
+  "concept": { "zh": "长短音窗", "en": "Alternating pipe windows" },
+  "brief": {
+    "zh": "在 47 回合内用脉冲让三台对手机器人停机，芽芽要留在场上。第 7、13、20 回合结束时，三排风管的音窗依次换位。两台定点机器人守在风管间，簧片会追过来。起点的风琴拉栓可用 pick() 按下，打开两扇侧窗。",
+    "en": "Tag out all 3 robots with pulses within 47 turns and keep Sprout running. The windows in the three ranks of pipes switch after turns 7, 13 and 20. Two bots hold their places among the pipes while Reed gives chase. Press the organ stop at the starting square with pick() to open two side windows."
+  },
+  "prerequisites": [
+    { "unit": "python-intermediate", "topic": "for-loops" },
+    { "unit": "algorithm-advanced", "topic": "rival-strategy" }
+  ],
+  "hints": [],
+  "tiles": [
+    "################",
+    "#...........#..#",
+    "#...#.......#..#",
+    "#...#...#......#",
+    "#...#...#####..#",
+    "#####...#...#..#",
+    "#...#...#...#..#",
+    "#.......#...#..#",
+    "#...#..........#",
+    "#.......#......#",
+    "#.......#......#",
+    "################"
+  ],
+  "start": { "x": 1, "y": 9 },
+  "items": [
+    { "id": "organ-stop", "x": 1, "y": 9 },
+    { "id": "amber-key", "x": 2, "y": 9 },
+    { "id": "brass-key", "x": 3, "y": 8 },
+    { "id": "felt-pad", "x": 4, "y": 9 },
+    { "id": "spare-pad", "x": 10, "y": 5 }
+  ],
+  "opponents": [
+    {
+      "id": "bass",
+      "title": { "zh": "低音管", "en": "Bass Pipe" },
+      "start": { "x": 6, "y": 2 },
+      "policy": { "kind": "duelist", "style": "sentry" }
+    },
+    {
+      "id": "reed",
+      "title": { "zh": "簧片", "en": "Reed" },
+      "start": { "x": 14, "y": 9 },
+      "policy": { "kind": "duelist", "style": "hunter" }
+    },
+    {
+      "id": "bell",
+      "title": { "zh": "小钟", "en": "Bell" },
+      "start": { "x": 13, "y": 3 },
+      "policy": { "kind": "duelist", "style": "sentry" }
+    }
+  ],
+  "objective": { "kind": "eliminate" },
+  "maxTurns": 47,
+  "combat": {
+    "switches": [
+      { "itemId": "organ-stop", "open": [{ "x": 4, "y": 8 }, { "x": 8, "y": 9 }] }
+    ],
+    "health": 4,
+    "range": 5,
+    "buffs": [
+      { "id": "amber-key", "kind": "power" },
+      { "id": "brass-key", "kind": "power" },
+      { "id": "felt-pad", "kind": "shield" },
+      { "id": "spare-pad", "kind": "shield" }
+    ]
+  },
+  "shifts": [
+    {
+      "turn": 7,
+      "open": [
+        { "x": 4, "y": 3 }
+      ],
+      "close": [
+        { "x": 4, "y": 7 }
+      ]
+    },
+    {
+      "turn": 13,
+      "open": [
+        { "x": 8, "y": 5 }
+      ],
+      "close": [
+        { "x": 8, "y": 8 }
+      ]
+    },
+    {
+      "turn": 20,
+      "open": [
+        { "x": 12, "y": 5 }
+      ],
+      "close": [
+        { "x": 12, "y": 3 }
+      ]
+    }
+  ],
+  "starterCode": "state = scan()\n",
+  "solutionCode": "def visible_pulse(state):\n    for ray in [[\"up\", 0, -1], [\"right\", 1, 0], [\"down\", 0, 1], [\"left\", -1, 0]]:\n        x = state[\"player\"][0]\n        y = state[\"player\"][1]\n        for distance in range(state[\"range\"]):\n            x += ray[1]\n            y += ray[2]\n            if state[\"tiles\"][y][x] == \"#\":\n                break\n            for bot in state[\"opponents\"]:\n                if bot[\"hp\"] > 0 and bot[\"x\"] == x and bot[\"y\"] == y:\n                    return ray[0]\n    return None\n\ndef clear_view():\n    direction = visible_pulse(scan())\n    while direction is not None:\n        shoot(direction)\n        direction = visible_pulse(scan())\n\ndef visit(x, y):\n    while scan()[\"player\"] != [x, y]:\n        clear_view()\n        player = scan()[\"player\"]\n        if player[0] < x:\n            move(\"right\")\n        elif player[0] > x:\n            move(\"left\")\n        elif player[1] < y:\n            move(\"down\")\n        else:\n            move(\"up\")\n\npick()\nvisit(2, 9)\npick()\nvisit(3, 9)\nvisit(3, 8)\npick()\nvisit(4, 8)\nvisit(4, 9)\npick()\nvisit(6, 9)\nvisit(6, 5)\nvisit(10, 5)\npick()\nvisit(12, 5)\nwhile scan()[\"turn\"] % 3 != 0:\n    guard()\nvisit(13, 5)\nclear_view()\n",
+  "snippets": [
+    {
+      "label": { "zh": "向上走", "en": "Move up" },
+      "code": "move(\"up\")"
+    },
+    {
+      "label": { "zh": "向右走", "en": "Move right" },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": { "zh": "向下走", "en": "Move down" },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": { "zh": "向左走", "en": "Move left" },
+      "code": "move(\"left\")"
+    },
+    {
+      "label": { "zh": "向上发脉冲", "en": "Pulse up" },
+      "code": "shoot(\"up\")"
+    },
+    {
+      "label": { "zh": "向右发脉冲", "en": "Pulse right" },
+      "code": "shoot(\"right\")"
+    },
+    {
+      "label": { "zh": "向下发脉冲", "en": "Pulse down" },
+      "code": "shoot(\"down\")"
+    },
+    {
+      "label": { "zh": "向左发脉冲", "en": "Pulse left" },
+      "code": "shoot(\"left\")"
+    },
+    {
+      "label": { "zh": "拾取芯片", "en": "Pick up a chip" },
+      "code": "pick()"
+    },
+    {
+      "label": { "zh": "开启防御", "en": "Guard" },
+      "code": "guard()"
+    },
+    {
+      "label": { "zh": "扫描棋盘", "en": "Scan the board" },
+      "code": "state = scan()"
+    },
+    {
+      "label": { "zh": "等待一回合", "en": "Wait a turn" },
+      "code": "wait()"
+    }
+  ]
+}

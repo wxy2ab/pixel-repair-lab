@@ -15,6 +15,41 @@ const algorithm = getLevel<AlgorithmLevel>('22-shortest-step')
 const score = getLevel<ArenaLevel>('23-parts-race')
 const escape = getLevel<ArenaLevel>('24-escape-patrol')
 
+test('a standalone Brass Bell policy runs every turn and replays its actual return lines', () => {
+  const level = getLevel<ArenaLevel>('2201-brass-bell-lane')
+  const source = [
+    'def decide(state):',
+    '    turn = state["turn"]  # 已经走完的回合数，开场时是 0',
+    '    if turn == 0:',
+    '        return "right"',
+    '    if turn == 1:',
+    '        return "pick"',
+    '    if turn == 2:',
+    '        return "right"',
+    '    return "shoot-right"',
+  ].join('\n')
+  const run = runArena({ ...level, variants: [{ start: level.start }] }, source, undefined, undefined, { recordFlow: true })
+  assert.equal(run.won, true)
+  assert.equal(run.passedCases, 2)
+  assert.deepEqual(run.frames.map(frame => frame.state), runArena(level, level.solutionCode).frames.map(frame => frame.state))
+  assert.deepEqual(run.frames.map(frame => frame.line), [4, 6, 8, 9])
+  assert.deepEqual(run.frames, run.variantFrames?.[0])
+  assert.ok(run.frames.every(frame => frame.program?.at(-1)?.kind === 'return'))
+})
+
+test('only a definitions-only arena policy is called by the game and invalid choices point to the return', () => {
+  const source = 'def choose():\n    return "right"\ndef decide(state):\n    return choose()'
+  const level = { ...escape, maxTurns: 3, variants: [] }
+  const policy = runArena(level, source)
+  assert.deepEqual(policy.frames.map(frame => frame.line), [4, 4, 4])
+  const script = runArena(level, source + '\nmove(decide(scan()))')
+  assert.deepEqual(script.frames.map(frame => frame.line), [5])
+  assert.equal(script.reason, 'unfinished')
+  const bad = runArena(level, source.replace('"right"', '"jump"'))
+  assert.equal(bad.final.turn, 0)
+  assert.deepEqual(bad.issue, { code: 'wrongAnswer', detail: 'decide', line: 4 })
+})
+
 test('the shortest route returns the expected first step on six boards', () => {
   const result = runAlgorithm(algorithm, algorithm.solutionCode)
   assert.equal(result.won, true)

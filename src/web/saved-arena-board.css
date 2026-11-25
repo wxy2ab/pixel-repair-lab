@@ -84,6 +84,12 @@
   inset: 0;
   margin: auto;
 }
+.saved-arena-board-switch {
+  border-radius: 55% 55% 0 0;
+  border-bottom: 2px solid #8298a4;
+  background: #ffc573;
+  transform: none;
+}
 
 .saved-arena-board-cell:has(.saved-arena-board-occupants) > .saved-arena-board-battery {
   inset: 1px 1px auto auto;

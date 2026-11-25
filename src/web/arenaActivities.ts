@@ -3,6 +3,7 @@ import type { ArenaFrame, ArenaProgramEvent, ArenaScan } from '../shared/advance
 import { flowActivity, type StationActivity } from './station3d/types'
 import type { ExecutionLocation } from './ExecutionSource'
 import { actionViewingDelay } from './gridExecution'
+import { arenaTurnTiming } from './arenaTurnMotion'
 
 const programBeatMs = 340
 
@@ -12,12 +13,11 @@ function previewOffsets(count: number) {
   return count > 8 ? [0, 1, 2, 3, count - 3, count - 2, count - 1] : Array.from({ length: count }, (_, index) => index)
 }
 
-export function arenaViewingDelay(frame?: ArenaFrame) {
-  if (!frame) return
+export function arenaViewingDelay(frame: ArenaFrame | undefined, animated: boolean) {
+  if (animated) return 60
+  if (!frame) return 180
   const event = frame.events.find(entry => entry.actorId === 'player')
-  const delay = event?.blocked ? 380 : actionViewingDelay(event?.action)
-  const beats = frame.program?.length ?? Number(Boolean(frame.scan))
-  return beats ? previewOffsets(beats).length * programBeatMs + (delay ?? 470) : delay
+  return actionViewingDelay(event?.action) ?? programBeatMs
 }
 
 export function arenaPlayerActivity(frame?: ArenaFrame): StationActivity | undefined {
@@ -78,11 +78,14 @@ export function useArenaActivities(frame: ArenaFrame | undefined, trailing: Aren
   const manual = stepping && hasFlow
   const more = index + 1 < beats.length
   const next = manual ? index + 1 : preview.find(position => position > index)
+  const visibleBeat = beats[index]
+  const dwell = frame && visibleBeat?.activity && !visibleBeat.flow && !visibleBeat.scan
+    ? Math.max(programBeatMs, arenaTurnTiming(frame.events, frame.state.actors).durationMs) : programBeatMs
   useEffect(() => {
     if (next === undefined || manual) return
-    const timer = window.setTimeout(() => setShown({ beats, index: next }), programBeatMs)
+    const timer = window.setTimeout(() => setShown({ beats, index: next }), dwell)
     return () => window.clearTimeout(timer)
-  }, [beats, next, manual])
+  }, [beats, next, manual, dwell])
   return {
     beat: beats[index], nextBeat: next === undefined ? undefined : beats[next], more,
     shortened: !manual && preview.length < beats.length,

@@ -5,9 +5,29 @@ import { previewArenaMatch } from '../src/engine/arenaMatchPreview'
 import type { ArenaLevel } from '../src/shared/advanced'
 import { readArenaMatch, readArenaMatchRecord, saveArenaMatch } from '../src/web/arenaMatchProgress'
 import { readUnfinishedArenaMatches } from '../src/web/unfinishedArenaMatches'
+import { arenaGateCells } from '../src/web/arenaGates'
+import { readSavedArenaChanges } from '../src/web/savedArenaChanges'
 
 const junction = JSON.parse(readFileSync(new URL('../levels/1803-junction-race.json', import.meta.url), 'utf8')) as ArenaLevel
 const freight = JSON.parse(readFileSync(new URL('../levels/1817-freight-carousel.json', import.meta.url), 'utf8')) as ArenaLevel
+
+test('switch saves restore picked items and both gate tiles, and reconfiguring a switch invalidates the save', context => {
+  mockStorage(context)
+  const level = JSON.parse(readFileSync(new URL('../levels/2207-chime-pipe-gallery.json', import.meta.url), 'utf8')) as ArenaLevel
+  const initial = previewArenaMatch({ level, mode: 'timed', progress: { actions: [], remainingMs: 600 } }, true)?.board
+  const progress = { source: 'pick()\nwait()', personal: {}, course: {}, step: 1 }
+  saveArenaMatch(level, 'relaxed', progress)
+  const saved = readArenaMatch(level, 'relaxed')
+  assert.ok(initial && saved)
+  const board = previewArenaMatch({ level, mode: 'relaxed', progress: saved }, true)?.board
+  assert.ok(board)
+  const changes = readSavedArenaChanges(initial, board, arenaGateCells(level))
+  assert.ok(changes.some(change => change.kind === 'battery' && change.entries.some(entry => entry.id === 'organ-stop' && !entry.second)))
+  const opened = changes.flatMap(change => change.kind === 'gate' && change.entries[0].second ? change.positions : [])
+  assert.deepEqual(opened, level.combat!.switches![0].open)
+  const combat = { ...level.combat!, switches: [{ itemId: 'organ-stop', open: [{ x: 4, y: 8 }] }] }
+  assert.equal(readArenaMatch({ ...level, combat }, 'relaxed'), undefined)
+})
 
 function mockStorage(context: TestContext) {
   const original = Object.getOwnPropertyDescriptor(globalThis, 'localStorage')

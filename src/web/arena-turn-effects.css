@@ -1,0 +1,112 @@
+.arena-motion-layer {
+  grid-area: 2 / 2;
+  position: relative;
+  z-index: 4;
+  pointer-events: none;
+}
+.arena-fx-cell {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  top: 0;
+  left: 0;
+  width: calc((100% + var(--tile-gap)) / var(--cols) - var(--tile-gap));
+  height: calc((100% + var(--tile-gap)) / var(--rows) - var(--tile-gap));
+  transform: translate(calc(var(--fx-x) * (100% + var(--tile-gap))), calc(var(--fx-y) * (100% + var(--tile-gap))));
+}
+.arena-shot {
+  --pulse-core: #e7fff4;
+  --pulse-edge: #46dfc3;
+  --pulse-heading: 0deg;
+  --port-x: 29%;
+  --port-y: 0%;
+  --contact-x: -18%;
+  --contact-y: 0%;
+}
+.arena-shot[data-side='rival'] { --pulse-core: #ffedf2; --pulse-edge: #fa83af; }
+.arena-shot[data-direction='left'] { --pulse-heading: 180deg; --port-x: -29%; --contact-x: 18%; }
+.arena-shot[data-direction='up'] {
+  --pulse-heading: -90deg; --port-x: 0%; --port-y: -29%; --contact-x: 0%; --contact-y: 18%;
+}
+.arena-shot[data-direction='down'] {
+  --pulse-heading: 90deg; --port-x: 0%; --port-y: 29%; --contact-x: 0%; --contact-y: -18%;
+}
+.arena-pulse-charge, .arena-pulse-flight, .arena-pulse-muzzle, .arena-pulse-impact,
+.arena-hit-core, .arena-fallen-art, .arena-guard-ring, .arena-wreck-chip, .arena-pulse-wake { opacity: 0; }
+.arena-muzzle-port, .arena-contact-point, .arena-pulse-flight, .arena-pulse-heading, .arena-fallen-art {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.arena-muzzle-port { translate: var(--port-x) var(--port-y); }
+.arena-contact-point { translate: var(--contact-x) var(--contact-y); }
+.arena-contact-point[data-shielded] { --pulse-edge: #7dcfff; --pulse-core: #dbf6ff; }
+.arena-pulse-heading { rotate: var(--pulse-heading); }
+.arena-pulse-bolt {
+  width: 17%;
+  height: 11%;
+  min-height: 2px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 3px 1px var(--pulse-core), 0 0 7px 2px var(--pulse-edge);
+}
+.arena-pulse-wake {
+  position: absolute;
+  right: 50%;
+  width: 74%;
+  height: 13%;
+  border-radius: 100% 35% 35% 100%;
+  transform-origin: 100% 50%;
+  background: linear-gradient(90deg, transparent, var(--pulse-edge) 65%, var(--pulse-core));
+}
+.arena-pulse-charge, .arena-pulse-muzzle, .arena-hit-core {
+  position: absolute;
+  width: 48%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 7%, var(--pulse-core) 13%, var(--pulse-edge) 26%, transparent 66%);
+}
+.arena-pulse-charge::after {
+  content: '';
+  position: absolute;
+  inset: 4%;
+  border: 1px solid var(--pulse-edge);
+  border-radius: 50%;
+}
+.arena-pulse-muzzle { width: 62%; }
+.arena-guard-ring, .arena-pulse-impact {
+  position: absolute;
+  width: 88%;
+  height: 88%;
+  border: 2px solid var(--pulse-core, #bfe7ff);
+  border-radius: 50%;
+  box-shadow: 0 0 4px var(--pulse-edge, #65cfff), inset 0 0 5px var(--pulse-edge, #65cfff);
+}
+.arena-guard-ring, .arena-contact-point[data-shielded] .arena-pulse-impact {
+  border-style: double;
+  background: radial-gradient(circle, transparent 42%, #79ccff33 66%, transparent 74%);
+}
+.arena-wreck-chip {
+  position: absolute;
+  width: max(2px, 7%);
+  aspect-ratio: 1.6;
+  border-radius: 20%;
+  background: #9aaeaf;
+  box-shadow: inset 0 1px #e0ebd9;
+}
+.arena-wreck-chip:nth-of-type(2n) { background: #ffb76c; box-shadow: 0 0 3px #ffb76c99; }
+.arena-fallen-art { transform-origin: 50% 70%; }
+@media (prefers-reduced-motion: no-preference) {
+  .tilemap[data-motion-turn] .arena-pulse-line { opacity: 0; }
+  /* Arena chassis and muzzle share one clock. The normal grid gestures still play for pickups and code. */
+  .tilemap[data-motion-turn] .action-robot:is([data-robot-action=move], [data-robot-action=shoot], [data-robot-action=guard]) .action-robot__body {
+    animation: none;
+  }
+  .tilemap[data-motion-turn] .action-robot:is([data-robot-action=move], [data-robot-action=shoot], [data-robot-action=guard]) :is(.action-robot__effect, .action-robot__badge) {
+    visibility: hidden;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arena-motion-layer { display: none; }
+}

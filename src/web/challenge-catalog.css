@@ -90,6 +90,9 @@
   gap: 9px;
 }
 .challenge-filters label { display: grid; align-content: space-between; gap: 4px; min-width: 0; color: #cbd9ec; font-size: 13px; }
+@media (min-width: 561px) {
+  .challenge-filters[data-arena] { grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.7fr); }
+}
 .challenge-filters select {
   width: 100%;
   min-width: 0;
@@ -328,5 +331,5 @@
 
 @media (max-width: 560px) {
   .challenge-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .challenge-filters label:last-child { grid-column: 1 / -1; }
+  .challenge-filters:not([data-arena]) label:last-child { grid-column: 1 / -1; }
 }

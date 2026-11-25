@@ -1,0 +1,253 @@
+{
+  "version": 1,
+  "id": "challenge-lantern-float-grand-final",
+  "order": 2212,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": { "zh": "挑战场", "en": "Challenge Arena" }
+  },
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": { "zh": "花灯巡游总决赛", "en": "Lantern Parade Grand Final" },
+  "concept": { "zh": "两场灯会总决赛", "en": "Two parade layouts" },
+  "brief": {
+    "zh": "在 54 回合内用脉冲让四台对手机器人停机，芽芽要留在场上。两场灯会的左侧入场道和机器人出发位置不同。第 8 回合末入场道换位，第 16 回合末护盾花灯滑入中庭。用 pick() 按下中庭的彩带开关，可打开通往东侧的近路。从容模式需要同一份程序通过两场。紧张模式在第一场对抗。",
+    "en": "Tag out all 4 robots with pulses within 54 turns and keep Sprout running. The two parades have different entrance lanes and robot positions. The entrance changes after turn 8. A shield lantern slides into the courtyard after turn 16. Press the courtyard ribbon switch with pick() to open the eastern shortcut. In relaxed mode, clear both parades with the same program. Timed mode uses the first parade."
+  },
+  "prerequisites": [
+    { "unit": "python-intermediate", "topic": "for-loops" },
+    { "unit": "algorithm-advanced", "topic": "rival-strategy" }
+  ],
+  "hints": [],
+  "tiles": [
+    "###################",
+    "#..........#......#",
+    "#.....#....#......#",
+    "#.......##.#......#",
+    "#.....#....#......#",
+    "#.....#....#..#####",
+    "#.###.#....#......#",
+    "#.....###.##......#",
+    "#.....#...........#",
+    "#.....#....#.##...#",
+    "#.....#....#......#",
+    "#.....#........#..#",
+    "#..............#..#",
+    "###################"
+  ],
+  "start": { "x": 2, "y": 10 },
+  "items": [
+    { "id": "ribbon-switch", "x": 10, "y": 8 },
+    { "id": "first-spark", "x": 3, "y": 10 },
+    { "id": "second-spark", "x": 4, "y": 10 },
+    { "id": "plating", "x": 3, "y": 9 },
+    { "id": "travelling-lantern", "x": 16, "y": 2 },
+    { "id": "blue-ribbon", "x": 15, "y": 3 },
+    { "id": "parade-glow", "x": 4, "y": 9 },
+    { "id": "sun-buckle", "x": 4, "y": 8 }
+  ],
+  "opponents": [
+    {
+      "id": "drum",
+      "title": { "zh": "小鼓", "en": "Drum" },
+      "start": { "x": 8, "y": 2 },
+      "policy": { "kind": "duelist", "style": "hunter" }
+    },
+    {
+      "id": "tassel",
+      "title": { "zh": "流苏", "en": "Tassel" },
+      "start": { "x": 16, "y": 11 },
+      "policy": { "kind": "duelist", "style": "hunter" }
+    },
+    {
+      "id": "star",
+      "title": { "zh": "星灯", "en": "Star" },
+      "start": { "x": 9, "y": 9 },
+      "policy": { "kind": "duelist", "style": "sentry" }
+    },
+    {
+      "id": "crown",
+      "title": { "zh": "花冠", "en": "Crown" },
+      "start": { "x": 15, "y": 3 },
+      "policy": { "kind": "duelist", "style": "sentry" }
+    }
+  ],
+  "objective": { "kind": "eliminate" },
+  "maxTurns": 54,
+  "combat": {
+    "switches": [
+      { "itemId": "ribbon-switch", "open": [{ "x": 10, "y": 7 }, { "x": 11, "y": 4 }] }
+    ],
+    "health": 5,
+    "range": 5,
+    "buffs": [
+      { "id": "first-spark", "kind": "power" },
+      { "id": "second-spark", "kind": "power" },
+      { "id": "plating", "kind": "shield" },
+      { "id": "travelling-lantern", "kind": "shield" },
+      { "id": "blue-ribbon", "kind": "power" },
+      { "id": "parade-glow", "kind": "power" },
+      { "id": "sun-buckle", "kind": "shield" }
+    ]
+  },
+  "shifts": [
+    {
+      "turn": 8,
+      "open": [
+        { "x": 6, "y": 10 }
+      ],
+      "close": [
+        { "x": 6, "y": 3 }
+      ]
+    },
+    {
+      "turn": 16,
+      "open": [
+        { "x": 11, "y": 3 }
+      ],
+      "close": [
+        { "x": 11, "y": 8 }
+      ],
+      "moveItems": [
+        { "id": "travelling-lantern", "x": 10, "y": 9 }
+      ]
+    },
+    {
+      "turn": 26,
+      "open": [
+        { "x": 11, "y": 8 }
+      ],
+      "close": [
+        { "x": 11, "y": 3 }
+      ]
+    },
+    {
+      "turn": 35,
+      "open": [
+        { "x": 11, "y": 3 }
+      ]
+    }
+  ],
+  "starterCode": "state = scan()\n",
+  "solutionCode": "def visible_pulse(state):\n    for ray in [[\"up\", 0, -1], [\"right\", 1, 0], [\"down\", 0, 1], [\"left\", -1, 0]]:\n        x = state[\"player\"][0]\n        y = state[\"player\"][1]\n        for distance in range(state[\"range\"]):\n            x += ray[1]\n            y += ray[2]\n            if state[\"tiles\"][y][x] == \"#\":\n                break\n            for bot in state[\"opponents\"]:\n                if bot[\"hp\"] > 0 and bot[\"x\"] == x and bot[\"y\"] == y:\n                    return ray[0]\n    return None\n\ndef clear_view():\n    direction = visible_pulse(scan())\n    while direction is not None:\n        shoot(direction)\n        direction = visible_pulse(scan())\n\ndef visit(x, y):\n    while scan()[\"player\"] != [x, y]:\n        clear_view()\n        player = scan()[\"player\"]\n        if player[0] < x:\n            move(\"right\")\n        elif player[0] > x:\n            move(\"left\")\n        elif player[1] < y:\n            move(\"down\")\n        else:\n            move(\"up\")\n\ndef wait_until(turn):\n    while scan()[\"turn\"] < turn:\n        direction = visible_pulse(scan())\n        if direction is None:\n            guard()\n        else:\n            shoot(direction)\n\nvisit(3, 10)\npick()\nvisit(4, 10)\npick()\nvisit(4, 9)\npick()\nvisit(3, 9)\npick()\nvisit(4, 9)\nvisit(4, 8)\npick()\nwait_until(8)\nlane = 10\nif scan()[\"tiles\"][10][6] == \"#\":\n    lane = 8\nvisit(4, lane)\nvisit(8, lane)\nvisit(8, 9)\nvisit(10, 9)\nwait_until(16)\npick()\nvisit(10, 8)\npick()\nvisit(10, 4)\nvisit(13, 4)\nvisit(13, 3)\nvisit(16, 3)\nclear_view()\n",
+  "snippets": [
+    {
+      "label": { "zh": "向上走", "en": "Move up" },
+      "code": "move(\"up\")"
+    },
+    {
+      "label": { "zh": "向右走", "en": "Move right" },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": { "zh": "向下走", "en": "Move down" },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": { "zh": "向左走", "en": "Move left" },
+      "code": "move(\"left\")"
+    },
+    {
+      "label": { "zh": "向上发脉冲", "en": "Pulse up" },
+      "code": "shoot(\"up\")"
+    },
+    {
+      "label": { "zh": "向右发脉冲", "en": "Pulse right" },
+      "code": "shoot(\"right\")"
+    },
+    {
+      "label": { "zh": "向下发脉冲", "en": "Pulse down" },
+      "code": "shoot(\"down\")"
+    },
+    {
+      "label": { "zh": "向左发脉冲", "en": "Pulse left" },
+      "code": "shoot(\"left\")"
+    },
+    {
+      "label": { "zh": "拾取芯片", "en": "Pick up a chip" },
+      "code": "pick()"
+    },
+    {
+      "label": { "zh": "开启防御", "en": "Guard" },
+      "code": "guard()"
+    },
+    {
+      "label": { "zh": "扫描棋盘", "en": "Scan the board" },
+      "code": "state = scan()"
+    },
+    {
+      "label": { "zh": "等待一回合", "en": "Wait a turn" },
+      "code": "wait()"
+    }
+  ],
+  "variants": [
+    {
+      "opponents": [
+        {
+          "id": "drum",
+          "title": { "zh": "小鼓", "en": "Drum" },
+          "start": { "x": 8, "y": 4 },
+          "policy": { "kind": "duelist", "style": "hunter" }
+        },
+        {
+          "id": "tassel",
+          "title": { "zh": "流苏", "en": "Tassel" },
+          "start": { "x": 16, "y": 12 },
+          "policy": { "kind": "duelist", "style": "hunter" }
+        },
+        {
+          "id": "star",
+          "title": { "zh": "星灯", "en": "Star" },
+          "start": { "x": 8, "y": 10 },
+          "policy": { "kind": "duelist", "style": "sentry" }
+        },
+        {
+          "id": "crown",
+          "title": { "zh": "花冠", "en": "Crown" },
+          "start": { "x": 15, "y": 3 },
+          "policy": { "kind": "duelist", "style": "sentry" }
+        }
+      ],
+      "shifts": [
+        {
+          "turn": 8,
+          "open": [
+            { "x": 6, "y": 8 }
+          ],
+          "close": [
+            { "x": 6, "y": 3 }
+          ]
+        },
+        {
+          "turn": 16,
+          "open": [
+            { "x": 11, "y": 3 }
+          ],
+          "close": [
+            { "x": 11, "y": 8 }
+          ],
+          "moveItems": [
+            { "id": "travelling-lantern", "x": 10, "y": 9 }
+          ]
+        },
+        {
+          "turn": 26,
+          "open": [
+            { "x": 11, "y": 8 }
+          ],
+          "close": [
+            { "x": 11, "y": 3 }
+          ]
+        },
+        {
+          "turn": 35,
+          "open": [
+            { "x": 11, "y": 3 }
+          ]
+        }
+      ]
+    }
+  ]
+}

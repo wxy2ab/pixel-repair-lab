@@ -1,0 +1,205 @@
+{
+  "version": 1,
+  "id": "challenge-three-lantern-encore",
+  "order": 2206,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "stage": "challenge",
+  "difficulty": "intermediate",
+  "title": {
+    "zh": "三盏灯的返场赛",
+    "en": "Three-Lantern Encore"
+  },
+  "concept": {
+    "zh": "三机对抗 · 芯片叠层",
+    "en": "Three-bot duel · Stacking chips"
+  },
+  "brief": {
+    "zh": "在三盏灯下让三台返场机器人全部停机。左右两台守着舞台，后场的追光机会沿走廊赶来。第 7 回合末追光门打开，第 14 回合末侧门升起。增幅芯片的威力可以叠加。限时 32 回合。",
+    "en": "Tag out the three encore bots under the stage lights. Two sentries hold the wings while a spotlight hunter approaches from backstage. The spotlight gate opens after turn 7 and the side gate opens after turn 14. Power chips stack. Finish within 32 turns."
+  },
+  "prerequisites": [
+    {
+      "unit": "python-intermediate",
+      "topic": "while-loops"
+    },
+    {
+      "unit": "routing",
+      "topic": "breadth-first"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "###############",
+    "#.............#",
+    "#.###.....###.#",
+    "#######.#######",
+    "#.............#",
+    "###############",
+    "#........#....#",
+    "#..###...####.#",
+    "#........#....#",
+    "#........#....#",
+    "###############"
+  ],
+  "start": { "x": 7, "y": 8 },
+  "items": [
+    {
+      "id": "power-1",
+      "x": 6,
+      "y": 8
+    },
+    {
+      "id": "power-2",
+      "x": 8,
+      "y": 8
+    },
+    {
+      "id": "shield-1",
+      "x": 6,
+      "y": 9
+    },
+    {
+      "id": "shield-2",
+      "x": 7,
+      "y": 9
+    }
+  ],
+  "opponents": [
+    {
+      "id": "violet",
+      "title": { "zh": "紫灯", "en": "Violet" },
+      "start": { "x": 4, "y": 6 },
+      "policy": {
+        "kind": "duelist",
+        "style": "sentry"
+      }
+    },
+    {
+      "id": "amber",
+      "title": { "zh": "橙灯", "en": "Amber" },
+      "start": { "x": 12, "y": 6 },
+      "policy": {
+        "kind": "duelist",
+        "style": "sentry"
+      }
+    },
+    {
+      "id": "spot",
+      "title": { "zh": "追光", "en": "Spotlight" },
+      "start": { "x": 7, "y": 1 },
+      "policy": {
+        "kind": "duelist",
+        "style": "hunter"
+      }
+    }
+  ],
+  "objective": {
+    "kind": "eliminate"
+  },
+  "maxTurns": 32,
+  "combat": {
+    "health": 3,
+    "range": 5,
+    "buffs": [
+      {
+        "id": "power-1",
+        "kind": "power"
+      },
+      {
+        "id": "power-2",
+        "kind": "power"
+      },
+      {
+        "id": "shield-1",
+        "kind": "shield"
+      },
+      {
+        "id": "shield-2",
+        "kind": "shield"
+      }
+    ]
+  },
+  "shifts": [
+    {
+      "turn": 7,
+      "open": [
+        { "x": 7, "y": 5 }
+      ]
+    },
+    {
+      "turn": 14,
+      "open": [
+        { "x": 9, "y": 6 }
+      ]
+    }
+  ],
+  "starterCode": "state = scan()\n",
+  "solutionCode": "move(\"left\")\npick()\nmove(\"down\")\npick()\nmove(\"right\")\npick()\nmove(\"up\")\nmove(\"right\")\npick()\nmove(\"left\")\nmove(\"up\")\nwhile scan()[\"opponents\"][2][\"hp\"] > 0:\n    shoot(\"up\")\nmove(\"left\")\nmove(\"up\")\nwhile scan()[\"opponents\"][0][\"hp\"] > 0:\n    shoot(\"left\")\nmove(\"right\")\nwhile scan()[\"opponents\"][1][\"hp\"] > 0:\n    shoot(\"right\")\n",
+  "snippets": [
+    {
+      "label": { "zh": "向上走", "en": "Move up" },
+      "code": "move(\"up\")"
+    },
+    {
+      "label": { "zh": "向上发脉冲", "en": "Pulse up" },
+      "code": "shoot(\"up\")"
+    },
+    {
+      "label": { "zh": "向右走", "en": "Move right" },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": { "zh": "向右发脉冲", "en": "Pulse right" },
+      "code": "shoot(\"right\")"
+    },
+    {
+      "label": {
+        "zh": "向下走",
+        "en": "Move down"
+      },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": {
+        "zh": "向下发脉冲",
+        "en": "Pulse down"
+      },
+      "code": "shoot(\"down\")"
+    },
+    {
+      "label": { "zh": "向左走", "en": "Move left" },
+      "code": "move(\"left\")"
+    },
+    {
+      "label": { "zh": "向左发脉冲", "en": "Pulse left" },
+      "code": "shoot(\"left\")"
+    },
+    {
+      "label": { "zh": "拾取芯片", "en": "Pick up chip" },
+      "code": "pick()"
+    },
+    {
+      "label": { "zh": "防御一拍", "en": "Guard for a beat" },
+      "code": "guard()"
+    },
+    {
+      "label": { "zh": "等待一拍", "en": "Wait a beat" },
+      "code": "wait()"
+    },
+    {
+      "label": {
+        "zh": "查看赛场",
+        "en": "Scan arena"
+      },
+      "code": "state = scan()"
+    }
+  ]
+}

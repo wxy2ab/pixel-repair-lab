@@ -1,17 +1,17 @@
-import type { ArenaFrame, ArenaLevel, ArenaResult, PersonalAlgorithms } from '../shared/advanced'
+import type { ArenaFrame, ArenaLevel, PersonalAlgorithms } from '../shared/advanced'
 import type { PythonFlowEvent, RunIssue } from '../shared/types'
 import { ArenaSession, arenaModules } from './arena'
-import { ProgramError, PythonProgram, type PythonModules } from './python'
-import { isArenaChoice, type ArenaChoice, type RealtimeArenaProgress, type RealtimePolicyStep } from './realtimeProtocol'
-import { Values } from './values'
+import { ProgramError, type PythonModules } from './python'
+import { isArenaChoice, type ArenaChoice, type RealtimeArenaProgress, type RealtimeArenaResult, type RealtimePolicyStep } from './realtimeProtocol'
 
-type LiveTurn = { frame: ArenaFrame; result?: ArenaResult; issue?: RunIssue; policyStep?: RealtimePolicyStep }
+type LiveTurn = { frame: ArenaFrame; result?: RealtimeArenaResult; issue?: RunIssue; policyStep?: RealtimePolicyStep }
 
 export class RealtimeArenaSession {
   private readonly arena: ArenaSession
   private readonly modules: PythonModules
   private readonly combat: boolean
   private readonly actions: ArenaChoice[] = []
+  private policyOnly = true
   private policy?: string
   private manual?: ArenaChoice
 
@@ -31,6 +31,8 @@ export class RealtimeArenaSession {
     if (progress.queued !== undefined && !isArenaChoice(progress.queued, session.combat)) return
     session.policy = progress.policy
     session.manual = progress.queued
+    // Older saves contain the moves but cannot tell who chose them.
+    session.policyOnly = progress.policyOnly === true
     return session
   }
 
@@ -39,7 +41,7 @@ export class RealtimeArenaSession {
   }
 
   get progress(): RealtimeArenaProgress {
-    return { actions: [...this.actions], policy: this.policy, queued: this.manual }
+    return { actions: [...this.actions], policy: this.policy, queued: this.manual, policyOnly: this.policyOnly }
   }
 
   get latestFrame() {
@@ -60,7 +62,7 @@ export class RealtimeArenaSession {
       return { active: false }
     }
     try {
-      this.choose(source)
+      this.arena.chooseAction(source, this.modules)
       this.policy = source
       return { active: true }
     } catch (error) {
@@ -76,6 +78,7 @@ export class RealtimeArenaSession {
 
   tick(): LiveTurn | undefined {
     let choice = this.manual ?? 'wait'
+    let choseWithPolicy = false
     let issue: RunIssue | undefined
     let policyStep: RealtimePolicyStep | undefined
     if (!this.manual && this.policy) {
@@ -84,9 +87,12 @@ export class RealtimeArenaSession {
       const flow: PythonFlowEvent[] = []
       let truncated = false
       try {
-        choice = this.choose(source, (line, file) => {
-          if (file === 'main.py') policyLine = line
-        }, event => flow.push(event), () => { truncated = true })
+        const decision = this.arena.chooseAction(source, this.modules, {
+          onFlow: event => flow.push(event), onFlowTruncated: () => { truncated = true },
+        })
+        choice = decision.action
+        policyLine = decision.line
+        choseWithPolicy = true
       } catch (error) {
         this.policy = undefined
         issue = this.issueFor(error)
@@ -98,9 +104,11 @@ export class RealtimeArenaSession {
     this.manual = undefined
     const step = this.advance(choice)
     if (!step) return undefined
+    if (!choseWithPolicy) this.policyOnly = false
     const result = step.decision && {
       ...step.decision,
       won: step.decision.outcome === 'win',
+      policyOnly: this.policyOnly,
       frames: this.arena.frames,
       final: this.arena.state,
       passedCases: Number(step.decision.outcome === 'win'),
@@ -114,17 +122,6 @@ export class RealtimeArenaSession {
     const step = this.arena.advance(action)
     if (step) this.actions.push(action)
     return step
-  }
-
-  private choose(source: string, onLine?: (line: number, sourceName: string) => void,
-    onFlow?: (event: PythonFlowEvent) => void, onFlowTruncated?: () => void): ArenaChoice {
-    const values = new Values()
-    const runner = new PythonProgram(source, values, (name, _args, line) => {
-      throw new ProgramError({ code: 'unknownName', detail: name, line })
-    }, { modules: this.modules, stepBudget: 24_000, onLine, onFlow, onFlowTruncated, flowLimit: 80, traceModules: true })
-    const choice = runner.runPureFunction('decide', [values.fromJson(this.arena.scan())], true).data
-    if (!isArenaChoice(choice, this.combat)) throw new ProgramError({ code: 'wrongAnswer', detail: 'decide' })
-    return choice
   }
 
   private issueFor(error: unknown): RunIssue {

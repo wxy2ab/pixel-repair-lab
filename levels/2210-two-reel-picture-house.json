@@ -1,0 +1,193 @@
+{
+  "version": 1,
+  "id": "challenge-two-reel-picture-house",
+  "order": 2210,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": { "zh": "挑战场", "en": "Challenge Arena" }
+  },
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": { "zh": "双胶片放映厅", "en": "The Two-Reel Picture House" },
+  "concept": { "zh": "双片场同一程序", "en": "One program for two reels" },
+  "brief": {
+    "zh": "在 43 回合内用脉冲让三台对手机器人停机，芽芽要留在场上。从容模式需要用同一份程序连过两卷胶片。紧张模式在第一卷胶片上对抗。一卷从上方开门，另一卷从下方开门。第 13 回合末换门，追击机可以穿过开着的门。",
+    "en": "Tag out all 3 robots with pulses within 43 turns and keep Sprout running. In relaxed mode, clear both reels with the same program. Timed mode uses the first reel. One opens with the upper door unlocked and the other with the lower door unlocked. The door switches after turn 13. The roaming bot can pass through the open door."
+  },
+  "prerequisites": [
+    { "unit": "python-intermediate", "topic": "for-loops" },
+    { "unit": "algorithm-advanced", "topic": "rival-strategy" }
+  ],
+  "hints": [],
+  "tiles": [
+    "################",
+    "#..#...#.....#.#",
+    "#..#...#.......#",
+    "#..#...........#",
+    "#......#.......#",
+    "#......#.###...#",
+    "#......#.......#",
+    "#..#...#.......#",
+    "#..#...#.......#",
+    "#..#...#.....#.#",
+    "################"
+  ],
+  "start": { "x": 2, "y": 5 },
+  "items": [
+    { "id": "spool", "x": 3, "y": 5 },
+    { "id": "lens", "x": 4, "y": 5 },
+    { "id": "film-case", "x": 5, "y": 5 },
+    { "id": "reel-pad", "x": 10, "y": 3 }
+  ],
+  "opponents": [
+    {
+      "id": "projector",
+      "title": { "zh": "放映轮", "en": "Projector" },
+      "start": { "x": 13, "y": 3 },
+      "policy": { "kind": "duelist", "style": "sentry" }
+    },
+    {
+      "id": "rewinder",
+      "title": { "zh": "倒片轮", "en": "Rewinder" },
+      "start": { "x": 11, "y": 7 },
+      "policy": { "kind": "duelist", "style": "hunter" }
+    },
+    {
+      "id": "clapper",
+      "title": { "zh": "场记板", "en": "Clapper" },
+      "start": { "x": 14, "y": 7 },
+      "policy": { "kind": "duelist", "style": "sentry" }
+    }
+  ],
+  "objective": { "kind": "eliminate" },
+  "maxTurns": 43,
+  "combat": {
+    "health": 4,
+    "range": 4,
+    "buffs": [
+      { "id": "spool", "kind": "power" },
+      { "id": "lens", "kind": "power" },
+      { "id": "film-case", "kind": "shield" },
+      { "id": "reel-pad", "kind": "shield" }
+    ]
+  },
+  "shifts": [
+    {
+      "turn": 13,
+      "open": [
+        { "x": 7, "y": 7 }
+      ],
+      "close": [
+        { "x": 7, "y": 3 }
+      ]
+    }
+  ],
+  "starterCode": "state = scan()\n",
+  "solutionCode": "def visible_pulse(state):\n    for ray in [[\"up\", 0, -1], [\"right\", 1, 0], [\"down\", 0, 1], [\"left\", -1, 0]]:\n        x = state[\"player\"][0]\n        y = state[\"player\"][1]\n        for distance in range(state[\"range\"]):\n            x += ray[1]\n            y += ray[2]\n            if state[\"tiles\"][y][x] == \"#\":\n                break\n            for bot in state[\"opponents\"]:\n                if bot[\"hp\"] > 0 and bot[\"x\"] == x and bot[\"y\"] == y:\n                    return ray[0]\n    return None\n\ndef clear_view():\n    direction = visible_pulse(scan())\n    while direction is not None:\n        shoot(direction)\n        direction = visible_pulse(scan())\n\ndef visit(x, y):\n    while scan()[\"player\"] != [x, y]:\n        clear_view()\n        player = scan()[\"player\"]\n        if player[0] < x:\n            move(\"right\")\n        elif player[0] > x:\n            move(\"left\")\n        elif player[1] < y:\n            move(\"down\")\n        else:\n            move(\"up\")\n\nvisit(3, 5)\npick()\nvisit(4, 5)\npick()\nvisit(5, 5)\npick()\nlane = 7\nif scan()[\"tiles\"][3][7] == \".\":\n    lane = 3\nvisit(5, lane)\nvisit(12, lane)\nvisit(12, 10 - lane)\nvisit(14, 10 - lane)\nclear_view()\n",
+  "snippets": [
+    {
+      "label": { "zh": "向上走", "en": "Move up" },
+      "code": "move(\"up\")"
+    },
+    {
+      "label": { "zh": "向右走", "en": "Move right" },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": { "zh": "向下走", "en": "Move down" },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": { "zh": "向左走", "en": "Move left" },
+      "code": "move(\"left\")"
+    },
+    {
+      "label": { "zh": "向上发脉冲", "en": "Pulse up" },
+      "code": "shoot(\"up\")"
+    },
+    {
+      "label": { "zh": "向右发脉冲", "en": "Pulse right" },
+      "code": "shoot(\"right\")"
+    },
+    {
+      "label": { "zh": "向下发脉冲", "en": "Pulse down" },
+      "code": "shoot(\"down\")"
+    },
+    {
+      "label": { "zh": "向左发脉冲", "en": "Pulse left" },
+      "code": "shoot(\"left\")"
+    },
+    {
+      "label": { "zh": "拾取芯片", "en": "Pick up a chip" },
+      "code": "pick()"
+    },
+    {
+      "label": { "zh": "开启防御", "en": "Guard" },
+      "code": "guard()"
+    },
+    {
+      "label": { "zh": "扫描棋盘", "en": "Scan the board" },
+      "code": "state = scan()"
+    },
+    {
+      "label": { "zh": "等待一回合", "en": "Wait a turn" },
+      "code": "wait()"
+    }
+  ],
+  "variants": [
+    {
+      "tiles": [
+        "################",
+        "#..#...#.....#.#",
+        "#..#...#.......#",
+        "#..#...#.......#",
+        "#......#.......#",
+        "#......#.###...#",
+        "#......#.......#",
+        "#..#...........#",
+        "#..#...#.......#",
+        "#..#...#.....#.#",
+        "################"
+      ],
+      "opponents": [
+        {
+          "id": "projector",
+          "title": { "zh": "放映轮", "en": "Projector" },
+          "start": { "x": 13, "y": 7 },
+          "policy": { "kind": "duelist", "style": "sentry" }
+        },
+        {
+          "id": "rewinder",
+          "title": { "zh": "倒片轮", "en": "Rewinder" },
+          "start": { "x": 11, "y": 3 },
+          "policy": { "kind": "duelist", "style": "hunter" }
+        },
+        {
+          "id": "clapper",
+          "title": { "zh": "场记板", "en": "Clapper" },
+          "start": { "x": 14, "y": 3 },
+          "policy": { "kind": "duelist", "style": "sentry" }
+        }
+      ],
+      "items": [
+        { "id": "spool", "x": 3, "y": 5 },
+        { "id": "lens", "x": 4, "y": 5 },
+        { "id": "film-case", "x": 5, "y": 5 },
+        { "id": "reel-pad", "x": 10, "y": 7 }
+      ],
+      "shifts": [
+        {
+          "turn": 13,
+          "open": [
+            { "x": 7, "y": 3 }
+          ],
+          "close": [
+            { "x": 7, "y": 7 }
+          ]
+        }
+      ]
+    }
+  ]
+}

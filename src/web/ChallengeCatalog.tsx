@@ -3,11 +3,12 @@ import type { Level, Locale, Localized, Position } from '../shared/types'
 import { shortSeries } from '../shared/shortChallenges'
 import { challengeZoneId } from '../shared/coursePrerequisites'
 import {
-  buildChallengePreparation, challengeDifficulties, challengeDifficultyLabels, challengeTypeLabels, type buildChallengeCatalog,
+  arenaObjectiveLabels, buildChallengePreparation, challengeDifficulties, challengeDifficultyLabels, challengeTypeLabels, type buildChallengeCatalog,
   challengeTypes, filterChallenges, type ChallengeEntry, type ChallengeFilters, type ChallengePreparation,
   type ChallengePrerequisite, type ChallengeType,
 } from './challengeModel'
 import type { ChallengeRoute } from './challengeRoutes'
+import { isArenaGoalKind } from './challengeScore'
 import { ChallengeRouteList } from './ChallengeRouteList'
 import type { LearningGroup } from './roadmapModel'
 import { tr } from './text'
@@ -119,6 +120,7 @@ function ChallengeRules({ id, level, locale }: { id: string; level: Level; local
   const steps = level.kind === 'data' ? level.steps.length : 0
 
   return <span id={id} className="challenge-rules">
+    {level.kind === 'arena' && <span>{arenaObjectiveLabels[level.objective.kind][locale]}</span>}
     {turns !== undefined && <span>{t(`限 ${turns} 回合`, `${turns}-turn limit`)}</span>}
     {opponents ? <span>{t(`${opponents} 台对手`, `${opponents} ${opponents === 1 ? 'opponent' : 'opponents'}`)}</span> : null}
     {cases > 1 && <span>{t(`${cases} 个场景`, `${cases} scenarios`)}</span>}
@@ -283,16 +285,25 @@ export function ChallengeCatalog({
           </button>)}
         </nav>
       })}
-      <div className="challenge-filters">
+      <div className="challenge-filters" data-arena={filters.type === 'arena' || undefined}>
         <label>{t('类型', 'Type')}
           <select value={filters.type ?? ''} onChange={event => onFiltersChange({
-            ...filters, type: challengeTypes.find(type => type === event.target.value),
+            ...filters, type: challengeTypes.find(type => type === event.target.value), arenaObjective: undefined,
           })}>
             <option value="">{t('全部类型', 'All types')}</option>
             {challengeTypes.filter(type => entries.some(entry => entry.type === type)).map(type =>
               <option value={type} key={type}>{challengeTypeLabels[type][locale]}</option>)}
           </select>
         </label>
+        {filters.type === 'arena' && <label>{t('对抗目标', 'Battle objective')}
+          <select value={filters.arenaObjective ?? ''} onChange={event => {
+            const objective = event.target.value
+            onFiltersChange({ ...filters, arenaObjective: isArenaGoalKind(objective) ? objective : undefined })
+          }}>
+            <option value="">{t('全部目标', 'All objectives')}</option>
+            {Object.entries(arenaObjectiveLabels).map(([value, label]) => <option key={value} value={value}>{label[locale]}</option>)}
+          </select>
+        </label>}
         <label>{t('难度', 'Difficulty')}
           <select value={filters.difficulty ?? ''} onChange={event => onFiltersChange({
             ...filters, difficulty: challengeDifficulties.find(tier => tier === event.target.value),

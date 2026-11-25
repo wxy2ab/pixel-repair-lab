@@ -1,0 +1,162 @@
+{
+  "version": 1,
+  "id": "challenge-twin-jelly-shelves",
+  "order": 2202,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "stage": "challenge",
+  "difficulty": "starter",
+  "title": {
+    "zh": "双层果冻架",
+    "en": "Twin Jelly Shelves"
+  },
+  "concept": {
+    "zh": "双机对抗 · 上下换道",
+    "en": "Twin duel · Switching shelves"
+  },
+  "brief": {
+    "zh": "让上下两层的果冻机器人都停机。架板会挡住脉冲，两台机器人各守一条横道。每块护盾芯片能抵消 1 点伤害。限时 22 回合。",
+    "en": "Tag out the jelly bots on both shelves. The shelf dividers stop pulses and each bot holds one lane. Each shield chip absorbs 1 point of damage. Finish within 22 turns."
+  },
+  "prerequisites": [
+    {
+      "unit": "foundations",
+      "topic": "sequence"
+    },
+    {
+      "unit": "python-intermediate",
+      "topic": "for-loops"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "###########",
+    "#...#.....#",
+    "#.........#",
+    "#..#####..#",
+    "#.........#",
+    "#..#####..#",
+    "#.........#",
+    "#...#.....#",
+    "###########"
+  ],
+  "start": { "x": 1, "y": 4 },
+  "items": [
+    {
+      "id": "shield-1",
+      "x": 2,
+      "y": 3
+    },
+    {
+      "id": "power-1",
+      "x": 2,
+      "y": 4
+    }
+  ],
+  "opponents": [
+    {
+      "id": "lime",
+      "title": { "zh": "青柠", "en": "Lime" },
+      "start": { "x": 7, "y": 2 },
+      "policy": {
+        "kind": "duelist",
+        "style": "sentry"
+      }
+    },
+    {
+      "id": "plum",
+      "title": { "zh": "梅子", "en": "Plum" },
+      "start": { "x": 7, "y": 6 },
+      "policy": {
+        "kind": "duelist",
+        "style": "sentry"
+      }
+    }
+  ],
+  "objective": {
+    "kind": "eliminate"
+  },
+  "maxTurns": 22,
+  "combat": {
+    "health": 2,
+    "range": 6,
+    "buffs": [
+      {
+        "id": "shield-1",
+        "kind": "shield"
+      },
+      {
+        "id": "power-1",
+        "kind": "power"
+      }
+    ]
+  },
+  "starterCode": "state = scan()\n",
+  "solutionCode": "move(\"right\")\npick()\nmove(\"up\")\npick()\nmove(\"up\")\nfor pulse in range(2):\n    shoot(\"right\")\nfor step in range(4):\n    move(\"down\")\nfor pulse in range(2):\n    shoot(\"right\")\n",
+  "snippets": [
+    {
+      "label": { "zh": "向上走", "en": "Move up" },
+      "code": "move(\"up\")"
+    },
+    {
+      "label": { "zh": "向上发脉冲", "en": "Pulse up" },
+      "code": "shoot(\"up\")"
+    },
+    {
+      "label": { "zh": "向右走", "en": "Move right" },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": { "zh": "向右发脉冲", "en": "Pulse right" },
+      "code": "shoot(\"right\")"
+    },
+    {
+      "label": {
+        "zh": "向下走",
+        "en": "Move down"
+      },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": {
+        "zh": "向下发脉冲",
+        "en": "Pulse down"
+      },
+      "code": "shoot(\"down\")"
+    },
+    {
+      "label": { "zh": "向左走", "en": "Move left" },
+      "code": "move(\"left\")"
+    },
+    {
+      "label": { "zh": "向左发脉冲", "en": "Pulse left" },
+      "code": "shoot(\"left\")"
+    },
+    {
+      "label": { "zh": "拾取芯片", "en": "Pick up chip" },
+      "code": "pick()"
+    },
+    {
+      "label": { "zh": "防御一拍", "en": "Guard for a beat" },
+      "code": "guard()"
+    },
+    {
+      "label": { "zh": "等待一拍", "en": "Wait a beat" },
+      "code": "wait()"
+    },
+    {
+      "label": {
+        "zh": "查看赛场",
+        "en": "Scan arena"
+      },
+      "code": "state = scan()"
+    }
+  ]
+}

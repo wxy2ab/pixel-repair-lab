@@ -1,0 +1,176 @@
+{
+  "version": 1,
+  "id": "challenge-freight-lift-pulse-league",
+  "order": 2209,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": { "zh": "挑战场", "en": "Challenge Arena" }
+  },
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": { "zh": "升降笼轮班赛", "en": "Freight Lift League" },
+  "concept": { "zh": "升降笼轮班", "en": "Staggered lift doors" },
+  "brief": {
+    "zh": "在 48 回合内用脉冲让四台对手机器人停机，芽芽要留在场上。第 7、15、25 回合末，升降笼会改变停靠楼层。第 19 回合末，中层出口会收到一枚护盾。东侧守点机脚下有威力芯片。",
+    "en": "Tag out all 4 robots with pulses within 48 turns and keep Sprout running. The lift landings change after turns 7, 15 and 25. A shield arrives at the middle room’s exit after turn 19. The eastern sentry starts on a power chip."
+  },
+  "prerequisites": [
+    { "unit": "python-intermediate", "topic": "for-loops" },
+    { "unit": "algorithm-advanced", "topic": "rival-strategy" }
+  ],
+  "hints": [],
+  "tiles": [
+    "##################",
+    "#.....#.....#....#",
+    "#.....#.....#....#",
+    "#.....#..........#",
+    "#.#####.....#....#",
+    "#.....#.....#....#",
+    "#.....#.###.#.####",
+    "#.....#.....#....#",
+    "#...........#....#",
+    "#.....#.....#....#",
+    "#.....#.....#....#",
+    "##################"
+  ],
+  "start": { "x": 2, "y": 8 },
+  "items": [
+    { "id": "counterweight", "x": 3, "y": 8 },
+    { "id": "flywheel", "x": 4, "y": 8 },
+    { "id": "packing", "x": 6, "y": 8 },
+    { "id": "rubber-stop", "x": 9, "y": 8 },
+    { "id": "top-deck", "x": 15, "y": 3 },
+    { "id": "door-buffer", "x": 2, "y": 1 }
+  ],
+  "opponents": [
+    {
+      "id": "porter",
+      "title": { "zh": "搬运轮", "en": "Porter" },
+      "start": { "x": 9, "y": 2 },
+      "policy": { "kind": "duelist", "style": "hunter" }
+    },
+    {
+      "id": "bellhop",
+      "title": { "zh": "铃铛", "en": "Bellhop" },
+      "start": { "x": 9, "y": 9 },
+      "policy": { "kind": "duelist", "style": "sentry" }
+    },
+    {
+      "id": "cage",
+      "title": { "zh": "方格", "en": "Lattice" },
+      "start": { "x": 15, "y": 3 },
+      "policy": { "kind": "duelist", "style": "sentry" }
+    },
+    {
+      "id": "hook",
+      "title": { "zh": "弯钩", "en": "Hook" },
+      "start": { "x": 16, "y": 9 },
+      "policy": { "kind": "duelist", "style": "hunter" }
+    }
+  ],
+  "objective": { "kind": "eliminate" },
+  "maxTurns": 48,
+  "combat": {
+    "health": 5,
+    "range": 4,
+    "buffs": [
+      { "id": "counterweight", "kind": "power" },
+      { "id": "flywheel", "kind": "power" },
+      { "id": "packing", "kind": "shield" },
+      { "id": "rubber-stop", "kind": "shield" },
+      { "id": "top-deck", "kind": "power" },
+      { "id": "door-buffer", "kind": "shield" }
+    ]
+  },
+  "shifts": [
+    {
+      "turn": 7,
+      "open": [
+        { "x": 6, "y": 3 }
+      ],
+      "close": [
+        { "x": 6, "y": 8 }
+      ]
+    },
+    {
+      "turn": 15,
+      "open": [
+        { "x": 12, "y": 8 }
+      ],
+      "close": [
+        { "x": 12, "y": 3 }
+      ]
+    },
+    {
+      "turn": 19,
+      "moveItems": [
+        { "id": "door-buffer", "x": 11, "y": 8 }
+      ]
+    },
+    {
+      "turn": 25,
+      "open": [
+        { "x": 6, "y": 8 },
+        { "x": 12, "y": 3 }
+      ],
+      "close": [
+        { "x": 6, "y": 3 },
+        { "x": 12, "y": 8 }
+      ]
+    }
+  ],
+  "starterCode": "state = scan()\n",
+  "solutionCode": "def visible_pulse(state):\n    for ray in [[\"up\", 0, -1], [\"right\", 1, 0], [\"down\", 0, 1], [\"left\", -1, 0]]:\n        x = state[\"player\"][0]\n        y = state[\"player\"][1]\n        for distance in range(state[\"range\"]):\n            x += ray[1]\n            y += ray[2]\n            if state[\"tiles\"][y][x] == \"#\":\n                break\n            for bot in state[\"opponents\"]:\n                if bot[\"hp\"] > 0 and bot[\"x\"] == x and bot[\"y\"] == y:\n                    return ray[0]\n    return None\n\ndef clear_view():\n    direction = visible_pulse(scan())\n    while direction is not None:\n        shoot(direction)\n        direction = visible_pulse(scan())\n\ndef visit(x, y):\n    while scan()[\"player\"] != [x, y]:\n        clear_view()\n        player = scan()[\"player\"]\n        if player[0] < x:\n            move(\"right\")\n        elif player[0] > x:\n            move(\"left\")\n        elif player[1] < y:\n            move(\"down\")\n        else:\n            move(\"up\")\n\nvisit(3, 8)\npick()\nvisit(4, 8)\npick()\nvisit(6, 8)\npick()\nguard()\nvisit(9, 8)\npick()\nvisit(11, 8)\npick()\nlane = 3\nif scan()[\"tiles\"][8][12] == \".\":\n    lane = 8\nvisit(11, lane)\nvisit(13, lane)\nvisit(13, 3)\nvisit(15, 3)\nclear_view()\n",
+  "snippets": [
+    {
+      "label": { "zh": "向上走", "en": "Move up" },
+      "code": "move(\"up\")"
+    },
+    {
+      "label": { "zh": "向右走", "en": "Move right" },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": { "zh": "向下走", "en": "Move down" },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": { "zh": "向左走", "en": "Move left" },
+      "code": "move(\"left\")"
+    },
+    {
+      "label": { "zh": "向上发脉冲", "en": "Pulse up" },
+      "code": "shoot(\"up\")"
+    },
+    {
+      "label": { "zh": "向右发脉冲", "en": "Pulse right" },
+      "code": "shoot(\"right\")"
+    },
+    {
+      "label": { "zh": "向下发脉冲", "en": "Pulse down" },
+      "code": "shoot(\"down\")"
+    },
+    {
+      "label": { "zh": "向左发脉冲", "en": "Pulse left" },
+      "code": "shoot(\"left\")"
+    },
+    {
+      "label": { "zh": "拾取芯片", "en": "Pick up a chip" },
+      "code": "pick()"
+    },
+    {
+      "label": { "zh": "开启防御", "en": "Guard" },
+      "code": "guard()"
+    },
+    {
+      "label": { "zh": "扫描棋盘", "en": "Scan the board" },
+      "code": "state = scan()"
+    },
+    {
+      "label": { "zh": "等待一回合", "en": "Wait a turn" },
+      "code": "wait()"
+    }
+  ]
+}

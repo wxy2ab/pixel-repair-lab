@@ -92,6 +92,6 @@ export function initialArenaSnapshot(scenario: ArenaScenario): ArenaSnapshot {
     items: scenario.items.map((item) => ({ ...item })),
     turn: 0,
     ...((scenario.combat || scenario.objective.kind === 'collect') && { collected: [] }),
-    ...(scenario.shifts?.length ? { tiles: [...scenario.tiles] } : {}),
+    ...(scenario.shifts?.length || scenario.combat?.switches?.length ? { tiles: [...scenario.tiles] } : {}),
   }
 }

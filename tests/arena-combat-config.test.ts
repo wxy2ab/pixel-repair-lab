@@ -29,3 +29,13 @@ test('collected and elimination victories keep separate timed and relaxed score 
   assert.equal(restored.length, 4)
   assert.ok(restored.every(series => series.best.kind === 'arena' && series.best.turns === 12))
 })
+
+test('switches reference separate items and initially closed gates on every scenario', () => {
+  const item = arena.items[0], gate = { x: 4, y: 1 }
+  const combat = { ...arena.combat!, buffs: [], switches: [{ itemId: item.id, open: [gate] }] }
+  assert.deepEqual(issues({ combat }), [])
+  assert.ok(issues({ combat: { ...combat, buffs: [arena.combat!.buffs[0]] } }).some(issue => issue.code === 'arena-switch'))
+  assert.ok(issues({ combat: { ...combat, switches: [...combat.switches, ...combat.switches] } }).some(issue => issue.code === 'arena-switch'))
+  assert.ok(issues({ combat, variants: [{ items: [] }] }).some(issue => issue.path.startsWith('/variants/0/combat/switches/')))
+  assert.ok(issues({ combat: { ...combat, switches: [{ itemId: item.id, open: [arena.start] }] } }).some(issue => issue.code === 'arena-switch'))
+})

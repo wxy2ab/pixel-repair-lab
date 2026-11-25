@@ -2,10 +2,10 @@ import type {
   ArenaActor, ArenaEvent, ArenaFailure, ArenaFrame, ArenaLevel, ArenaOpponent, ArenaOutcome, ArenaReason,
   ArenaProgramEvent, ArenaReading, ArenaResult, ArenaScan, ArenaScenario, ArenaShiftResult, ArenaSnapshot, PersonalAlgorithms,
 } from '../shared/advanced'
-import type { Direction, Position, RunIssue } from '../shared/types'
+import type { Direction, Position, PythonFlowEvent, RunIssue } from '../shared/types'
 import { selectHelpers } from '../shared/courseHelpers'
 import { SHORTEST_STEP_SOURCE } from './algorithms'
-import { ProgramError, PythonProgram, type PythonModules } from './python'
+import { MAX_PYTHON_FLOW_EVENTS, ProgramError, PythonProgram, type PythonModules } from './python'
 import { isArenaChoice, type ArenaChoice } from './realtimeProtocol'
 import { aimAtPlayer, isActive, moveCombatants, resolvePulses } from './arenaCombat'
 import { initialArenaSnapshot } from './snapshot'
@@ -23,6 +23,7 @@ const matchEnded = Symbol('match ended')
 type Intent = Pick<ArenaEvent, 'action' | 'direction' | 'tactic' | 'targetId'>
 type Decision = { outcome: ArenaOutcome; reason: ArenaReason }
 type Route = { distance: number; first?: Direction }
+type PolicyTrace = { onFlow: (event: PythonFlowEvent) => void; onFlowTruncated: () => void; flowLimit?: number }
 type Racer = { actor: ArenaActor; routes: Map<string, Route> }
 type AdaptiveStyle = Extract<ArenaOpponent['policy'], { kind: 'adaptive' }>['style']
 
@@ -44,6 +45,13 @@ function move(position: Position, direction: Direction): Position {
 
 function passable(tiles: string[], position: Position): boolean {
   return tiles[position.y]?.[position.x] === '.'
+}
+
+function setTile(tiles: string[], { x, y }: Position, tile: '.' | '#') {
+  const row = tiles[y]
+  if (row?.[x] === undefined || row[x] === tile) return false
+  tiles[y] = row.slice(0, x) + tile + row.slice(x + 1)
+  return true
 }
 
 function nextMove(tiles: string[], start: Position, goals: Position[]): Direction | undefined {
@@ -86,29 +94,48 @@ export class ArenaSession {
     this.state = initialArenaSnapshot(scenario)
   }
 
-  advance(action: ArenaChoice): { frame: ArenaFrame; decision?: Decision } | undefined {
+  advance(action: ArenaChoice, line = 0): { frame: ArenaFrame; decision?: Decision } | undefined {
     if (this.decision || !isArenaChoice(action, Boolean(this.scenario.combat))) return undefined
     const intent: Intent = action === 'pick' || action === 'wait' || action === 'guard' ? { action }
       : action.startsWith('shoot-') ? { action: 'shoot', direction: action.slice(6) as Direction }
       : { action: 'move', direction: action as Direction }
-    this.turn(intent, 0)
+    this.turn(intent, line)
     return { frame: this.frames.at(-1)!, decision: this.decision }
+  }
+
+  chooseAction(source: string, modules: PythonModules, trace?: PolicyTrace) {
+    let returnLine = 1
+    const runner = new PythonProgram(source, this.values, (name, _args, line) => {
+      throw new ProgramError({ code: 'unknownName', detail: name, line })
+    }, { modules, stepBudget: 24_000, flowLimit: 80, traceModules: true, ...trace })
+    const choice = runner.runPureFunction('decide', [this.values.fromJson(this.scan())], true, line => { returnLine = line }).data
+    if (!isArenaChoice(choice, Boolean(this.scenario.combat))) throw new ProgramError({ code: 'wrongAnswer', detail: 'decide', line: returnLine })
+    return { action: choice, line: returnLine }
   }
 
   run(source: string, modules: PythonModules): Decision & { issue?: RunIssue } {
     try {
-      new PythonProgram(source, this.values, (name, args, line, file) => this.call(name, args, line, file), {
+      const recording = this.recordFlow ? {
+        flowLimit: MAX_PYTHON_FLOW_EVENTS,
+        onFlow: (event: PythonFlowEvent) => { this.pendingProgram.push(event) },
+        onFlowTruncated: () => { this.programTruncated = true },
+      } : undefined
+      const program = new PythonProgram(source, this.values, (name, args, line, file) => this.call(name, args, line, file), {
         modules,
         traceModules: true,
         stepBudget: 120_000,
-        ...(this.recordFlow && {
-          onFlow: event => { this.pendingProgram.push(event) },
-          onFlowTruncated: () => { this.programTruncated = true },
-        }),
-      }).run()
+        ...recording,
+      })
+      if (program.isFunctionModule('decide')) {
+        while (!this.decision) {
+          const { action, line } = this.chooseAction(source, modules, recording)
+          if (recording) recording.flowLimit -= this.pendingProgram.length
+          this.advance(action, line)
+        }
+      } else program.run()
     } catch (error) {
       if (error !== matchEnded) {
-        return { outcome: 'loss', reason: 'error', issue: error instanceof ProgramError ? error.issue : { code: 'internal' } }
+        return { outcome: 'loss', reason: 'error', issue: error instanceof ProgramError ? error.issue : { code: error instanceof RangeError ? 'limit' : 'internal' } }
       }
     }
     if (this.scenario.objective.kind === 'score') {
@@ -188,6 +215,7 @@ export class ArenaSession {
       ...(this.state.collected && { collected: [...this.state.collected] }),
       ...(this.scenario.combat && {
         self: { ...this.state.actors[0] }, range: this.scenario.combat.range, buffs: this.scenario.combat.buffs.map(buff => ({ ...buff })),
+        ...(this.scenario.combat.switches && { switches: structuredClone(this.scenario.combat.switches) }),
       }),
       ...(this.state.tiles ? {
         playerScore: this.state.actors[0].score,
@@ -241,6 +269,7 @@ export class ArenaSession {
       const item = this.state.items.find(entry => samePosition(entry, position))
       const chip = item && buffs.find(buff => buff.id === item.id)
       if (chip && (position[chip.kind] ?? 0) < 3) return { action: 'pick' }
+      if (item && this.scenario.combat.switches?.some(control => control.itemId === item.id)) return { action: 'pick' }
       const direction = aimAtPlayer(this.tiles, this.state.actors, position, range)
       if (direction) return (this.state.turn + 1) % 3 === 0 ? { action: 'guard' } : { action: 'shoot', direction }
       if (policy.style === 'sentry') return { action: 'wait' }
@@ -276,14 +305,8 @@ export class ArenaSession {
     if (!tiles || shift?.turn !== this.state.turn) return undefined
     this.shiftIndex++
     const result: ArenaShiftResult = { turn: shift.turn, opened: [], closed: [], blocked: [], relocated: [] }
-    const setTile = ({ x, y }: Position, tile: '.' | '#') => {
-      const row = tiles[y]
-      if (row?.[x] === undefined || row[x] === tile) return false
-      tiles[y] = row.slice(0, x) + tile + row.slice(x + 1)
-      return true
-    }
     for (const position of shift.open ?? []) {
-      if (setTile(position, '.')) result.opened.push({ ...position })
+      if (setTile(tiles, position, '.')) result.opened.push({ ...position })
     }
     for (const { id, x, y } of shift.moveItems ?? []) {
       const item = this.state.items.find(entry => entry.id === id)
@@ -297,7 +320,7 @@ export class ArenaSession {
       if (this.state.actors.some(actor => isActive(actor) && samePosition(actor, position))
         || this.state.items.some(item => samePosition(item, position))) {
         result.blocked.push({ ...position })
-      } else if (setTile(position, '#')) {
+      } else if (setTile(tiles, position, '#')) {
         result.closed.push({ ...position })
       }
     }
@@ -353,6 +376,15 @@ export class ArenaSession {
     if (this.scenario.combat) resolvePulses(this.tiles, this.state.actors, events, this.scenario.combat.range)
     this.state.turn++
     const shift = this.applyShift()
+    const { switches } = this.scenario.combat ?? {}
+    const tiles = this.state.tiles
+    if (tiles && switches?.length) {
+      // Switches open after pulses and scheduled shifts, ready for the next turn.
+      for (const event of events) {
+        const control = event.itemId && switches.find(button => button.itemId === event.itemId)
+        if (control) event.opened = control.open.filter(gate => setTile(tiles, gate, '.')).map(gate => ({ ...gate }))
+      }
+    }
     this.decide(previous)
     this.frames.push({ line, state: structuredClone(this.state), events: inactive.length ? events.filter(event => !inactive.includes(event.actorId)) : events,
       ...(shift ? { shift } : {}),

@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ArenaFrame, ArenaLevel } from '../shared/advanced'
 import { mapScenarioAt } from '../shared/mapScenarios'
 import type { Locale } from '../shared/types'
 import { initialArenaSnapshot } from '../engine/snapshot'
 import { ArenaBoard, ArenaTurnEvents } from './ArenaPanels'
+import { useArenaTurnPresentation } from './useArenaTurnPresentation'
+import { arenaTurnTiming } from './arenaTurnMotion'
 import { useLessonWorker } from './lessonTools'
 import { MapObservationControls, useMapObservation } from './MapObservation'
 import MapScenarioPicker from './MapScenarioPicker'
@@ -16,7 +18,7 @@ export function ArenaObservationBoard({ level, locale, initialMap, onExit }: {
   const count = 1 + (level.variants?.length ?? 0)
   const maps = useRef<ArenaFrame[][]>([])
   const framesForMap = useCallback((index: number) => maps.current[index], [])
-  const observation = useMapObservation(count, framesForMap)
+  const observation = useMapObservation(count, framesForMap, frame => arenaTurnTiming(frame.events, frame.state.actors).durationMs + 60)
   const start = observation.start
   const [failed, setFailed] = useState(false)
   const { run } = useLessonWorker<ArenaFrame[][]>()
@@ -30,20 +32,22 @@ export function ArenaObservationBoard({ level, locale, initialMap, onExit }: {
   }, [initialMap, level, run, start])
 
   const index = observation.active ? observation.mapIndex : initialMap
-  const map = mapScenarioAt(level, index)
+  const map = useMemo(() => mapScenarioAt(level, index), [level, index])
   const frame = observation.frame
+  const snapshot = frame?.state ?? initialArenaSnapshot(map)
+  const presentation = useArenaTurnPresentation(index, snapshot, frame)
   const frames = maps.current[index]
   const latestShift = frames?.findLast((entry, i) => i < observation.step && entry.shift)?.shift
   return <>
-    <ArenaBoard level={map} locale={locale} snapshot={frame?.state ?? initialArenaSnapshot(map)} frame={frame}
+    <ArenaBoard level={map} locale={locale} snapshot={snapshot} frame={frame} presentation={presentation}
       finished={!!frames && observation.step === frames.length} latestShift={latestShift}
       mapPicker={observation.active && <MapScenarioPicker locale={locale} index={index} count={count} onChange={observation.selectMap} />}>
-      {observation.active ? <MapObservationControls observation={{ ...observation, exit: onExit }} locale={locale} /> : <>
+      {observation.active ? <MapObservationControls observation={{ ...observation, exit: onExit }} locale={locale} nextBusy={presentation.inFlight} /> : <>
         <p role="status">{failed ? t('地图观察暂时无法打开，请再试一次。', 'The observation could not open. Please try again.')
           : t('正在准备地图观察…', 'Preparing the map observation…')}</p>
         <button type="button" className="subtle-button" onClick={onExit}>{t('结束观察', 'Exit observation')}</button>
       </>}
     </ArenaBoard>
-    {frame && <ArenaTurnEvents frame={frame} level={map} locale={locale} />}
+    {presentation.reportedFrame && <ArenaTurnEvents frame={presentation.reportedFrame} level={map} locale={locale} />}
   </>
 }

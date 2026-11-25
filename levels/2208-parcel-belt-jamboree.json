@@ -1,0 +1,165 @@
+{
+  "version": 1,
+  "id": "challenge-parcel-belt-jamboree",
+  "order": 2208,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": { "zh": "挑战场", "en": "Challenge Arena" }
+  },
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": { "zh": "快件滑槽争夺赛", "en": "Parcel Chute Jamboree" },
+  "concept": { "zh": "变轨传送带", "en": "Switching parcel chutes" },
+  "brief": {
+    "zh": "在 33 回合内用脉冲让四台对手机器人停机，芽芽要留在场上。蓝包裹在第 3 回合末滑到西侧装货台，红包裹在第 7 回合末滑到旁边。中间的隔板同时打开，两侧各有一台追击机。",
+    "en": "Tag out all 4 robots with pulses within 33 turns and keep Sprout running. The blue parcel slides to the west loading bay after turn 3 and the red parcel arrives beside it after turn 7. The central partition opens at the second delivery. A hunter starts on each outer belt."
+  },
+  "prerequisites": [
+    { "unit": "python-intermediate", "topic": "for-loops" },
+    { "unit": "algorithm-advanced", "topic": "rival-strategy" }
+  ],
+  "hints": [],
+  "tiles": [
+    "#################",
+    "#.......#.......#",
+    "#...............#",
+    "#####.#.#.##.####",
+    "#.......#.......#",
+    "#.......#.......#",
+    "#.......#.......#",
+    "###.###.#.####.##",
+    "#...............#",
+    "#.......#.......#",
+    "#################"
+  ],
+  "start": { "x": 2, "y": 5 },
+  "items": [
+    { "id": "blue-parcel", "x": 6, "y": 2 },
+    { "id": "red-parcel", "x": 12, "y": 5 },
+    { "id": "foil-wrap", "x": 2, "y": 5 },
+    { "id": "steel-wrap", "x": 13, "y": 8 },
+    { "id": "box-corner", "x": 12, "y": 2 }
+  ],
+  "opponents": [
+    {
+      "id": "zip",
+      "title": { "zh": "快递轮", "en": "Zip" },
+      "start": { "x": 14, "y": 1 },
+      "policy": { "kind": "duelist", "style": "hunter" }
+    },
+    {
+      "id": "stamp",
+      "title": { "zh": "钢印", "en": "Stamp" },
+      "start": { "x": 10, "y": 5 },
+      "policy": { "kind": "duelist", "style": "sentry" }
+    },
+    {
+      "id": "roller",
+      "title": { "zh": "压辊", "en": "Roller" },
+      "start": { "x": 15, "y": 9 },
+      "policy": { "kind": "duelist", "style": "hunter" }
+    },
+    {
+      "id": "labeler",
+      "title": { "zh": "贴签轮", "en": "Labeler" },
+      "start": { "x": 12, "y": 2 },
+      "policy": { "kind": "duelist", "style": "sentry" }
+    }
+  ],
+  "objective": { "kind": "eliminate" },
+  "maxTurns": 33,
+  "combat": {
+    "health": 4,
+    "range": 5,
+    "buffs": [
+      { "id": "blue-parcel", "kind": "power" },
+      { "id": "red-parcel", "kind": "power" },
+      { "id": "foil-wrap", "kind": "shield" },
+      { "id": "steel-wrap", "kind": "shield" },
+      { "id": "box-corner", "kind": "shield" }
+    ]
+  },
+  "shifts": [
+    {
+      "turn": 3,
+      "moveItems": [
+        { "id": "blue-parcel", "x": 3, "y": 5 }
+      ]
+    },
+    {
+      "turn": 7,
+      "open": [
+        { "x": 8, "y": 5 }
+      ],
+      "close": [
+        { "x": 8, "y": 2 }
+      ],
+      "moveItems": [
+        { "id": "red-parcel", "x": 4, "y": 5 }
+      ]
+    },
+    {
+      "turn": 15,
+      "open": [
+        { "x": 8, "y": 2 }
+      ],
+      "close": [
+        { "x": 8, "y": 8 }
+      ]
+    }
+  ],
+  "starterCode": "state = scan()\n",
+  "solutionCode": "def visible_pulse(state):\n    for ray in [[\"up\", 0, -1], [\"right\", 1, 0], [\"down\", 0, 1], [\"left\", -1, 0]]:\n        x = state[\"player\"][0]\n        y = state[\"player\"][1]\n        for distance in range(state[\"range\"]):\n            x += ray[1]\n            y += ray[2]\n            if state[\"tiles\"][y][x] == \"#\":\n                break\n            for bot in state[\"opponents\"]:\n                if bot[\"hp\"] > 0 and bot[\"x\"] == x and bot[\"y\"] == y:\n                    return ray[0]\n    return None\n\ndef clear_view():\n    direction = visible_pulse(scan())\n    while direction is not None:\n        shoot(direction)\n        direction = visible_pulse(scan())\n\ndef visit(x, y):\n    while scan()[\"player\"] != [x, y]:\n        clear_view()\n        player = scan()[\"player\"]\n        if player[0] < x:\n            move(\"right\")\n        elif player[0] > x:\n            move(\"left\")\n        elif player[1] < y:\n            move(\"down\")\n        else:\n            move(\"up\")\n\ndef wait_until(turn):\n    while scan()[\"turn\"] < turn:\n        direction = visible_pulse(scan())\n        if direction is None:\n            guard()\n        else:\n            shoot(direction)\n\npick()\nvisit(3, 5)\nwait_until(3)\npick()\nvisit(4, 5)\nwait_until(7)\npick()\nvisit(9, 5)\nvisit(9, 2)\nvisit(11, 2)\nclear_view()\n",
+  "snippets": [
+    {
+      "label": { "zh": "向上走", "en": "Move up" },
+      "code": "move(\"up\")"
+    },
+    {
+      "label": { "zh": "向右走", "en": "Move right" },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": { "zh": "向下走", "en": "Move down" },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": { "zh": "向左走", "en": "Move left" },
+      "code": "move(\"left\")"
+    },
+    {
+      "label": { "zh": "向上发脉冲", "en": "Pulse up" },
+      "code": "shoot(\"up\")"
+    },
+    {
+      "label": { "zh": "向右发脉冲", "en": "Pulse right" },
+      "code": "shoot(\"right\")"
+    },
+    {
+      "label": { "zh": "向下发脉冲", "en": "Pulse down" },
+      "code": "shoot(\"down\")"
+    },
+    {
+      "label": { "zh": "向左发脉冲", "en": "Pulse left" },
+      "code": "shoot(\"left\")"
+    },
+    {
+      "label": { "zh": "拾取芯片", "en": "Pick up a chip" },
+      "code": "pick()"
+    },
+    {
+      "label": { "zh": "开启防御", "en": "Guard" },
+      "code": "guard()"
+    },
+    {
+      "label": { "zh": "扫描棋盘", "en": "Scan the board" },
+      "code": "state = scan()"
+    },
+    {
+      "label": { "zh": "等待一回合", "en": "Wait a turn" },
+      "code": "wait()"
+    }
+  ]
+}

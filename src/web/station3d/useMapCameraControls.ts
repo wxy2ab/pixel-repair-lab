@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, type RefObject } from 'react'
-import { isMapShortcutTarget } from '../ArenaMapMode'
+import { isWorkspaceShortcut } from '../ArenaMapMode'
 import type { Position } from '../../shared/types'
 import type { createStationRenderer } from './renderer'
 
@@ -7,7 +7,7 @@ const clamp = (value: number, min: number, max: number) => Math.max(min, Math.mi
 const zoomStep = 1.2
 const panKeys: Record<string, [number, number]> = { w: [0, -1], a: [-1, 0], s: [0, 1], d: [1, 0] }
 
-export function useMapCameraControls(active: boolean, view: '2d' | '3d', canvas: RefObject<HTMLCanvasElement | null>,
+export function useMapCameraControls(active: boolean, keyboardEnabled: boolean, view: '2d' | '3d', canvas: RefObject<HTMLCanvasElement | null>,
   engine: RefObject<ReturnType<typeof createStationRenderer> | null>, showOverview: () => void, columns: number, rows: number,
   onFootprint: (points: Position[]) => void) {
   const flat = useRef<HTMLDivElement>(null)
@@ -84,15 +84,12 @@ export function useMapCameraControls(active: boolean, view: '2d' | '3d', canvas:
   }, [view, engine, showOverview, paintFlat])
 
   useEffect(() => {
-    if (!active) return
+    if (!active || !keyboardEnabled) return
     const surface: HTMLElement | null = view === '2d' ? flat.current : canvas.current
-    const workspace = surface?.closest('.arena-layout')
-    if (!surface || !workspace) return
-    // A new full-map session begins with a fitted flat board.
-    if (view === '2d') { camera.current = { zoom: 1, x: 0, y: 0 }; paintFlat() }
+    const workspace = surface?.closest('.arena-layout') ?? null
+    if (!workspace) return
     function keyDown(event: KeyboardEvent) {
-      if (!isMapShortcutTarget(event) || !(event.target instanceof Element)) return
-      if (!workspace!.contains(event.target) && event.target !== document.body && event.target !== document.documentElement) return
+      if (!isWorkspaceShortcut(event, workspace)) return
       const key = event.key.toLowerCase()
       const direction = panKeys[key]
       if (direction) pan(direction[0] * 44, direction[1] * 44)
@@ -102,22 +99,30 @@ export function useMapCameraControls(active: boolean, view: '2d' | '3d', canvas:
       else return
       event.preventDefault()
     }
+    window.addEventListener('keydown', keyDown)
+    return () => window.removeEventListener('keydown', keyDown)
+  }, [active, keyboardEnabled, view, canvas, pan, zoom, fit])
+
+  useEffect(() => {
+    if (!active) return
+    const surface: HTMLElement | null = view === '2d' ? flat.current : canvas.current
+    if (!surface) return
+    // A new full-map session begins with a fitted flat board.
+    if (view === '2d') { camera.current = { zoom: 1, x: 0, y: 0 }; paintFlat() }
     function wheel(event: WheelEvent) {
       if (event.ctrlKey || event.metaKey || event.altKey || !event.deltaY) return
       event.preventDefault()
       const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? surface!.clientHeight : 1)
       zoom(Math.exp(clamp(-delta * .002, -.35, .35)))
     }
-    window.addEventListener('keydown', keyDown)
     surface.addEventListener('wheel', wheel, { passive: false })
     const observer = view === '2d' ? new ResizeObserver(measureFlat) : undefined
     observer?.observe(surface)
     return () => {
       observer?.disconnect()
-      window.removeEventListener('keydown', keyDown)
       surface.removeEventListener('wheel', wheel)
     }
-  }, [active, view, canvas, pan, zoom, fit, paintFlat, measureFlat])
+  }, [active, view, canvas, zoom, paintFlat, measureFlat])
 
   useEffect(() => {
     const surface = flat.current

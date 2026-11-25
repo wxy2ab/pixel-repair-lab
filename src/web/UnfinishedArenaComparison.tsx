@@ -5,6 +5,7 @@ import type { Locale, Position } from '../shared/types'
 import { actorTitle, SavedArenaScores, savedArenaTime } from './ArenaPanels'
 import type { ArenaMatchMode } from './arenaMatchProgress'
 import { SavedArenaBoard } from './SavedArenaBoard'
+import { arenaGateCells } from './arenaGates'
 import { readSavedArenaChange, readSavedArenaChanges, type SavedArenaChange, type SavedArenaChangeKind } from './savedArenaChanges'
 import { tr } from './text'
 import './unfinished-arena-comparison.css'
@@ -104,7 +105,8 @@ function describeChange(change: SavedArenaChange, level: ArenaLevel, locale: Loc
     if (change.kind === 'battery') {
       const itemIndex = level.items.findIndex(item => item.id === entry.id)
       const batteryName = itemIndex < 0 ? entry.id : itemIndex + 1
-      label = level.combat ? t(`道具 ${entry.id}`, `Item ${entry.id}`) : t(`电池 ${batteryName}`, `Battery ${batteryName}`)
+      label = level.combat?.switches?.some(control => control.itemId === entry.id) ? t(`闸门开关 ${entry.id}`, `Gate switch ${entry.id}`)
+        : level.combat ? t(`道具 ${entry.id}`, `Item ${entry.id}`) : t(`电池 ${batteryName}`, `Battery ${batteryName}`)
     }
     return {
       id: entry.id,
@@ -249,9 +251,7 @@ export function UnfinishedArenaComparison({ entries, locale, onContinue, onBack 
   const sameLevel = entries.length === 2 && first.levelId === second.levelId
   const highlightChanges = sameLevel && showChanges
   const boards = highlightChanges && first.board && second.board ? [first.board, second.board] as const : undefined
-  const changes = boards && readSavedArenaChanges(...boards, (first.level.shifts ?? []).flatMap(shift => [
-    ...(shift.open ?? []), ...(shift.close ?? []),
-  ]))
+  const changes = boards && readSavedArenaChanges(...boards, arenaGateCells(first.level))
   const selectedChange = boards && selection && (selection.source === 'board'
     ? readSavedArenaChange(...boards, selection.kind, selection.position)
     : changes?.find(change => change.kind === selection.kind && change.entries[0].id === selection.id))

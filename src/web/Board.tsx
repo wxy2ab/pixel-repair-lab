@@ -1,6 +1,7 @@
-import { useMemo, type CSSProperties, type ReactNode } from 'react'
+import { useMemo, useRef, type CSSProperties, type ReactNode } from 'react'
 import type { GridLevel, GridSnapshot, Locale, Position, Scenario } from '../shared/types'
 import { ActionRobot } from './ActionRobot'
+import { ArenaTurnEffects } from './ArenaTurnEffects'
 import { StationViewport } from './station3d/StationViewport'
 import { gridMapTargets } from './station3d/mapTargets'
 import { useArenaMapMode } from './ArenaMapMode'
@@ -8,6 +9,7 @@ import type { StationFrame } from './station3d/types'
 import { tr } from './text'
 import { boardDevice, describeDevice, deviceName, emittingRay, hazardName, rayArms } from './gridDeviceDisplay'
 import { GridDeviceGlyph } from './GridDeviceGlyph'
+import { switchDescription } from './arenaGates'
 import { FerryDockIcon } from './icons'
 import { CargoGlyph, CargoOverlay, LoadingPadGlyph, cargoLabel } from './WarehouseTiles'
 import './arena-chips.css'
@@ -32,16 +34,17 @@ export function MapTiles({ locale, batteries, trail, ...scene }: Omit<StationFra
   const frame: StationFrame = { ...scene, trailEdges }
   return (
     <StationViewport frame={frame} locale={locale} batteries={batteries}>
-      {cell => <FlatMap frame={frame} locale={locale} selected={cell} />}
+      {(cell, visible) => <FlatMap frame={frame} locale={locale} selected={cell} showMotion={visible} />}
     </StationViewport>
   )
 }
 
-export function FlatMap({ frame, locale, selected, cellControl }: {
-  frame: StationFrame; locale: Locale; selected?: Position; cellControl?: (position: Position) => ReactNode
+export function FlatMap({ frame, locale, selected, cellControl, showMotion = true }: {
+  frame: StationFrame; locale: Locale; selected?: Position; cellControl?: (position: Position) => ReactNode; showMotion?: boolean
 }) {
   const { tiles, exit, playerPosition, opponents, items, cellChanges } = frame
   const columns = tiles[0].length
+  const board = useRef<HTMLDivElement>(null)
   const arms = useMemo(() => trailArmsByCell(frame.trailEdges ?? [], columns), [frame.trailEdges, columns])
   return (
     <div className="map-well" style={{ '--cols': tiles[0].length, '--rows': tiles.length } as CSSProperties}>
@@ -51,7 +54,7 @@ export function FlatMap({ frame, locale, selected, cellControl }: {
       <div className="map-coordinate map-coordinate--y" aria-hidden="true">
         {tiles.map((_, index) => <span key={index}>{index}</span>)}
       </div>
-      <div className="tilemap" role={cellControl ? 'group' : 'img'}
+      <div ref={board} className="tilemap" role={cellControl ? 'group' : 'img'} data-motion-turn={frame.arenaMotion?.turn}
         aria-label={tr(locale, '机器人位于 ' + playerPosition.x + '，' + playerPosition.y, 'Robot at ' + playerPosition.x + ', ' + playerPosition.y)}
       >
         {tiles.flatMap((row, y) => [...row].map((tile, x) => {
@@ -60,6 +63,9 @@ export function FlatMap({ frame, locale, selected, cellControl }: {
           const item = items.find(candidate => at(candidate, x, y))
           const player = !frame.playerDown && at(playerPosition, x, y)
           const buff = item && frame.arenaBuffs?.find(chip => chip.id === item.id)
+          const control = item && frame.arenaSwitches?.find(control => control.itemId === item.id)
+          const gate = frame.arenaSwitches?.find(control => control.open.some(cell => at(cell, x, y)))
+          const gateState = gate && (tile === '#' ? 'locked' : 'open')
           const target = item && frame.arenaTargetIds?.includes(item.id)
           const shots = frame.arenaShots?.filter(event => event.path?.some(cell => at(cell, x, y)))
           const changes = cellChanges?.filter(change => at(change.position, x, y)).map(change => change.state).join(' ')
@@ -71,11 +77,13 @@ export function FlatMap({ frame, locale, selected, cellControl }: {
           return <span key={x + ':' + y} className={'tile ' + (tile === '#' ? 'tile--wall' : 'tile--floor') + (goal ? ' tile--exit' : '')}
             data-x={x} data-y={y} data-item-id={item?.id} data-arena-change={changes || undefined}
             data-buff={buff?.kind} data-target-item={target || undefined}
+            data-gate-switch={control?.itemId} data-switch-gate={gateState}
             data-device-id={device?.id} data-device={device?.kind} data-device-state={device?.status}
             data-crate={box ? (pad ? 'parked' : 'loose') : undefined} data-loading-pad={pad || undefined}
             data-hazard={hazards?.length ? [...new Set(hazards.map(h => h.kind))].join(' ') : undefined}
             data-inspected={selected && at(selected, x, y) || undefined}
-            title={device || hazards?.length || box || pad ? [cargoLabel(box, pad, locale), device && describeDevice(device, locale),
+            title={control || gate || device || hazards?.length || box || pad ? [control && switchDescription(control.open, locale),
+              gate && (tile === '#' ? tr(locale, '闸门已关', 'Gate closed') : tr(locale, '闸门已开', 'Gate open')), cargoLabel(box, pad, locale), device && describeDevice(device, locale),
               ...new Set(hazards?.map(h => hazardName(h.kind, locale)))].filter(Boolean).join(' · ') : undefined}>
             {arms.get(y * columns + x)?.map(arm => <span key={arm.direction} className="board-trail-arm"
               data-trail={arm.recent ? 'recent' : 'history'} data-direction={arm.direction} aria-hidden="true" />)}
@@ -85,12 +93,14 @@ export function FlatMap({ frame, locale, selected, cellControl }: {
             {goal && (frame.ferryDock ? <FerryDockIcon /> : <span className="exit-icon" aria-hidden="true">↥</span>)}
             {pad && <LoadingPadGlyph />}
             {device && <GridDeviceGlyph device={device} />}
-            {shots?.map(shot => <i key={shot.actorId} className="arena-pulse-line" data-side={shot.actorId === 'player' ? 'player' : 'rival'}
+            {gate && gateState && <GridDeviceGlyph device={{ x, y, id: gate.itemId, kind: 'door', status: gateState }} />}
+            {shots?.map(shot => <i key={shot.actorId} className="arena-pulse-line" data-shot-actor={shot.actorId} data-side={shot.actorId === 'player' ? 'player' : 'rival'}
               data-direction={shot.direction} aria-hidden="true" />)}
-            {buff ? <span className="arena-chip" data-kind={buff.kind} aria-hidden="true">{buff.kind === 'power' ? 'ϟ' : '◆'}</span>
+            {control ? <GridDeviceGlyph device={{ x, y, id: control.itemId, kind: 'switch', status: 'off' }} />
+              : buff ? <span className="arena-chip" data-kind={buff.kind} aria-hidden="true">{buff.kind === 'power' ? 'ϟ' : '◆'}</span>
               : item && <span className={frame.arenaBuffs ? (target ? 'arena-parcel' : 'arena-token') : 'gem'} aria-hidden="true" />}
             {rivalsHere.map((rival, index) => rival.label
-              ? <span key={index} className="rival-marker" style={{ '--rival-index': rival.index ?? index } as CSSProperties}><Robot enemy /><small>{rival.label}</small></span>
+              ? <span key={rival.id ?? index} className="rival-marker" data-rival-id={rival.id} style={{ '--rival-index': rival.index ?? index } as CSSProperties}><Robot enemy /><small>{rival.label}</small></span>
               : <Robot key={index} enemy />)}
             {player && <ActionRobot activity={frame.activity} locale={locale} />}
             {cellControl?.({ x, y })}
@@ -98,6 +108,7 @@ export function FlatMap({ frame, locale, selected, cellControl }: {
         }))}
         {frame.warehouse && <CargoOverlay {...frame.warehouse} arrival={frame.warehouseArrival} />}
       </div>
+      {showMotion && frame.arenaMotion && <ArenaTurnEffects board={board} motion={frame.arenaMotion} />}
     </div>
   )
 }

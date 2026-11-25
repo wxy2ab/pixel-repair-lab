@@ -7,6 +7,7 @@ import { breadboardProgramIssues } from '../shared/breadboard'
 import { ferryGrid, initialFerryLayout } from '../shared/ferry'
 import type { parseLevel } from '../shared/validate'
 import { Board, MapTiles } from './Board'
+import { arenaGateCells } from './arenaGates'
 import MapScenarioPicker from './MapScenarioPicker'
 import { WorkshopForLesson } from './station3d/LessonWorkbench'
 import { initialSnapshot } from '../engine/snapshot'
@@ -96,7 +97,7 @@ export function LevelPreview({ locale, catalog }: { locale: Locale; catalog: Lev
             {map.kind === 'grid' ? <Board level={map} snapshot={initialSnapshot(map)} locale={locale} />
               : <MapTiles location="arena" tiles={map.tiles} arenaBuffs={map.combat?.buffs} exit={map.objective.kind === 'escape' ? map.objective.exit : undefined}
                 arenaTargetIds={map.combat && 'itemIds' in map.objective ? map.objective.itemIds : undefined}
-                gates={map.shifts?.flatMap(shift => [...(shift.open ?? []), ...(shift.close ?? [])])}
+                gates={arenaGateCells(map)} arenaSwitches={map.combat?.switches}
                 batteries={!map.combat && Boolean(map.shifts?.length)} playerPosition={map.start}
                 opponents={map.opponents.map((bot, index) => ({ ...bot.start, id: bot.id, name: bot.title[locale], label: String(index + 1), index }))}
                 items={map.items} locale={locale} />}

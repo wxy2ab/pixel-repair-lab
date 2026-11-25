@@ -105,12 +105,14 @@ export function useLessonWorker<Response>() {
   return { pending, run, stop }
 }
 
-export function useReplayCursor(count: number, delayOverride?: number | ((step: number) => number | undefined)) {
+// Passing null lets a scene advance the cursor when its current animation actually finishes.
+export function useReplayCursor(count: number, delayOverride?: number | null | ((step: number) => number | undefined)) {
   const [step, setStep] = useState(0)
   const [playing, setPlaying] = useState(false)
-  const delay = (typeof delayOverride === 'function' ? delayOverride(step) : delayOverride) ?? Math.min(380, Math.max(75, 5200 / count))
+  const requested = typeof delayOverride === 'function' ? delayOverride(step) : delayOverride
+  const delay = requested === undefined ? Math.min(380, Math.max(75, 5200 / count)) : requested
   useEffect(() => {
-    if (!playing || step >= count) return
+    if (!playing || step >= count || delay === null) return
     const timer = window.setTimeout(() => setStep(step + 1), delay)
     return () => window.clearTimeout(timer)
   }, [count, delay, playing, step])

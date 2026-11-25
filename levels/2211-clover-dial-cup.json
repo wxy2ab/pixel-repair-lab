@@ -1,0 +1,181 @@
+{
+  "version": 1,
+  "id": "challenge-clover-dial-cup",
+  "order": 2211,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": { "zh": "挑战场", "en": "Challenge Arena" }
+  },
+  "stage": "challenge",
+  "difficulty": "advanced",
+  "title": { "zh": "四叶表盘杯", "en": "Clover Dial Cup" },
+  "concept": { "zh": "轮流开启的四扇窗", "en": "Four timed windows" },
+  "brief": {
+    "zh": "在 42 回合内用脉冲让四台对手机器人停机，芽芽要留在场上。四台机器人分守表盘的四个方向。第 5、12、19、26 回合末，窗口按顺时针打开。第 33 回合末四扇窗全开。",
+    "en": "Tag out all 4 robots with pulses within 42 turns and keep Sprout running. Four bots start at the four hours of the dial. Windows open clockwise after turns 5, 12, 19 and 26. All four windows stand open after turn 33."
+  },
+  "prerequisites": [
+    { "unit": "python-intermediate", "topic": "for-loops" },
+    { "unit": "algorithm-advanced", "topic": "rival-strategy" }
+  ],
+  "hints": [],
+  "tiles": [
+    "###############",
+    "#....#...#....#",
+    "#....#...#....#",
+    "#....#...#....#",
+    "#....#...#....#",
+    "###############",
+    "#....#...#....#",
+    "#....#...#....#",
+    "#....#...#....#",
+    "###############",
+    "#....#...#....#",
+    "#....#...#....#",
+    "#....#...#....#",
+    "#....#...#....#",
+    "###############"
+  ],
+  "start": { "x": 7, "y": 8 },
+  "items": [
+    { "id": "spring", "x": 7, "y": 7 },
+    { "id": "spindle", "x": 8, "y": 7 },
+    { "id": "dial-guard", "x": 8, "y": 8 },
+    { "id": "minute-hand", "x": 6, "y": 7 }
+  ],
+  "opponents": [
+    {
+      "id": "twelve",
+      "title": { "zh": "十二点", "en": "Twelve" },
+      "start": { "x": 7, "y": 2 },
+      "policy": { "kind": "duelist", "style": "sentry" }
+    },
+    {
+      "id": "three",
+      "title": { "zh": "三点", "en": "Three" },
+      "start": { "x": 12, "y": 7 },
+      "policy": { "kind": "duelist", "style": "sentry" }
+    },
+    {
+      "id": "six",
+      "title": { "zh": "六点", "en": "Six" },
+      "start": { "x": 7, "y": 12 },
+      "policy": { "kind": "duelist", "style": "hunter" }
+    },
+    {
+      "id": "nine",
+      "title": { "zh": "九点", "en": "Nine" },
+      "start": { "x": 2, "y": 7 },
+      "policy": { "kind": "duelist", "style": "sentry" }
+    }
+  ],
+  "objective": { "kind": "eliminate" },
+  "maxTurns": 42,
+  "combat": {
+    "health": 4,
+    "range": 5,
+    "buffs": [
+      { "id": "spring", "kind": "power" },
+      { "id": "spindle", "kind": "power" },
+      { "id": "dial-guard", "kind": "shield" },
+      { "id": "minute-hand", "kind": "shield" }
+    ]
+  },
+  "shifts": [
+    {
+      "turn": 5,
+      "open": [
+        { "x": 7, "y": 5 }
+      ]
+    },
+    {
+      "turn": 12,
+      "open": [
+        { "x": 9, "y": 7 }
+      ],
+      "close": [
+        { "x": 7, "y": 5 }
+      ]
+    },
+    {
+      "turn": 19,
+      "open": [
+        { "x": 7, "y": 9 }
+      ],
+      "close": [
+        { "x": 9, "y": 7 }
+      ]
+    },
+    {
+      "turn": 26,
+      "open": [
+        { "x": 5, "y": 7 }
+      ],
+      "close": [
+        { "x": 7, "y": 9 }
+      ]
+    },
+    {
+      "turn": 33,
+      "open": [
+        { "x": 7, "y": 5 },
+        { "x": 9, "y": 7 },
+        { "x": 7, "y": 9 }
+      ]
+    }
+  ],
+  "starterCode": "state = scan()\n",
+  "solutionCode": "def visible_pulse(state):\n    for ray in [[\"up\", 0, -1], [\"right\", 1, 0], [\"down\", 0, 1], [\"left\", -1, 0]]:\n        x = state[\"player\"][0]\n        y = state[\"player\"][1]\n        for distance in range(state[\"range\"]):\n            x += ray[1]\n            y += ray[2]\n            if state[\"tiles\"][y][x] == \"#\":\n                break\n            for bot in state[\"opponents\"]:\n                if bot[\"hp\"] > 0 and bot[\"x\"] == x and bot[\"y\"] == y:\n                    return ray[0]\n    return None\n\ndef clear_view():\n    direction = visible_pulse(scan())\n    while direction is not None:\n        shoot(direction)\n        direction = visible_pulse(scan())\n\ndef visit(x, y):\n    while scan()[\"player\"] != [x, y]:\n        clear_view()\n        player = scan()[\"player\"]\n        if player[0] < x:\n            move(\"right\")\n        elif player[0] > x:\n            move(\"left\")\n        elif player[1] < y:\n            move(\"down\")\n        else:\n            move(\"up\")\n\nvisit(7, 7)\npick()\nvisit(8, 7)\npick()\nvisit(8, 8)\npick()\nvisit(7, 8)\nvisit(7, 7)\nvisit(6, 7)\npick()\nvisit(7, 7)\nwhile True:\n    direction = visible_pulse(scan())\n    if direction is None:\n        guard()\n    else:\n        shoot(direction)\n",
+  "snippets": [
+    {
+      "label": { "zh": "向上走", "en": "Move up" },
+      "code": "move(\"up\")"
+    },
+    {
+      "label": { "zh": "向右走", "en": "Move right" },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": { "zh": "向下走", "en": "Move down" },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": { "zh": "向左走", "en": "Move left" },
+      "code": "move(\"left\")"
+    },
+    {
+      "label": { "zh": "向上发脉冲", "en": "Pulse up" },
+      "code": "shoot(\"up\")"
+    },
+    {
+      "label": { "zh": "向右发脉冲", "en": "Pulse right" },
+      "code": "shoot(\"right\")"
+    },
+    {
+      "label": { "zh": "向下发脉冲", "en": "Pulse down" },
+      "code": "shoot(\"down\")"
+    },
+    {
+      "label": { "zh": "向左发脉冲", "en": "Pulse left" },
+      "code": "shoot(\"left\")"
+    },
+    {
+      "label": { "zh": "拾取芯片", "en": "Pick up a chip" },
+      "code": "pick()"
+    },
+    {
+      "label": { "zh": "开启防御", "en": "Guard" },
+      "code": "guard()"
+    },
+    {
+      "label": { "zh": "扫描棋盘", "en": "Scan the board" },
+      "code": "state = scan()"
+    },
+    {
+      "label": { "zh": "等待一回合", "en": "Wait a turn" },
+      "code": "wait()"
+    }
+  ]
+}
