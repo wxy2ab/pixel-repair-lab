@@ -1,4 +1,4 @@
-import { createContext, useContext, useLayoutEffect, useMemo, useState, type Dispatch, type SetStateAction } from 'react'
+import { createContext, useContext, useEffectEvent, useLayoutEffect, useMemo, useState, type Dispatch, type SetStateAction } from 'react'
 import type { ArenaFrame, ArenaSnapshot } from '../shared/advanced'
 import { arenaElapsed, arenaShotImpactMs, arenaTurnTiming, ArenaVolleyClock, type ArenaTurnMotion } from './arenaTurnMotion'
 import { readArenaAttackPlayback, useSystemReducedMotion } from './ArenaAttackSpeed'
@@ -6,6 +6,7 @@ import { readArenaAttackPlayback, useSystemReducedMotion } from './ArenaAttackSp
 type ShownTurn = {
   scene: number; snapshot: ArenaSnapshot; frame?: ArenaFrame; previousFrame?: ArenaFrame; allowMotion: boolean; motion?: ArenaTurnMotion
   explicitAttack?: boolean
+  volleyFrame?: ArenaFrame
   resumeOffset?: number
 }
 
@@ -16,7 +17,7 @@ function timedMotion(fields: Omit<ArenaTurnMotion, 'startedAt'>, offset = 0, hel
 }
 
 /** Only animate an actual advance from the board the child was looking at. */
-export function useArenaTurnPresentation(scene: number, snapshot: ArenaSnapshot, frame?: ArenaFrame, allowMotion = true) {
+export function useArenaTurnPresentation(scene: number, snapshot: ArenaSnapshot, frame: ArenaFrame | undefined, allowMotion: boolean, onVolleyStart: () => void) {
   const reduced = useSystemReducedMotion()
   const [surfaceVisible, setSurfaceVisible] = useState(false)
   const [last, setLast] = useState<ShownTurn>({ scene, snapshot, frame, allowMotion })
@@ -27,6 +28,7 @@ export function useArenaTurnPresentation(scene: number, snapshot: ArenaSnapshot,
     if (allowMotion && frame?.state === snapshot && scene === last.scene && snapshot.turn === last.snapshot.turn + 1) {
       const { speed, explicit } = readArenaAttackPlayback()
       const timing = arenaTurnTiming(frame.events, snapshot.actors, speed)
+      if (timing.fireAtMs) shown.volleyFrame = frame
       shown.previousFrame = last.frame
       shown.explicitAttack = explicit && timing.fireAtMs > 0
       if (timing.durationMs && (!reduced || shown.explicitAttack)) {
@@ -47,6 +49,12 @@ export function useArenaTurnPresentation(scene: number, snapshot: ArenaSnapshot,
     }
   }
   if (shown !== last) setLast(shown)
+
+  const { volleyFrame } = shown
+  const uncoverVolley = useEffectEvent(onVolleyStart)
+  useLayoutEffect(() => {
+    if (volleyFrame) uncoverVolley()
+  }, [volleyFrame])
 
   const { motion, resumeOffset = 0 } = shown
   const heldAt = motion?.heldAt

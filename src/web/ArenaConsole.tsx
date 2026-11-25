@@ -23,6 +23,13 @@ export function useArenaConsole(storageKey = 'pixel-repair-lab:arena-console') {
     const panel = document.getElementById(id)
     const workspace = panel?.closest('.arena-map-workspace')
     const surface = workspace && arenaBoardSurface(workspace)
+    if (surface && mapConsoleOpen === null && !arenaBoardInView(surface)) surface.scrollIntoView({ block: 'center', behavior: 'instant' })
+  }
+
+  function uncoverVolley() {
+    const panel = document.getElementById(id)
+    const workspace = panel?.closest('.arena-map-workspace')
+    const surface = workspace && arenaBoardSurface(workspace)
     if (!panel || !surface) return
     const board = surface.getBoundingClientRect()
     const popup = panel.getBoundingClientRect()
@@ -35,9 +42,8 @@ export function useArenaConsole(storageKey = 'pixel-repair-lab:arena-console') {
       if (mapConsoleOpen !== null) setMapConsoleOpen(false)
       else setStandardOpen(false) // Manual toggles own the saved preference.
     }
-    if (mapConsoleOpen === null && !arenaBoardInView(surface)) surface.scrollIntoView({ block: 'center', behavior: 'instant' })
   }
-  return { id, open: mapConsoleOpen ?? standardOpen, toggle, revealBoard, mapMode: mapConsoleOpen !== null, setMapConsoleOpen }
+  return { id, open: mapConsoleOpen ?? standardOpen, toggle, revealBoard, uncoverVolley, mapMode: mapConsoleOpen !== null, setMapConsoleOpen }
 }
 
 export type ArenaConsoleControl = ReturnType<typeof useArenaConsole>

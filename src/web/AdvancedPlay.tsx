@@ -394,7 +394,7 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
   const previous = frames?.[Math.min(shownTurns, frames.length) - 1]
   const initial = useMemo(() => initialArenaSnapshot(shownLevel), [shownLevel])
   const snapshot = previous?.state ?? initial
-  const presentation = useArenaTurnPresentation(mapIndex, snapshot, previous, !observing && !suppressed && (!turnOnly || sought.animate))
+  const presentation = useArenaTurnPresentation(mapIndex, snapshot, previous, !observing && !suppressed && (!turnOnly || sought.animate), consoleControl.uncoverVolley)
   const dwell = arenaViewingDelay(turnFrame, !!presentation.motion)
   useEffect(() => {
     if (presentation.inFlight) return
@@ -597,7 +597,7 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
     <ArenaMapOutcome won={finishRun && showEnd && result?.won && !failure} text={observing ? undefined : failure ? runIssueText(locale, failure)
       : result && (showEnd || !frames) ? arenaResultText(result, locale, dynamic) : undefined} />
     <div className="play-column">
-      {observing ? <ArenaObservationBoard level={level} locale={locale} initialMap={mapIndex} onExit={() => setObserving(false)} revealBoard={consoleControl.revealBoard} /> : <>
+      {observing ? <ArenaObservationBoard level={level} locale={locale} initialMap={mapIndex} onExit={() => setObserving(false)} consoleControl={consoleControl} /> : <>
       <ArenaBoard level={shownLevel} locale={locale} snapshot={snapshot} frame={previous} presentation={presentation} latestShift={latestShift} finished={showEnd} trail={route}
         activity={beat?.activity} scan={beat?.scan ?? (beat?.beforeTurn ? undefined : turnFrame?.scan)}
         mapPicker={<MapScenarioPicker locale={locale} index={mapIndex} count={1 + (level.variants?.length ?? 0)} onChange={changeMap} />}>

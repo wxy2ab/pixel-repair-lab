@@ -210,7 +210,7 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
   const preview = mapIndex > 0
   const readOnlyMap = observing || preview
   const visibleSnapshot = preview ? initialArenaSnapshot(shownLevel) : snapshot
-  const presentation = useArenaTurnPresentation(mapIndex, visibleSnapshot, preview ? undefined : frame, !readOnlyMap && frame === activityFrame)
+  const presentation = useArenaTurnPresentation(mapIndex, visibleSnapshot, preview ? undefined : frame, !readOnlyMap && frame === activityFrame, consoleControl.uncoverVolley)
   useEffect(() => {
     if (frame && !presentation.inFlight && frame.events.some(event => event.action === 'shoot')) {
       worker.current?.postMessage({ type: 'presented', turn: frame.state.turn } satisfies RealtimeArenaRequest)
@@ -233,6 +233,12 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
   useLayoutEffect(() => {
     if (!playerControls) openingKey.current = undefined
   }, [playerControls])
+
+  const revealRetryBoard = useEffectEvent(() => consoleControl.revealBoard())
+  useLayoutEffect(() => {
+    // A Python retry mounts a fresh board and a taller toolbar before the first turn.
+    if (initialPolicy !== undefined && phase === 'playing' && !frame) revealRetryBoard()
+  }, [initialPolicy, phase, frame])
 
   useEffect(() => { completion.current = onComplete }, [onComplete])
   useEffect(() => { mistake.current = onMistake }, [onMistake])
@@ -504,7 +510,7 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
     {consoleControl.mapMode && keyboardCue && <p className="arena-keyboard-cue" role="status">{keyboardCue}</p>}
     <ArenaMapOutcome won={showResult && result?.policyOnly && result.won} text={!observing && !preview && (phase === 'failed' || showResult) ? status : undefined} />
     <div className="play-column">
-      {observing ? <ArenaObservationBoard level={level} locale={locale} initialMap={mapIndex} onExit={() => setObserving(false)} revealBoard={consoleControl.revealBoard} /> : <>
+      {observing ? <ArenaObservationBoard level={level} locale={locale} initialMap={mapIndex} onExit={() => setObserving(false)} consoleControl={consoleControl} /> : <>
       <ArenaBoard level={shownLevel} locale={locale} snapshot={visibleSnapshot} frame={preview ? undefined : frame} presentation={presentation}
         activity={!preview ? activity : undefined}
         trail={trail.visible && !preview ? playerPositions : undefined}
@@ -590,7 +596,6 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
         </button>}
         {!preview && showResult && result && !result.policyOnly && <button type="button" className="primary-button" onClick={() => {
           if (hasDraftPolicy) {
-            consoleControl.revealBoard()
             clearCheckpoint()
             reset(code)
           } else {
