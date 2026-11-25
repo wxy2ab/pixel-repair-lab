@@ -46,8 +46,9 @@ test('the warehouse route progresses from starter to advanced with distinct layo
   const route = buildChallengeRoutes(challengeCatalog.entries, []).find(route => route.type === 'warehouse')
   assert.ok(route)
   const publishedOrders: number[] = []
-  for (const [first, count, difficulty] of [[2161, 6, 'starter'], [2167, 6, 'intermediate'],
-    [1981, 30, 'advanced'], [2101, 60, 'advanced']] as const) {
+  for (const [first, count, difficulty] of [[2161, 6, 'starter'], [2301, 24, 'starter'],
+    [2167, 6, 'intermediate'], [2325, 48, 'intermediate'],
+    [1981, 30, 'advanced'], [2101, 60, 'advanced'], [2373, 36, 'advanced']] as const) {
     const expected = Array.from({ length: count }, (_, i) => first + i)
     const freeChoice = filterChallenges(challengeCatalog.entries, { type: 'warehouse', difficulty })
     assert.deepEqual(freeChoice.map(entry => entry.level.order).filter(order => order >= first && order < first + count), expected)

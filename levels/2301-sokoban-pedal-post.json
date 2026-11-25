@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-sokoban-pedal-post",
+  "order": 2301,
+  "difficulty": "starter",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "stage": "challenge",
+  "prerequisites": [{"unit": "foundations", "topic": "sequence"}],
+  "title": {"zh": "踏板收件口", "en": "Pedal Post"},
+  "concept": {"zh": "推箱子 · 1 箱 · 最少推 1 次", "en": "Sokoban · 1 crate · 1 push minimum"},
+  "brief": {
+    "zh": "把脚踏板箱送到收件口的标记处。一次只能推一箱。箱子不能拉动。",
+    "en": "Deliver the pedal crate to the marked receiving bay. Push one crate at a time. Crates cannot be pulled."
+  },
+  "hints": [],
+  "tiles": [
+    "######",
+    "##...#",
+    "#....#",
+    "##...#",
+    "######"
+  ],
+  "start": {"x": 4, "y": 1},
+  "warehouse": {
+    "boxes": [{"x": 3, "y": 2}],
+    "targets": [{"x": 4, "y": 2}]
+  },
+  "allowedApi": ["move", "read_map"],
+  "objectives": [{"type": "parkBoxes"}],
+  "cards": [
+    {"id": "up", "label": {"zh": "向上", "en": "Move up"}, "template": "move(\"up\")"},
+    {"id": "right", "label": {"zh": "向右", "en": "Move right"}, "template": "move(\"right\")"},
+    {"id": "down", "label": {"zh": "向下", "en": "Move down"}, "template": "move(\"down\")"},
+    {"id": "left", "label": {"zh": "向左", "en": "Move left"}, "template": "move(\"left\")"}
+  ],
+  "solutionCards": [
+    {"cardId": "left"}, {"cardId": "left"}, {"cardId": "down"}, {"cardId": "right"}
+  ]
+}

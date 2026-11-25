@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-sokoban-lamp-socket-kiosk",
+  "order": 2323,
+  "difficulty": "starter",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "stage": "challenge",
+  "prerequisites": [{"unit": "foundations", "topic": "sequence"}],
+  "title": {"zh": "灯座检修亭", "en": "Lamp Socket Kiosk"},
+  "concept": {"zh": "推箱子 · 2 箱 · 最少推 6 次", "en": "Sokoban · 2 crates · 6 pushes minimum"},
+  "brief": {
+    "zh": "把两箱灯座送到检修亭的标记处。一次只能推一箱。箱子不能拉动。",
+    "en": "Deliver both lamp socket crates to the marked repair bays. Push one crate at a time. Crates cannot be pulled."
+  },
+  "hints": [],
+  "tiles": [
+    "########",
+    "##...#.#",
+    "#......#",
+    "#.#..#.#",
+    "#.#....#",
+    "##...###",
+    "########"
+  ],
+  "start": {"x": 4, "y": 3},
+  "warehouse": {
+    "boxes": [{"x": 3, "y": 2}, {"x": 3, "y": 4}],
+    "targets": [{"x": 2, "y": 5}, {"x": 4, "y": 5}]
+  },
+  "allowedApi": ["move", "read_map"],
+  "objectives": [{"type": "parkBoxes"}],
+  "cards": [
+    {"id": "up", "label": {"zh": "向上", "en": "Move up"}, "template": "move(\"up\")"},
+    {"id": "right", "label": {"zh": "向右", "en": "Move right"}, "template": "move(\"right\")"},
+    {"id": "down", "label": {"zh": "向下", "en": "Move down"}, "template": "move(\"down\")"},
+    {"id": "left", "label": {"zh": "向左", "en": "Move left"}, "template": "move(\"left\")"}
+  ],
+  "solutionCards": [
+    {"cardId": "left"}, {"cardId": "down"}, {"cardId": "right"}, {"cardId": "down"},
+    {"cardId": "left"}, {"cardId": "up"}, {"cardId": "up"}, {"cardId": "right"},
+    {"cardId": "up"}, {"cardId": "up"}, {"cardId": "left"}, {"cardId": "left"},
+    {"cardId": "down"}, {"cardId": "right"}, {"cardId": "up"}, {"cardId": "right"},
+    {"cardId": "down"}, {"cardId": "down"}, {"cardId": "down"}
+  ]
+}

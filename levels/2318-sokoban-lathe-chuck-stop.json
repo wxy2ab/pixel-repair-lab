@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-sokoban-lathe-chuck-stop",
+  "order": 2318,
+  "difficulty": "starter",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "stage": "challenge",
+  "prerequisites": [{"unit": "foundations", "topic": "sequence"}],
+  "title": {"zh": "卡盘停靠站", "en": "Chuck Stop"},
+  "concept": {"zh": "推箱子 · 2 箱 · 最少推 5 次", "en": "Sokoban · 2 crates · 5 pushes minimum"},
+  "brief": {
+    "zh": "把两箱车床卡盘送到停靠站的货位。一次只能推一箱。箱子不能拉动。",
+    "en": "Deliver both lathe chuck crates to the marked loading bays. Push one crate at a time. Crates cannot be pulled."
+  },
+  "hints": [],
+  "tiles": [
+    "########",
+    "#...####",
+    "#.....##",
+    "#.#....#",
+    "#.....##",
+    "########"
+  ],
+  "start": {"x": 2, "y": 1},
+  "warehouse": {
+    "boxes": [{"x": 2, "y": 2}, {"x": 3, "y": 4}],
+    "targets": [{"x": 5, "y": 2}, {"x": 5, "y": 4}]
+  },
+  "allowedApi": ["move", "read_map"],
+  "objectives": [{"type": "parkBoxes"}],
+  "cards": [
+    {"id": "up", "label": {"zh": "向上", "en": "Move up"}, "template": "move(\"up\")"},
+    {"id": "right", "label": {"zh": "向右", "en": "Move right"}, "template": "move(\"right\")"},
+    {"id": "down", "label": {"zh": "向下", "en": "Move down"}, "template": "move(\"down\")"},
+    {"id": "left", "label": {"zh": "向左", "en": "Move left"}, "template": "move(\"left\")"}
+  ],
+  "solutionCards": [
+    {"cardId": "left"}, {"cardId": "down"}, {"cardId": "right"}, {"cardId": "right"},
+    {"cardId": "right"}, {"cardId": "left"}, {"cardId": "left"}, {"cardId": "left"},
+    {"cardId": "down"}, {"cardId": "down"}, {"cardId": "right"}, {"cardId": "right"},
+    {"cardId": "right"}
+  ]
+}
