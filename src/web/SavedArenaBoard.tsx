@@ -4,6 +4,7 @@ import type { ArenaLevel } from '../shared/advanced'
 import type { Locale, Position } from '../shared/types'
 import { changedSavedArenaLocations, type SavedArenaChangeKind } from './savedArenaChanges'
 import { tr } from './text'
+import { arenaGateCells, switchDescription } from './arenaGates'
 import './saved-arena-board.css'
 
 const cellKey = ({ x, y }: Position) => `${x},${y}`
@@ -27,8 +28,8 @@ export function SavedArenaBoard({ level, board, compareBoard, locale, testId, on
     name: actor.id === 'player' ? sprout : namedOpponents.get(actor.id)?.name ?? actor.id,
     marker: actor.id === 'player' ? t('芽', 'S') : namedOpponents.get(actor.id)?.marker ?? '?',
   }))
-  const gates = new Map((level.shifts ?? []).flatMap(({ open = [], close = [] }) => [...open, ...close])
-    .map(position => [cellKey(position), position]))
+  const gates = new Map(arenaGateCells(level).map(position => [cellKey(position), position]))
+  const switches = new Map(level.combat?.switches?.map(control => [control.itemId, control]))
   const items = new Map(board.items.map(item => [cellKey(item), item]))
   const gateIsOpen = ({ x, y }: Position) => board.tiles[y]?.[x] === '.'
   const changes = compareBoard ? {
@@ -59,6 +60,7 @@ export function SavedArenaBoard({ level, board, compareBoard, locale, testId, on
     ...actors.map(actor => t(`${actor.name}位于 ${coordinates(actor)}`, `${actor.name} at ${coordinates(actor)}`)),
     items.size ? t(level.combat ? '道具位于 ' : '电池位于 ', level.combat ? 'Items at ' : 'Batteries at ') + listPositions(board.items)
       : level.combat ? t('没有剩余道具', 'No items left') : t('没有剩余电池', 'No batteries left'),
+    ...board.items.flatMap(item => switches.has(item.id) ? [t(`闸门开关位于 ${coordinates(item)}`, `Gate switch at ${coordinates(item)}`)] : []),
     ...(openGates.length ? [t(`开启的门位于 ${listPositions(openGates)}`, `Open gates at ${listPositions(openGates)}`)] : []),
     ...(closedGates.length ? [t(`关闭的门位于 ${listPositions(closedGates)}`, `Closed gates at ${listPositions(closedGates)}`)] : []),
     ...(changes && !changeDetails.length ? [noChanges] : changeDetails),
@@ -71,12 +73,14 @@ export function SavedArenaBoard({ level, board, compareBoard, locale, testId, on
         const position = { x, y }
         const key = cellKey(position)
         const item = items.get(key)
+        const control = item && switches.get(item.id)
         const occupants = actors.filter(actor => actor.x === x && actor.y === y)
         const floor = tile === '.'
         const gate = gates.has(key) ? floor ? 'open' : 'closed' : undefined
         const selectedKind = selectedPositions?.has(key) ? selectedChange?.kind : undefined
         return <span key={key} className="saved-arena-board-cell" data-x={x} data-y={y} data-tile={floor ? 'floor' : 'wall'}
-          data-gate={gate} data-item-id={item?.id} data-change-player={changes?.player.has(key) || undefined}
+          data-gate={gate} data-item-id={item?.id} data-gate-switch={control?.itemId} title={control && switchDescription(control.open, locale)}
+          data-change-player={changes?.player.has(key) || undefined}
           data-change-rivals={changes?.rivals.has(key) || undefined} data-change-battery={changes?.battery.has(key) || undefined}
           data-change-gate={changes?.gate.has(key) || undefined} data-selected-change={selectedKind}>
           {occupants.length > 0 && <span className="saved-arena-board-occupants" data-stacked={occupants.length > 1} aria-hidden="true">
@@ -84,7 +88,7 @@ export function SavedArenaBoard({ level, board, compareBoard, locale, testId, on
               className={actor.id === 'player' ? 'saved-arena-board-actor saved-arena-board-actor--player' : 'saved-arena-board-actor'} data-actor-id={actor.id}
               title={actor.name}>{actor.marker}</span>)}
           </span>}
-          {item && <i className="saved-arena-board-battery" aria-hidden="true" />}
+          {item && <i className={'saved-arena-board-battery' + (control ? ' saved-arena-board-switch' : '')} aria-hidden="true" />}
           {changes && changeKinds.map(kind => {
             if (!changes[kind].has(key)) return null
             const markerClass = `saved-arena-change-marker saved-arena-change-marker--${kind}`
@@ -105,6 +109,7 @@ export function SavedArenaBoard({ level, board, compareBoard, locale, testId, on
       <span><i className="saved-arena-board-actor saved-arena-board-actor--player" aria-hidden="true" />{sprout}</span>
       <span><i className="saved-arena-board-actor" aria-hidden="true" />{t('对手', 'Rivals')}</span>
       <span><i className="saved-arena-board-battery" aria-hidden="true" />{level.combat ? t('道具', 'Item') : t('电池', 'Battery')}</span>
+      {switches.size > 0 && <span><i className="saved-arena-board-battery saved-arena-board-switch" aria-hidden="true" />{t('闸门开关', 'Gate switch')}</span>}
       {gates.size > 0 && <>
         <span><i className="saved-arena-board-gate saved-arena-board-gate--open" aria-hidden="true" />{t('门已开', 'Gate open')}</span>
         <span><i className="saved-arena-board-gate saved-arena-board-gate--closed" aria-hidden="true" />{t('门已关', 'Gate closed')}</span>

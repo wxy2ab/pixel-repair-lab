@@ -78,7 +78,7 @@
 .score-rival { color: #ffc18d; }
 .scoreboard strong { color: #e6efff; font: 750 16px var(--mono); }
 .rival-marker { position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; }
-.rival-marker small { position: absolute; bottom: 0; right: min(48%, calc(var(--rival-index) * 14%)); z-index: 4; padding-inline: 2px; border-radius: 2px; background: #4a2623; color: #ffe0bd; font: 700 clamp(7px, 1vw, 11px) var(--mono); }
+.rival-marker small, .arena-fallen-label { position: absolute; bottom: 0; right: min(48%, calc(var(--rival-index) * 14%)); z-index: 4; padding-inline: 2px; border-radius: 2px; background: #4a2623; color: #ffe0bd; font: 700 clamp(7px, 1vw, 11px) var(--mono); }
 .tile .rival-marker ~ .pixel-bot { z-index: 3; }
 .arena-events li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; padding: 4px 0; font-size: 14px; border-top: 1px solid var(--border); }
 .arena-events span { color: var(--muted); }

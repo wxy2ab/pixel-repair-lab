@@ -82,7 +82,8 @@ export type AlgorithmResult = {
 export type PersonalAlgorithms = Partial<Record<string, string>>
 export type ArenaAction = 'move' | 'pick' | 'wait' | 'shoot' | 'guard'
 export type ArenaBuff = { id: string; kind: 'power' | 'shield' }
-export type ArenaCombat = { health: number; range: number; buffs: ArenaBuff[] }
+export type ArenaSwitch = { itemId: string; open: Position[] }
+export type ArenaCombat = { health: number; range: number; buffs: ArenaBuff[]; switches?: ArenaSwitch[] }
 export type ArenaOpponent = {
   id: string
   title: Localized
@@ -123,12 +124,12 @@ export type ArenaSnapshot = { actors: ArenaActor[]; items: Item[]; turn: number;
 export type ArenaEvent = {
   actorId: string; action: ArenaAction; direction?: Direction; itemId?: string; blocked?: boolean;
   tactic?: 'secure' | 'contest'; targetId?: string;
-  path?: Position[]; damage?: number; absorbed?: number; buff?: ArenaBuff['kind'];
+  path?: Position[]; damage?: number; absorbed?: number; buff?: ArenaBuff['kind']; opened?: Position[];
 }
 export type ArenaReading = {
   tiles: string[]; player: number[]; opponents: ArenaActor[]; items: Item[]; turn: number; exit: number[] | null
   playerScore?: number; nextShift?: number | null
-  self?: ArenaActor; range?: number; buffs?: ArenaBuff[]; collected?: string[]
+  self?: ArenaActor; range?: number; buffs?: ArenaBuff[]; switches?: ArenaSwitch[]; collected?: string[]
 }
 export type ArenaScan = { line: number; sourceName?: string; count: number; value: ArenaReading }
 export type ArenaProgramEvent = PythonFlowEvent | { kind: 'scan'; scan: ArenaScan }

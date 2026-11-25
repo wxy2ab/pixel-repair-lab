@@ -25,7 +25,9 @@ function facts(level: Level, locale: Locale) {
   if (rivals) list.push(t(`对手 ${rivals} 台`, plural(rivals, 'rival', 'rivals')))
   if (level.kind === 'arena' || level.kind === 'grid') {
     const maps = (level.variants?.length ?? 0) + 1
-    if (maps > 1) list.push(t(`同一程序过 ${maps} 张地图`, `One program, ${maps} maps`))
+    if (maps > 1) list.push(level.kind === 'arena'
+      ? t(`从容模式用同一程序过 ${maps} 张地图`, `One program for ${maps} maps in relaxed mode`)
+      : t(`同一程序过 ${maps} 张地图`, `One program, ${maps} maps`))
   } else if ('cases' in level && level.cases.length > 1) {
     list.push(level.kind === 'machine'
       ? t(`同一程序过 ${level.cases.length} 组数据`, `One program, ${level.cases.length} data sets`)

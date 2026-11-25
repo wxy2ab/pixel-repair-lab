@@ -6,6 +6,24 @@
 
 .timed-arena-controls { padding: 12px 14px; border-top: 1px solid var(--border); display: grid; gap: 9px; }
 .timed-arena-controls > p { margin: 0; font-size: 14px; }
+.arena-keyboard-cue {
+  position: absolute;
+  z-index: 2;
+  inset-inline-start: 50%;
+  bottom: calc(var(--map-toolbar-space) + 32px);
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - var(--map-gap) * 2);
+  margin: 0;
+  padding: 5px 12px;
+  border: 1px solid #61978a;
+  border-radius: 8px;
+  background: #122e34f5;
+  color: #d5ffec;
+  text-align: center;
+  font-size: .85rem;
+  pointer-events: none;
+}
 .arena-clock { display: grid; grid-template-columns: minmax(70px, 1fr) 52px; gap: 8px; align-items: center; }
 .arena-clock progress { width: 100%; height: 7px; accent-color: var(--mint); }
 .arena-clock[data-paused='true'] progress { accent-color: var(--warm); }

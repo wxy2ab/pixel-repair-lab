@@ -3,7 +3,8 @@ import type { Direction, Position, PythonFlowEvent, RunIssue } from '../shared/t
 
 export const ARENA_TURN_MS = 1_800
 export type ArenaChoice = Direction | 'pick' | 'wait' | 'guard' | `shoot-${Direction}`
-export type RealtimeArenaProgress = { actions: ArenaChoice[]; policy?: string; queued?: ArenaChoice }
+export type RealtimeArenaProgress = { actions: ArenaChoice[]; policy?: string; queued?: ArenaChoice; policyOnly?: boolean }
+export type RealtimeArenaResult = ArenaResult & { policyOnly: boolean }
 export type RealtimeArenaCheckpoint = RealtimeArenaProgress & { remainingMs: number }
 export type RealtimePolicyStep = { source: string; line: number; sourceName?: string; flow?: PythonFlowEvent[]; truncated?: boolean }
 
@@ -18,21 +19,22 @@ export function isArenaChoice(value: unknown, combat = true): value is ArenaChoi
 export function validateRealtimeArenaCheckpoint(value: unknown, maxTurns: number, combat = false): RealtimeArenaCheckpoint | undefined {
   if (!Number.isSafeInteger(maxTurns) || maxTurns < 1) return
   if (!value || typeof value !== 'object' || Array.isArray(value)) return
-  const { actions, policy, queued, remainingMs } = value as Record<string, unknown>
+  const { actions, policy, queued, remainingMs, policyOnly } = value as Record<string, unknown>
   if (!Array.isArray(actions) || actions.length >= maxTurns) return
   const history: unknown[] = [...actions]
   if (!history.every(action => isArenaChoice(action, combat))) return
   if (policy !== undefined && (typeof policy !== 'string' || !policy.trim() || policy.length > maxPolicyLength)) return
   if (queued !== undefined && !isArenaChoice(queued, combat)) return
+  if (policyOnly !== undefined && typeof policyOnly !== 'boolean') return
   if (typeof remainingMs !== 'number' || !Number.isFinite(remainingMs) || remainingMs < 0 || remainingMs > ARENA_TURN_MS) return
-  return { actions: history, policy, queued, remainingMs }
+  return { actions: history, policy, queued, remainingMs, ...(policyOnly !== undefined && { policyOnly }) }
 }
 
 export type RealtimeArenaRequest =
   | { type: 'prepare'; level: ArenaLevel; personal?: PersonalAlgorithms; course?: PersonalAlgorithms; checkpoint?: RealtimeArenaCheckpoint }
-  | { type: 'start' }
+  | { type: 'start'; firstAction?: ArenaChoice }
   | { type: 'pause' }
-  | { type: 'policy'; source: string; requestId: number }
+  | { type: 'policy'; source: string; requestId: number; startOnSuccess?: boolean }
   | { type: 'action'; action: ArenaChoice; turn: number }
 
 export type RealtimeArenaResponse =
@@ -43,4 +45,4 @@ export type RealtimeArenaResponse =
   | { type: 'paused'; checkpoint: RealtimeArenaCheckpoint }
   | { type: 'policy'; requestId: number; active: boolean; issue?: RunIssue; progress: RealtimeArenaProgress }
   | { type: 'action'; turn: number; progress: RealtimeArenaProgress }
-  | { type: 'turn'; frame: ArenaFrame; nextAt?: number; result?: ArenaResult; issue?: RunIssue; policyStep?: RealtimePolicyStep; progress: RealtimeArenaProgress }
+  | { type: 'turn'; frame: ArenaFrame; nextAt?: number; result?: RealtimeArenaResult; issue?: RunIssue; policyStep?: RealtimePolicyStep; progress: RealtimeArenaProgress }

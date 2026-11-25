@@ -2745,6 +2745,16 @@
       "properties": {
         "health": { "type": "integer", "minimum": 1, "maximum": 20 },
         "range": { "type": "integer", "minimum": 1, "maximum": 19 },
+        "switches": {
+          "type": "array", "maxItems": 32,
+          "items": {
+            "type": "object", "additionalProperties": false, "required": ["itemId", "open"],
+            "properties": {
+              "itemId": { "$ref": "#/$defs/id" },
+              "open": { "type": "array", "items": { "$ref": "#/$defs/position" }, "minItems": 1, "maxItems": 32, "uniqueItems": true }
+            }
+          }
+        },
         "buffs": {
           "type": "array", "maxItems": 32,
           "items": {

@@ -86,6 +86,7 @@
 .station-minimap__legend [data-symbol="target"] { border: 2px solid #ffd36a; transform: rotate(45deg); }
 .station-minimap__legend [data-symbol="crate"] { background: #f3af62; }
 .station-minimap__legend [data-symbol="loading-pad"] { border: 1px solid #9bebdd; }
+.station-minimap__legend [data-symbol="switch"] { background: #ffc573; border-radius: 55% 55% 0 0; border-bottom: 2px solid #8298a4; }
 .station-minimap__legend [data-symbol="view"] { width: 8px; border: 1px solid #b1ecff; }
 
 /* Leave the upper corners to the console and camera tools while a drawer is open. */

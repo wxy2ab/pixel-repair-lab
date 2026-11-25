@@ -138,7 +138,8 @@ function routeAvailable(level: Level, plan: Extract<ReplayFocusPlan, { kind: 'ro
   return [plan.from, plan.to].every(({ x, y }) => {
     if (level.tiles[y]?.[x] === '.') return true
     return level.kind === 'arena' && level.tiles[y]?.[x] === '#'
-      && level.shifts?.some(shift => shift.open?.some(cell => cell.x === x && cell.y === y))
+      && (level.shifts?.some(shift => shift.open?.some(cell => cell.x === x && cell.y === y))
+        || level.combat?.switches?.some(control => control.open.some(cell => cell.x === x && cell.y === y)))
   })
 }
 

@@ -38,6 +38,40 @@ test('both sides shoot on the last turn, even when the simultaneous exchange dis
   assert.deepEqual(result.final.actors.map(actor => actor.hp), [0, 0])
 })
 
+test('a switch pickup opens its gates for the next turn once, even without a shift schedule', () => {
+  const gate = { x: 3, y: 1 }
+  const level = floor({ tiles: ['.........', '...#.....', '.........'], items: [{ id: 'panel', x: 1, y: 1 }],
+    combat: { health: 4, range: 5, buffs: [], switches: [{ itemId: 'panel', open: [gate] }] } })
+  const match = new ArenaSession(level)
+  const before = match.scan()
+  assert.deepEqual(before.switches, level.combat?.switches)
+  assert.deepEqual(match.advance('shoot-right')!.frame.events[0].path, [{ x: 2, y: 1 }])
+  const press = match.advance('pick')!.frame
+  assert.deepEqual(press.events[0].opened, [gate])
+  assert.equal(press.events[1].action, 'wait')
+  assert.deepEqual(press.state.items, [])
+  assert.equal(match.scan().tiles[1][3], '.')
+  assert.equal(before.tiles[1][3], '#')
+  assert.equal(level.tiles[1][3], '#')
+  assert.equal(match.advance('shoot-right')!.frame.events[0].targetId, 'red')
+  assert.equal(match.advance('pick')!.frame.events[0].blocked, true)
+})
+
+test('a rival on a switch can open a gate after the scheduled shift closes it', () => {
+  const gate = { x: 3, y: 1 }
+  const level = floor({ tiles: ['.........', '...#.....', '.........'], items: [{ id: 'panel', x: 1, y: 2 }],
+    combat: { health: 4, range: 5, buffs: [], switches: [{ itemId: 'panel', open: [gate] }] },
+    shifts: [{ turn: 1, open: [gate], moveItems: [{ id: 'panel', x: 5, y: 1 }] }, { turn: 2, close: [gate] }] })
+  const match = new ArenaSession(level)
+  assert.deepEqual(match.advance('wait')!.frame.shift?.opened, [gate])
+  const second = match.advance('wait')!.frame
+  assert.deepEqual(second.shift?.closed, [gate])
+  assert.equal(second.events[1].actorId, 'red')
+  assert.equal(second.events[1].itemId, 'panel')
+  assert.deepEqual(second.events[1].opened, [gate])
+  assert.equal(second.state.tiles![1][3], '.')
+})
+
 test('stacked chip benefits cap at three and start on the actual pickup turn', () => {
   const items = [1, 2, 3, 4].map(x => ({ id: 'boost-' + x, x, y: 1 }))
   const level = floor({ start: { x: 0, y: 1 }, items, opponents: [rival('red', 8)],

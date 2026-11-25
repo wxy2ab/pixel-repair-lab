@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react'
 import type { AlgorithmLevel, AlgorithmResult, ArenaLevel, ArenaResult, PersonalAlgorithms } from '../shared/advanced'
 import type { Json, Locale, RunIssue } from '../shared/types'
 import { ARENA_TURN_MS, type RealtimeArenaCheckpoint } from '../engine/realtimeProtocol'
@@ -7,9 +7,11 @@ import { mapScenarioAt } from '../shared/mapScenarios'
 import MapScenarioPicker from './MapScenarioPicker'
 import { ArenaBoard, ArenaStateReference, ArenaTurnEvents, arenaResultText, describeEvent } from './ArenaPanels'
 import { arenaViewingDelay, firstArenaLine, useArenaActivities } from './arenaActivities'
+import { useArenaFinishPresentation, useArenaTurnPresentation } from './useArenaTurnPresentation'
 import { ArenaObservationBoard } from './ArenaObservationBoard'
 import { ArenaConsolePanel, ArenaConsoleToggle, useArenaConsole, type ArenaConsoleControl } from './ArenaConsole'
 import { ArenaMapWorkspace } from './ArenaMapWorkspace'
+import type { ArenaKeyboardMode } from './ArenaMapMode'
 import { ArenaMapOutcome, MapShortcutGuide } from './ArenaMapShortcuts'
 import { hasProgramCommands } from './MapObservation'
 import { useLessonWorker, useReplayCursor } from './lessonTools'
@@ -22,7 +24,7 @@ import { CodeField } from './CodeField'
 import { AlgorithmRunToolbar, type AlgorithmDebugCursor } from './AlgorithmRunToolbar'
 import { ExecutionSource } from './ExecutionSource'
 import { PlayToolbar, useTrailPreference } from './PlayToolbar'
-import { RealtimeArena } from './RealtimeArena'
+import { RealtimeArena, starterArenaPolicy } from './RealtimeArena'
 import { CourseHelperPicker } from './CourseHelperPicker'
 import { ChallengeFailureReview, type ChallengeReviewData } from './ChallengeFailureReview'
 import { arenaFailureReview } from './challengeGameReview'
@@ -277,12 +279,15 @@ export function ArenaPlay({ initialDraft, onDraftChange, initialTimedCheckpoint,
   const [draft, setDraft] = useState(() => ({
     mode: initialArenaMode ?? initialDraft?.mode ?? 'relaxed',
     source: initialDraft?.source ?? level.starterCode,
-    policy: initialDraft?.policy ?? 'def decide(state):\n    return "wait"\n',
+    policy: initialDraft?.policy ?? starterArenaPolicy,
   }))
   const timedCheckpoint = useRef(initialTimedCheckpoint)
   const consoleControl = useArenaConsole()
   const replayProgress = useRef(initialReplayProgress)
   const timed = draft.mode === 'timed'
+  const [keyboardMode, setKeyboardMode] = useState<ArenaKeyboardMode>('map')
+  const [readOnlyMap, setReadOnlyMap] = useState(false)
+  const effectiveKeyboardMode = timed && readOnlyMap ? 'map' : keyboardMode
 
   function updateDraft(next: typeof draft) {
     setDraft(next)
@@ -291,21 +296,27 @@ export function ArenaPlay({ initialDraft, onDraftChange, initialTimedCheckpoint,
 
   function changePace(mode: ArenaChallengeDraft['mode']) {
     if (mode === draft.mode) return
+    if (mode === 'relaxed') setKeyboardMode('map')
     challenge?.onStart()
     updateDraft({ ...draft, mode })
   }
+  function chooseKeyboard(mode: ArenaKeyboardMode) {
+    if (mode === 'player' && !timed) changePace('timed')
+    setKeyboardMode(mode)
+  }
+  const playerTitle = readOnlyMap ? t('返回对局地图后可以控制芽芽', 'Return to the match map to control Sprout')
+    : timed ? t('用方向键或 WASD 移动芽芽', 'Move Sprout with the arrow keys or WASD')
+      : t('切到紧张练习，可用方向键走出第一步', 'Switch to timed practice and use an arrow key for your first move')
   const secondsPerTurn = ARENA_TURN_MS / 1000
   const paceControl = <div className="segmented" role="group" aria-label={t('选择对抗节奏', 'Choose arena pace')}>
     <button type="button" aria-pressed={!timed} onClick={() => changePace('relaxed')}>{t('从容', 'Relaxed')}</button>
     <button type="button" aria-pressed={timed} onClick={() => changePace('timed')}>{t('紧张', 'Timed')}</button>
   </div>
-  const paceRule = level.shifts?.length
-    ? timed
-      ? t(`每 ${secondsPerTurn} 秒结算一回合。可点按或启用 Python 策略。`, `Each turn takes ${secondsPerTurn} seconds. Play by clicking or enabling a Python policy.`)
-      : t('运行 Python，按回合回放对抗。', 'Run Python and replay the match turn by turn.')
-    : timed
-      ? t('按下开始后，对手每隔 1.8 秒行动。可让 Python 选择下一步，也可用按钮接管一回合。', 'Once you press Start, rivals act every 1.8 seconds. Let Python choose each move, or override one turn with a button.')
-      : t('先编好程序，运行后逐回合查看双方动作。', 'Write your program first, then run it and inspect each turn in the replay.')
+  const paceRule = timed
+    ? t(`每 ${secondsPerTurn} 秒一回合。写好 decide(state)，点「开始」让 Python 从第 1 回合接手。键盘和按钮可用来练习。`,
+      `Each turn takes ${secondsPerTurn} seconds. Write decide(state) and choose Start to let Python play from turn 1. Use keys or buttons for practice.`)
+    : t('可以逐行写动作，也可以写 decide(state)，让它每回合返回一个动作。点「运行」或「单步执行」看结果。',
+      'Write a sequence of actions or define decide(state) to return one action per turn. Choose Run or Step once to see what happens.')
 
   return <>
     <CommandDesk locale={locale} title={t('对局设置', 'Match settings')}>
@@ -315,12 +326,17 @@ export function ArenaPlay({ initialDraft, onDraftChange, initialTimedCheckpoint,
           {paceControl}
         </div>
         <p>{paceRule}</p>
+        {timed && <details>
+          <summary>{t('练习用键', 'Practice controls')}</summary>
+          <MapShortcutGuide locale={locale} keyboardMode={effectiveKeyboardMode} viewOnly={readOnlyMap} combat={Boolean(level.combat)} camera={false} />
+        </details>}
       </section>
     </CommandDesk>
     <ArenaMapWorkspace locale={locale} consoleControl={consoleControl} title={level.title[locale]}
-      modeControl={paceControl} shortcutHelp={<MapShortcutGuide locale={locale} timed={timed} combat={Boolean(level.combat)} />}>
+      keyboardControl={{ mode: effectiveKeyboardMode, choose: chooseKeyboard, viewOnly: timed && readOnlyMap, playerTitle }}
+      modeControl={paceControl} shortcutHelp={<MapShortcutGuide locale={locale} keyboardMode={effectiveKeyboardMode} viewOnly={readOnlyMap} combat={Boolean(level.combat)} />}>
     {timed
-      ? <RealtimeArena {...props} consoleControl={consoleControl} code={draft.policy} setCode={policy => updateDraft({ ...draft, policy })}
+      ? <RealtimeArena {...props} onReadOnlyMapChange={setReadOnlyMap} consoleControl={consoleControl} code={draft.policy} setCode={policy => updateDraft({ ...draft, policy })}
         initialCheckpoint={timedCheckpoint.current} onCheckpointChange={onTimedCheckpointChange && (checkpoint => {
           timedCheckpoint.current = checkpoint
           onTimedCheckpointChange(checkpoint)
@@ -351,7 +367,7 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
   const mapSteps = useRef(new Map<number, number>())
   const [savedProgress] = useState(() => initialReplayProgress)
   const silentStop = useRef<{ result: ArenaResult; map: number; step: number } | undefined>(undefined)
-  const soughtTurn = useRef<{ result: ArenaResult; map: number; step: number } | undefined>(undefined)
+  const soughtTurn = useRef<{ result: ArenaResult; map: number; step: number; animate: boolean } | undefined>(undefined)
   const [failure, setFailure] = useState<RunIssue>()
   const editor = useRef<HTMLTextAreaElement>(null)
   const creditedResult = useRef<ArenaResult | undefined>(undefined)
@@ -360,10 +376,10 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
   const worker = useLessonWorker<ArenaResult>()
   const runWorker = worker.run
   const result = session?.result
-  const shownLevel = mapScenarioAt(level, mapIndex)
+  const shownLevel = useMemo(() => mapScenarioAt(level, mapIndex), [level, mapIndex])
   const replay = arenaReplayCase(result, mapIndex)
   const { frames, issue: caseIssue, count } = replay
-  const cursor = useReplayCursor(count, step => arenaViewingDelay(frames?.[step - 1]))
+  const cursor = useReplayCursor(count, null)
   const restartCursor = cursor.restart
   const turnFrame = frames?.[cursor.step - 1]
   const quiet = silentStop.current
@@ -376,14 +392,25 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
   const { beat } = program
   const shownTurns = cursor.step - Number(Boolean(beat?.beforeTurn))
   const previous = frames?.[Math.min(shownTurns, frames.length) - 1]
-  const snapshot = previous?.state ?? initialArenaSnapshot(shownLevel)
-  const route = trail.visible && frames ? [shownLevel.start, ...frames.slice(0, shownTurns).map(frame => frame.state.actors[0])] : undefined
+  const initial = useMemo(() => initialArenaSnapshot(shownLevel), [shownLevel])
+  const snapshot = previous?.state ?? initial
+  const presentation = useArenaTurnPresentation(mapIndex, snapshot, previous, !observing && !suppressed && (!turnOnly || sought.animate))
+  const dwell = arenaViewingDelay(turnFrame, !!presentation.motion)
+  useEffect(() => {
+    if (!cursor.playing || program.more || presentation.inFlight) return
+    const timer = window.setTimeout(() => restartCursor(true, cursor.step + 1), dwell)
+    return () => window.clearTimeout(timer)
+  }, [cursor.playing, cursor.step, program.more, presentation.inFlight, dwell, restartCursor])
+  const route = useMemo(() => trail.visible && frames ? [shownLevel.start, ...frames.slice(0, shownTurns).map(frame => frame.state.actors[0])] : undefined,
+    [trail.visible, frames, shownLevel.start, shownTurns])
   useEffect(() => { if (!suppressed) silentStop.current = undefined }, [suppressed, result, mapIndex, cursor.step])
   useEffect(() => { if (!turnOnly) soughtTurn.current = undefined }, [turnOnly, result, mapIndex, cursor.step])
   const atEnd = Boolean(frames && cursor.step === count && !program.more)
   const finishRun = atEnd && (mapIndex === 0 || mapIndex === session?.runMap)
+  const showEnd = atEnd && !presentation.inFlight
+  useArenaFinishPresentation(level.id, finishRun && presentation.inFlight)
   const mainStep = mapIndex === 0 ? shownTurns : mapSteps.current.get(0) ?? 0
-  const review = result && (atEnd || !frames) && !result.won ? arenaFailureReview(result) : undefined
+  const review = result && (showEnd || !frames) && !result.won ? arenaFailureReview(result) : undefined
   const dynamic = Boolean(level.shifts?.length)
   const latestShift = frames?.findLast((frame, index) => index < shownTurns && frame.shift)?.shift
   const hasCommands = hasProgramCommands(code)
@@ -407,11 +434,11 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
     : beat?.scan ? t(`第 ${beat.scan.value.turn} 回合 · 读取局势`, `Turn ${beat.scan.value.turn} · Scanned the board`) : previous && playerEvent && [
     t(`第 ${snapshot.turn} 回合`, `Turn ${snapshot.turn}`),
     previous.line > 0 && t(`第 ${previous.line} 行`, `Line ${previous.line}`),
-    describeEvent(playerEvent, locale, dynamic, level),
+    describeEvent(playerEvent, locale, dynamic, level, playerEvent.targetId ? !presentation.pendingShots.includes(playerEvent) : !presentation.inFlight),
   ].filter(Boolean).join(' · ')
   const stepDescription = failure ? runIssueText(locale, failure) : stepping && currentSession
-    ? atEnd && caseIssue ? t(`第 ${snapshot.turn} 回合`, `Turn ${snapshot.turn}`) + ' · ' + runIssueText(locale, caseIssue)
-      : [actionLabel, (atEnd || !frames) && result && arenaResultText(result, locale, dynamic)].filter(Boolean).join(' · ') : undefined
+    ? showEnd && caseIssue ? t(`第 ${snapshot.turn} 回合`, `Turn ${snapshot.turn}`) + ' · ' + runIssueText(locale, caseIssue)
+      : [actionLabel, (showEnd || !frames) && result && arenaResultText(result, locale, dynamic)].filter(Boolean).join(' · ') : undefined
   const stepSource = stepping && current ? executionLine(current.line, current.sourceName, code, runPersonal, runCourse) : undefined
   const stepStatus = stepDescription && <>{stepDescription}{stepSource && <code className="arena-step-source" title={stepSource}>{stepSource}</code>}</>
 
@@ -526,8 +553,8 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
     cursor.seek(cursor.step + 1)
   }
 
-  function seekTurn(step: number) {
-    if (result) soughtTurn.current = { result, map: mapIndex, step }
+  function seekTurn(step: number, animate = false) {
+    if (result) soughtTurn.current = { result, map: mapIndex, step, animate }
     cursor.seek(step)
   }
 
@@ -547,7 +574,7 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
         {hasCommands && <button type="button" className="primary-button play-toolbar__run" onClick={runOrContinue}>
           {currentSession && replayPlaying ? t('暂停运行', 'Pause run') : t('运行', 'Run')}
         </button>}
-        {hasCommands && <button type="button" className="subtle-button play-toolbar__step" disabled={currentSession && (atEnd || !frames)} onClick={stepOnce}>
+        {hasCommands && <button type="button" className="subtle-button play-toolbar__step" disabled={currentSession && (atEnd || !frames || presentation.inFlight)} onClick={stepOnce}>
           {t('单步执行', 'Step once')}
         </button>}
         <button type="button" className={hasCommands ? 'subtle-button' : 'primary-button'} data-testid="map-observe-start"
@@ -561,14 +588,14 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
   </PlayToolbar>
 
   return <>
-    <ArenaMapOutcome won={finishRun && result?.won && !failure} text={observing ? undefined : failure ? runIssueText(locale, failure)
-      : result && (atEnd || !frames) ? arenaResultText(result, locale, dynamic) : undefined} />
+    <ArenaMapOutcome won={finishRun && showEnd && result?.won && !failure} text={observing ? undefined : failure ? runIssueText(locale, failure)
+      : result && (showEnd || !frames) ? arenaResultText(result, locale, dynamic) : undefined} />
     <div className="play-column">
       {observing ? <ArenaObservationBoard level={level} locale={locale} initialMap={mapIndex} onExit={() => setObserving(false)} /> : <>
-      <ArenaBoard level={shownLevel} locale={locale} snapshot={snapshot} frame={previous} latestShift={latestShift} finished={atEnd} trail={route}
+      <ArenaBoard level={shownLevel} locale={locale} snapshot={snapshot} frame={previous} presentation={presentation} latestShift={latestShift} finished={showEnd} trail={route}
         activity={beat?.activity} scan={beat?.scan ?? (beat?.beforeTurn ? undefined : turnFrame?.scan)}
         mapPicker={<MapScenarioPicker locale={locale} index={mapIndex} count={1 + (level.variants?.length ?? 0)} onChange={changeMap} />}>
-        {result && result.totalCases > 1 && <p data-testid="arena-map-result">{!frames
+        {result && result.totalCases > 1 && (showEnd || !frames) && <p data-testid="arena-map-result">{!frames
           ? t('前面的地图未通过，本次还没检查这张地图。', 'An earlier map failed, so this map was not checked in this run.')
           : mapIndex < result.passedCases ? t('这张地图已通过。', 'This map passed.') : t('这张地图未通过。', 'This map did not pass.')}</p>}
         {program.shortened && <button className="subtle-button" type="button" onClick={() => {
@@ -578,20 +605,20 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
         }}>{t('展开本回合的程序步骤', 'Step through this turn’s calculation')}</button>}
         {result?.programTruncated?.[mapIndex] && atEnd && <p>{t('这次运算较长，程序动画只记录了前段。所有回合均已执行。',
           'This calculation was long. The replay shows its first program steps and every match turn.')}</p>}
-        <ReplayControls cursor={{ ...cursor, seek: seekTurn, toggle: () => {
+        <ReplayControls nextBusy={presentation.inFlight} onNext={() => seekTurn(cursor.step + 1, true)} cursor={{ ...cursor, seek: seekTurn, toggle: () => {
           setStepping(cursor.playing)
           cursor.toggle()
         } }} count={count} locale={locale} />
       </ArenaBoard>
-      {previous && <ArenaTurnEvents frame={previous} level={shownLevel} locale={locale} />}
+      {presentation.reportedFrame && <ArenaTurnEvents frame={presentation.reportedFrame} level={shownLevel} locale={locale} />}
       <section className="panel teaching-panel">
         <h2>{t('回合结果', 'Arena result')}</h2>
-        <p role="status" className={atEnd && result ? result.won ? 'win-message' : 'error-message' : failure ? 'error-message' : ''}>
-          {failure ? runIssueText(locale, failure) : result && (atEnd || !frames) ? arenaResultText(result, locale, dynamic) :
-            result ? replayPlaying ? t('正在回放。', 'Replay in progress.') : t('回放已暂停。', 'Replay paused.') :
+        <p role="status" className={showEnd && result ? result.won ? 'win-message' : 'error-message' : failure ? 'error-message' : ''}>
+          {failure ? runIssueText(locale, failure) : result && (showEnd || !frames) ? arenaResultText(result, locale, dynamic) :
+            result ? replayPlaying || presentation.inFlight ? t('正在回放。', 'Replay in progress.') : t('回放已暂停。', 'Replay paused.') :
               t('尚未运行。', 'Ready to run.')}
         </p>
-        {result && (atEnd || !frames) && result.totalCases > 1 && <p>{t('场景通过', 'Scenarios passed')} {result.passedCases}/{result.totalCases}</p>}
+        {result && (showEnd || !frames) && result.totalCases > 1 && <p>{t('场景通过', 'Scenarios passed')} {result.passedCases}/{result.totalCases}</p>}
         {review && <ChallengeFailureReview review={review} onRetry={retry} />}
       </section>
       </>}
@@ -605,7 +632,8 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
           <CourseHelperPicker names={level.helpers} course={course} personal={personal} code={code} locale={locale}
             disabled={worker.pending} onChange={setCode} />
           <div className="api-list">{['scan()', 'move()', 'pick()', 'wait()', ...(level.combat ? ['shoot(direction)', 'guard()'] : [])].map(api => <code key={api}>{api}</code>)}</div>
-          {(dynamic || level.combat) && <ArenaStateReference locale={locale} combat={Boolean(level.combat)} dynamic={dynamic} />}
+          {(dynamic || level.combat) && <ArenaStateReference locale={locale} combat={Boolean(level.combat)} dynamic={dynamic}
+            hasSwitches={Boolean(level.combat?.switches?.length)} />}
         </PracticeEditor>
         {!observing && level.hints.length > 0 && <details className="panel teaching-panel"><summary>{t('任务提示', 'Mission hints')}</summary>
           <HintSteps hints={level.hints} locale={locale} /></details>}

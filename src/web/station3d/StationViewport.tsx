@@ -1,11 +1,12 @@
-import { useCallback, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { useCallback, useContext, useEffect, useEffectEvent, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { Locale, Position } from '../../shared/types'
 import { tr } from '../text'
 import { describeDevice, hazardName } from '../gridDeviceDisplay'
+import { switchDescription } from '../arenaGates'
 import type { createStationRenderer } from './renderer'
 import type { StationCamera, StationFrame } from './types'
 import { StationActionCue } from '../StationActionCue'
-import { ArenaMapControlsContext, useArenaMapMode } from '../ArenaMapMode'
+import { ArenaMapControlsContext, isWorkspaceShortcut, useArenaKeyboardMode, useArenaMapMode } from '../ArenaMapMode'
 import { useMapCameraControls } from './useMapCameraControls'
 import { StationMinimap } from './StationMinimap'
 import { cargoLabel } from '../WarehouseTiles'
@@ -27,6 +28,8 @@ function cellContents(frame: StationFrame, cell: Position, locale: Locale, batte
     !frame.playerDown && here(frame.playerPosition) && t('芽芽', 'Sprout'),
     ...frame.opponents.filter(here).map(bot => bot.name ?? (bot.label ? t(`对手 ${bot.label}`, `Rival ${bot.label}`) : t('巡逻机器人', 'Patrol bot'))),
     ...frame.items.filter(here).map(item => {
+      const control = frame.arenaSwitches?.find(control => control.itemId === item.id)
+      if (control) return switchDescription(control.open, locale)
       const chip = frame.arenaBuffs?.find(buff => buff.id === item.id)
       const name = chip ? (chip.kind === 'power' ? t('增幅芯片', 'Power chip') : t('护盾芯片', 'Shield chip'))
         : frame.arenaBuffs ? t('道具', 'Item') : batteries ? t('电池', 'Battery') : t('零件', 'Part')
@@ -44,7 +47,7 @@ function cellContents(frame: StationFrame, cell: Position, locale: Locale, batte
 }
 
 export function StationViewport({ frame, locale, batteries = false, children }: {
-  frame: StationFrame; locale: Locale; batteries?: boolean; children: (selected?: Position) => ReactNode
+  frame: StationFrame; locale: Locale; batteries?: boolean; children: (selected: Position | undefined, visible: boolean) => ReactNode
 }) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const [view, setView] = useState<View>(preferredView)
@@ -57,6 +60,8 @@ export function StationViewport({ frame, locale, batteries = false, children }: 
   const latest = useRef(frame)
   const hintId = useId()
   const mapNavigation = useArenaMapMode()
+  const keyboardMode = useArenaKeyboardMode()
+  const inspectWithKeys = keyboardMode !== 'player'
   const workspaceControls = useContext(ArenaMapControlsContext)
   const showOverview = useCallback(() => setCameraMode('overview'), [])
   const [footprint, setFootprint] = useState<Position[]>([])
@@ -64,13 +69,13 @@ export function StationViewport({ frame, locale, batteries = false, children }: 
     setFootprint(previous => previous.length === points.length && previous.every((p, i) =>
       Math.abs(p.x - points[i].x) < .001 && Math.abs(p.y - points[i].y) < .001) ? previous : points)
   }, [])
-  const mapCamera = useMapCameraControls(mapNavigation, view, canvas, engine, showOverview,
+  const mapCamera = useMapCameraControls(mapNavigation, inspectWithKeys, view, canvas, engine, showOverview,
     frame.tiles[0].length, frame.tiles.length, updateFootprint)
-  const inspectFlat = Boolean(mapNavigation || frame.devices?.length || frame.arenaBuffs || frame.warehouse)
+  const inspectFlat = Boolean(keyboardMode || mapNavigation || frame.devices?.length || frame.arenaBuffs || frame.warehouse)
   const flatInteractive = view === '2d' && inspectFlat
   const inspected = cell && frame.tiles[cell.y]?.[cell.x] !== undefined ? cell : undefined
   const selectionOnOpen = useRef<Position | undefined>(undefined)
-  const flatContent = useMemo(() => children(flatInteractive ? inspected : undefined), [children, flatInteractive, inspected])
+  const flatContent = useMemo(() => children(flatInteractive ? inspected : undefined, view === '2d'), [children, flatInteractive, inspected, view])
 
   useLayoutEffect(() => {
     latest.current = frame
@@ -123,8 +128,8 @@ export function StationViewport({ frame, locale, batteries = false, children }: 
     try { localStorage.setItem(viewKey, next) } catch { /* The current board still switches. */ }
   }
 
-  function navigateGrid(event: KeyboardEvent<HTMLElement>) {
-    if (event.defaultPrevented) return
+  function navigateGrid(event: KeyboardEvent) {
+    if (!inspectWithKeys || event.defaultPrevented || event.ctrlKey || event.altKey || event.metaKey || event.isComposing || event.keyCode === 229) return
     const origin = inspected ?? frame.playerPosition
     if (view === '3d' && (event.key === 'Enter' || event.key === ' ')) {
       event.preventDefault()
@@ -143,6 +148,19 @@ export function StationViewport({ frame, locale, batteries = false, children }: 
     else engine.current?.inspectCell(next)
   }
 
+  const navigateFromWorkspace = useEffectEvent(navigateGrid)
+  useEffect(() => {
+    if (keyboardMode !== 'map') return
+    const workspace = mapCamera.flat.current?.closest('.arena-map-workspace') ?? null
+    function onWorkspaceArrow(event: KeyboardEvent) {
+      // Entering fullscreen or removing the Start button can leave focus off the board.
+      if (event.target !== workspace && event.target !== document.body && event.target !== document.documentElement) return
+      if (event.key.startsWith('Arrow') && isWorkspaceShortcut(event, workspace)) navigateFromWorkspace(event)
+    }
+    window.addEventListener('keydown', onWorkspaceArrow)
+    return () => window.removeEventListener('keydown', onWorkspaceArrow)
+  }, [keyboardMode, mapCamera.flat])
+
   const tools = [
     { label: t('向左旋转', 'Rotate left'), mark: '↶', action: () => engine.current?.rotate(-Math.PI / 6) },
     { label: t('向右旋转', 'Rotate right'), mark: '↷', action: () => engine.current?.rotate(Math.PI / 6) },
@@ -155,6 +173,12 @@ export function StationViewport({ frame, locale, batteries = false, children }: 
     engine.current.setCamera(mode)
     setCameraMode(mode)
   }
+
+  const dimension = t(view === '3d' ? '三维' : '二维', view.toUpperCase())
+  const boardLabel = dimension + (keyboardMode === 'player'
+    ? t('棋盘，方向键移动芽芽', ' board. Use arrow keys to move Sprout')
+    : mapNavigation ? t('地图，W A S D 平移', ' map. Pan with W A S D')
+      : t('棋盘，方向键查看格子', ' board. Use arrow keys to inspect cells'))
 
   return <div className="station-viewport" data-view={view} data-map-navigation={mapNavigation || undefined} data-warehouse={frame.warehouse ? true : undefined}
     data-camera={view === '3d' ? cameraMode : undefined} data-ready={view === '3d' && ready}>
@@ -175,16 +199,16 @@ export function StationViewport({ frame, locale, batteries = false, children }: 
     <StationActionCue activity={frame.activity} locale={locale} showValue={frame.location !== 'arena' || frame.activity?.action !== 'scan'} />
     {view === '3d' && <>
       <div className="station-stage">
-        <canvas ref={canvas} tabIndex={0} data-testid="station-3d-canvas" aria-label={mapNavigation ? t('三维地图，W A S D 平移', '3D map. Pan with W A S D') : t('三维棋盘，方向键查看格子', '3D board. Use arrow keys to inspect cells')}
-          aria-keyshortcuts="Enter Space" aria-describedby={hintId} onKeyDown={navigateGrid} />
+        <canvas ref={canvas} tabIndex={0} data-testid="station-3d-canvas" aria-label={boardLabel}
+          aria-keyshortcuts={inspectWithKeys ? 'Enter Space' : undefined} aria-describedby={hintId} onKeyDown={event => navigateGrid(event.nativeEvent)} />
         {!ready && <span className="station-loading" role="status">{t('正在打开三维棋盘…', 'Opening 3D board…')}</span>}
       </div>
     </>}
     {failed && <p className="station-fallback" role="status">{t('当前设备已切换到 2D 棋盘。', 'This device is displaying the 2D board.')}</p>}
     <div ref={mapCamera.flat} className={view === '3d' ? 'station-flat-board station-flat-board--accessible' : 'station-flat-board'}
       role={flatInteractive ? 'group' : undefined} tabIndex={flatInteractive ? 0 : undefined}
-      aria-label={flatInteractive ? (mapNavigation ? t('二维地图，W A S D 平移', '2D map. Pan with W A S D') : t('二维棋盘，方向键查看格子', '2D board. Use arrow keys to inspect cells')) : undefined}
-      data-inspectable={flatInteractive || undefined} onKeyDown={flatInteractive ? navigateGrid : undefined}
+      aria-label={flatInteractive ? boardLabel : undefined}
+      data-inspectable={flatInteractive || undefined} onKeyDown={flatInteractive ? event => navigateGrid(event.nativeEvent) : undefined}
       onClick={flatInteractive ? event => {
         const tile = event.target instanceof Element && event.target.closest<HTMLElement>('.tile[data-x][data-y]')
         if (tile) setCell({ x: Number(tile.dataset.x), y: Number(tile.dataset.y) })

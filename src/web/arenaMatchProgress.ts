@@ -18,7 +18,8 @@ function scenarioKey(level: ArenaLevel) {
   const existing = scenarioKeys.get(level)
   if (existing !== undefined) return existing
   const { tiles, start, items, opponents, maxTurns, objective, shifts, variants, helpers } = level
-  const scenario = JSON.stringify([tiles, start, items, opponents, maxTurns, objective, shifts, variants, helpers])
+  const scenario = JSON.stringify([tiles, start, items, opponents, maxTurns, objective, shifts, variants, helpers,
+    ...(level.combat?.switches?.length ? [level.combat.switches] : [])])
   let key = 2166136261
   for (let index = 0; index < scenario.length; index++) key = Math.imul(key ^ scenario.charCodeAt(index), 16777619)
   scenarioKeys.set(level, key)

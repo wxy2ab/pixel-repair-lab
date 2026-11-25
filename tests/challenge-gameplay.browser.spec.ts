@@ -154,9 +154,10 @@ test('both arena modes record their actual turns and score once, each with its o
   await expect(policy).toHaveValue(policySource)
 })
 
-test('the new arena challenges run on their alternate layouts and expose live mouse controls', async ({ page, request }) => {
+test('noncombat robot races run on their alternate layouts and expose live mouse controls', async ({ page, request }) => {
+  test.slow()
   const levels = await catalog(request)
-  const matches = levels.filter(level => level.kind === 'arena' && level.unit?.id === 'challenge-zone' && !level.shifts?.length)
+  const matches = levels.filter(level => level.kind === 'arena' && level.unit?.id === 'challenge-zone' && !level.combat && !level.shifts?.length)
   expect(matches.length).toBeGreaterThanOrEqual(2)
 
   await page.goto('/#challenge-zone')

@@ -1,9 +1,11 @@
-import type { ReactNode } from 'react'
+import { memo, type ReactNode } from 'react'
 import type { ArenaEvent, ArenaFrame, ArenaLevel, ArenaResult, ArenaScan, ArenaSnapshot } from '../shared/advanced'
 import type { Locale, Position } from '../shared/types'
 import { MapTiles, type ArenaCellChange } from './Board'
 import { useArenaMapMode } from './ArenaMapMode'
 import { arenaMapTargets } from './station3d/mapTargets'
+import { arenaGateCells } from './arenaGates'
+import { arenaHudSnapshot, type ArenaTurnPresentation } from './useArenaTurnPresentation'
 import type { StationActivity } from './station3d/types'
 import { TeachingScreen, CommandDesk } from './Classroom'
 import { runIssueText, tr } from './text'
@@ -35,12 +37,13 @@ export function SavedArenaScores({ level, scores, locale, numberOpponents = fals
   </div>
 }
 
-export function describeEvent(event: ArenaEvent, locale: Locale, dynamic: boolean, level?: ArenaLevel) {
+export function describeEvent(event: ArenaEvent, locale: Locale, dynamic: boolean, level?: ArenaLevel, showHit = true) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const directions = { up: '上', down: '下', left: '左', right: '右' }
   if (event.action === 'guard') return t('展开防护', 'Raised guard')
   if (event.action === 'shoot') {
     const shot = t('向' + (event.direction ? directions[event.direction] : '') + '发射', 'Fired ' + (event.direction ?? ''))
+    if (!showHit) return shot
     if (!event.targetId) return shot + ' · ' + t('未命中', 'Miss')
     const target = level ? actorTitle(level, locale, event.targetId) : event.targetId
     const loss = event.damage ? t(`生命 −${event.damage}`, `HP −${event.damage}`) : undefined
@@ -48,6 +51,10 @@ export function describeEvent(event: ArenaEvent, locale: Locale, dynamic: boolea
     return [shot, target, loss, absorbed].filter(Boolean).join(' · ')
   }
   if (event.buff) return event.buff === 'power' ? t('拾取强化芯片', 'Picked up a power chip') : t('拾取护盾芯片', 'Picked up a shield chip')
+  if (event.action === 'pick' && level?.combat?.switches?.some(control => control.itemId === event.itemId)) {
+    const opened = event.opened?.map(coordinates).join(' · ')
+    return opened ? t(`开关启动 · 打开 ${opened}`, `Switch activated · opened ${opened}`) : t('开关启动', 'Switch activated')
+  }
   if (event.action === 'pick' && level?.combat) return event.itemId ? t('取得道具', 'Picked up item') + ' · ' + event.itemId : t('没有拾到道具', 'No item picked up')
   if (event.action === 'pick') return event.itemId
     ? (dynamic ? t('取得电池', 'Picked up battery') : t('取得零件', 'Picked up part')) + ' · ' + event.itemId
@@ -80,6 +87,10 @@ export function arenaResultText(result: ArenaResult, locale: Locale, dynamic = f
     : t('回合用完了。试着缩短路线。', 'Out of turns. Try a shorter route.')
   if (result.reason === 'score') return result.won ? t('你收集的零件最多，获胜！', 'You collected the most parts and won!') :
     t('有对手收集了更多零件。试着换个目标。', 'A rival collected more parts. Try a different target.')
+  if (result.reason === 'unfinished' && result.final.turn === 0) return t(
+    '程序结束了，芽芽还没收到第一个动作。检查有没有调用动作指令。如果要运行 decide(state)，请用整段策略替换起始代码。',
+    'The program ended before Sprout received a move. Check that your program calls an action. To run decide(state), replace the starter code with your policy.',
+  )
   return t('目标还没有完成。', 'The goal is still incomplete.')
 }
 
@@ -131,7 +142,7 @@ function ArenaSensor({ scan, locale }: { scan: ArenaScan; locale: Locale }) {
   </p>
 }
 
-function CombatStatus({ level, locale, snapshot, frame }: { level: ArenaLevel; locale: Locale; snapshot: ArenaSnapshot; frame?: ArenaFrame }) {
+function CombatStatus({ level, locale, snapshot, events }: { level: ArenaLevel; locale: Locale; snapshot: ArenaSnapshot; events?: ArenaEvent[] }) {
   if (!level.combat) return null
   const { objective, combat } = level
   const t = (zh: string, en: string) => tr(locale, zh, en)
@@ -148,8 +159,8 @@ function CombatStatus({ level, locale, snapshot, frame }: { level: ArenaLevel; l
     </div>
     <ul className="arena-robot-stats" aria-label={t('机器人战况', 'Robot status')}>
       {snapshot.actors.map((actor, index) => {
-        const damage = frame?.events.reduce((sum, event) => sum + (event.targetId === actor.id ? event.damage ?? 0 : 0), 0) ?? 0
-        const guarded = frame?.events.some(event => event.actorId === actor.id && event.action === 'guard')
+        const damage = events?.reduce((sum, event) => sum + (event.targetId === actor.id ? event.damage ?? 0 : 0), 0) ?? 0
+        const guarded = events?.some(event => event.actorId === actor.id && event.action === 'guard')
         return <li key={actor.id} data-robot-id={actor.id} data-offline={actor.hp === 0 || undefined} data-hit={damage || undefined}>
         <div className="arena-robot-name"><i aria-hidden="true">{index || '●'}</i><strong>{actorTitle(level, locale, actor.id)}</strong>
           {objective.kind === 'score' && <span>{t('得分', 'Score')} {actor.score}</span>}</div>
@@ -165,36 +176,53 @@ function CombatStatus({ level, locale, snapshot, frame }: { level: ArenaLevel; l
   </div>
 }
 
-export function ArenaBoard({ level, locale, snapshot, frame, latestShift, finished, mapPicker, trail, activity, scan, children }: {
-  level: ArenaLevel; locale: Locale; snapshot: ArenaSnapshot; frame?: ArenaFrame; latestShift?: ArenaShift; finished?: boolean; mapPicker?: ReactNode; children?: ReactNode
-  trail?: readonly Position[]
-  activity?: StationActivity; scan?: ArenaScan
+type ArenaPlayfieldProps = {
+  level: ArenaLevel; locale: Locale; snapshot: ArenaSnapshot; frame?: ArenaFrame; latestShift?: ArenaShift
+  trail?: readonly Position[]; activity?: StationActivity
+}
+
+// Applying a hit to a health meter does not rebuild every tile or reposition the WebGL models.
+const ArenaPlayfield = memo(function ArenaPlayfield({ level, locale, snapshot, frame, latestShift, trail, activity, motion }: ArenaPlayfieldProps & {
+  motion: ArenaTurnPresentation['motion']
+}) {
+  const mapMode = useArenaMapMode()
+  const changedCells = latestShift?.turn === snapshot.turn ? shiftChanges(latestShift) : []
+  for (const event of frame?.events ?? []) {
+    for (const position of event.opened ?? []) changedCells.push({ position, state: 'opened' })
+  }
+  return <MapTiles location="arena" activity={activity} arenaMotion={motion} tiles={snapshot.tiles ?? level.tiles}
+    exit={level.objective.kind === 'escape' ? level.objective.exit : undefined} items={snapshot.items} trail={trail}
+    mapTargets={mapMode ? arenaMapTargets(level, snapshot) : undefined}
+    arenaBuffs={level.combat?.buffs} arenaSwitches={level.combat?.switches} arenaShots={frame?.events.filter(event => event.action === 'shoot')} playerDown={snapshot.actors[0].hp === 0}
+    arenaTargetIds={level.combat && 'itemIds' in level.objective ? level.objective.itemIds : undefined}
+    gates={arenaGateCells(level)} cellChanges={changedCells}
+    batteries={Boolean(level.shifts?.length) && !level.combat} playerPosition={snapshot.actors[0]} opponents={snapshot.actors.slice(1).flatMap((actor, index) =>
+      actor.hp === 0 ? [] : [{ ...actor, label: String(index + 1), index, name: actorTitle(level, locale, actor.id) }])} locale={locale} />
+})
+
+export function ArenaBoard({ level, locale, snapshot, frame, presentation, latestShift, finished, mapPicker, trail, activity, scan, children }: ArenaPlayfieldProps & {
+  finished?: boolean; mapPicker?: ReactNode; children?: ReactNode; scan?: ArenaScan; presentation: ArenaTurnPresentation
 }) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const dynamic = Boolean(level.shifts?.length)
   const next = finished ? undefined : level.shifts?.find(shift => shift.turn > snapshot.turn)?.turn
   const mapMode = useArenaMapMode()
-  return <section className="panel board-panel" data-testid={dynamic ? 'arena-dynamic-board' : undefined}>
+  const hud = arenaHudSnapshot(snapshot, presentation)
+  return <section className="panel board-panel" data-testid={dynamic || level.combat?.switches?.length ? 'arena-dynamic-board' : undefined}>
     <TeachingScreen locale={locale} variant="monitor" title={t('回合现场', 'Match view')}>
       <div className="panel-heading"><h2>{t('对抗棋盘', 'Arena board')}</h2>
         <div className="arena-turn-hud">
           <span className="turn-display" data-testid="arena-turn">{t('回合', 'Turn')} {snapshot.turn}/{level.maxTurns}</span>
-          {mapMode && level.combat && <span className="arena-map-health">{t('生命', 'HP')} {snapshot.actors[0].hp}/{level.combat.health}</span>}
+          {mapMode && level.combat && <span className="arena-map-health">{t('生命', 'HP')} {hud.actors[0].hp}/{level.combat.health}</span>}
         </div>
       </div>
       {mapPicker}
-      {level.combat && <CombatStatus level={level} locale={locale} snapshot={snapshot} frame={frame} />}
+      {level.combat && <CombatStatus level={level} locale={locale} snapshot={hud} events={frame?.events.filter(event => !presentation.pendingShots.includes(event))} />}
       {next !== undefined && <p className="arena-shift-countdown" data-testid="arena-shift-countdown" data-next-turn={next} data-turns-remaining={next - snapshot.turn}>
         <strong>{t(`第 ${next} 回合变阵`, `Shift on turn ${next}`)}</strong><span>{t(`还剩 ${next - snapshot.turn} 回合`, `${next - snapshot.turn} turns to go`)}</span>
       </p>}
-      <MapTiles location="arena" activity={activity} tiles={snapshot.tiles ?? level.tiles} exit={level.objective.kind === 'escape' ? level.objective.exit : undefined} items={snapshot.items} trail={trail}
-        mapTargets={mapMode ? arenaMapTargets(level, snapshot) : undefined}
-        arenaBuffs={level.combat?.buffs} arenaShots={frame?.events.filter(event => event.action === 'shoot')} playerDown={snapshot.actors[0].hp === 0}
-        arenaTargetIds={level.combat && 'itemIds' in level.objective ? level.objective.itemIds : undefined}
-        gates={level.shifts?.flatMap(shift => [...(shift.open ?? []), ...(shift.close ?? [])])}
-        cellChanges={latestShift?.turn === snapshot.turn ? shiftChanges(latestShift) : undefined}
-        batteries={dynamic && !level.combat} playerPosition={snapshot.actors[0]} opponents={snapshot.actors.slice(1).flatMap((actor, index) =>
-          actor.hp === 0 ? [] : [{ ...actor, label: String(index + 1), index, name: actorTitle(level, locale, actor.id) }])} locale={locale} />
+      <ArenaPlayfield level={level} locale={locale} snapshot={snapshot} frame={frame} motion={presentation.motion}
+        latestShift={latestShift} trail={trail} activity={activity} />
       {scan && <ArenaSensor scan={scan} locale={locale} />}
       {!level.combat && <ul className="scoreboard" aria-label={dynamic ? t('已收集电池数', 'Batteries collected') : t('对抗比分', 'Arena scores')}>
         {snapshot.actors.map((actor, index) => <li key={actor.id}>
@@ -207,7 +235,7 @@ export function ArenaBoard({ level, locale, snapshot, frame, latestShift, finish
   </section>
 }
 
-export function ArenaStateReference({ locale, timed = false, combat = false, dynamic = true }: { locale: Locale; timed?: boolean; combat?: boolean; dynamic?: boolean }) {
+export function ArenaStateReference({ locale, timed = false, combat = false, dynamic = true, hasSwitches = false }: { locale: Locale; timed?: boolean; combat?: boolean; dynamic?: boolean; hasSwitches?: boolean }) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   return <details className="arena-state-reference">
     <summary>{timed ? 'state' : 'scan()'} · {t('赛场数据', 'Arena data')}</summary>
@@ -220,6 +248,7 @@ export function ArenaStateReference({ locale, timed = false, combat = false, dyn
         <dt><code>self</code></dt><dd>{t('hp 是生命，power 是强化层数，shield 是剩余护盾。对手也有这三个数值。', 'hp is health, power counts upgrades and shield is the remaining protection. Rivals have these values too.')}</dd>
         <dt><code>range</code></dt><dd>{t('脉冲在没有墙时能前进的格数', 'Pulse range along an open lane')}</dd>
         <dt><code>buffs</code></dt><dd>{t('芯片的 id 和 kind（power 或 shield）', 'Chip id and kind (power or shield)')}</dd>
+        {hasSwitches && <><dt><code>switches</code></dt><dd>{t('itemId 对应开关，open 列出它控制的闸门坐标。', 'itemId identifies the switch and open lists the gate coordinates it controls.')}</dd></>}
         <dt><code>collected</code></dt><dd>{t('芽芽已拾取的道具 ID', 'Item IDs already collected by Sprout')}</dd>
       </>}
       {dynamic && <><dt><code>playerScore</code></dt><dd>{combat ? t('芽芽的得分', 'Sprout’s score') : t('芽芽已收集的电池数', 'Sprout’s battery count')}</dd></>}

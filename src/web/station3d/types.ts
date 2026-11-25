@@ -2,6 +2,7 @@ import type { ApiName, GridHazard, Item, Json, Position, PythonFlowEvent, Scenar
 import type { BoardDevice } from '../gridDeviceDisplay'
 import type { TrailEdge } from '../boardTrail'
 import type { ArenaScenario, ArenaEvent } from '../../shared/advanced'
+import type { ArenaTurnMotion } from '../arenaTurnMotion'
 
 export type ArenaCellChange = { position: Position; state: 'opened' | 'closed' | 'blocked' | 'relocated' }
 // A live push stamps performance.now() here. Saved positions and backward steps have no arrival.
@@ -31,8 +32,10 @@ export type StationFrame = {
   mapTargets?: readonly (Position & { id?: string })[]
   playerDown?: boolean
   arenaBuffs?: NonNullable<ArenaScenario['combat']>['buffs']
+  arenaSwitches?: NonNullable<ArenaScenario['combat']>['switches']
   arenaTargetIds?: readonly string[]
   arenaShots?: readonly ArenaEvent[]
+  arenaMotion?: ArenaTurnMotion
   opponents: readonly (Position & { id?: string; label?: string; index?: number; name?: string })[]
   items: readonly Item[]
   cellChanges?: readonly ArenaCellChange[]

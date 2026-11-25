@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "id": "challenge-brass-bell-lane",
+  "order": 2201,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "stage": "challenge",
+  "difficulty": "starter",
+  "title": {
+    "zh": "铜铃开场赛",
+    "en": "Brass Bell Opener"
+  },
+  "concept": {
+    "zh": "一机对抗 · 直线脉冲",
+    "en": "Solo duel · Straight-line pulses"
+  },
+  "brief": {
+    "zh": "让铃道尽头的铜铃机器人停机。双方各有 2 格耐久，脉冲最多走 4 格。增幅芯片给每发脉冲加 1 点威力。限时 12 回合。",
+    "en": "Tag out the brass bell robot at the end of the lane. Each bot has 2 hull points and pulses travel up to 4 squares. The power chip adds 1 point to each pulse. Finish within 12 turns."
+  },
+  "prerequisites": [
+    {
+      "unit": "foundations",
+      "topic": "sequence"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "#########",
+    "#...#...#",
+    "#.#.#.#.#",
+    "#.......#",
+    "#.#...#.#",
+    "#.......#",
+    "#########"
+  ],
+  "start": { "x": 1, "y": 3 },
+  "items": [
+    {
+      "id": "power-1",
+      "x": 2,
+      "y": 3
+    }
+  ],
+  "opponents": [
+    {
+      "id": "bell",
+      "title": { "zh": "铜铃", "en": "Brass Bell" },
+      "start": { "x": 7, "y": 3 },
+      "policy": {
+        "kind": "duelist",
+        "style": "sentry"
+      }
+    }
+  ],
+  "objective": {
+    "kind": "eliminate"
+  },
+  "maxTurns": 12,
+  "combat": {
+    "health": 2,
+    "range": 4,
+    "buffs": [
+      {
+        "id": "power-1",
+        "kind": "power"
+      }
+    ]
+  },
+  "starterCode": "state = scan()\n",
+  "solutionCode": "move(\"right\")\npick()\nmove(\"right\")\nshoot(\"right\")\n",
+  "snippets": [
+    {
+      "label": { "zh": "向上走", "en": "Move up" },
+      "code": "move(\"up\")"
+    },
+    {
+      "label": { "zh": "向上发脉冲", "en": "Pulse up" },
+      "code": "shoot(\"up\")"
+    },
+    {
+      "label": { "zh": "向右走", "en": "Move right" },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": { "zh": "向右发脉冲", "en": "Pulse right" },
+      "code": "shoot(\"right\")"
+    },
+    {
+      "label": {
+        "zh": "向下走",
+        "en": "Move down"
+      },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": {
+        "zh": "向下发脉冲",
+        "en": "Pulse down"
+      },
+      "code": "shoot(\"down\")"
+    },
+    {
+      "label": { "zh": "向左走", "en": "Move left" },
+      "code": "move(\"left\")"
+    },
+    {
+      "label": { "zh": "向左发脉冲", "en": "Pulse left" },
+      "code": "shoot(\"left\")"
+    },
+    {
+      "label": { "zh": "拾取芯片", "en": "Pick up chip" },
+      "code": "pick()"
+    },
+    {
+      "label": { "zh": "防御一拍", "en": "Guard for a beat" },
+      "code": "guard()"
+    },
+    {
+      "label": { "zh": "等待一拍", "en": "Wait a beat" },
+      "code": "wait()"
+    },
+    {
+      "label": {
+        "zh": "查看赛场",
+        "en": "Scan arena"
+      },
+      "code": "state = scan()"
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "version": 1,
+  "id": "challenge-paper-comet-carousel",
+  "order": 2204,
+  "kind": "arena",
+  "unit": {
+    "id": "challenge-zone",
+    "order": 90,
+    "title": {
+      "zh": "挑战场",
+      "en": "Challenge Arena"
+    }
+  },
+  "stage": "challenge",
+  "difficulty": "intermediate",
+  "title": { "zh": "纸彗星旋转场", "en": "Paper Comet Carousel" },
+  "concept": {
+    "zh": "双机追逐 · 按位置转向",
+    "en": "Twin pursuit · Aim by position"
+  },
+  "brief": {
+    "zh": "让从两侧滑来的纸彗星机器人都停机。两台追击机会绕过展台，进入射程后会停下来对射。两张赛场的追击机从不同入口出现。限时 23 回合。",
+    "en": "Tag out both paper comet bots as they slide in from the sides. The hunters circle the display stands and stop to trade pulses when in range. Their entrances change on the second board. Finish within 23 turns."
+  },
+  "prerequisites": [
+    {
+      "unit": "python-intermediate",
+      "topic": "branches"
+    },
+    {
+      "unit": "python-intermediate",
+      "topic": "while-loops"
+    }
+  ],
+  "hints": [],
+  "tiles": [
+    "###############",
+    "#.............#",
+    "#.#.##...##.#.#",
+    "#.............#",
+    "#..###...###..#",
+    "#.............#",
+    "#.............#",
+    "###############"
+  ],
+  "start": { "x": 7, "y": 6 },
+  "items": [
+    {
+      "id": "power-1",
+      "x": 7,
+      "y": 5
+    }
+  ],
+  "opponents": [
+    {
+      "id": "comet-a",
+      "title": { "zh": "银尾", "en": "Silver Tail" },
+      "start": { "x": 3, "y": 1 },
+      "policy": {
+        "kind": "duelist",
+        "style": "hunter"
+      }
+    },
+    {
+      "id": "comet-b",
+      "title": { "zh": "金尾", "en": "Gold Tail" },
+      "start": { "x": 11, "y": 1 },
+      "policy": {
+        "kind": "duelist",
+        "style": "hunter"
+      }
+    }
+  ],
+  "objective": {
+    "kind": "eliminate"
+  },
+  "maxTurns": 23,
+  "combat": {
+    "health": 3,
+    "range": 3,
+    "buffs": [
+      {
+        "id": "power-1",
+        "kind": "power"
+      }
+    ]
+  },
+  "variants": [
+    {
+      "opponents": [
+        {
+          "id": "comet-a",
+          "title": { "zh": "银尾", "en": "Silver Tail" },
+          "start": { "x": 2, "y": 5 },
+          "policy": {
+            "kind": "duelist",
+            "style": "hunter"
+          }
+        },
+        {
+          "id": "comet-b",
+          "title": { "zh": "金尾", "en": "Gold Tail" },
+          "start": { "x": 13, "y": 1 },
+          "policy": {
+            "kind": "duelist",
+            "style": "hunter"
+          }
+        }
+      ]
+    }
+  ],
+  "starterCode": "state = scan()\n",
+  "solutionCode": "move(\"up\")\npick()\nwhile True:\n    state = scan()\n    x = state[\"player\"][0]\n    y = state[\"player\"][1]\n    reach = state[\"range\"]\n    aim = \"\"\n    for rival in state[\"opponents\"]:\n        dx = rival[\"x\"] - x\n        dy = rival[\"y\"] - y\n        if rival[\"hp\"] > 0:\n            if dx == 0 and dy >= -reach and dy <= reach:\n                if dy < 0:\n                    aim = \"up\"\n                else:\n                    aim = \"down\"\n                break\n            if dy == 0 and dx >= -reach and dx <= reach:\n                if dx < 0:\n                    aim = \"left\"\n                else:\n                    aim = \"right\"\n                break\n    if aim:\n        shoot(aim)\n    else:\n        guard()\n",
+  "snippets": [
+    {
+      "label": { "zh": "向上走", "en": "Move up" },
+      "code": "move(\"up\")"
+    },
+    {
+      "label": { "zh": "向上发脉冲", "en": "Pulse up" },
+      "code": "shoot(\"up\")"
+    },
+    {
+      "label": { "zh": "向右走", "en": "Move right" },
+      "code": "move(\"right\")"
+    },
+    {
+      "label": { "zh": "向右发脉冲", "en": "Pulse right" },
+      "code": "shoot(\"right\")"
+    },
+    {
+      "label": {
+        "zh": "向下走",
+        "en": "Move down"
+      },
+      "code": "move(\"down\")"
+    },
+    {
+      "label": {
+        "zh": "向下发脉冲",
+        "en": "Pulse down"
+      },
+      "code": "shoot(\"down\")"
+    },
+    {
+      "label": { "zh": "向左走", "en": "Move left" },
+      "code": "move(\"left\")"
+    },
+    {
+      "label": { "zh": "向左发脉冲", "en": "Pulse left" },
+      "code": "shoot(\"left\")"
+    },
+    {
+      "label": { "zh": "拾取芯片", "en": "Pick up chip" },
+      "code": "pick()"
+    },
+    {
+      "label": { "zh": "防御一拍", "en": "Guard for a beat" },
+      "code": "guard()"
+    },
+    {
+      "label": { "zh": "等待一拍", "en": "Wait a beat" },
+      "code": "wait()"
+    },
+    {
+      "label": {
+        "zh": "查看赛场",
+        "en": "Scan arena"
+      },
+      "code": "state = scan()"
+    }
+  ]
+}

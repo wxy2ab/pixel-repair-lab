@@ -3,6 +3,7 @@ import type { Locale, Position } from '../../shared/types'
 import { tr } from '../text'
 import type { StationFrame } from './types'
 import { cargoLabel } from '../WarehouseTiles'
+import { switchDescription } from '../arenaGates'
 import './station-minimap.css'
 
 const preferenceKey = 'pixel-repair-lab:minimap-collapsed'
@@ -86,6 +87,13 @@ export function StationMinimap({ frame, locale, footprint, onCenter, ready = tru
           onClick={pick} onKeyDown={navigate} onBlur={() => setCursor(undefined)}>
           <rect width={width} height={height} fill="#172e3e" />
           <path d={walls} fill="#547083" />
+          {Boolean(frame.arenaSwitches?.length) && frame.gates?.map(({ x, y }) => {
+            const closed = frame.tiles[y][x] === '#'
+            return <rect key={x + ',' + y} data-minimap-marker="gate" data-gate={closed ? 'closed' : 'open'}
+              x={x + .05} y={y + .05} width=".9" height=".9" fill={closed ? '#a97447' : 'none'}
+              stroke={closed ? '#ffbf74' : '#85ebba'} strokeWidth=".16">
+              <title>{closed ? t('闸门已关', 'Gate closed') : t('闸门已开', 'Gate open')} ({x}, {y})</title></rect>
+          })}
           {footprint.length >= 3 && <polygon className="station-minimap__footprint" data-testid="minimap-footprint"
             points={footprint.map(point => `${point.x},${point.y}`).join(' ')} vectorEffect="non-scaling-stroke"><title>{sight}</title></polygon>}
           {frame.mapTargets?.map(({ x, y, id: itemId }, index) => <path key={itemId ?? index} data-minimap-marker="target"
@@ -106,6 +114,15 @@ export function StationMinimap({ frame, locale, footprint, onCenter, ready = tru
           {!frame.playerDown && <circle data-minimap-marker="player" data-x={frame.playerPosition.x} data-y={frame.playerPosition.y}
             cx={frame.playerPosition.x + .5} cy={frame.playerPosition.y + .5} r=".40" className="station-minimap__player">
             <title>{player} ({frame.playerPosition.x}, {frame.playerPosition.y})</title></circle>}
+          {frame.arenaSwitches?.map(control => {
+            const item = frame.items.find(item => item.id === control.itemId)
+            if (!item) return null
+            const occupied = [frame.playerPosition, ...frame.opponents].some(bot => bot.x === item.x && bot.y === item.y)
+            return <path key={item.id} data-minimap-marker="switch" data-id={item.id}
+              transform={`translate(${item.x + (occupied ? .5 : .04)} ${item.y}) scale(${occupied ? .57 : .93})`}
+              d="M.08 .69h.84v.21H.08z M.21 .59V.48a.29 .29 0 0 1 .58 0v.11z" fill="#ffc573">
+              <title>{switchDescription(control.open, locale)} ({item.x}, {item.y})</title></path>
+          })}
           {cursor && <rect className="station-minimap__cursor" x={cursor.x - .08} y={cursor.y - .08} width="1.16" height="1.16"
             fill="none" stroke="white" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />}
         </svg>
@@ -113,6 +130,7 @@ export function StationMinimap({ frame, locale, footprint, onCenter, ready = tru
           <span><i data-symbol="player" />{player}</span>
           {frame.opponents.length > 0 && <span><i data-symbol="rival" />{rival}</span>}
           {Boolean(frame.mapTargets?.length) && <span><i data-symbol="target" />{target}</span>}
+          {Boolean(frame.arenaSwitches?.length) && <span><i data-symbol="switch" />{t('开关', 'Switch')}</span>}
           {frame.warehouse && <>
             <span><i data-symbol="crate" />{t('货箱', 'Crate')}</span>
             <span><i data-symbol="loading-pad" />{t('货位', 'Loading pad')}</span>

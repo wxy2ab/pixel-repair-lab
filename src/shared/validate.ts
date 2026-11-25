@@ -211,12 +211,22 @@ function arenaIssues(scenario: ArenaScenario, prefix: string, issues: Issue[]) {
     report('/objective', 'arena-combat', 'Enable combat for an elimination objective.')
   }
   if (objective.kind === 'score' && !items.length) report('/items', 'arena-score', 'A score race needs at least one item.')
-  const buffIds = new Set<string>()
+  const combatItemIds = new Set<string>()
   for (const [index, buff] of (scenario.combat?.buffs ?? []).entries()) {
-    if (buffIds.has(buff.id) || !items.some(item => item.id === buff.id)) {
+    if (combatItemIds.has(buff.id) || !items.some(item => item.id === buff.id)) {
       report('/combat/buffs/' + index + '/id', 'arena-buff', 'Each chip must refer to a different item on this map.')
     }
-    buffIds.add(buff.id)
+    combatItemIds.add(buff.id)
+  }
+  for (const [index, control] of (scenario.combat?.switches ?? []).entries()) {
+    const path = '/combat/switches/' + index
+    if (combatItemIds.has(control.itemId) || !items.some(item => item.id === control.itemId)) {
+      report(path + '/itemId', 'arena-switch', 'Choose a separate item for each switch and chip.')
+    }
+    combatItemIds.add(control.itemId)
+    for (const [gate, { x, y }] of control.open.entries()) {
+      if (tiles[y]?.[x] !== '#') report(path + '/open/' + gate, 'arena-switch', 'A switch opens a wall on this map.')
+    }
   }
   for (const [index, opponent] of opponents.entries()) {
     const path = '/opponents/' + index

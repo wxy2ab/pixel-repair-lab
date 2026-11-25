@@ -452,6 +452,7 @@ export function createStationModels() {
       if (enemy && number) addNumber(robot, number, 1.19)
       return robot
     },
+    robotRig(robot: THREE.Group) { return rigs.get(robot) },
     pose(robot: THREE.Group, action: RobotAction, seconds: number) {
       const rig = rigs.get(robot)
       if (rig) poseRobot(rig, action, seconds)

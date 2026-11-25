@@ -10,6 +10,7 @@ import { ChallengePrerequisites } from './ChallengeCatalog'
 import { ChallengeBrief } from './ChallengeBrief'
 import { ChallengeCompletion } from './ChallengeCompletion'
 import { FullscreenVictoryContext } from './FullscreenVictory'
+import { ArenaFinishContext } from './useArenaTurnPresentation'
 import { CompletionFeedback } from './CompletionFeedback'
 import { completionMilestone, type CompletionMilestone } from './completionMilestone'
 import { readArenaMatch, readArenaReload, saveArenaMatch, saveArenaReload, type ArenaReload } from './arenaMatchProgress'
@@ -208,6 +209,7 @@ function App() {
   const [skippedRouteIds, setSkippedRouteIds] = useState(() => loadChallengeRouteSkips(readStorage(challengeRouteSkipsKey)))
   const [routeChallengeId, setRouteChallengeId] = useState(arenaReload?.fromRoute ? arenaReload.levelId : undefined)
   const [challengeSummary, setChallengeSummary] = useState<RecordedChallenge>()
+  const [finishingArena, setFinishingArena] = useState<string>()
   const activeReplayFocus = useRef<ActiveReplayFocus | undefined>(undefined)
   const [replayFocusResult, setReplayFocusResult] = useState<RecordedReplayFocus>()
   const replayFocusHistoryCache = useRef<ReplayFocusHistoryCache | undefined>(undefined)
@@ -329,7 +331,8 @@ function App() {
     && candidate.kind === 'arena' && candidate.unit?.id === challengeZoneId)
   const invalidArenaReload = Boolean(catalog && arenaReload && (reloadingArena?.kind !== 'arena'
     || !readArenaMatch(reloadingArena, arenaReload.mode)))
-  const currentSummary = isChallenge && challengeSummary?.levelId === level.id ? challengeSummary : undefined
+  const showingFinalTurn = !!finishingArena && finishingArena === level?.id
+  const currentSummary = !showingFinalTurn && isChallenge && challengeSummary?.levelId === level.id ? challengeSummary : undefined
   const series = shortSeries(level)
   const seriesNextId = shortCrossing(level)?.next
   const nextMission = seriesNextId ? levels.find(candidate => candidate.id === seriesNextId) : ordered[levelIndex + 1]
@@ -771,7 +774,7 @@ function App() {
   }
 
   return <div className="app-shell">
-    <CompletionFeedback event={section === 'campaign' && milestone?.levelId === level?.id ? milestone : undefined}
+    <CompletionFeedback event={!showingFinalTurn && section === 'campaign' && milestone?.levelId === level?.id ? milestone : undefined}
       locale={locale} onDismiss={dismissMilestone} />
     <header className="topbar">
       <button type="button" className="brand" onClick={() => goTo('modules')}>
@@ -955,7 +958,7 @@ function App() {
                 ? <ChallengeStudyRoute challenge={studyChallenge} preparation={studyPlan} locale={locale} lessonComplete={isWon}
                   review={studyRoute?.mode === 'review'} onNext={openLevel} onReturn={() => openLevel(studyChallenge.id)} />
                 : null}
-            <FullscreenVictoryContext.Provider value={victoryNavigation}>
+            <ArenaFinishContext.Provider value={setFinishingArena}><FullscreenVictoryContext.Provider value={victoryNavigation}>
               {retainedChallenge && <RetainedChallenge visible={retainedChallenge.id === level.id}>
                 <LessonView catalog={levels} key={JSON.stringify(retainedChallenge) + ':' + challengeRestart} level={retainedChallenge} locale={locale} completed={completed}
                   onComplete={markChallengeWin} onMistake={markChallengeMistake} personal={personal} onOpenLevel={openLevel}
@@ -972,7 +975,7 @@ function App() {
               {retainedChallenge?.id !== level.id &&
                 <LessonView catalog={levels} key={`${review?.visit ?? 0}:${JSON.stringify(level)}`} level={level} locale={locale} completed={completed}
                   onComplete={markWin} onMistake={markMistake} personal={personal} onSave={saveAlgorithm} onOpenLevel={openLevel} />}
-            </FullscreenVictoryContext.Provider>
+            </FullscreenVictoryContext.Provider></ArenaFinishContext.Provider>
             {guidedLesson && isWon && <LessonNext level={level} ordered={courseOrder} locale={locale} onOpen={openLevel} onHome={() => goTo('modules')} />}
             {!reviewSource && level.kind === 'lecture' && level.overview && !level.execution?.intro &&
               <OverviewTopics ordered={ordered} completed={completed} locale={locale} onOpen={openLevel} />}

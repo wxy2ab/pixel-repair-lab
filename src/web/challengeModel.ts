@@ -1,4 +1,5 @@
 import { challengeZoneId } from '../shared/coursePrerequisites'
+import type { ArenaLevel } from '../shared/advanced'
 import type { ChallengeDifficulty, Level, Localized } from '../shared/types'
 import { isOptionalChallenge } from './lessonTools'
 import type { LearningGroup } from './roadmapModel'
@@ -41,7 +42,14 @@ export type ChallengePreparation = LessonProgress & {
   requiredLessons: Level[]
 }
 type CourseFilterOption = { unitId: string; label: Localized; topics: { topicId: string; label: Localized }[] }
-export type ChallengeFilters = { type?: ChallengeType; difficulty?: ChallengeDifficulty; course?: CourseFilter }
+type ArenaObjective = ArenaLevel['objective']['kind']
+export const arenaObjectiveLabels: Record<ArenaObjective, Localized> = {
+  eliminate: { zh: '射击清场', en: 'Pulse elimination' },
+  score: { zh: '比分争夺', en: 'Outscore rivals' },
+  collect: { zh: '集齐物品', en: 'Collect items' },
+  escape: { zh: '抵达出口', en: 'Reach the exit' },
+}
+export type ChallengeFilters = { type?: ChallengeType; difficulty?: ChallengeDifficulty; course?: CourseFilter; arenaObjective?: ArenaObjective }
 export type ChallengeEntry = {
   level: Level
   type: ChallengeType
@@ -135,8 +143,9 @@ export function buildChallengeCatalog(levels: Level[], courseGroups: LearningGro
   return { entries, recommendations, nearest, courses: courseFilterOptions(courseGroups, entries) }
 }
 
-export function filterChallenges(entries: ChallengeEntry[], { type, difficulty, course }: ChallengeFilters) {
+export function filterChallenges(entries: ChallengeEntry[], { type, difficulty, course, arenaObjective }: ChallengeFilters) {
   return entries.filter(entry => (!type || type === entry.type) && (!difficulty || difficulty === entry.difficulty)
+    && (!arenaObjective || entry.level.kind === 'arena' && entry.level.objective.kind === arenaObjective)
     && (!course || entry.preparation.prerequisites.some(({ unitId, topicId }) => unitId === course.unitId
       && (course.topicId === undefined || topicId === course.topicId))))
 }
