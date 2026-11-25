@@ -1,7 +1,12 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
 import { ARENA_TURN_MS } from '../src/engine/realtimeProtocol'
 
-test.use({ launchOptions: { args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] } })
+test.use({ launchOptions: { args: [
+  '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader',
+  // On Windows a GPU-composited SwiftShader canvas can freeze Chromium's entire
+  // frame timeline when scrolled back into view. Keep WebGL, composite in software.
+  ...(process.platform === 'win32' ? ['--disable-gpu-compositing'] : []),
+] } })
 
 async function openCup(page: Page) {
   await page.addInitScript(() => localStorage.setItem('pixel-repair-lab:board-view', '2d'))

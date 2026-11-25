@@ -103,6 +103,9 @@ export function StationViewport({ frame, locale, batteries = false, children, on
     sizes.observe(surface)
     const workspace = surface.closest('.arena-map-workspace')
     workspace?.querySelectorAll('.play-toolbar, .arena-console').forEach(panel => sizes.observe(panel))
+    // Closing the editor can expose a held shot without resizing the board.
+    const consoleChanges = new MutationObserver(publish)
+    if (workspace) consoleChanges.observe(workspace, { attributes: true, attributeFilter: ['data-console'] })
     publish()
     observer.observe(surface)
     window.addEventListener('scroll', publish, { capture: true, passive: true })
@@ -111,6 +114,7 @@ export function StationViewport({ frame, locale, batteries = false, children, on
     return () => {
       observer.disconnect()
       sizes.disconnect()
+      consoleChanges.disconnect()
       window.removeEventListener('scroll', publish, true)
       window.removeEventListener('resize', publish)
       document.removeEventListener('visibilitychange', publish)
