@@ -187,23 +187,25 @@
     top: calc(var(--map-gap) + 48px);
   }
 }
-/* Let the camera strip and minimap share a row when they fit. Localized labels
-   and larger tap targets can force either one onto a second row. */
-@media (max-width: 700px) {
-  .arena-map-workspace[data-map-fullscreen][data-console="closed"]:not([data-map-drawer]) .station-viewport {
-    display: flex;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    align-items: flex-start;
-    gap: var(--map-gap);
-    padding: var(--map-gap);
-  }
-  .arena-map-workspace[data-map-fullscreen][data-console="closed"]:not([data-map-drawer]) :is(.station-tools, .station-minimap) {
+/* The folded camera tools leave the opposite corner for navigation. */
+@media (max-width: 700px), (max-width: 1024px) and (max-height: 480px) {
+  .arena-map-workspace[data-map-fullscreen][data-console="closed"]:is(:not([data-map-drawer]), [data-map-drawer="camera"]) .station-minimap {
+    --minimap-height: min(9dvh, 76px);
     position: relative;
     inset: auto;
-    max-width: 100%;
+    grid-area: 1 / 1;
+    justify-self: end;
+    align-self: start;
+    margin: var(--map-gap);
   }
-  .arena-map-workspace[data-map-fullscreen][data-console="closed"]:not([data-map-drawer]) .station-minimap {
-    margin-inline-start: auto;
+  .arena-map-workspace[data-map-fullscreen][data-map-drawer="camera"] .station-minimap {
+    visibility: hidden;
+  }
+}
+@media (max-height: 480px) and (max-width: 1024px) and (orientation: landscape) {
+  .arena-map-workspace[data-map-fullscreen][data-console="closed"]:is(:not([data-map-drawer]), [data-map-drawer="camera"]) .station-minimap {
+    --minimap-height: min(14dvh, 72px);
+    grid-area: 1 / 2;
+    margin-top: calc(var(--map-gap) + 50px);
   }
 }

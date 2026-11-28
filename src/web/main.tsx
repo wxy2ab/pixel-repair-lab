@@ -13,7 +13,7 @@ import { MapVictoryContext, type VictoryDestination } from './VictoryAction'
 import { ArenaFinishContext } from './useArenaTurnPresentation'
 import { CompletionFeedback } from './CompletionFeedback'
 import { completionMilestone, type CompletionMilestone } from './completionMilestone'
-import { readArenaMatch, readArenaReload, saveArenaMatch, saveArenaReload, type ArenaReload } from './arenaMatchProgress'
+import { arenaStartMode, readArenaMatch, readArenaReload, saveArenaMatch, saveArenaReload, type ArenaReload } from './arenaMatchProgress'
 import type { ArenaReplayProgress } from './arenaReplayProgress'
 import { challengeDraftKey, parseChallengeDraft, supportsChallengeDraft, type ChallengeDraft } from './challengeDraft'
 import { carriedCrossingProgram } from './shortChallengeProgram'
@@ -154,16 +154,11 @@ function writeChallengeDraft(id: string, draft: ChallengeDraft) {
   writeStorage(challengeDraftKey(id), JSON.stringify(draft))
 }
 
-function arenaDraftMode(level: ArenaLevel): ArenaMode {
-  const draft = readChallengeDraft(level)
-  return draft?.kind === 'arena' ? draft.mode : 'relaxed'
-}
-
 function resetChallengeDraft(level: Level, arenaMode?: ArenaMode) {
   const draft = readChallengeDraft(level)
   if (level.kind === 'arena') {
     const stored = draft?.kind === 'arena' ? draft : undefined
-    const mode = arenaMode ?? stored?.mode ?? 'relaxed'
+    const mode = arenaStartMode(level, stored, arenaMode)
     saveArenaMatch(level, mode)
     writeChallengeDraft(level.id, mode === 'timed'
       ? { kind: 'arena', mode, source: stored?.source }
@@ -525,11 +520,10 @@ function App() {
         if (inherited) writeChallengeDraft(target.id, inherited)
       }
       if (target.kind === 'arena') {
-        arenaMode = replay?.kind === 'arena' ? replay.mode : arenaDraftMode(target)
-        if (replay?.kind === 'arena') {
-          const draft = readChallengeDraft(target)
-          writeChallengeDraft(id, draft?.kind === 'arena' ? { ...draft, mode: replay.mode } : { kind: 'arena', mode: replay.mode })
-        }
+        const stored = readChallengeDraft(target)
+        const draft = stored?.kind === 'arena' ? stored : undefined
+        arenaMode = arenaStartMode(target, draft, replay?.kind === 'arena' ? replay.mode : undefined)
+        if (draft?.mode !== arenaMode) writeChallengeDraft(id, { ...draft, kind: 'arena', mode: arenaMode })
       }
     } else if (target && courseFor(target) && !isOptionalChallenge(target)) {
       setLastLesson(id)

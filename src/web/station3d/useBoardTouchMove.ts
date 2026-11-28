@@ -3,7 +3,7 @@ import type { Direction } from '../../shared/types'
 
 /** Dispatch one action on release. Leave a gap between tapping and swiping. */
 export function useBoardTouchMove(surfaceRef: RefObject<HTMLElement | null>, onMove: ((direction: Direction) => void) | null,
-  projectSwipe?: (dx: number, dy: number) => Direction | undefined, onTap?: (x: number, y: number) => void) {
+  mapNavigation: boolean, projectSwipe?: (dx: number, dy: number) => Direction | undefined, onTap?: (x: number, y: number) => void) {
   const tap = useEffectEvent((x: number, y: number) => onTap?.(x, y))
   const move = useEffectEvent((dx: number, dy: number) => {
     const projected = projectSwipe?.(dx, dy)
@@ -12,6 +12,16 @@ export function useBoardTouchMove(surfaceRef: RefObject<HTMLElement | null>, onM
     else onMove?.(dy > 0 ? 'down' : 'up')
   })
   const enabled = Boolean(onMove)
+  const captureDrag = enabled || mapNavigation
+  useLayoutEffect(() => {
+    const surface = surfaceRef.current
+    if (!surface || !captureDrag) return
+    // Native scrolling can swallow the next toolbar tap even when pointer events handled the drag.
+    function touchMove(event: TouchEvent) { if (event.cancelable) event.preventDefault() }
+    surface.addEventListener('touchmove', touchMove, { passive: false })
+    return () => surface.removeEventListener('touchmove', touchMove)
+  }, [surfaceRef, captureDrag])
+
   useLayoutEffect(() => {
     const surface = surfaceRef.current
     if (!surface || !enabled) return

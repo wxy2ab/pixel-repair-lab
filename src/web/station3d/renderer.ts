@@ -202,13 +202,14 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
   let pitch = defaultPitch
   let magnification = 1
   let mapNavigation = false
+  let inlineTouchNavigation = false
   // A jump from follow mode keeps its close lens while detaching the camera from Sprout.
   let pinnedLens: StationCamera | undefined
   const mapFrustum = new THREE.Frustum()
   const projectionView = new THREE.Matrix4()
   const lastProjectionView = new THREE.Matrix4()
   let lastFootprint: Position[] | undefined
-  let inlineCamera: { mode: StationCamera; yaw: number; pitch: number; magnification: number } | undefined
+  let inlineCamera: { mode: StationCamera; yaw: number; pitch: number; magnification: number; offsetX: number; offsetZ: number } | undefined
   let offsetX = 0, offsetZ = 0
   let focusX = 0, focusZ = 0, unitsPerPixel = 1
   let viewportWidth = 1
@@ -280,7 +281,7 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     }
     focusX = cx
     focusZ = cz
-    if (mapNavigation) {
+    if (mapNavigation || inlineTouchNavigation) {
       cx = THREE.MathUtils.clamp(cx + offsetX, 0, columns - 1)
       cz = THREE.MathUtils.clamp(cz + offsetZ, 0, rows - 1)
       unitsPerPixel = 2 * distance * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) / viewportHeight
@@ -331,7 +332,7 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
   }
 
   function pan(dx: number, dy: number) {
-    if (!mapNavigation) return
+    if (!mapNavigation && !inlineTouchNavigation) return
     const horizontal = dx * unitsPerPixel
     const vertical = dy * unitsPerPixel / Math.sin(pitch)
     offsetX = THREE.MathUtils.clamp(offsetX + horizontal * Math.cos(yaw) + vertical * Math.sin(yaw), -focusX, frame.tiles[0].length - 1 - focusX)
@@ -1164,9 +1165,9 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
       }
     }
   }
-  function pick(event: PointerEvent) {
-    const hit = hitAt(event.clientX, event.clientY)
-    if (event.pointerType !== 'touch') showHover(hit)
+  function pick(x: number, y: number, hover = false) {
+    const hit = hitAt(x, y)
+    if (hover) showHover(hit)
     if (hit && 'prop' in hit) {
       scenery?.activate(hit.prop, performance.now())
       redraw()
@@ -1225,7 +1226,7 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     const clicked = !drag.moved
     drag = undefined
     if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId)
-    if (clicked) pick(event)
+    if (clicked) pick(event.clientX, event.clientY, event.pointerType !== 'touch')
   }
   function cancelDrag(event: PointerEvent) {
     if (drag?.id === event.pointerId) drag = undefined
@@ -1326,22 +1327,27 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     update,
     inspectCell,
     activateCell,
+    pick,
     cellAt(x: number, y: number) {
       const hit = hitAt(x, y)
       return hit && 'cell' in hit ? hit.cell : undefined
     },
     swipeDirection,
-    zoom(factor: number) { magnification = THREE.MathUtils.clamp(magnification * factor, 0.65, mapNavigation ? 5 : 2.5); cameraFit(); redraw() },
+    zoom(factor: number) { magnification = THREE.MathUtils.clamp(magnification * factor, 0.65, mapNavigation || inlineTouchNavigation ? 5 : 2.5); cameraFit(); redraw() },
     pan,
     centerMapOn,
-    setMapNavigation(active: boolean) {
-      if (mapNavigation === active) return cameraMode
+    setMapNavigation(active: boolean, inline: boolean) {
+      const inlineChanged = inlineTouchNavigation !== inline
+      inlineTouchNavigation = inline
+      if (mapNavigation === active) {
+        if (inlineChanged) cameraFit()
+        return cameraMode
+      }
       mapNavigation = active
       lastFootprint = undefined
       pinnedLens = undefined
-      offsetX = offsetZ = 0
       if (active) {
-        inlineCamera = { mode: cameraMode, yaw, pitch, magnification }
+        inlineCamera = { mode: cameraMode, yaw, pitch, magnification, offsetX, offsetZ }
         cameraMode = 'overview'
         resetCamera()
       } else if (inlineCamera) {
@@ -1349,6 +1355,8 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
         yaw = inlineCamera.yaw
         pitch = inlineCamera.pitch
         magnification = inlineCamera.magnification
+        offsetX = inlineCamera.offsetX
+        offsetZ = inlineCamera.offsetZ
         inlineCamera = undefined
         delete canvas.dataset.cameraZoom
         delete canvas.dataset.cameraCenter

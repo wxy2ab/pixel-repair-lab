@@ -69,6 +69,7 @@
 .station-inspection b { color: #91efce; font-family: var(--mono); }
 .station-fallback { margin: 8px 13px 0; font-size: 13px; color: var(--muted); }
 .station-flat-board--accessible { position: absolute; inset: 0; overflow: hidden; clip-path: inset(50%); pointer-events: none; }
+.station-viewport[data-touch-player][data-view='2d'] > .station-flat-board { touch-action: none; user-select: none; }
 .station-viewport[data-view='3d'] + .board-legend .legend-item { background: #ffbd55; }
 .station-viewport[data-view='3d'] + .board-legend .legend-exit { background: #75e7dc; }
 @media (max-width: 480px) {
@@ -115,7 +116,19 @@
     translate(var(--map-shift-x, 0%), var(--map-shift-y, 0%));
   transform-origin: center;
 }
+.station-viewport[data-inline-map][data-view='2d'] > .station-flat-board {
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+}
+.station-viewport[data-inline-map][data-view='2d'] .map-well {
+  transform: scale(var(--map-zoom, 1)) translate(var(--map-shift-x, 0%), var(--map-shift-y, 0%));
+  transform-origin: center;
+}
+.station-touch-hint { display: none; }
 @media (any-pointer: coarse) {
   .station-tools :is(.station-view-switch, .station-camera) button { min-width: 44px; min-height: 44px; }
-  .station-viewport:not([data-map-navigation]) canvas { touch-action: pan-y pinch-zoom; }
+  .station-viewport:not([data-map-navigation], [data-inline-map], [data-touch-player]) canvas { touch-action: pan-y pinch-zoom; }
+  .station-pointer-hint { display: none; }
+  .station-touch-hint { display: inline; }
 }

@@ -5,14 +5,23 @@ test.use({
   launchOptions: { args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] },
 })
 
-async function openLevel(page: Page, levelId: string, view: '2d' | '3d') {
+async function prepareTouchView(page: Page, view: '2d' | '3d') {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.addInitScript(view => {
     localStorage.setItem('pixel-repair-lab:board-view', view)
     if (view === '2d') Element.prototype.requestFullscreen = () => Promise.reject(new DOMException('Unavailable', 'NotAllowedError'))
   }, view)
+}
+
+async function openInlineLevel(page: Page, levelId: string, view: '2d' | '3d') {
+  await prepareTouchView(page, view)
   await page.goto('/#challenge-browse')
   await page.locator(`[data-challenge-level="${levelId}"]`).tap()
+  return page.getByTestId('arena-map-workspace')
+}
+
+async function openLevel(page: Page, levelId: string, view: '2d' | '3d') {
+  await openInlineLevel(page, levelId, view)
   await page.getByRole('button', { name: '全屏地图', exact: true }).tap()
   return page.getByRole('dialog')
 }
@@ -57,6 +66,98 @@ async function swipe(touch: CDPSession, from: Point, dx: number, dy: number, can
 }
 
 for (const view of ['2d', '3d'] as const) {
+  test(`an inline ${view} map supports touch zoom, pan and reset on a program-only grid`, async ({ page }) => {
+    const board = await openInlineLevel(page, 'challenge-six-step-detour', view)
+    const surface = view === '2d' ? board.locator('.station-flat-board:visible') : board.getByTestId('station-3d-canvas')
+    if (view === '3d') await expect(board.locator('.station-viewport')).toHaveAttribute('data-ready', 'true')
+    const camera = (setting: 'zoom' | 'center') => surface.evaluate((node, { view, setting }) => {
+      if (view === '3d') return node.getAttribute(`data-camera-${setting}`)
+      const style = getComputedStyle(node)
+      return style.getPropertyValue(setting === 'zoom' ? '--map-zoom' : '--map-shift-x')
+    }, { view, setting })
+    await surface.evaluate(node => node.scrollIntoView({ block: 'center', behavior: 'instant' }))
+    const touch = await page.context().newCDPSession(page)
+    const from = await gestureOrigin(surface)
+    const contacts = (gap: number) => [
+      { id: 1, x: from.x - gap, y: from.y }, { id: 2, x: from.x + gap, y: from.y },
+    ]
+    const initialZoom = await camera('zoom')
+    await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: contacts(15) })
+    for (const gap of [23, 32, 45]) await touch.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: contacts(gap) })
+    await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+    await expect.poll(() => camera('zoom')).not.toBe(initialZoom)
+    const panStart = await camera('center')
+    await swipe(touch, from, 55, 0)
+    await expect.poll(() => camera('center')).not.toBe(panStart)
+    expect(await page.evaluate(() => window.visualViewport?.scale)).toBe(1)
+    await board.getByRole('button', { name: '地图工具', exact: true }).tap()
+    await board.getByRole('button', { name: '复位镜头', exact: true }).tap()
+    await expect.poll(() => camera('zoom')).toBe(initialZoom)
+    await expect(board.getByTestId('grid-turn-budget')).toContainText('0 / 6')
+    await touch.detach()
+  })
+}
+
+test('inline touch preference follows fullscreen, the next warehouse and a page reload', async ({ page }) => {
+  test.slow()
+  await prepareTouchView(page, '2d')
+  await page.goto('/#challenge-zone')
+  await page.locator('[data-challenge-route="warehouse"]').tap()
+  await page.locator('[data-route-step="challenge-sokoban-first-nut-crate"] .challenge-route-step-open').tap()
+  const board = page.getByTestId('arena-map-workspace')
+  const controls = board.getByRole('group', { name: '触控操作', exact: true })
+  const map = controls.getByRole('button', { name: '操作地图', exact: true })
+  const player = controls.getByRole('button', { name: '移动芽芽', exact: true })
+  const readout = board.getByTestId('warehouse-readout')
+  await expect(map).toHaveAttribute('aria-pressed', 'true')
+  await flatCell(board, 2, 1).tap()
+  await expect(board.getByTestId('station-cell-inspection')).toContainText('(2, 1)')
+  await expect(readout).toContainText('步数 0')
+
+  await player.tap()
+  await board.getByRole('button', { name: '全屏地图', exact: true }).tap()
+  await expect(player).toHaveAttribute('aria-pressed', 'true')
+  await flatCell(board, 2, 1).tap()
+  await board.getByRole('button', { name: '下一关', exact: true }).tap()
+  await expect(page.getByRole('dialog', { name: '升降台送件' })).toBeVisible()
+  await expect(player).toHaveAttribute('aria-pressed', 'true')
+  await board.getByRole('button', { name: '退出全屏', exact: true }).tap()
+  await expect(player).toHaveAttribute('aria-pressed', 'true')
+  await flatCell(board, 2, 4).tap()
+  await expect(readout).toContainText('步数 1')
+
+  const resume = page.locator('[data-continue-challenge="challenge-sokoban-lift-delivery"]')
+  await page.reload()
+  await resume.tap()
+  await expect(player).toHaveAttribute('aria-pressed', 'true')
+  await flatCell(board, 2, 3).tap()
+  await expect(readout).toContainText('推箱 1')
+  await map.tap()
+  await page.reload()
+  await resume.tap()
+  await expect(map).toHaveAttribute('aria-pressed', 'true')
+  await flatCell(board, 2, 2).tap()
+  await expect(readout).toContainText('步数 2')
+})
+
+test('an inline 3D swipe walks and pushes without scrolling the page', async ({ page }) => {
+  const board = await openInlineLevel(page, 'challenge-sokoban-lift-delivery', '3d')
+  await expect(board.locator('.station-viewport')).toHaveAttribute('data-ready', 'true')
+  await board.getByRole('button', { name: '移动芽芽', exact: true }).tap()
+  const surface = board.getByTestId('station-3d-canvas')
+  await surface.evaluate(node => node.scrollIntoView({ block: 'center', behavior: 'instant' }))
+  const from = await gestureOrigin(surface)
+  const scrollY = await page.evaluate(() => window.scrollY)
+  const touch = await page.context().newCDPSession(page)
+  await swipe(touch, from, 70, 0)
+  await expect(board.locator('.tilemap')).toHaveAttribute('aria-label', '机器人位于 2，4')
+  await swipe(touch, from, 0, -70)
+  await expect(board.getByTestId('warehouse-readout')).toContainText('推箱 1')
+  expect(await page.evaluate(() => window.scrollY)).toBe(scrollY)
+  await touch.detach()
+})
+
+for (const view of ['2d', '3d'] as const) {
   test(`fullscreen ${view} switches the same finger drag from moving the map to walking and pushing`, async ({ page }) => {
     test.slow()
     const board = await openLevel(page, 'challenge-sokoban-lift-delivery', view)
@@ -70,7 +171,10 @@ for (const view of ['2d', '3d'] as const) {
     const camera = () => view === '3d' ? surface.getAttribute('data-camera-center')
       : surface.locator('.map-well').evaluate(grid => getComputedStyle(grid).transform)
     await expect(map).toHaveAttribute('aria-pressed', 'true')
+    const cameraTools = board.getByRole('button', { name: '镜头', exact: true })
+    await cameraTools.tap()
     await board.getByRole('button', { name: '拉近', exact: true }).tap()
+    await cameraTools.tap()
     const from = await gestureOrigin(surface)
     const initialCamera = await camera()
 
@@ -78,8 +182,10 @@ for (const view of ['2d', '3d'] as const) {
     await expect.poll(camera).not.toBe(initialCamera)
     await expect(readout).toContainText('步数 0')
     if (view === '3d') {
+      await cameraTools.tap()
       const rotate = board.getByRole('button', { name: '向右旋转', exact: true })
       for (let i = 0; i < 3; i++) await rotate.tap()
+      await cameraTools.tap()
     }
     await player.tap()
     await expect(player).toHaveAttribute('aria-pressed', 'true')
@@ -109,8 +215,11 @@ for (const view of ['2d', '3d'] as const) {
     const board = await openLevel(page, 'challenge-sokoban-platform-loop', view)
     if (view === '3d') {
       await expect(board.locator('.station-viewport')).toHaveAttribute('data-ready', 'true')
+      const camera = board.getByRole('button', { name: '镜头', exact: true })
+      await camera.tap()
       const rotate = board.getByRole('button', { name: '向右旋转', exact: true })
       for (let i = 0; i < 6; i++) await rotate.tap()
+      await camera.tap()
     }
     const readout = board.getByTestId('warehouse-readout')
     await tapWarehouseCell(board, view, 2, 2)
@@ -206,13 +315,14 @@ test('short drags, cancelled and multi-finger gestures in character mode leave t
 })
 
 test('swipes can inspect another arena map without taking a turn', async ({ page }) => {
-  const board = await openLevel(page, 'challenge-freight-carousel', '2d')
-  const controls = board.getByRole('group', { name: '触控操作', exact: true })
-  await controls.getByRole('button', { name: '移动芽芽' }).tap()
-  await board.getByRole('button', { name: '退出全屏', exact: true }).tap()
-  const workspace = page.getByTestId('arena-map-workspace')
+  const workspace = await openInlineLevel(page, 'challenge-freight-carousel', '2d')
+  await workspace.getByRole('button', { name: '移动芽芽', exact: true }).tap()
+  await expect(page.getByRole('button', { name: '紧张', exact: true })).toHaveAttribute('aria-pressed', 'true')
   await workspace.getByRole('button', { name: '地图 2', exact: true }).tap()
+  await expect(workspace.getByRole('button', { name: '移动芽芽', exact: true })).toBeDisabled()
   await workspace.getByRole('button', { name: '全屏地图', exact: true }).tap()
+  const board = page.getByRole('dialog')
+  const controls = board.getByRole('group', { name: '触控操作', exact: true })
   await expect(controls.getByRole('button', { name: '操作地图' })).toHaveAttribute('aria-pressed', 'true')
   await expect(controls.getByRole('button', { name: '移动芽芽' })).toBeDisabled()
   const touch = await page.context().newCDPSession(page)
@@ -222,25 +332,37 @@ test('swipes can inspect another arena map without taking a turn', async ({ page
   await expect(board.locator('.tilemap')).toHaveAttribute('aria-label', position!)
   await expect(board.getByTestId('arena-turn')).toContainText('回合 0/')
   await touch.detach()
+  await board.getByRole('button', { name: '退出全屏', exact: true }).tap()
+  await workspace.getByRole('button', { name: '地图 1', exact: true }).tap()
+  await expect(workspace.getByRole('button', { name: '移动芽芽', exact: true })).toHaveAttribute('aria-pressed', 'true')
 })
 
 test('swipes can play a practice duel without resuming a paused match or earning a Python clear', async ({ page }) => {
+  test.slow()
   const level = 'challenge-brass-bell-lane'
-  const board = await openLevel(page, level, '2d')
-  const controls = board.getByRole('group', { name: '触控操作', exact: true })
-  const player = controls.getByRole('button', { name: '移动芽芽', exact: true })
-  await player.tap()
+  const workspace = await openInlineLevel(page, 'challenge-sokoban-lift-delivery', '2d')
+  await workspace.getByRole('button', { name: '移动芽芽', exact: true }).tap()
+  await page.reload()
+  await page.locator(`[data-challenge-level="${level}"]`).tap()
+  await expect(page.getByRole('button', { name: '从容', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  await page.getByRole('button', { name: '紧张', exact: true }).tap()
+  const player = workspace.getByRole('button', { name: '移动芽芽', exact: true })
   await expect(player).toHaveAttribute('aria-pressed', 'true')
   const touch = await page.context().newCDPSession(page)
-  const from = await gestureOrigin(board.locator('.station-flat-board:visible'))
-  const turn = board.getByTestId('arena-turn')
-  const toolbar = board.getByTestId('play-toolbar')
-  await swipe(touch, from, 70, 0)
-  await expect(board.locator('.tilemap')).toHaveAttribute('aria-label', '机器人位于 2，3')
+  const surface = workspace.locator('.station-flat-board:visible')
+  await surface.evaluate(node => node.scrollIntoView({ block: 'center', behavior: 'instant' }))
+  const toolbar = workspace.getByTestId('play-toolbar')
+  await swipe(touch, await gestureOrigin(surface), 70, 0)
+  await expect(workspace.locator('.tilemap')).toHaveAttribute('aria-label', '机器人位于 2，3')
   await toolbar.getByRole('button', { name: '暂停对局', exact: true }).tap()
   const resume = toolbar.getByRole('button', { name: '继续对局', exact: true })
   await expect(resume).toBeEnabled()
+  const turn = workspace.getByTestId('arena-turn')
   const pausedTurn = await turn.innerText()
+  await workspace.getByRole('button', { name: '全屏地图', exact: true }).tap()
+  const board = page.getByRole('dialog')
+  await expect(player).toHaveAttribute('aria-pressed', 'true')
+  const from = await gestureOrigin(surface)
   await swipe(touch, from, -70, 0)
   await expect(resume).toBeEnabled()
   await expect(turn).toHaveText(pausedTurn)
@@ -251,6 +373,10 @@ test('swipes can play a practice duel without resuming a paused match or earning
   await expect(board.locator('.tilemap')).toHaveAttribute('aria-label', '机器人位于 3，3')
   await toolbar.locator('[data-arena-action="shoot-right"]').tap()
   await expect(board.getByText(/练习结束/).first()).toBeAttached()
+  await expect(player).toBeDisabled()
+  await expect(board.getByRole('button', { name: '操作地图', exact: true })).toHaveAttribute('aria-pressed', 'true')
   expect(await page.evaluate(id => JSON.parse(localStorage.getItem('pixel-repair-lab:completed') ?? '[]').includes(id), level)).toBe(false)
+  await toolbar.getByRole('button', { name: '重新准备', exact: true }).tap()
+  await expect(player).toHaveAttribute('aria-pressed', 'true')
   await touch.detach()
 })

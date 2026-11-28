@@ -24,7 +24,11 @@ export function StationMinimap({ frame, locale, footprint, onCenter, ready = tru
 }) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const [collapsed, setCollapsed] = useState(() => {
-    try { return localStorage.getItem(preferenceKey) === 'true' } catch { return false }
+    try {
+      const saved = localStorage.getItem(preferenceKey)
+      if (saved !== null) return saved === 'true'
+    } catch { /* Use the size of the current screen when storage is unavailable. */ }
+    return window.matchMedia('(max-width: 700px) and (max-height: 650px) and (orientation: portrait)').matches
   })
   const [cursor, setCursor] = useState<Position>()
   const id = useId()

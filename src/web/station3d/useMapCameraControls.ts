@@ -7,14 +7,15 @@ const clamp = (value: number, min: number, max: number) => Math.max(min, Math.mi
 const zoomStep = 1.2
 const panKeys: Record<string, [number, number]> = { w: [0, -1], a: [-1, 0], s: [0, 1], d: [1, 0] }
 
-export function useMapCameraControls(active: boolean, keyboardEnabled: boolean, view: '2d' | '3d', canvas: RefObject<HTMLCanvasElement | null>,
+export function useMapCameraControls(fullscreen: boolean, inline: boolean, keyboardEnabled: boolean, view: '2d' | '3d', canvas: RefObject<HTMLCanvasElement | null>,
   engine: RefObject<ReturnType<typeof createStationRenderer> | null>, showOverview: () => void, columns: number, rows: number,
   onFootprint: (points: Position[]) => void) {
   const flat = useRef<HTMLDivElement>(null)
   const camera = useRef({ zoom: 1, x: 0, y: 0 })
+  const active = fullscreen || inline
 
   const measureFlat = useCallback(() => {
-    if (!active || view !== '2d') return
+    if (!fullscreen || view !== '2d') return
     const surface = flat.current
     const grid = surface?.querySelector('.tilemap')
     const first = grid?.firstElementChild?.getBoundingClientRect()
@@ -34,7 +35,7 @@ export function useMapCameraControls(active: boolean, keyboardEnabled: boolean, 
     onFootprint(left < right && top < bottom ? [
       { x: left, y: top }, { x: right, y: top }, { x: right, y: bottom }, { x: left, y: bottom },
     ] : [])
-  }, [active, view, columns, rows, onFootprint])
+  }, [fullscreen, view, columns, rows, onFootprint])
 
   const paintFlat = useCallback(() => {
     const { zoom, x, y } = camera.current
@@ -84,7 +85,7 @@ export function useMapCameraControls(active: boolean, keyboardEnabled: boolean, 
   }, [view, engine, showOverview, paintFlat])
 
   useEffect(() => {
-    if (!active || !keyboardEnabled) return
+    if (!fullscreen || !keyboardEnabled) return
     const surface: HTMLElement | null = view === '2d' ? flat.current : canvas.current
     const workspace = surface?.closest('.arena-layout') ?? null
     if (!workspace) return
@@ -101,13 +102,13 @@ export function useMapCameraControls(active: boolean, keyboardEnabled: boolean, 
     }
     window.addEventListener('keydown', keyDown)
     return () => window.removeEventListener('keydown', keyDown)
-  }, [active, keyboardEnabled, view, canvas, pan, zoom, fit])
+  }, [fullscreen, keyboardEnabled, view, canvas, pan, zoom, fit])
 
   useEffect(() => {
     if (!active) return
     const surface: HTMLElement | null = view === '2d' ? flat.current : canvas.current
     if (!surface) return
-    // A new full-map session begins with a fitted flat board.
+    // Fit the new surface when switching between the inline and fullscreen layouts.
     if (view === '2d') { camera.current = { zoom: 1, x: 0, y: 0 }; paintFlat() }
     function wheel(event: WheelEvent) {
       if (event.ctrlKey || event.metaKey || event.altKey || !event.deltaY) return
@@ -115,19 +116,14 @@ export function useMapCameraControls(active: boolean, keyboardEnabled: boolean, 
       const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? surface!.clientHeight : 1)
       zoom(Math.exp(clamp(-delta * .002, -.35, .35)))
     }
-    // The game handles fullscreen drags via pointer events. A native touch scroll
-    // can otherwise swallow the next tap on the toolbar after a swipe.
-    function touchMove(event: TouchEvent) { if (event.cancelable) event.preventDefault() }
-    surface.addEventListener('wheel', wheel, { passive: false })
-    surface.addEventListener('touchmove', touchMove, { passive: false })
-    const observer = view === '2d' ? new ResizeObserver(measureFlat) : undefined
+    if (fullscreen) surface.addEventListener('wheel', wheel, { passive: false })
+    const observer = fullscreen && view === '2d' ? new ResizeObserver(measureFlat) : undefined
     observer?.observe(surface)
     return () => {
       observer?.disconnect()
       surface.removeEventListener('wheel', wheel)
-      surface.removeEventListener('touchmove', touchMove)
     }
-  }, [active, view, canvas, zoom, paintFlat, measureFlat])
+  }, [active, fullscreen, view, canvas, zoom, paintFlat, measureFlat])
 
   useEffect(() => {
     const surface = flat.current
@@ -135,7 +131,7 @@ export function useMapCameraControls(active: boolean, keyboardEnabled: boolean, 
     let drag: { id: number; x: number; y: number; moved: boolean } | undefined
     let suppressClick = false
     function down(event: PointerEvent) {
-      if (!event.isPrimary || event.button !== 0) return
+      if (event.pointerType === 'touch' || !event.isPrimary || event.button !== 0) return
       suppressClick = false
       drag = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false }
     }
@@ -169,5 +165,5 @@ export function useMapCameraControls(active: boolean, keyboardEnabled: boolean, 
       window.removeEventListener('pointercancel', end)
     }
   }, [active, view, pan])
-  return { flat, zoom, fit, centerOn }
+  return { flat, pan, zoom, fit, centerOn }
 }

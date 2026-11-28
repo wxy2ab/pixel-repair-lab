@@ -17,6 +17,34 @@ async function enterMap(page: Page) {
   return root
 }
 
+test('the ordinary arena offers touch controls even when the browser reports a mouse', async ({ page }) => {
+  test.slow() // Reopen the catalog twice to exercise the saved input and pace.
+  await openArena(page)
+  const root = page.getByTestId('arena-map-workspace')
+  const touch = root.getByRole('group', { name: '触控操作', exact: true })
+  await expect(touch.getByRole('button', { name: '操作地图' })).toHaveAttribute('aria-pressed', 'true')
+  await touch.getByRole('button', { name: '移动芽芽' }).click()
+  await expect(page.getByRole('button', { name: '紧张', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  await expect(touch.getByRole('button', { name: '移动芽芽' })).toHaveAttribute('aria-pressed', 'true')
+  await expect(root.getByTestId('arena-turn')).toContainText('回合 0/')
+  await enterMap(page)
+  await expect(root.getByRole('button', { name: '紧张', exact: true })).toBeVisible()
+  await expect(root.getByRole('button', { name: '玩法', exact: true })).toBeHidden()
+  await root.getByRole('button', { name: '退出全屏', exact: true }).click()
+  await page.reload()
+  const nextArena = page.locator('[data-challenge-level="challenge-brass-bell-lane"]')
+  await nextArena.click()
+  await expect(touch.getByRole('button', { name: '移动芽芽' })).toHaveAttribute('aria-pressed', 'true')
+  await expect(root.getByRole('button', { name: '开始', exact: true })).toBeEnabled()
+  await expect(root.getByTestId('arena-turn')).toContainText('回合 0/')
+
+  // Reopening a saved pace takes priority over the global input preference.
+  await page.getByRole('button', { name: '从容', exact: true }).click()
+  await page.reload()
+  await nextArena.click()
+  await expect(page.getByRole('button', { name: '从容', exact: true })).toHaveAttribute('aria-pressed', 'true')
+})
+
 async function bounds(locator: Locator) {
   const box = await locator.boundingBox()
   if (!box) throw new Error('Expected a visible map element')
@@ -101,10 +129,13 @@ test('flat map fits a phone without native fullscreen, pans when zoomed, and res
   await page.keyboard.press('Home')
   await expect.poll(async () => Math.abs((await bounds(board)).width - fit.width)).toBeLessThan(2)
   await expect.poll(async () => Math.abs((await bounds(board)).x - fit.x)).toBeLessThan(2)
+  const camera = root.getByRole('button', { name: '镜头', exact: true })
+  await camera.click()
   await root.getByRole('button', { name: '拉近', exact: true }).click()
   await expect.poll(async () => (await bounds(board)).width).toBeGreaterThan(fit.width)
   await root.getByRole('button', { name: '适应全图', exact: true }).click()
   await expect.poll(async () => Math.abs((await bounds(board)).width - fit.width)).toBeLessThan(2)
+  await camera.click()
   const toolbar = root.getByTestId('play-toolbar')
   const expanded = await bounds(toolbar)
   await toolbar.getByRole('button', { name: '收起操作栏', exact: true }).click()

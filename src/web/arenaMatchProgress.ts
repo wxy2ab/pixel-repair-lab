@@ -1,4 +1,7 @@
 import type { ArenaLevel } from '../shared/advanced'
+import { challengeZoneId } from '../shared/coursePrerequisites'
+import { readBoardTouchMode } from './boardTouchPreference'
+import type { ChallengeDraft } from './challengeDraft'
 import { validateRealtimeArenaCheckpoint, type RealtimeArenaCheckpoint } from '../engine/realtimeProtocol'
 import { parseArenaReplayProgress, type ArenaReplayProgress } from './arenaReplayProgress'
 
@@ -55,6 +58,19 @@ export function readArenaMatch(level: ArenaLevel, mode: 'relaxed'): ArenaReplayP
 export function readArenaMatch(level: ArenaLevel, mode: ArenaMatchMode): ArenaMatchProgress | undefined
 export function readArenaMatch(level: ArenaLevel, mode: ArenaMatchMode) {
   return readArenaMatchRecord(level, mode)?.progress
+}
+
+export function arenaStartMode(level?: ArenaLevel, draft?: ChallengeDraft, requested?: ArenaMatchMode): ArenaMatchMode {
+  if (requested) return requested
+  if (draft?.kind === 'arena') return draft.mode
+  if (level?.unit?.id !== challengeZoneId) return 'relaxed'
+
+  // A legacy checkpoint may outlive its draft. Resume the most recent valid match.
+  const timed = readArenaMatchRecord(level, 'timed')
+  const relaxed = readArenaMatchRecord(level, 'relaxed')
+  if (timed && (!relaxed || (timed.savedAt ?? -1) > (relaxed.savedAt ?? -1))) return 'timed'
+  if (relaxed) return 'relaxed'
+  return readBoardTouchMode() === 'player' ? 'timed' : 'relaxed'
 }
 
 export function saveArenaMatch(level: ArenaLevel, mode: ArenaMatchMode, progress?: ArenaMatchProgress) {
