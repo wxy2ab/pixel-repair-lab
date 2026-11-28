@@ -44,7 +44,7 @@ test('standalone challenges open directly without changing learning roadmap prog
   await expect(cards.locator('.challenge-card-courses')).toHaveCount(challenges.length)
   const prerequisiteCount = challenges.reduce((count, challenge) => count + (challenge.prerequisites?.length ?? 0), 0)
   await expect(cards.locator('[data-prep-status="pending"]')).toHaveCount(prerequisiteCount)
-  const tiers = { starter: 0, intermediate: 1, advanced: 2 }
+  const tiers = { starter: 0, intermediate: 1, advanced: 2, expert: 3 }
   const gridChallengeIds = challenges.filter(level => level.kind === 'grid' && !level.warehouse && level.difficulty)
     .sort((left, right) => tiers[left.difficulty!] - tiers[right.difficulty!] || left.order - right.order)
     .map(level => level.id)
@@ -118,6 +118,12 @@ test('challenge filters intersect and distinguish preparation modules from indiv
   await expect(browse.getByText('没有符合筛选条件的挑战。', { exact: true })).toBeVisible()
   await browse.getByRole('button', { name: '清除筛选', exact: true }).click()
   await expect(cards).toHaveCount(challenges.length)
+
+  const warehouses = challenges.filter(level => level.kind === 'grid' && level.warehouse && level.difficulty === 'expert')
+  await type.selectOption('warehouse')
+  await difficulty.selectOption({ label: '超难' })
+  await expect.poll(filteredIds).toEqual(warehouses.map(level => level.id).sort())
+  await expect(cards.first().locator('.challenge-difficulty')).toHaveText('超难')
 })
 
 test('recommendations depend on full prerequisite completion and omit cleared challenges', async ({ page, request }) => {
@@ -138,7 +144,7 @@ test('recommendations depend on full prerequisite completion and omit cleared ch
   const ready = page.getByRole('region', { name: '适合现在挑战', exact: true })
   const recommended = ready.locator('[data-recommended-challenge]')
   async function expectTopicsToQualify(topics: string[]) {
-    const tiers = ['starter', 'intermediate', 'advanced']
+    const tiers = ['starter', 'intermediate', 'advanced', 'expert']
     const eligible = levels.filter(level => level.unit?.id === 'challenge-zone' && level.prerequisites?.length
       && level.prerequisites.every(({ unit, topic }) => topics.includes(unit + '/' + topic)))
       .sort((a, b) => tiers.indexOf(a.difficulty ?? 'intermediate') - tiers.indexOf(b.difficulty ?? 'intermediate')

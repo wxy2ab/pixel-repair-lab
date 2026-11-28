@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-sokoban-equatorial-balance-bench",
+  "order": 2468,
+  "difficulty": "intermediate",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "stage": "challenge",
+  "prerequisites": [{"unit": "foundations", "topic": "sequence"}],
+  "title": {"zh": "赤道仪配重台", "en": "Equatorial Balance Bench"},
+  "concept": {"zh": "推箱子 · 3 箱 · 最少推 20 次", "en": "Sokoban · 3 crates · 20 pushes minimum"},
+  "brief": {
+    "zh": "把三箱赤道仪配重送到标记货位。每次只能向前推一个箱子。所有货位同时放有箱子即通关。",
+    "en": "Move the three crates of mount counterweights onto the marked bays. Push one crate at a time. The delivery is complete when every bay holds a crate."
+  },
+  "hints": [],
+  "tiles": [
+    "#########",
+    "#...#...#",
+    "#..#....#",
+    "#.....#.#",
+    "#.......#",
+    "#....#..#",
+    "###.##..#",
+    "#########"
+  ],
+  "start": {"x": 6, "y": 2},
+  "warehouse": {
+    "boxes": [{"x": 5, "y": 2}, {"x": 7, "y": 2}, {"x": 6, "y": 5}],
+    "targets": [{"x": 1, "y": 2}, {"x": 7, "y": 3}, {"x": 1, "y": 5}]
+  },
+  "allowedApi": ["move", "read_map"],
+  "objectives": [{"type": "parkBoxes"}],
+  "cards": [
+    {"id": "up", "label": {"zh": "向上", "en": "Move up"}, "template": "move(\"up\")"},
+    {"id": "right", "label": {"zh": "向右", "en": "Move right"}, "template": "move(\"right\")"},
+    {"id": "down", "label": {"zh": "向下", "en": "Move down"}, "template": "move(\"down\")"},
+    {"id": "left", "label": {"zh": "向左", "en": "Move left"}, "template": "move(\"left\")"},
+    {
+      "id": "repeat", "label": {"zh": "重复几次", "en": "Repeat moves"}, "template": "for step in range({{count}}):", "block": true,
+      "parameters": [{ "name": "count", "label": {"zh": "次数", "en": "Times"}, "choices": [
+        {"id": "n2", "label": {"zh": "2", "en": "2"}, "code": "2"},
+        {"id": "n3", "label": {"zh": "3", "en": "3"}, "code": "3"},
+        {"id": "n4", "label": {"zh": "4", "en": "4"}, "code": "4"},
+        {"id": "n5", "label": {"zh": "5", "en": "5"}, "code": "5"},
+        {"id": "n6", "label": {"zh": "6", "en": "6"}, "code": "6"},
+        {"id": "n7", "label": {"zh": "7", "en": "7"}, "code": "7"},
+        {"id": "n8", "label": {"zh": "8", "en": "8"}, "code": "8"}
+      ] }]
+    }
+  ],
+  "solutionCards": [
+    {"cardId": "up"},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "left"}, {"cardId": "down"}]},
+    {"cardId": "down"}, {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "right"}]},
+    {"cardId": "down"}, {"cardId": "down"}, {"cardId": "left"}, {"cardId": "up"}, {"cardId": "right"},
+    {"cardId": "up"}, {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "left"}]},
+    {"cardId": "up"},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "up"}, {"cardId": "right"}]},
+    {"cardId": "right"}, {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "down"}]},
+    {"cardId": "repeat", "values": {"count": "n5"}, "children": [{"cardId": "left"}]}, {"cardId": "up"},
+    {"cardId": "left"}, {"cardId": "down"}, {"cardId": "up"},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "right"}]}, {"cardId": "up"},
+    {"cardId": "right"}, {"cardId": "down"}, {"cardId": "up"}, {"cardId": "right"}, {"cardId": "right"},
+    {"cardId": "down"}, {"cardId": "down"}, {"cardId": "left"}, {"cardId": "down"}, {"cardId": "down"},
+    {"cardId": "right"},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "up"}, {"cardId": "left"}]},
+    {"cardId": "right"}, {"cardId": "down"}, {"cardId": "right"},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "up"}, {"cardId": "left"}, {"cardId": "left"}]},
+    {"cardId": "down"}, {"cardId": "down"},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "right"}, {"cardId": "up"}]},
+    {"cardId": "repeat", "values": {"count": "n3"}, "children": [{"cardId": "left"}]}, {"cardId": "down"},
+    {"cardId": "left"}, {"cardId": "up"}
+  ]
+}

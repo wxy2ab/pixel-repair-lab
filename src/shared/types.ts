@@ -99,7 +99,7 @@ export type Scenario = {
 }
 
 export type CoursePrerequisite = { unit: string; topic?: string }
-export type ChallengeDifficulty = 'starter' | 'intermediate' | 'advanced'
+export type ChallengeDifficulty = 'starter' | 'intermediate' | 'advanced' | 'expert'
 
 export type LevelMetadata = {
   unit?: Unit

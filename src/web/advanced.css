@@ -21,6 +21,7 @@
 .mission-stage[data-difficulty='starter'] { --chip: #8cecc9; }
 .mission-stage[data-difficulty='intermediate'] { --chip: #a9c3ff; }
 .mission-stage[data-difficulty='advanced'] { --chip: #ffc98a; }
+.mission-stage[data-difficulty='expert'] { --chip: #ecc4ff; }
 .mission-list button[data-done]:not(.active) .mission-name { color: #b4c3d8; }
 .mission-list .active .mission-stage { border-color: color-mix(in srgb, var(--chip) 62%, #26364d); }
 .course-topic-heading--count { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }

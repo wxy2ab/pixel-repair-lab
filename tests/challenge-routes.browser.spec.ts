@@ -7,7 +7,7 @@ const skipsKey = 'pixel-repair-lab:challenge-route-skips'
 const firstGridId = 'limited-battery-salvage'
 const secondGridId = 'challenge-two-lane-dispatch'
 const thirdGridId = 'challenge-six-step-detour'
-const tiers = { starter: 0, intermediate: 1, advanced: 2 }
+const tiers = { starter: 0, intermediate: 1, advanced: 2, expert: 3 }
 const routeKinds = [
   ['grid', 'grid'], ['warehouse', 'grid'], ['arena', 'arena'], ['algorithm', 'algorithm'],
   ['systems', 'machine'], ['data', 'data'], ['vision', 'vision'], ['ai', 'ai'],

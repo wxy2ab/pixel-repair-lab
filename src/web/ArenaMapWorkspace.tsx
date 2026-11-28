@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useEffectEvent, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { flushSync } from 'react-dom'
-import type { Locale } from '../shared/types'
+import type { Direction, Locale } from '../shared/types'
 import { ArenaConsoleToggle, type ArenaConsoleControl } from './ArenaConsole'
-import { advancingMapStages, arenaControlKey, ArenaKeyboardModeContext, ArenaMapControlsContext, ArenaMapModeContext, focusArenaBoard, mapStageSelector, type ArenaKeyboardMode } from './ArenaMapMode'
+import { advancingMapStages, arenaControlKey, ArenaKeyboardModeContext, ArenaMapControlsContext, ArenaMapModeContext, ArenaTouchMoveContext, focusArenaBoard, mapStageSelector, type ArenaKeyboardMode } from './ArenaMapMode'
 import { Icon } from './icons'
 import { tr } from './text'
 import './arena-map-workspace.css'
@@ -17,6 +17,12 @@ type Props = {
     choose: (mode: ArenaKeyboardMode) => void
     viewOnly: boolean
     playerTitle: string
+  }
+  touchControl?: {
+    move: (direction: Direction) => void
+    viewOnly?: boolean
+    activePlayer?: boolean
+    onChoosePlayer?: () => void
   }
   shortcutHelp?: ReactNode
   dockedConsole?: boolean
@@ -46,10 +52,16 @@ function anchorConsole(controls: HTMLDivElement | null) {
   return () => observer.disconnect()
 }
 
-export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, keyboardControl, shortcutHelp, dockedConsole, hasConsole = true, className = '', children }: Props) {
+export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, keyboardControl, touchControl, shortcutHelp, dockedConsole, hasConsole = true, className = '', children }: Props) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const { mapMode, open, setMapConsoleOpen } = consoleControl
   const [drawer, setDrawer] = useState<'report' | 'keys'>()
+  const [swipeToMove, setSwipeToMove] = useState(false)
+  const canMoveByTouch = mapMode && !!touchControl && !touchControl.viewOnly && touchControl.activePlayer !== false
+  const touchMove = canMoveByTouch && swipeToMove ? touchControl.move : null
+  useEffect(() => {
+    if (!canMoveByTouch) setSwipeToMove(false)
+  }, [canMoveByTouch])
   const host = useRef<HTMLDivElement>(null)
   const bar = useRef<HTMLDivElement>(null)
   const toggle = useRef<HTMLButtonElement>(null)
@@ -228,6 +240,14 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
     <button type="button" disabled={keyboardControl.viewOnly} aria-pressed={keyboardControl.mode === 'player'}
       onClick={() => chooseKeyboard('player')} title={keyboardControl.playerTitle}>{t('控制芽芽', 'Control Sprout')}</button>
   </div>
+  const touchSwitch = mapMode && touchControl && <div className="segmented arena-touch-switch" role="group"
+    aria-label={t('触控操作', 'Touch controls')} data-touchscreen={navigator.maxTouchPoints > 0 || undefined}>
+    <span aria-hidden="true">{t('触控', 'Touch')}</span>
+    <button type="button" aria-pressed={!touchMove} onClick={() => setSwipeToMove(false)}>{t('操作地图', 'Map gestures')}</button>
+    <button type="button" aria-pressed={!!touchMove} disabled={touchControl.viewOnly}
+      title={t('在棋盘上滑动，让芽芽走一格', 'Swipe the board to move Sprout one square')}
+      onClick={() => { touchControl.onChoosePlayer?.(); setSwipeToMove(true) }}>{t('移动芽芽', 'Move Sprout')}</button>
+  </div>
   const inlineControls = !mapMode && <div className="arena-map-controls" ref={dockedConsole || !hasConsole ? undefined : anchorConsole}
     role="group" aria-label={t('地图显示', 'Map display')}>
     {keyboardSwitch}
@@ -240,11 +260,14 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
       data-testid="arena-map-workspace" data-console={hasConsole && open ? 'open' : 'closed'} data-map-fullscreen={mapMode || undefined}
       data-map-drawer={mapMode ? drawer : undefined} role={mapMode ? 'dialog' : undefined}
       aria-modal={mapMode || undefined} aria-label={mapMode ? title : undefined} tabIndex={-1}>
-      <ArenaMapControlsContext.Provider value={inlineControls}>{children}</ArenaMapControlsContext.Provider>
+      <ArenaTouchMoveContext.Provider value={touchMove}>
+        <ArenaMapControlsContext.Provider value={inlineControls}>{children}</ArenaMapControlsContext.Provider>
+      </ArenaTouchMoveContext.Provider>
       {mapMode && <div ref={bar} className="arena-map-bar">
         <strong className="arena-map-title">{title}</strong>
         {modeControl}
         {keyboardSwitch}
+        {touchSwitch}
         <button type="button" className="subtle-button" data-testid="arena-map-report-toggle"
           aria-expanded={drawer === 'report'} onClick={() => showDrawer('report')}>
           <Icon name="record" />{t('战况', 'Status')}
@@ -253,7 +276,7 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
           aria-expanded={drawer === 'keys'} onClick={() => showDrawer('keys')}>{t('键盘操作', 'Keyboard')}</button>}
         {fullscreenButton}
       </div>}
-      {mapMode && drawer === 'keys' && <div id={keysId} className="arena-map-keys">{shortcutHelp}</div>}
+      {mapMode && drawer === 'keys' && <div id={keysId} className="arena-map-keys">{keyboardSwitch}{shortcutHelp}</div>}
     </div>
   </ArenaMapModeContext.Provider></ArenaKeyboardModeContext.Provider>
 }

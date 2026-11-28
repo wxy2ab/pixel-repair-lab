@@ -129,6 +129,7 @@
 }
 .challenge-difficulty[data-difficulty='starter'] { background: #274338; color: #b5f1d0; }
 .challenge-difficulty[data-difficulty='advanced'] { background: #563630; color: #ffd2b9; }
+.challenge-difficulty[data-difficulty='expert'] { background: #493154; color: #f0d0ff; }
 
 .challenge-cards {
   display: grid;

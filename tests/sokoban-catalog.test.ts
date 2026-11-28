@@ -38,7 +38,7 @@ function layoutKey(level: WarehouseLevel): string {
   return keys.sort()[0]
 }
 
-test('the warehouse route progresses from starter to advanced with distinct layouts and working mouse cards', async () => {
+test('the warehouse route progresses from starter to expert with distinct layouts and working mouse cards', async () => {
   const { entries } = await scanLevels()
   const catalog = entries.map(entry => entry.level)
   const pack = catalog.filter((level): level is WarehouseLevel => level.kind === 'grid' && !!level.warehouse && level.id.startsWith('challenge-sokoban-'))
@@ -47,8 +47,9 @@ test('the warehouse route progresses from starter to advanced with distinct layo
   assert.ok(route)
   const publishedOrders: number[] = []
   for (const [first, count, difficulty] of [[2161, 6, 'starter'], [2301, 24, 'starter'],
-    [2167, 6, 'intermediate'], [2325, 48, 'intermediate'],
-    [1981, 30, 'advanced'], [2101, 60, 'advanced'], [2373, 36, 'advanced']] as const) {
+    [2167, 6, 'intermediate'], [2325, 48, 'intermediate'], [2409, 62, 'intermediate'],
+    [1981, 30, 'advanced'], [2101, 60, 'advanced'], [2373, 36, 'advanced'], [2471, 130, 'advanced'],
+    [2601, 100, 'expert']] as const) {
     const expected = Array.from({ length: count }, (_, i) => first + i)
     const freeChoice = filterChallenges(challengeCatalog.entries, { type: 'warehouse', difficulty })
     assert.deepEqual(freeChoice.map(entry => entry.level.order).filter(order => order >= first && order < first + count), expected)
@@ -71,6 +72,7 @@ test('the warehouse route progresses from starter to advanced with distinct layo
     const { boxes, targets } = level.warehouse
     assert.ok(warehouseParked(boxes, targets) < targets.length, level.id)
     if (level.difficulty === 'advanced') assert.ok(boxes.length >= 3, level.id)
+    if (level.order >= 2601 && level.order <= 2700) assert.ok(boxes.length >= 4, level.id)
     if (level.order >= 2167 && level.order <= 2172) assert.ok(boxes.length >= 2, level.id)
     const result = runProgram(level, cardsToPython(level.cards, level.solutionCards))
     assert.equal(result.won, true, level.id + ' ' + JSON.stringify(result.issue))
@@ -85,4 +87,9 @@ test('the warehouse route progresses from starter to advanced with distinct layo
   assert.equal(openingPushes[0], 1)
   assert.deepEqual(openingPushes, [...openingPushes].sort((a, b) => a - b))
   assert.ok(openingPushes[11] < pushesByOrder.get(1981)!)
+  for (const [first, last, minimum] of [[2409, 2470, 16], [2471, 2600, 32], [2601, 2700, 58]]) {
+    const pushes = Array.from({ length: last - first + 1 }, (_, i) => pushesByOrder.get(first + i)!)
+    assert.ok(pushes[0] >= minimum)
+    assert.deepEqual(pushes, [...pushes].sort((a, b) => a - b))
+  }
 })
