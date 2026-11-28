@@ -5,13 +5,13 @@ import { tr } from './text'
 
 export type MissionRailMode = 'pinned' | 'compact' | 'hidden'
 
-const phoneWidth = '(max-width: 670px)'
+const drawerWidth = '(max-width: 1024px)'
 function watchWidth(update: () => void) {
-  const query = window.matchMedia(phoneWidth)
+  const query = window.matchMedia(drawerWidth)
   query.addEventListener('change', update)
   return () => query.removeEventListener('change', update)
 }
-const isPhone = () => window.matchMedia(phoneWidth).matches
+const needsDrawer = () => window.matchMedia(drawerWidth).matches
 
 type RailProps = {
   locale: Locale
@@ -27,7 +27,7 @@ type RailProps = {
 }
 
 export function MissionRail({ locale, mode, onModeChange, levelId, isChallenge, classroom, onHome, onPrevious, onNext, children }: RailProps) {
-  const phone = useSyncExternalStore(watchWidth, isPhone)
+  const drawerLayout = useSyncExternalStore(watchWidth, needsDrawer)
   const [open, setOpen] = useState(false)
   const dialogId = useId()
   const dialog = useRef<HTMLDialogElement>(null)
@@ -38,11 +38,11 @@ export function MissionRail({ locale, mode, onModeChange, levelId, isChallenge, 
   const backdropDown = useRef(false)
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const title = t('任务列表', 'Mission list')
-  const pinned = !phone && mode === 'pinned'
-  const compact = !phone && mode === 'compact'
+  const pinned = !drawerLayout && mode === 'pinned'
+  const compact = !drawerLayout && mode === 'compact'
 
   // A new lesson or a different screen layout starts with its own navigation state.
-  useLayoutEffect(() => { setOpen(false) }, [levelId, phone])
+  useLayoutEffect(() => { setOpen(false) }, [levelId, drawerLayout])
 
   useLayoutEffect(() => {
     const element = dialog.current
@@ -55,7 +55,7 @@ export function MissionRail({ locale, mode, onModeChange, levelId, isChallenge, 
       entryButton.current?.focus({ preventScroll: true })
       restoreFocus.current = false
     }
-  }, [open, mode, phone])
+  }, [open, mode, drawerLayout])
 
   // Center the current item in the scrollable list without scrolling the classroom or its toolbar.
   useLayoutEffect(() => {
@@ -67,7 +67,7 @@ export function MissionRail({ locale, mode, onModeChange, levelId, isChallenge, 
     if (item.top < frame.top + 8 || item.bottom > frame.bottom - 8) {
       list.scrollTop += item.top - frame.top - (frame.height - item.height) / 2
     }
-  }, [levelId, mode, open, phone, locale])
+  }, [levelId, mode, open, drawerLayout, locale])
 
   function dismiss() {
     restoreFocus.current = true
@@ -78,10 +78,10 @@ export function MissionRail({ locale, mode, onModeChange, levelId, isChallenge, 
     onModeChange(next)
   }
 
-  const openerName = phone ? title : t('展开任务列表栏', 'Show the mission list panel')
+  const openerName = drawerLayout ? title : t('展开任务列表栏', 'Show the mission list panel')
   const opener = <button type="button" ref={entryButton} className="mission-rail__open" aria-label={openerName}
     title={openerName} aria-haspopup="dialog" aria-controls={dialogId} aria-expanded={open} onClick={() => setOpen(true)}>
-    <Icon name="expand" size={20} /><span className="mission-rail__label">{phone ? title : t('目录', 'List')}</span>
+    <Icon name="expand" size={20} /><span className="mission-rail__label">{drawerLayout ? title : t('目录', 'List')}</span>
   </button>
 
   function shortcut(icon: IconName, text: string, label: string, action?: () => void) {
@@ -97,12 +97,12 @@ export function MissionRail({ locale, mode, onModeChange, levelId, isChallenge, 
     <div className="mission-rail__toolbar">
       <strong className="mission-rail__title">{t('导航', 'Navigation')}</strong>
       <div className="mission-rail__actions">
-        {open && !phone && <button type="button" className="mission-rail__action" title={pin} aria-label={pin}
+        {open && !drawerLayout && <button type="button" className="mission-rail__action" title={pin} aria-label={pin}
           onClick={() => chooseMode('pinned')}><Icon name="pin" /><span>{t('固定', 'Pin')}</span></button>}
-        {!phone && mode !== 'compact' && <button type="button" className="mission-rail__action" title={minimal} aria-label={minimal}
+        {!drawerLayout && mode !== 'compact' && <button type="button" className="mission-rail__action" title={minimal} aria-label={minimal}
           ref={!open && pinned ? entryButton : undefined} onClick={() => chooseMode('compact')}>
           <Icon name="compact" /><span>{t('精简', 'Compact')}</span></button>}
-        {!phone && mode !== 'hidden' && <button type="button" className="mission-rail__action" title={hide} aria-label={hide}
+        {!drawerLayout && mode !== 'hidden' && <button type="button" className="mission-rail__action" title={hide} aria-label={hide}
           onClick={() => chooseMode('hidden')}><Icon name="collapse" /><span>{t('隐藏', 'Hide')}</span></button>}
         {open && <button type="button" className="mission-rail__action" ref={closeButton} title={close} aria-label={close}
           onClick={dismiss}><Icon name="close" /><span>{t('关闭', 'Close')}</span></button>}

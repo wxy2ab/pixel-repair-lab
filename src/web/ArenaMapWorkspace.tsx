@@ -1,9 +1,8 @@
-import { useCallback, useContext, useEffect, useEffectEvent, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useEffectEvent, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { flushSync } from 'react-dom'
 import type { Locale } from '../shared/types'
 import { ArenaConsoleToggle, type ArenaConsoleControl } from './ArenaConsole'
 import { advancingMapStages, arenaControlKey, ArenaKeyboardModeContext, ArenaMapControlsContext, ArenaMapModeContext, focusArenaBoard, mapStageSelector, type ArenaKeyboardMode } from './ArenaMapMode'
-import { FullscreenVictoryActions, FullscreenVictoryContext, MapVictoryReporter } from './FullscreenVictory'
 import { Icon } from './icons'
 import { tr } from './text'
 import './arena-map-workspace.css'
@@ -50,8 +49,6 @@ function anchorConsole(controls: HTMLDivElement | null) {
 export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, keyboardControl, shortcutHelp, dockedConsole, hasConsole = true, className = '', children }: Props) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const { mapMode, open, setMapConsoleOpen } = consoleControl
-  const navigation = useContext(FullscreenVictoryContext)
-  const [mapWon, setMapWon] = useState(false)
   const [drawer, setDrawer] = useState<'report' | 'keys'>()
   const host = useRef<HTMLDivElement>(null)
   const bar = useRef<HTMLDivElement>(null)
@@ -243,12 +240,9 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
       data-testid="arena-map-workspace" data-console={hasConsole && open ? 'open' : 'closed'} data-map-fullscreen={mapMode || undefined}
       data-map-drawer={mapMode ? drawer : undefined} role={mapMode ? 'dialog' : undefined}
       aria-modal={mapMode || undefined} aria-label={mapMode ? title : undefined} tabIndex={-1}>
-      <MapVictoryReporter.Provider value={navigation?.requireMapWin ? setMapWon : null}>
-        <ArenaMapControlsContext.Provider value={inlineControls}>{children}</ArenaMapControlsContext.Provider>
-      </MapVictoryReporter.Provider>
+      <ArenaMapControlsContext.Provider value={inlineControls}>{children}</ArenaMapControlsContext.Provider>
       {mapMode && <div ref={bar} className="arena-map-bar">
         <strong className="arena-map-title">{title}</strong>
-        <FullscreenVictoryActions locale={locale} mapWon={mapWon} />
         {modeControl}
         {keyboardSwitch}
         <button type="button" className="subtle-button" data-testid="arena-map-report-toggle"

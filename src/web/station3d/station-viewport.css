@@ -115,3 +115,7 @@
     translate(var(--map-shift-x, 0%), var(--map-shift-y, 0%));
   transform-origin: center;
 }
+@media (any-pointer: coarse) {
+  .station-tools :is(.station-view-switch, .station-camera) button { min-width: 44px; min-height: 44px; }
+  .station-viewport:not([data-map-navigation]) canvas { touch-action: pan-y pinch-zoom; }
+}

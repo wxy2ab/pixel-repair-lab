@@ -40,7 +40,7 @@ async function expectMapControls(page: Page) {
   return toggle
 }
 
-test('starting a phone duel from the editor uncovers the shot and keeps the editor preference', async ({ page }) => {
+test('a phone duel places its editor below the board and brings the shot into view when run', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.addInitScript(() => localStorage.setItem('pixel-repair-lab:board-view', '2d'))
   await page.goto('/#challenge-browse')
@@ -55,15 +55,19 @@ test('starting a phone duel from the editor uncovers the shot and keeps the edit
     const top = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2)
     return !top || Boolean(top.closest('.arena-console'))
   })
-  expect(await covered()).toBe(true)
+  const consoleBox = await bounds(page.locator('.arena-console'))
+  const field = await bounds(page.locator('.station-flat-board .tilemap'))
+  expect(consoleBox.y).toBeGreaterThanOrEqual(field.y + field.height)
   // The floating Run toolbar and editor shortcut also work when the page is scrolled away from the map.
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
   await expect(shooter).not.toBeInViewport()
   await page.keyboard.press('Control+Enter')
   await expect(page.getByTestId('arena-turn')).toHaveText('回合 1/12')
-  await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true')
   expect(await covered()).toBe(false)
   expect(await page.evaluate(() => localStorage.getItem('pixel-repair-lab:arena-console'))).toBeNull()
+  await toggle.click()
+  await expect(editor).toBeHidden()
   await toggle.click()
   await expect(editor).toBeVisible()
   await expect(editor).toHaveValue(source)

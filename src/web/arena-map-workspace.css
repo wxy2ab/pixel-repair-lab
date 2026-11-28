@@ -114,10 +114,6 @@
   padding: 4px;
 }
 @media (max-width: 750px) {
-  .arena-map-floating:not([data-map-fullscreen]) > .arena-console {
-    width: min(24rem, calc(100% - 2 * var(--console-inset)));
-    max-height: min(42dvh, max(8.5rem, calc(var(--arena-map-surface-height, 55dvh) * .62)));
-  }
   .station-tools .arena-map-controls > button {
     min-height: 38px;
     gap: 4px;
@@ -320,7 +316,7 @@ html:has(.arena-map-workspace[data-map-fullscreen]) { overflow: hidden; scrollba
 .arena-map-workspace[data-map-fullscreen] > .arena-map-outcome {
   position: absolute;
   z-index: 2;
-  top: 24%;
+  top: var(--map-panel-top);
   left: 50%;
   max-width: calc(100% - 30px);
   width: max-content;
@@ -333,17 +329,23 @@ html:has(.arena-map-workspace[data-map-fullscreen]) { overflow: hidden; scrollba
   color: #f0fff8;
   pointer-events: none;
 }
-.arena-map-workspace .arena-map-outcome[data-victory] {
-  display: flex; align-items: center; gap: .6em; border: 2px solid #7de6b1;
-  background: #173c35; box-shadow: 0 5px 22px #0a191a77; font-weight: 750;
+.arena-map-outcome p { margin: 0; }
+.arena-map-workspace[data-map-fullscreen] > .arena-map-outcome[data-victory] {
+  z-index: 4;
+  display: grid;
+  gap: .6rem;
+  max-height: calc(100% - var(--map-panel-top) - var(--map-toolbar-space));
+  overflow: auto;
+  pointer-events: auto;
+  border: 2px solid #7de6b1;
+  background: #173c35;
+  box-shadow: 0 5px 22px #0a191a77;
+  font-weight: 750;
 }
-.arena-map-outcome[data-victory] > span {
+.arena-map-outcome[data-victory] p { display: flex; align-items: center; gap: .6em; }
+.arena-map-outcome[data-victory] p > span {
   display: inline-grid; flex: none; place-items: center; width: 1.55em; aspect-ratio: 1;
   background: #89e9b9; color: #143329; border-radius: 50%;
-}
-@media (prefers-reduced-motion: no-preference) {
-  .arena-map-outcome[data-victory] > span { animation: map-victory-check .4s ease-out; }
-  @keyframes map-victory-check { from { transform: scale(.65); } 65% { transform: scale(1.14); } }
 }
 @media (max-width: 600px) {
   .arena-map-workspace[data-map-fullscreen] .arena-map-bar { gap: 3px 5px; padding-inline: 7px; }
@@ -358,4 +360,20 @@ html:has(.arena-map-workspace[data-map-fullscreen]) { overflow: hidden; scrollba
     max-height: min(35dvh, calc(100% - var(--map-panel-top) - var(--map-toolbar-space)));
   }
   .arena-map-workspace[data-map-fullscreen] .station-caption:not(:has(.station-inspection)) { display: none; }
+}
+@media (max-width: 750px), (any-pointer: coarse) and (max-width: 1024px) {
+  /* Keep the board visible while a touch keyboard edits the program below it. */
+  .arena-map-floating:not([data-map-fullscreen]) > .arena-console {
+    position: static;
+    width: 100%;
+    max-height: none;
+    overflow: visible;
+  }
+  .arena-map-floating:not([data-map-fullscreen])[data-console="open"] [data-view="2d"] > .station-flat-board::after { content: none; }
+  .arena-console-heading { position: static; }
+}
+@media (any-pointer: coarse) {
+  .station-tools .arena-map-controls button, .station-tools .arena-attack-speed select,
+  .arena-map-workspace .arena-map-bar button, .arena-map-workspace .arena-console-dismiss { min-height: 44px; }
+  .arena-map-workspace .arena-map-size-toggle { min-width: 44px; }
 }

@@ -1,0 +1,18 @@
+button.victory-action {
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 44px;
+  gap: .5rem;
+  justify-content: flex-start;
+  pointer-events: auto;
+}
+.victory-action small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-inline-start: 1px solid currentColor;
+  padding-inline-start: .5rem;
+  font-weight: 500;
+}
+.victory-action svg { flex: none; margin-inline-start: auto; }

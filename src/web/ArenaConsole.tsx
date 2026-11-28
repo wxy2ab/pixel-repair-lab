@@ -52,7 +52,11 @@ export function ArenaConsoleToggle({ control, locale }: { control: ArenaConsoleC
   function toggle() {
     control.toggle()
     if (!control.open && !control.mapMode) {
-      requestAnimationFrame(() => document.getElementById(control.id)?.focus({ preventScroll: true }))
+      requestAnimationFrame(() => {
+        const panel = document.getElementById(control.id)
+        panel?.focus({ preventScroll: true })
+        if (panel?.closest('.arena-map-floating') && getComputedStyle(panel).position === 'static') panel.scrollIntoView({ block: 'nearest' })
+      })
     }
   }
   return <button type="button" id={control.id + '-toggle'} className="subtle-button arena-console-toggle" aria-controls={control.id}

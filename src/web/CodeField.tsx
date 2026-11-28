@@ -43,7 +43,8 @@ export function CodeField({ value, onChange, locale, inputRef, onRun, python = t
 
   function apply(edit: CodeEdit) {
     const input = area.current
-    if (!input) return
+    if (!input || field.disabled || field.readOnly || edit.value === value
+      || (input.maxLength >= 0 && edit.value.length > input.maxLength && edit.value.length > value.length)) return
     // Going through the browser's own editing command keeps native undo history intact.
     const from = commonPrefix(value, edit.value)
     const tail = commonSuffix(value, edit.value, from)
@@ -57,6 +58,14 @@ export function CodeField({ value, onChange, locale, inputRef, onRun, python = t
     }
     pendingSelection.current = [edit.selectionStart, edit.selectionEnd]
     onChange(edit.value)
+  }
+
+  function shiftIndent(outdent: boolean) {
+    const input = area.current
+    if (!input) return
+    const { selectionStart, selectionEnd } = input
+    input.focus({ preventScroll: true })
+    apply((outdent ? outdentSelection : indentSelection)(value, selectionStart, selectionEnd))
   }
 
   function trackLine() {
@@ -87,7 +96,7 @@ export function CodeField({ value, onChange, locale, inputRef, onRun, python = t
         return
       }
       event.preventDefault()
-      apply(event.shiftKey ? outdentSelection(value, start, end) : indentSelection(value, start, end))
+      shiftIndent(event.shiftKey)
       return
     }
     releaseTab.current = false
@@ -110,6 +119,12 @@ export function CodeField({ value, onChange, locale, inputRef, onRun, python = t
   const leaving = tr(locale, '按 Esc 再按 Tab，可以离开编辑区。', 'Press Esc, then Tab, to leave the editor.')
 
   return <div className="code-field" data-disabled={field.disabled || undefined}>
+    {!field.readOnly && <div className="code-field__touch-tools" role="group" aria-label={tr(locale, '代码缩进', 'Code indentation')}>
+      <button type="button" className="subtle-button" disabled={field.disabled}
+        onPointerDown={event => event.preventDefault()} onClick={() => shiftIndent(false)}>{tr(locale, '增加缩进', 'Indent')}</button>
+      <button type="button" className="subtle-button" disabled={field.disabled}
+        onPointerDown={event => event.preventDefault()} onClick={() => shiftIndent(true)}>{tr(locale, '减少缩进', 'Outdent')}</button>
+    </div>}
     <div className="code-field__frame">
       <div className="code-field__gutter" aria-hidden="true">
         <div ref={numbers} className="code-field__numbers">

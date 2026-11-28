@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import type { Locale, Localized } from '../shared/types'
 import type { CompletionMilestone } from './completionMilestone'
 import { Icon } from './icons'
+import { VictoryAction, type VictoryDestination } from './VictoryAction'
 import { tr } from './text'
 import './completion-feedback.css'
 
@@ -15,9 +16,10 @@ const headings: Record<CompletionMilestone['scope'], Localized> = {
   series: { zh: '系列挑战全部通关', en: 'Challenge series cleared' },
 }
 
-export function CompletionFeedback({ event, locale, onDismiss }: {
+export function CompletionFeedback({ event, locale, destination, onDismiss }: {
   event?: CompletionMilestone
   locale: Locale
+  destination?: VictoryDestination
   onDismiss: () => void
 }) {
   const [fullscreen, setFullscreen] = useState(() => document.fullscreenElement)
@@ -36,12 +38,12 @@ export function CompletionFeedback({ event, locale, onDismiss }: {
   ].filter(Boolean).join(' · ') : ''
   return createPortal(<>
     <span aria-live="polite" aria-atomic="true" className="sr-only">{announcement}</span>
-    {event && <CompletionCard key={event.levelId} event={event} locale={locale} progressLabel={progressLabel} onDismiss={onDismiss} />}
+    {event && <CompletionCard key={event.levelId} event={event} locale={locale} progressLabel={progressLabel} destination={destination} onDismiss={onDismiss} />}
   </>, fullscreen ?? document.body)
 }
 
-function CompletionCard({ event, locale, progressLabel, onDismiss }: {
-  event: CompletionMilestone; locale: Locale; progressLabel?: string; onDismiss: () => void
+function CompletionCard({ event, locale, progressLabel, destination, onDismiss }: {
+  event: CompletionMilestone; locale: Locale; progressLabel?: string; destination?: VictoryDestination; onDismiss: () => void
 }) {
   const [hovered, setHovered] = useState(false)
   const [focused, setFocused] = useState(false)
@@ -54,7 +56,9 @@ function CompletionCard({ event, locale, progressLabel, onDismiss }: {
 
   const progress = event.progress
   return <aside className="completion-feedback" data-testid="completion-feedback" data-tier={event.tier} data-scope={event.scope}
-    aria-label={tr(locale, '完成反馈', 'Completion feedback')}>
+    aria-label={tr(locale, '完成反馈', 'Completion feedback')}
+    onFocus={() => setFocused(true)} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false) }}
+    onPointerEnter={() => setHovered(true)} onPointerLeave={() => setHovered(false)}>
     <div className="completion-feedback__emblem" aria-hidden="true">
       <span className="completion-feedback__sprout" />
       <span className="completion-feedback__seal">{event.tier === 'stage' ? '★' : '✓'}</span>
@@ -72,10 +76,9 @@ function CompletionCard({ event, locale, progressLabel, onDismiss }: {
       </div>}
     </div>
     <button type="button" className="completion-feedback__dismiss" onClick={onDismiss}
-      aria-label={tr(locale, '关闭完成反馈', 'Dismiss completion feedback')}
-      onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
-      onPointerEnter={() => setHovered(true)} onPointerLeave={() => setHovered(false)}>
+      aria-label={tr(locale, '关闭完成反馈', 'Dismiss completion feedback')}>
       <Icon name="close" size={15} />
     </button>
+    {destination && <VictoryAction destination={destination} />}
   </aside>
 }

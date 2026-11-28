@@ -79,7 +79,18 @@ export function ChallengeCompletion({ missionTitle, outcome, comparison, goalRes
         <h2 id="challenge-completion-title">{missionTitle}</h2>
         {outcome && <p>{outcome}</p>}
       </div>
+      {next ? <button type="button" className="primary-button" data-next-challenge={next.level.id} onClick={() => onNext(next.level.id)}>
+        {t('挑战下一关', 'Play next challenge')}
+      </button> : <button type="button" className="primary-button" onClick={onBrowse}>{t('自由选关', 'Browse challenges')}</button>}
     </header>
+    {next && <div className="challenge-completion-next">
+      <div>
+        <h3>{seriesNext === 'laserTrial' ? t('下一场激光挑战', 'Next laser challenge')
+          : seriesNext === 'ferry' ? t('下一场渡口挑战', 'Next ferry challenge') : t('下一关推荐', 'Suggested next challenge')}</h3>
+        <p><strong>{next.level.title[locale]}</strong> <span>{challengeTypeLabels[next.type][locale]} · {challengeDifficultyLabels[next.difficulty][locale]}</span></p>
+        {!seriesNext && remaining > 0 && <small>{t(`前序课程还差 ${remaining} 节`, `${remaining} prerequisite ${remaining === 1 ? 'lesson' : 'lessons'} left`)}</small>}
+      </div>
+    </div>}
     <table className="challenge-score-table">
       <thead><tr>
         <th scope="col">{t('成绩', 'Result')}</th><th scope="col">{t('本次', 'This run')}</th>
@@ -98,21 +109,10 @@ export function ChallengeCompletion({ missionTitle, outcome, comparison, goalRes
       : t('已记录这组挑战成绩，下次通关就能比较。', 'Score recorded. Compare it the next time you win.')}</p>}
     {goalResult && <GoalResult result={goalResult} score={current} locale={locale} />}
     {replayFocusResult}
-    {next && <div className="challenge-completion-next">
-      <div>
-        <h3>{seriesNext === 'laserTrial' ? t('下一场激光挑战', 'Next laser challenge')
-          : seriesNext === 'ferry' ? t('下一场渡口挑战', 'Next ferry challenge') : t('下一关推荐', 'Suggested next challenge')}</h3>
-        <p><strong>{next.level.title[locale]}</strong> <span>{challengeTypeLabels[next.type][locale]} · {challengeDifficultyLabels[next.difficulty][locale]}</span></p>
-        {!seriesNext && remaining > 0 && <small>{t(`前序课程还差 ${remaining} 节`, `${remaining} prerequisite ${remaining === 1 ? 'lesson' : 'lessons'} left`)}</small>}
-      </div>
-      <button type="button" className="primary-button" data-next-challenge={next.level.id} onClick={() => onNext(next.level.id)}>
-        {t('挑战下一关', 'Play next challenge')}
-      </button>
-    </div>}
     <div className="challenge-completion-actions">
       <button type="button" className="subtle-button" onClick={onReplay}>{t('再玩一次', 'Play again')}</button>
       {onRoutes && <button type="button" className="subtle-button" onClick={onRoutes}>{t('返回闯关路线', 'Back to challenge routes')}</button>}
-      <button type="button" className="subtle-button" onClick={onBrowse}>{t('自由选关', 'Browse challenges')}</button>
+      {next && <button type="button" className="subtle-button" onClick={onBrowse}>{t('自由选关', 'Browse challenges')}</button>}
       <button type="button" className="subtle-button" onClick={onRecords}>{t('成绩记录', 'Challenge records')}</button>
     </div>
   </section>

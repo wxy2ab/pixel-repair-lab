@@ -9,7 +9,7 @@ import { challengeZoneId } from '../shared/coursePrerequisites'
 import { ChallengePrerequisites } from './ChallengeCatalog'
 import { ChallengeBrief } from './ChallengeBrief'
 import { ChallengeCompletion } from './ChallengeCompletion'
-import { FullscreenVictoryContext } from './FullscreenVictory'
+import { MapVictoryContext, type VictoryDestination } from './VictoryAction'
 import { ArenaFinishContext } from './useArenaTurnPresentation'
 import { CompletionFeedback } from './CompletionFeedback'
 import { completionMilestone, type CompletionMilestone } from './completionMilestone'
@@ -758,15 +758,18 @@ function App() {
   const showCompletionTag = isWon && (!guidedLesson || railMode !== 'pinned')
   const adjacent = course ? adjacentCoreLessons(courseOrder, level) : { previous: ordered[levelIndex - 1], next: ordered[levelIndex + 1] }
   const courseMap = section === 'campaign' && !inChallengeZone && !review && !studyPlan
-  const nextCourseLesson = adjacent.next
-  const victoryNavigation = currentSummary ? {
-    next: nextOnMap && { title: nextOnMap.level.title, open: () => openNextChallenge(nextOnMap.level.id) },
-    browse: () => openCatalogSection('challenge-browse'),
-  } : courseMap ? {
-    requireMapWin: true,
-    next: nextCourseLesson && { title: nextCourseLesson.title, open: () => openLevel(nextCourseLesson.id) },
-    browse: () => openCatalogSection('free-choices'),
-  } : null
+  const nextLabel = t('下一关', 'Next level')
+  const nextLesson = adjacent.next
+  const courseVictory: VictoryDestination | undefined = !courseMap ? undefined : nextLesson
+    ? { label: nextLabel, nextTitle: nextLesson.title[locale], open: () => openLevel(nextLesson.id) }
+    : { label: t('返回选课', 'Browse lessons'), open: () => openCatalogSection('free-choices') }
+  function challengeVictory(target?: Level): VictoryDestination {
+    return target ? { label: nextLabel, nextTitle: target.title[locale], open: () => openNextChallenge(target.id) }
+      : { label: t('返回选关', 'Back to challenges'), open: () => openCatalogSection('challenge-browse') }
+  }
+  const victoryNavigation = currentSummary
+    ? { inline: challengeVictory(recommended?.level), fullscreen: challengeVictory(nextOnMap?.level) }
+    : { inline: courseVictory, fullscreen: courseVictory }
   function railLink(target: Level | undefined) {
     if (!target) return
     if (!isRouteAttempt) return () => openLevel(target.id)
@@ -775,7 +778,7 @@ function App() {
 
   return <div className="app-shell">
     <CompletionFeedback event={!showingFinalTurn && section === 'campaign' && milestone?.levelId === level?.id ? milestone : undefined}
-      locale={locale} onDismiss={dismissMilestone} />
+      locale={locale} destination={victoryNavigation.inline} onDismiss={dismissMilestone} />
     <header className="topbar">
       <button type="button" className="brand" onClick={() => goTo('modules')}>
         <span className="brand-mark"><Robot /></span>
@@ -958,7 +961,7 @@ function App() {
                 ? <ChallengeStudyRoute challenge={studyChallenge} preparation={studyPlan} locale={locale} lessonComplete={isWon}
                   review={studyRoute?.mode === 'review'} onNext={openLevel} onReturn={() => openLevel(studyChallenge.id)} />
                 : null}
-            <ArenaFinishContext.Provider value={setFinishingArena}><FullscreenVictoryContext.Provider value={victoryNavigation}>
+            <ArenaFinishContext.Provider value={setFinishingArena}><MapVictoryContext.Provider value={victoryNavigation}>
               {retainedChallenge && <RetainedChallenge visible={retainedChallenge.id === level.id}>
                 <LessonView catalog={levels} key={JSON.stringify(retainedChallenge) + ':' + challengeRestart} level={retainedChallenge} locale={locale} completed={completed}
                   onComplete={markChallengeWin} onMistake={markChallengeMistake} personal={personal} onOpenLevel={openLevel}
@@ -975,7 +978,7 @@ function App() {
               {retainedChallenge?.id !== level.id &&
                 <LessonView catalog={levels} key={`${review?.visit ?? 0}:${JSON.stringify(level)}`} level={level} locale={locale} completed={completed}
                   onComplete={markWin} onMistake={markMistake} personal={personal} onSave={saveAlgorithm} onOpenLevel={openLevel} />}
-            </FullscreenVictoryContext.Provider></ArenaFinishContext.Provider>
+            </MapVictoryContext.Provider></ArenaFinishContext.Provider>
             {guidedLesson && isWon && <LessonNext level={level} ordered={courseOrder} locale={locale} onOpen={openLevel} onHome={() => goTo('modules')} />}
             {!reviewSource && level.kind === 'lecture' && level.overview && !level.execution?.intro &&
               <OverviewTopics ordered={ordered} completed={completed} locale={locale} onOpen={openLevel} />}

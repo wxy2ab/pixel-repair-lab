@@ -179,3 +179,23 @@
     top: calc(var(--map-gap) + 48px);
   }
 }
+/* Let the camera strip and minimap share a row when they fit. Localized labels
+   and larger tap targets can force either one onto a second row. */
+@media (max-width: 700px) {
+  .arena-map-workspace[data-map-fullscreen][data-console="closed"]:not([data-map-drawer]) .station-viewport {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    align-items: flex-start;
+    gap: var(--map-gap);
+    padding: var(--map-gap);
+  }
+  .arena-map-workspace[data-map-fullscreen][data-console="closed"]:not([data-map-drawer]) :is(.station-tools, .station-minimap) {
+    position: relative;
+    inset: auto;
+    max-width: 100%;
+  }
+  .arena-map-workspace[data-map-fullscreen][data-console="closed"]:not([data-map-drawer]) .station-minimap {
+    margin-inline-start: auto;
+  }
+}

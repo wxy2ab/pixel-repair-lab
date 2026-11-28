@@ -91,3 +91,8 @@ body:has(.play-toolbar) {
   .grid-step-reading code { display: block; }
   .grid-step-error { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 }
+@media (any-pointer: coarse) {
+  .play-toolbar .play-toolbar__actions > button { min-height: 44px; white-space: normal; }
+  .play-toolbar__actions > button > svg { flex: none; }
+  .play-toolbar__fold { min-height: 36px; }
+}
