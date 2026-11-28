@@ -130,7 +130,7 @@ export default function WarehouseChallenge(props: Props) {
     <div className="warehouse-challenge__header">{switches}{soundControl}</div>
     {controls === 'program' ? <GridLesson {...props} initialDraft={draft.current} onDraftChange={save} mapModeControl={soundControl} /> :
       <ArenaMapWorkspace locale={locale} title={level.title[locale]} consoleControl={consoleControl} hasConsole={false}
-        modeControl={<>{switches}{soundControl}</>} shortcutHelp={<MapShortcutGuide locale={locale} />}>
+        touchControl={{ move }} modeControl={<>{switches}{soundControl}</>} shortcutHelp={<MapShortcutGuide locale={locale} />}>
         <div className="play-column"><section className="panel board-panel">
           <Board level={level} locale={locale} snapshot={last.state} trail={trail.visible ? turns.map(turn => turn.state.player) : undefined}
             warehouseArrival={arrival} activity={issue ? { action: 'move', token: issue, failed: true } : last.direction ? { action: 'move', token: last, value: last.direction } : undefined} />

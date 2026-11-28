@@ -1,6 +1,6 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react'
 import type { AlgorithmLevel, AlgorithmResult, ArenaLevel, ArenaResult, PersonalAlgorithms } from '../shared/advanced'
-import type { Json, Locale, RunIssue } from '../shared/types'
+import type { Direction, Json, Locale, RunIssue } from '../shared/types'
 import { ARENA_TURN_MS, type RealtimeArenaCheckpoint } from '../engine/realtimeProtocol'
 import { initialArenaSnapshot } from '../engine/snapshot'
 import { mapScenarioAt } from '../shared/mapScenarios'
@@ -286,8 +286,11 @@ export function ArenaPlay({ initialDraft, onDraftChange, initialTimedCheckpoint,
   const replayProgress = useRef(initialReplayProgress)
   const timed = draft.mode === 'timed'
   const [keyboardMode, setKeyboardMode] = useState<ArenaKeyboardMode>('map')
+  const touchMove = useRef<((direction: Direction) => void) | null>(null)
+  const moveWithTouch = useCallback((direction: Direction) => touchMove.current?.(direction), [])
   const [readOnlyMap, setReadOnlyMap] = useState(false)
-  const effectiveKeyboardMode = timed && readOnlyMap ? 'map' : keyboardMode
+  const keyboardViewOnly = timed && readOnlyMap
+  const effectiveKeyboardMode = keyboardViewOnly ? 'map' : keyboardMode
 
   function updateDraft(next: typeof draft) {
     setDraft(next)
@@ -304,7 +307,7 @@ export function ArenaPlay({ initialDraft, onDraftChange, initialTimedCheckpoint,
     if (mode === 'player' && !timed) changePace('timed')
     setKeyboardMode(mode)
   }
-  const playerTitle = readOnlyMap ? t('返回对局地图后可以控制芽芽', 'Return to the match map to control Sprout')
+  const playerTitle = keyboardViewOnly ? t('返回对局地图后可以控制芽芽', 'Return to the match map to control Sprout')
     : timed ? t('用方向键或 WASD 移动芽芽', 'Move Sprout with the arrow keys or WASD')
       : t('切到紧张练习，可用方向键走出第一步', 'Switch to timed practice and use an arrow key for your first move')
   const secondsPerTurn = ARENA_TURN_MS / 1000
@@ -313,8 +316,8 @@ export function ArenaPlay({ initialDraft, onDraftChange, initialTimedCheckpoint,
     <button type="button" aria-pressed={timed} onClick={() => changePace('timed')}>{t('紧张', 'Timed')}</button>
   </div>
   const paceRule = timed
-    ? t(`每回合有 ${secondsPerTurn} 秒选动作。${level.combat ? '交火播完后开始下一次倒计时。' : ''}写好 decide(state)，点「开始」让 Python 从第 1 回合接手。键盘和按钮可用来练习。`,
-      `You have ${secondsPerTurn} seconds to choose each action. ${level.combat ? 'The next countdown starts when the volley ends. ' : ''}Write decide(state) and choose Start to let Python play from turn 1. Use keys or buttons for practice.`)
+    ? t(`每回合有 ${secondsPerTurn} 秒选动作。${level.combat ? '交火播完后开始下一次倒计时。' : ''}写好 decide(state)，点「开始」让 Python 从第 1 回合接手。手动操作可以练习。`,
+      `You have ${secondsPerTurn} seconds to choose each action. ${level.combat ? 'The next countdown starts when the volley ends. ' : ''}Write decide(state) and choose Start to let Python play from turn 1. Use manual controls for practice.`)
     : t('可以逐行写动作，也可以写 decide(state)，让它每回合返回一个动作。点「运行」或「单步执行」看结果。',
       'Write a sequence of actions or define decide(state) to return one action per turn. Choose Run or Step once to see what happens.')
 
@@ -328,20 +331,21 @@ export function ArenaPlay({ initialDraft, onDraftChange, initialTimedCheckpoint,
         <p>{paceRule}</p>
         {timed && <details>
           <summary>{t('练习用键', 'Practice controls')}</summary>
-          <MapShortcutGuide locale={locale} keyboardMode={effectiveKeyboardMode} viewOnly={readOnlyMap} combat={Boolean(level.combat)} camera={false} />
+          <MapShortcutGuide locale={locale} keyboardMode={effectiveKeyboardMode} viewOnly={keyboardViewOnly} combat={Boolean(level.combat)} camera={false} />
         </details>}
       </section>
     </CommandDesk>
     <ArenaMapWorkspace locale={locale} consoleControl={consoleControl} title={level.title[locale]}
-      keyboardControl={{ mode: effectiveKeyboardMode, choose: chooseKeyboard, viewOnly: timed && readOnlyMap, playerTitle }}
-      modeControl={paceControl} shortcutHelp={<MapShortcutGuide locale={locale} keyboardMode={effectiveKeyboardMode} viewOnly={readOnlyMap} combat={Boolean(level.combat)} />}>
+      keyboardControl={{ mode: effectiveKeyboardMode, choose: chooseKeyboard, viewOnly: keyboardViewOnly, playerTitle }}
+      touchControl={{ move: moveWithTouch, activePlayer: timed, viewOnly: readOnlyMap, onChoosePlayer: () => changePace('timed') }}
+      modeControl={paceControl} shortcutHelp={<MapShortcutGuide locale={locale} keyboardMode={effectiveKeyboardMode} viewOnly={keyboardViewOnly} combat={Boolean(level.combat)} />}>
     {timed
-      ? <RealtimeArena {...props} onReadOnlyMapChange={setReadOnlyMap} consoleControl={consoleControl} code={draft.policy} setCode={policy => updateDraft({ ...draft, policy })}
+      ? <RealtimeArena {...props} touchMove={touchMove} onReadOnlyMapChange={setReadOnlyMap} consoleControl={consoleControl} code={draft.policy} setCode={policy => updateDraft({ ...draft, policy })}
         initialCheckpoint={timedCheckpoint.current} onCheckpointChange={onTimedCheckpointChange && (checkpoint => {
           timedCheckpoint.current = checkpoint
           onTimedCheckpointChange(checkpoint)
         })} />
-      : <RelaxedArena {...props} consoleControl={consoleControl} code={draft.source} setCode={source => updateDraft({ ...draft, source })}
+      : <RelaxedArena {...props} onReadOnlyMapChange={setReadOnlyMap} consoleControl={consoleControl} code={draft.source} setCode={source => updateDraft({ ...draft, source })}
         initialReplayProgress={replayProgress.current} onReplayProgressChange={onReplayProgressChange && (progress => {
           replayProgress.current = progress
           onReplayProgressChange(progress)
@@ -350,11 +354,12 @@ export function ArenaPlay({ initialDraft, onDraftChange, initialTimedCheckpoint,
   </>
 }
 
-function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, code, setCode, challenge, consoleControl,
+function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, code, setCode, challenge, consoleControl, onReadOnlyMapChange,
   initialReplayProgress, onReplayProgressChange }: ArenaProps & {
   code: string; setCode: (code: string) => void;
   initialReplayProgress?: ArenaReplayProgress; onReplayProgressChange?: (value?: ArenaReplayProgress) => void;
   consoleControl: ArenaConsoleControl;
+  onReadOnlyMapChange: (value: boolean) => void;
 }) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const [session, setSession] = useState<{ result: ArenaResult; runMap: number; source: string; input?: ArenaReplayInput }>()
@@ -363,6 +368,12 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
   const [stepping, setStepping] = useState(false)
   const pendingStepFailure = useRef<ArenaResult | undefined>(undefined)
   const [mapIndex, setMapIndex] = useState(0)
+  const readOnlyMap = observing || mapIndex > 0
+  useLayoutEffect(() => {
+    if (!readOnlyMap) return
+    onReadOnlyMapChange(true)
+    return () => onReadOnlyMapChange(false)
+  }, [readOnlyMap, onReadOnlyMapChange])
   const viewedMap = useRef(0)
   const mapSteps = useRef(new Map<number, number>())
   const [savedProgress] = useState(() => initialReplayProgress)

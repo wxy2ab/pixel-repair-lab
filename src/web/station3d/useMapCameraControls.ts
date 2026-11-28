@@ -115,12 +115,17 @@ export function useMapCameraControls(active: boolean, keyboardEnabled: boolean, 
       const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? surface!.clientHeight : 1)
       zoom(Math.exp(clamp(-delta * .002, -.35, .35)))
     }
+    // The game handles fullscreen drags via pointer events. A native touch scroll
+    // can otherwise swallow the next tap on the toolbar after a swipe.
+    function touchMove(event: TouchEvent) { if (event.cancelable) event.preventDefault() }
     surface.addEventListener('wheel', wheel, { passive: false })
+    surface.addEventListener('touchmove', touchMove, { passive: false })
     const observer = view === '2d' ? new ResizeObserver(measureFlat) : undefined
     observer?.observe(surface)
     return () => {
       observer?.disconnect()
       surface.removeEventListener('wheel', wheel)
+      surface.removeEventListener('touchmove', touchMove)
     }
   }, [active, view, canvas, zoom, paintFlat, measureFlat])
 

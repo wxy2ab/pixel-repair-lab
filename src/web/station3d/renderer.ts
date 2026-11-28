@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
-import type { Position } from '../../shared/types'
+import type { Direction, Position } from '../../shared/types'
 import { gridOffsets } from '../../shared/gridDevices'
 import { emittingRay, rayArms } from '../gridDeviceDisplay'
 import { createStationModels } from './models'
@@ -311,6 +311,23 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     offsetX = offsetZ = 0
     cameraFit()
     redraw()
+  }
+
+  function swipeDirection(dx: number, dy: number): Direction | undefined {
+    // Project the grid axes at Sprout's feet, where the child sees the move.
+    const { x, y } = frame.playerPosition
+    const project = (column: number, row: number) => new THREE.Vector3(column, 0, row).project(camera)
+    const origin = project(x, y)
+    if (Math.abs(origin.z) > 1) return
+    const alignment = (end: THREE.Vector3) => {
+      const horizontal = (end.x - origin.x) * viewportWidth
+      const vertical = (origin.y - end.y) * viewportHeight
+      return (dx * horizontal + dy * vertical) / Math.hypot(horizontal, vertical)
+    }
+    const column = alignment(project(x + 1, y)), row = alignment(project(x, y + 1))
+    if (!Number.isFinite(column) || !Number.isFinite(row)) return
+    if (Math.abs(column) > Math.abs(row)) return column > 0 ? 'right' : 'left'
+    return row > 0 ? 'down' : 'up'
   }
 
   function pan(dx: number, dy: number) {
@@ -1309,6 +1326,7 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     update,
     inspectCell,
     activateCell,
+    swipeDirection,
     zoom(factor: number) { magnification = THREE.MathUtils.clamp(magnification * factor, 0.65, mapNavigation ? 5 : 2.5); cameraFit(); redraw() },
     pan,
     centerMapOn,
