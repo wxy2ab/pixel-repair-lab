@@ -19,6 +19,7 @@ import { runIssueText, tr } from './text'
 import { CourseHelperPicker } from './CourseHelperPicker'
 import { CommandDesk } from './Classroom'
 import { PlayToolbar, useTrailPreference } from './PlayToolbar'
+import { SaveMovesToCode } from './SaveMovesToCode'
 import { ExecutionSource } from './ExecutionSource'
 import { StationActionCue } from './StationActionCue'
 import { ActionRobot } from './ActionRobot'
@@ -32,6 +33,18 @@ import { HintSteps } from './HintSteps'
 import './realtimeArena.css'
 
 export const starterArenaPolicy = 'def decide(state):\n    return "wait"\n'
+
+function recordedPolicy(actions: ArenaChoice[]) {
+  return `def decide(state):
+    actions = [
+${actions.map(action => `        "${action}",`).join('\n')}
+    ]
+    turn = state["turn"]
+    if turn < len(actions):
+        return actions[turn]
+    return "wait"`
+}
+
 export type ArenaBoardState = 'match' | 'preview' | 'finished'
 
 type Props = {
@@ -182,7 +195,8 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
   const trail = useTrailPreference()
   const [latestShift, setLatestShift] = useState<ArenaFrame['shift']>()
   const [result, setResult] = useState<RealtimeArenaResult>()
-  const [practice, setPractice] = useState(initialCheckpoint !== undefined && initialCheckpoint.policyOnly !== true)
+  const [progress, setProgress] = useState<RealtimeArenaProgress>({ actions: [], policyOnly: true })
+  const practice = progress.policyOnly !== true
   const [clock, setClock] = useState<Clock>()
   const [queued, setQueued] = useState<ArenaChoice>()
   const [appliedPolicy, setAppliedPolicy] = useState<string>()
@@ -305,7 +319,6 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
     worker.current = runner
 
     function updateProgress(progress: RealtimeArenaProgress, nextClock = saved.current?.clock) {
-      setPractice(progress.policyOnly !== true)
       if (nextClock) {
         saved.current = { progress, clock: nextClock }
         saveCheckpoint()
@@ -324,6 +337,7 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
             const clock = { remainingMs }
             setFrame(frame)
             setPlayerPositions([level.start, ...message.restored.playerPositions])
+            setProgress(progress)
             setLatestShift(latestShift)
             setQueued(progress.queued)
             setAppliedPolicy(progress.policy)
@@ -332,7 +346,6 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
             updateProgress(progress, clock)
           } else {
             if (resumeFrom.current) clearCheckpoint()
-            setPractice(false)
             finishPreparation()
           }
           break
@@ -374,6 +387,7 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
           setActivityFrame(message.frame)
           setPolicyStep(message.policyStep)
           setPlayerPositions(positions => [...positions, message.frame.state.actors[0]])
+          setProgress(message.progress)
           if (message.frame.shift) setLatestShift(message.frame.shift)
           setClock(clock)
           setQueued(message.progress.queued)
@@ -600,6 +614,15 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
         {!preview && phase === 'playing' && <button type="button" className="primary-button" onClick={() => send({ type: 'pause' })}>
           {t('暂停对局', 'Pause match')}
         </button>}
+        {!preview && practice && progress.actions.length > 0 &&
+          <SaveMovesToCode locale={locale} draft={hasDraftPolicy ? code : undefined}
+            getCode={() => recordedPolicy(progress.actions)}
+            onSave={source => {
+              if (phase === 'playing') send({ type: 'pause' })
+              setCode(source)
+              if (!consoleControl.open) consoleControl.toggle()
+              requestAnimationFrame(() => policyEditor.current?.focus())
+            }} />}
         {preview && <button type="button" className="primary-button" onClick={() => changeMap(0)}>{t('返回对局地图', 'Return to match map')}</button>}
         {!preview && active && <button type="button" className="subtle-button" disabled={policyPending || !code.trim()} onClick={() => applyPolicy(code)}>
           {appliedPolicy ? t('替换策略', 'Replace policy') : t('应用策略', 'Apply policy')}

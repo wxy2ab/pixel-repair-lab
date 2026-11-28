@@ -46,6 +46,14 @@ test('grid draft restores both the Python tab and nested ordered cards with chos
     { kind: 'grid', mode: 'cards', cards: [], source: '' })
 })
 
+test('a warehouse draft can restore every move of a full-length manual path as Python', () => {
+  const level = { ...grid, warehouse: { boxes: [], targets: [] } }
+  const path = 'rl'.repeat(8_192)
+  const source = Array.from(path, dir => dir === 'r' ? 'move("right")' : 'move("left")').join('\n')
+  const draft = { kind: 'grid', mode: 'python', cards: [], source, warehouse: { controls: 'program', path } }
+  assert.deepEqual(parseChallengeDraft(level, JSON.stringify(draft)), draft)
+})
+
 test('obsolete or corrupted grid cards do not prevent restoring remaining cards and code', () => {
   const draft = { kind: 'grid', mode: 'cards', source: 'a = ', cards: [
     { cardId: 'removed' }, false, { cardId: 'repeat', values: { times: 'unknown', obsolete: 'x' }, children: [

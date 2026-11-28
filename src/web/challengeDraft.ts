@@ -27,6 +27,8 @@ export type ChallengeDraft = GridChallengeDraft | ArenaChallengeDraft | Algorith
 
 const maxMachineCodeLength = 12_000
 const maxPythonDraftLength = 120_000
+const maxWarehousePathLength = 16_384
+const maxWarehouseDraftLength = maxWarehousePathLength * 'move("right")\n'.length
 const maxStoredLength = 1_600_000
 const maxCards = 100
 const maxCardDepth = 5
@@ -91,11 +93,11 @@ export function parseChallengeDraft(level: Level, raw: string | null | undefined
   if (!isRecord(stored) || stored.kind !== level.kind) return
 
   if (level.kind === 'grid' && (stored.mode === 'cards' || stored.mode === 'python')) {
-    const source = readCode(stored.source)
+    const source = readCode(stored.source, level.warehouse ? maxWarehouseDraftLength : maxPythonDraftLength)
     const draft: GridChallengeDraft = { kind: 'grid', mode: stored.mode, cards: readGridCards(level, stored.cards), ...(source !== undefined && { source }) }
     const warehouse = stored.warehouse
     if (level.warehouse && isRecord(warehouse) && (warehouse.controls === 'direct' || warehouse.controls === 'program')
-      && typeof warehouse.path === 'string' && warehouse.path.length <= 16384 && /^[udlr]*$/.test(warehouse.path)) {
+      && typeof warehouse.path === 'string' && warehouse.path.length <= maxWarehousePathLength && /^[udlr]*$/.test(warehouse.path)) {
       draft.warehouse = { controls: warehouse.controls, path: warehouse.path }
     }
     const race = stored.ferryRace

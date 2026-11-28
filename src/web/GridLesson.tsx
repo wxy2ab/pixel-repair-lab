@@ -47,10 +47,11 @@ function currentRun(result: GridPlayback | undefined, index: number) {
   return result.mapRuns?.[index] ?? (index === 0 ? result : result.inspected?.index === index ? result.inspected.run : undefined)
 }
 
-export function GridLesson({ level, locale, onWin, onMistake, personal = {}, course = {}, challenge, initialDraft, onDraftChange, mapModeControl }: {
+export function GridLesson({ level, locale, onWin, onMistake, personal = {}, course = {}, challenge, initialDraft, onDraftChange, mapModeControl, revealEditor = false }: {
   level: GridLevel; locale: Locale; onWin: () => void; onMistake?: () => void; personal?: PersonalAlgorithms; course?: PersonalAlgorithms;
   challenge?: ChallengeRunHandlers;
   mapModeControl?: ReactNode
+  revealEditor?: boolean
   initialDraft?: GridChallengeDraft; onDraftChange?: (draft: GridChallengeDraft) => void;
 }) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
@@ -58,7 +59,7 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
   const crossing = Boolean(shortCrossing(level))
   const ferry = level.ferry?.kind === 'crossing'
   const laser = level.laserTrial?.kind === 'crossing'
-  const consoleControl = useArenaConsole('pixel-repair-lab:' + (ferry ? 'ferry' : laser ? 'laser' : 'grid') + '-console')
+  const consoleControl = useArenaConsole('pixel-repair-lab:' + (ferry ? 'ferry' : laser ? 'laser' : 'grid') + '-console', revealEditor)
   const [carriedProgram] = useState(() => challenge && carriedCrossingProgram(level))
   const [draft, setDraft] = useState<GridChallengeDraft>(() => initialDraft ?? carriedProgram ?? { kind: 'grid', mode: 'cards', cards: [] })
   const { mode, cards, source: typedCode } = draft
@@ -71,6 +72,9 @@ export function GridLesson({ level, locale, onWin, onMistake, personal = {}, cou
   const workerTimeout = useRef<number | undefined>(undefined)
   const creditedResult = useRef<RunResult | undefined>(undefined)
   const editor = useRef<HTMLElement>(null)
+  useEffect(() => {
+    if (revealEditor) editor.current?.querySelector('textarea')?.focus()
+  }, [revealEditor])
   const trail = useTrailPreference()
   const { source: generated, linePaths } = useMemo(() => compileCards(level.cards, cards), [level.cards, cards])
   const activeCode = mode === 'cards' ? generated : typedCode ?? ''
