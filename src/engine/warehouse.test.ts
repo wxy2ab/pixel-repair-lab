@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { GridLevel } from '../shared/types'
 import { validateLevel } from '../shared/validate'
+import { warehouseTapRoute } from '../shared/warehouse'
 import { runProgram } from './run'
 import { initialSnapshot, moveGridPlayer } from './snapshot'
 
@@ -14,6 +15,41 @@ const level: GridLevel = {
   objectives: [{ type: 'parkBoxes' }], allowedApi: ['move', 'scan', 'read_map'],
   cards: [{ id: 'right', label, template: 'move("right")' }], solutionCards: [{ cardId: 'right' }],
 }
+
+test('tapping a neighbor walks or pushes one square and uses the current box positions', () => {
+  const state = initialSnapshot(level)
+  const tap = (cell: typeof state.player) => warehouseTapRoute(level.tiles, state, cell)
+  assert.deepEqual(tap(at(1, 2)), ['down'])
+  assert.deepEqual(tap(at(2)), ['right'])
+  assert.equal(moveGridPlayer(level, state, 'right'), undefined)
+  assert.deepEqual(tap(at(1)), ['left'])
+  assert.deepEqual(tap(at(3)), ['right'])
+  assert.deepEqual(tap(at(3, 2)), [])
+  assert.deepEqual(tap(at(2)), [])
+  assert.deepEqual(tap(at(2, 0)), [])
+  assert.deepEqual(tap(at(-1)), [])
+  assert.equal(moveGridPlayer(level, state, 'left'), undefined)
+  assert.deepEqual(tap(at(3)), [])
+  assert.deepEqual(tap(at(2)), ['right'])
+})
+
+test('tapping distant floor finds a shortest walk around walls and crates, or spends no turns', () => {
+  const board = { ...level, tiles: ['#######', '#.....#', '#.#.#.#', '#.....#', '#######'],
+    warehouse: { boxes: [at(3)], targets: [at(5)] } }
+  const state = initialSnapshot(board)
+  const route = warehouseTapRoute(board.tiles, state, at(5))
+  assert.equal(route.length, 8)
+  for (const direction of route) assert.equal(moveGridPlayer(board, state, direction), undefined)
+  assert.deepEqual(state.player, at(5))
+  assert.deepEqual(state.boxes, [at(3)])
+  assert.equal(state.turn, 8)
+
+  const corridor = { ...board, tiles: ['#######', '#.....#', '#######'] }
+  const blocked = initialSnapshot(corridor)
+  assert.deepEqual(warehouseTapRoute(corridor.tiles, blocked, at(5)), [])
+  assert.deepEqual(warehouseTapRoute(corridor.tiles, blocked, at(3)), [])
+  assert.equal(blocked.turn, 0)
+})
 
 test('either box may occupy either target, and clearing a target reopens its objective', () => {
   const start = initialSnapshot(level)

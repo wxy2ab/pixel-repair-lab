@@ -1326,6 +1326,10 @@ export function createStationRenderer(canvas: HTMLCanvasElement, initial: Statio
     update,
     inspectCell,
     activateCell,
+    cellAt(x: number, y: number) {
+      const hit = hitAt(x, y)
+      return hit && 'cell' in hit ? hit.cell : undefined
+    },
     swipeDirection,
     zoom(factor: number) { magnification = THREE.MathUtils.clamp(magnification * factor, 0.65, mapNavigation ? 5 : 2.5); cameraFit(); redraw() },
     pan,

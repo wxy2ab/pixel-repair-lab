@@ -306,19 +306,17 @@
   background: repeating-linear-gradient(0deg, #111d30 0 3px, #142035 3px 4px);
 }
 .challenge-preview-map {
-  display: grid;
-  grid-template-columns: repeat(var(--challenge-columns), minmax(0, 1fr));
-  grid-template-rows: repeat(var(--challenge-rows), minmax(0, 1fr));
-  gap: 1px;
+  display: block;
+  fill: #203249;
   width: min(100%, 164px, calc(50px * var(--challenge-columns) / var(--challenge-rows)));
   aspect-ratio: var(--challenge-columns) / var(--challenge-rows);
 }
-.challenge-preview-map > span { background: #203249; border-radius: 1px; }
-.challenge-preview-map > [data-tile='wall'] { background: #536481; }
-.challenge-preview-map > [data-marker='start'] { background: #78dda9; }
-.challenge-preview-map > [data-marker='exit'] { background: #86b8ee; }
-.challenge-preview-map > [data-marker='opponent'] { background: #ed9a88; }
-.challenge-preview-map > [data-marker='item'] { background: #edc275; }
+.challenge-preview-map [data-tile='wall'] { fill: #536481; }
+.challenge-preview-map [data-tile='start'] { fill: #78dda9; }
+.challenge-preview-map [data-tile='exit'], .challenge-preview-map [data-tile='target'] { fill: #86b8ee; }
+.challenge-preview-map [data-tile='opponent'] { fill: #ed9a88; }
+.challenge-preview-map [data-tile='item'], .challenge-preview-map [data-tile='box'] { fill: #edc275; }
+.challenge-preview-map [data-tile='parked'] { fill: #e2ef9c; }
 .top-nav button.challenge-jump:not(.active) { color: var(--warm); }
 
 @media (1000px < width <= 1160px) {

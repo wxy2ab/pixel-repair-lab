@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useEffectEvent, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { flushSync } from 'react-dom'
-import type { Direction, Locale } from '../shared/types'
+import type { Locale } from '../shared/types'
 import { ArenaConsoleToggle, type ArenaConsoleControl } from './ArenaConsole'
-import { advancingMapStages, arenaControlKey, ArenaKeyboardModeContext, ArenaMapControlsContext, ArenaMapModeContext, ArenaTouchMoveContext, focusArenaBoard, mapStageSelector, type ArenaKeyboardMode } from './ArenaMapMode'
+import { advancingMapStages, arenaControlKey, ArenaKeyboardModeContext, ArenaMapControlsContext, ArenaMapModeContext, ArenaTouchMoveContext, focusArenaBoard, mapStageSelector, type ArenaKeyboardMode, type BoardTouchActions } from './ArenaMapMode'
 import { Icon } from './icons'
 import { tr } from './text'
 import './arena-map-workspace.css'
@@ -18,11 +18,11 @@ type Props = {
     viewOnly: boolean
     playerTitle: string
   }
-  touchControl?: {
-    move: (direction: Direction) => void
+  touchControl?: BoardTouchActions & {
     viewOnly?: boolean
     activePlayer?: boolean
     onChoosePlayer?: () => void
+    onDeactivate?: () => void
   }
   shortcutHelp?: ReactNode
   dockedConsole?: boolean
@@ -58,7 +58,11 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
   const [drawer, setDrawer] = useState<'report' | 'keys'>()
   const [swipeToMove, setSwipeToMove] = useState(false)
   const canMoveByTouch = mapMode && !!touchControl && !touchControl.viewOnly && touchControl.activePlayer !== false
-  const touchMove = canMoveByTouch && swipeToMove ? touchControl.move : null
+  const touchEnabled = canMoveByTouch && swipeToMove
+  const stopTouch = touchControl?.onDeactivate
+  useLayoutEffect(() => {
+    if (touchEnabled) return stopTouch
+  }, [touchEnabled, stopTouch])
   useEffect(() => {
     if (!canMoveByTouch) setSwipeToMove(false)
   }, [canMoveByTouch])
@@ -243,9 +247,10 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
   const touchSwitch = mapMode && touchControl && <div className="segmented arena-touch-switch" role="group"
     aria-label={t('触控操作', 'Touch controls')} data-touchscreen={navigator.maxTouchPoints > 0 || undefined}>
     <span aria-hidden="true">{t('触控', 'Touch')}</span>
-    <button type="button" aria-pressed={!touchMove} onClick={() => setSwipeToMove(false)}>{t('操作地图', 'Map gestures')}</button>
-    <button type="button" aria-pressed={!!touchMove} disabled={touchControl.viewOnly}
-      title={t('在棋盘上滑动，让芽芽走一格', 'Swipe the board to move Sprout one square')}
+    <button type="button" aria-pressed={!touchEnabled} onClick={() => setSwipeToMove(false)}>{t('操作地图', 'Map gestures')}</button>
+    <button type="button" aria-pressed={touchEnabled} disabled={touchControl.viewOnly}
+      title={touchControl.tap ? t('点空地走过去，点身旁的箱子或滑动推一格', 'Tap open floor to walk there. Tap a box next to Sprout or swipe toward it to push.')
+        : t('在棋盘上滑动，让芽芽走一格', 'Swipe the board to move Sprout one square')}
       onClick={() => { touchControl.onChoosePlayer?.(); setSwipeToMove(true) }}>{t('移动芽芽', 'Move Sprout')}</button>
   </div>
   const inlineControls = !mapMode && <div className="arena-map-controls" ref={dockedConsole || !hasConsole ? undefined : anchorConsole}
@@ -260,7 +265,7 @@ export function ArenaMapWorkspace({ locale, title, consoleControl, modeControl, 
       data-testid="arena-map-workspace" data-console={hasConsole && open ? 'open' : 'closed'} data-map-fullscreen={mapMode || undefined}
       data-map-drawer={mapMode ? drawer : undefined} role={mapMode ? 'dialog' : undefined}
       aria-modal={mapMode || undefined} aria-label={mapMode ? title : undefined} tabIndex={-1}>
-      <ArenaTouchMoveContext.Provider value={touchMove}>
+      <ArenaTouchMoveContext.Provider value={touchEnabled ? touchControl : null}>
         <ArenaMapControlsContext.Provider value={inlineControls}>{children}</ArenaMapControlsContext.Provider>
       </ArenaTouchMoveContext.Provider>
       {mapMode && <div ref={bar} className="arena-map-bar">

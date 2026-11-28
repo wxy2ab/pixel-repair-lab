@@ -1,12 +1,13 @@
 import { createContext, useContext, type ReactNode } from 'react'
 import { flushSync } from 'react-dom'
-import type { Direction } from '../shared/types'
+import type { Direction, Position } from '../shared/types'
 
 export const ArenaMapModeContext = createContext(false)
 export const ArenaMapControlsContext = createContext<ReactNode>(null)
 export type ArenaKeyboardMode = 'map' | 'player'
 export const ArenaKeyboardModeContext = createContext<ArenaKeyboardMode | null>(null)
-export const ArenaTouchMoveContext = createContext<((direction: Direction) => void) | null>(null)
+export type BoardTouchActions = { move: (direction: Direction) => void; tap?: (cell: Position) => void }
+export const ArenaTouchMoveContext = createContext<BoardTouchActions | null>(null)
 export const mapStageSelector = '.challenge-stage, [data-map-stage]'
 
 // Only the workspace mounted by this navigation can inherit the fullscreen stage.
@@ -35,7 +36,11 @@ export function useArenaKeyboardMode() {
 }
 
 export function useArenaTouchMove() {
-  return useContext(ArenaTouchMoveContext)
+  return useContext(ArenaTouchMoveContext)?.move ?? null
+}
+
+export function useArenaTouchTap() {
+  return useContext(ArenaTouchMoveContext)?.tap ?? null
 }
 
 export function focusArenaBoard(workspace: HTMLElement | null) {

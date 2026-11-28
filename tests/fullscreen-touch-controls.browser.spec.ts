@@ -29,6 +29,24 @@ async function gestureOrigin(surface: Locator) {
 
 type Point = { x: number; y: number }
 
+const flatCell = (board: Locator, x: number, y: number) => board.locator(`.tile[data-x="${x}"][data-y="${y}"]`)
+
+async function tapWarehouseCell(board: Locator, view: '2d' | '3d', x: number, y: number) {
+  if (view === '2d') return flatCell(board, x, y).tap()
+  // Aim the real camera using the minimap, then touch the actual 3D scene.
+  const minimap = board.getByTestId('minimap-surface')
+  const point = await minimap.evaluate((node, cell) => {
+    const matrix = (node as SVGSVGElement).getScreenCTM()
+    if (!matrix) throw new Error('Minimap has no screen transform')
+    const point = new DOMPoint(cell.x + .5, cell.y + .5).matrixTransform(matrix)
+    return { x: point.x, y: point.y }
+  }, { x, y })
+  await board.page().touchscreen.tap(point.x, point.y)
+  const canvas = board.getByTestId('station-3d-canvas')
+  await expect(canvas).toHaveAttribute('data-camera-center', `${x.toFixed(2)},${y.toFixed(2)}`)
+  await canvas.tap()
+}
+
 async function swipe(touch: CDPSession, from: Point, dx: number, dy: number, cancel = false) {
   await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...from, id: 1 }] })
   for (const fraction of [.3, .6, 1]) {
@@ -85,13 +103,88 @@ for (const view of ['2d', '3d'] as const) {
   })
 }
 
-test('short, cancelled and multi-finger gestures in character mode leave the warehouse untouched', async ({ page }) => {
+for (const view of ['2d', '3d'] as const) {
+  test(`fullscreen ${view} walks around a crate, tap-pushes it once and finishes with a swipe`, async ({ page }) => {
+    test.slow()
+    const board = await openLevel(page, 'challenge-sokoban-platform-loop', view)
+    if (view === '3d') {
+      await expect(board.locator('.station-viewport')).toHaveAttribute('data-ready', 'true')
+      const rotate = board.getByRole('button', { name: '向右旋转', exact: true })
+      for (let i = 0; i < 6; i++) await rotate.tap()
+    }
+    const readout = board.getByTestId('warehouse-readout')
+    await tapWarehouseCell(board, view, 2, 2)
+    await expect(board.getByTestId('station-cell-inspection')).toContainText('(2, 2)')
+    await expect(readout).toContainText('步数 0')
+
+    await board.getByRole('button', { name: '移动芽芽', exact: true }).tap()
+    const grid = board.locator('.tilemap')
+    const visited = await grid.evaluateHandle(node => {
+      const positions: string[] = []
+      const observer = new MutationObserver(() => positions.push(node.getAttribute('aria-label')!))
+      observer.observe(node, { attributes: true, attributeFilter: ['aria-label'] })
+      return positions
+    })
+    await tapWarehouseCell(board, view, 2, 2)
+    await expect(grid).toHaveAttribute('aria-label', '机器人位于 2，2')
+    expect(await visited.jsonValue()).toEqual(['机器人位于 4，1', '机器人位于 3，1', '机器人位于 2，1', '机器人位于 2，2'])
+    await visited.dispose()
+    await expect(readout).toContainText('步数 4')
+    await expect(readout).toContainText('推箱 0')
+
+    await tapWarehouseCell(board, view, 3, 2)
+    await expect(grid).toHaveAttribute('aria-label', '机器人位于 3，2')
+    await expect(readout).toContainText('推箱 1')
+    const touch = await page.context().newCDPSession(page)
+    const surface = view === '3d' ? board.getByTestId('station-3d-canvas') : board.locator('.station-flat-board:visible')
+    await swipe(touch, await gestureOrigin(surface), view === '2d' ? 65 : -65, 0)
+    await expect(board.getByTestId('warehouse-receipt')).toContainText('6 步 · 推箱 2 次')
+    await touch.detach()
+  })
+}
+
+test('tapping a blocked floor leaves the crate in place and undo restores a single tapped step', async ({ page }) => {
+  const board = await openLevel(page, 'challenge-sokoban-lift-delivery', '2d')
+  const readout = board.getByTestId('warehouse-readout')
+  await board.getByRole('button', { name: '移动芽芽', exact: true }).tap()
+  await flatCell(board, 2, 1).tap()
+  await expect(readout).toContainText('走不到这一格')
+  await expect(readout).toContainText('步数 0')
+  await flatCell(board, 2, 4).tap()
+  await expect(readout).toContainText('步数 1')
+  await expect(readout).toContainText('推箱 0')
+  await board.getByRole('button', { name: '撤销一步', exact: true }).tap()
+  await expect(board.locator('.tilemap')).toHaveAttribute('aria-label', '机器人位于 1，4')
+  await expect(readout).toContainText('步数 0')
+})
+
+test('switching to map controls during a walk stops at the current square', async ({ page }) => {
+  const board = await openLevel(page, 'challenge-sokoban-platform-loop', '2d')
+  const map = board.getByRole('button', { name: '操作地图', exact: true })
+  await board.getByRole('button', { name: '移动芽芽', exact: true }).tap()
+  // Freeze the time between steps so both taps land before the next scheduled move.
+  const destination = await flatCell(board, 2, 2).boundingBox()
+  const toggle = await map.boundingBox()
+  if (!destination || !toggle) throw new Error('The square and mode switch must be visible')
+  await page.clock.install({ time: new Date('2026-01-01T10:00:00Z') })
+  await page.clock.pauseAt(new Date('2026-01-01T10:01:00Z'))
+  await page.touchscreen.tap(destination.x + destination.width / 2, destination.y + destination.height / 2)
+  const grid = board.locator('.tilemap')
+  await expect(grid).toHaveAttribute('aria-label', '机器人位于 4，1')
+  await page.touchscreen.tap(toggle.x + toggle.width / 2, toggle.y + toggle.height / 2)
+  await expect(map).toHaveAttribute('aria-pressed', 'true')
+  await page.clock.runFor(1500)
+  await expect(board.getByTestId('warehouse-readout')).toContainText('步数 1')
+  await expect(grid).toHaveAttribute('aria-label', '机器人位于 4，1')
+})
+
+test('short drags, cancelled and multi-finger gestures in character mode leave the warehouse untouched', async ({ page }) => {
   const board = await openLevel(page, 'challenge-sokoban-lift-delivery', '2d')
   const controls = board.getByRole('group', { name: '触控操作', exact: true })
   await controls.getByRole('button', { name: '移动芽芽', exact: true }).tap()
   const from = await gestureOrigin(board.locator('.station-flat-board:visible'))
   const touch = await page.context().newCDPSession(page)
-  await swipe(touch, from, 3, 0)
+  await swipe(touch, from, 14, 0)
   await swipe(touch, from, 70, 0, true)
   const first = { ...from, id: 1 }
   const second = { x: from.x + 20, y: from.y + 25, id: 2 }

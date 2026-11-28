@@ -17,6 +17,7 @@ const errors: Record<string, [string, string]> = {
   turnLimit: ['回合已用完，任务失败。', 'The turn budget ran out. Mission failed.'],
   apiDisabled: ['这条指令在本关还用不到。看一下本关的指令卡。', 'That command is unavailable in this level. Check the level’s cards.'],
   blocked: ['前面是墙或边界。换个方向试试。', 'There is a wall or edge in the way. Try a different direction.'],
+  noWalkingRoute: ['芽芽现在走不到这一格。', 'Sprout can’t walk to that square from here.'],
   boxBlocked: ['箱子后面没有空位。', 'There is no free square behind the crate.'],
   lockedDoor: ['门还锁着。看看地图上和它配对的钥匙或开关。', 'The door is locked. Look for its matching key or switch.'],
   lockedChest: ['宝箱还锁着。先找找它的钥匙。', 'The chest is locked. Look for its key first.'],

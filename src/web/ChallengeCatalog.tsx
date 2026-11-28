@@ -1,5 +1,5 @@
-import { useRef, type CSSProperties } from 'react'
-import type { Level, Locale, Localized, Position } from '../shared/types'
+import { memo, useRef, type CSSProperties } from 'react'
+import type { Level, Locale, Localized } from '../shared/types'
 import { shortSeries } from '../shared/shortChallenges'
 import { challengeZoneId } from '../shared/coursePrerequisites'
 import {
@@ -89,27 +89,35 @@ export function ChallengePrerequisites({ level, groups, locale, completed, onOpe
   </section>
 }
 
-function ChallengeMap({ level }: { level: Level }) {
+const ChallengeMap = memo(function ChallengeMap({ level }: { level: Level }) {
   if (level.kind !== 'grid' && level.kind !== 'arena') return null
 
   const opponents = level.kind === 'grid' ? level.enemies?.map(enemy => enemy.path[0]) ?? []
     : level.opponents.map(opponent => opponent.start)
   const exit = level.kind === 'grid' ? level.objectives.find(objective => objective.type === 'exit')
     : level.objective.kind === 'escape' ? level.objective.exit : undefined
-  const at = (position: Position | undefined, x: number, y: number) => position?.x === x && position.y === y
-  const size = { '--challenge-columns': level.tiles[0].length, '--challenge-rows': level.tiles.length } as CSSProperties
+  const columns = level.tiles[0].length, rows = level.tiles.length
+  const size = { '--challenge-columns': columns, '--challenge-rows': rows } as CSSProperties
+  const warehouse = level.kind === 'grid' ? level.warehouse : undefined
+  const cells: string[][] = level.tiles.map(row => Array.from(row, tile => tile === '#' ? 'wall' : 'floor'))
+  for (const { x, y } of warehouse?.targets ?? []) cells[y][x] = 'target'
+  for (const { x, y } of warehouse?.boxes ?? []) cells[y][x] = cells[y][x] === 'target' ? 'parked' : 'box'
+  for (const { x, y } of level.items ?? []) cells[y][x] = 'item'
+  for (const { x, y } of opponents) cells[y][x] = 'opponent'
+  if (exit) cells[exit.y][exit.x] = 'exit'
+  cells[level.start.y][level.start.x] = 'start'
+  // One path per color keeps the catalog from mounting a DOM element for every map cell.
+  const paths: Record<string, string> = {}
+  cells.forEach((row, y) => row.forEach((kind, x) => {
+    paths[kind] = (paths[kind] ?? '') + `M${x * 6} ${y * 6}h5v5h-5Z`
+  }))
 
   return <span className="challenge-preview" aria-hidden="true">
-    <span className="challenge-preview-map" style={size}>
-      {level.tiles.flatMap((row, y) => Array.from(row, (tile, x) => {
-        const marker = at(level.start, x, y) ? 'start' : at(exit, x, y) ? 'exit'
-          : opponents.some(opponent => at(opponent, x, y)) ? 'opponent'
-            : level.items?.some(item => at(item, x, y)) ? 'item' : undefined
-        return <span key={`${x},${y}`} data-tile={tile === '#' ? 'wall' : 'floor'} data-marker={marker} />
-      }))}
-    </span>
+    <svg className="challenge-preview-map" style={size} viewBox={`0 0 ${columns * 6} ${rows * 6}`} focusable="false">
+      {Object.entries(paths).map(([kind, d]) => <path key={kind} data-tile={kind} d={d} />)}
+    </svg>
   </span>
-}
+})
 
 function ChallengeRules({ id, level, locale }: { id: string; level: Level; locale: Locale }) {
   const t = (zh: string, en: string) => tr(locale, zh, en)

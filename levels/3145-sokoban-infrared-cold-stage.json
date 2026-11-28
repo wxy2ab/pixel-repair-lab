@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "kind": "grid",
+  "id": "challenge-sokoban-infrared-cold-stage",
+  "order": 3145,
+  "difficulty": "expert",
+  "unit": {"id": "challenge-zone", "order": 90, "title": {"zh": "挑战场", "en": "Challenge Arena"}},
+  "stage": "challenge",
+  "prerequisites": [{"unit": "routing", "topic": "breadth-first"}, {"unit": "routing", "topic": "depth-first"}],
+  "title": {"zh": "红外冷台", "en": "Infrared Cold Stage"},
+  "concept": {"zh": "推箱子 · 5 箱 · 最少推 69 次", "en": "Sokoban · 5 crates · 69 pushes minimum"},
+  "brief": {
+    "zh": "把 5 箱光子计数器推上红外冷台的标记货位。每次只能向前推一箱。全部货位同时占满即通关。",
+    "en": "Deliver 5 crates of photon counters to the marked bays at the Infrared Cold Stage. Push one crate at a time. Fill every bay at the same time to finish."
+  },
+  "hints": [],
+  "tiles": [
+    "##############",
+    "#....#########",
+    "#.#..#########",
+    "#....#########",
+    "#....#########",
+    "#.........####",
+    "###.......####",
+    "########..####",
+    "########.....#",
+    "#######......#",
+    "#######....#.#",
+    "#######......#",
+    "##############"
+  ],
+  "start": {"x": 11, "y": 8},
+  "warehouse": {
+    "boxes": [{"x": 9, "y": 6}, {"x": 9, "y": 8}, {"x": 8, "y": 9}, {"x": 9, "y": 10}, {"x": 10, "y": 10}],
+    "targets": [{"x": 1, "y": 1}, {"x": 2, "y": 1}, {"x": 3, "y": 3}, {"x": 4, "y": 4}, {"x": 1, "y": 5}]
+  },
+  "allowedApi": ["move", "read_map"],
+  "objectives": [{"type": "parkBoxes"}],
+  "cards": [
+    {"id": "up", "label": {"zh": "向上", "en": "Move up"}, "template": "move(\"up\")"},
+    {"id": "right", "label": {"zh": "向右", "en": "Move right"}, "template": "move(\"right\")"},
+    {"id": "down", "label": {"zh": "向下", "en": "Move down"}, "template": "move(\"down\")"},
+    {"id": "left", "label": {"zh": "向左", "en": "Move left"}, "template": "move(\"left\")"},
+    {
+      "id": "repeat", "label": {"zh": "重复几次", "en": "Repeat moves"}, "template": "for step in range({{count}}):", "block": true,
+      "parameters": [
+        { "name": "count", "label": {"zh": "次数", "en": "Times"}, "choices": [
+          {"id": "n2", "label": {"zh": "2", "en": "2"}, "code": "2"},
+          {"id": "n3", "label": {"zh": "3", "en": "3"}, "code": "3"},
+          {"id": "n4", "label": {"zh": "4", "en": "4"}, "code": "4"},
+          {"id": "n5", "label": {"zh": "5", "en": "5"}, "code": "5"},
+          {"id": "n6", "label": {"zh": "6", "en": "6"}, "code": "6"},
+          {"id": "n7", "label": {"zh": "7", "en": "7"}, "code": "7"},
+          {"id": "n8", "label": {"zh": "8", "en": "8"}, "code": "8"}
+        ] }
+      ]
+    },
+    {
+      "id": "stride", "label": {"zh": "直走几格", "en": "Walk several squares"}, "template": "for stride in range({{count}}): move({{direction}})",
+      "parameters": [
+        { "name": "direction", "label": {"zh": "方向", "en": "Direction"}, "choices": [
+          {"id": "up", "label": {"zh": "上", "en": "Up"}, "code": "\"up\""},
+          {"id": "right", "label": {"zh": "右", "en": "Right"}, "code": "\"right\""},
+          {"id": "down", "label": {"zh": "下", "en": "Down"}, "code": "\"down\""},
+          {"id": "left", "label": {"zh": "左", "en": "Left"}, "code": "\"left\""}
+        ] },
+        { "name": "count", "label": {"zh": "格数", "en": "Squares"}, "choices": [
+          {"id": "n2", "label": {"zh": "2", "en": "2"}, "code": "2"},
+          {"id": "n3", "label": {"zh": "3", "en": "3"}, "code": "3"},
+          {"id": "n4", "label": {"zh": "4", "en": "4"}, "code": "4"},
+          {"id": "n5", "label": {"zh": "5", "en": "5"}, "code": "5"},
+          {"id": "n6", "label": {"zh": "6", "en": "6"}, "code": "6"},
+          {"id": "n7", "label": {"zh": "7", "en": "7"}, "code": "7"},
+          {"id": "n8", "label": {"zh": "8", "en": "8"}, "code": "8"},
+          {"id": "n9", "label": {"zh": "9", "en": "9"}, "code": "9"},
+          {"id": "n10", "label": {"zh": "10", "en": "10"}, "code": "10"},
+          {"id": "n11", "label": {"zh": "11", "en": "11"}, "code": "11"},
+          {"id": "n12", "label": {"zh": "12", "en": "12"}, "code": "12"}
+        ] }
+      ]
+    }
+  ],
+  "solutionCards": [
+    {"cardId": "right"}, {"cardId": "stride", "values": {"direction": "down", "count": "n3"}},
+    {"cardId": "stride", "values": {"direction": "left", "count": "n2"}}, {"cardId": "up"}, {"cardId": "left"},
+    {"cardId": "down"}, {"cardId": "stride", "values": {"direction": "left", "count": "n2"}},
+    {"cardId": "stride", "values": {"direction": "up", "count": "n2"}}, {"cardId": "right"},
+    {"cardId": "stride", "values": {"direction": "up", "count": "n4"}}, {"cardId": "right"},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "down"}, {"cardId": "left"}, {"cardId": "stride", "values": {"direction": "down", "count": "n2"}}]},
+    {"cardId": "right"}, {"cardId": "stride", "values": {"direction": "up", "count": "n5"}}, {"cardId": "right"},
+    {"cardId": "up"}, {"cardId": "stride", "values": {"direction": "left", "count": "n4"}}, {"cardId": "down"},
+    {"cardId": "left"}, {"cardId": "up"}, {"cardId": "stride", "values": {"direction": "right", "count": "n4"}},
+    {"cardId": "stride", "values": {"direction": "down", "count": "n4"}},
+    {"cardId": "repeat", "values": {"count": "n2"}, "children": [{"cardId": "down"}, {"cardId": "stride", "values": {"direction": "right", "count": "n2"}}]},
+    {"cardId": "stride", "values": {"direction": "up", "count": "n3"}},
+    {"cardId": "stride", "values": {"direction": "left", "count": "n3"}},
+    {"cardId": "stride", "values": {"direction": "right", "count": "n3"}},
+    {"cardId": "stride", "values": {"direction": "down", "count": "n3"}},
+    {"cardId": "stride", "values": {"direction": "left", "count": "n2"}},
+    {"cardId": "stride", "values": {"direction": "up", "count": "n2"}}, {"cardId": "right"}, {"cardId": "up"},
+    {"cardId": "left"}, {"cardId": "stride", "values": {"direction": "down", "count": "n2"}},
+    {"cardId": "stride", "values": {"direction": "left", "count": "n2"}},
+    {"cardId": "stride", "values": {"direction": "up", "count": "n4"}}, {"cardId": "right"}, {"cardId": "up"},
+    {"cardId": "stride", "values": {"direction": "left", "count": "n7"}},
+    {"cardId": "stride", "values": {"direction": "right", "count": "n6"}},
+    {"cardId": "stride", "values": {"direction": "down", "count": "n5"}},
+    {"cardId": "stride", "values": {"direction": "right", "count": "n2"}}, {"cardId": "up"}, {"cardId": "left"},
+    {"cardId": "down"}, {"cardId": "left"}, {"cardId": "stride", "values": {"direction": "up", "count": "n4"}},
+    {"cardId": "right"}, {"cardId": "up"}, {"cardId": "stride", "values": {"direction": "left", "count": "n5"}},
+    {"cardId": "down"}, {"cardId": "left"}, {"cardId": "stride", "values": {"direction": "up", "count": "n4"}},
+    {"cardId": "right"}, {"cardId": "up"}, {"cardId": "stride", "values": {"direction": "left", "count": "n2"}},
+    {"cardId": "right"}, {"cardId": "stride", "values": {"direction": "down", "count": "n4"}},
+    {"cardId": "stride", "values": {"direction": "right", "count": "n5"}},
+    {"cardId": "stride", "values": {"direction": "down", "count": "n4"}},
+    {"cardId": "stride", "values": {"direction": "right", "count": "n2"}}, {"cardId": "up"}, {"cardId": "left"},
+    {"cardId": "down"}, {"cardId": "left"}, {"cardId": "stride", "values": {"direction": "up", "count": "n3"}},
+    {"cardId": "right"}, {"cardId": "down"}, {"cardId": "stride", "values": {"direction": "up", "count": "n2"}},
+    {"cardId": "stride", "values": {"direction": "left", "count": "n5"}}, {"cardId": "down"}, {"cardId": "left"},
+    {"cardId": "stride", "values": {"direction": "up", "count": "n4"}}, {"cardId": "right"}, {"cardId": "up"},
+    {"cardId": "left"}, {"cardId": "stride", "values": {"direction": "down", "count": "n4"}},
+    {"cardId": "stride", "values": {"direction": "right", "count": "n5"}},
+    {"cardId": "stride", "values": {"direction": "down", "count": "n4"}},
+    {"cardId": "stride", "values": {"direction": "right", "count": "n2"}}, {"cardId": "up"}, {"cardId": "left"},
+    {"cardId": "down"}, {"cardId": "left"}, {"cardId": "stride", "values": {"direction": "up", "count": "n3"}},
+    {"cardId": "right"}, {"cardId": "up"}, {"cardId": "stride", "values": {"direction": "left", "count": "n5"}},
+    {"cardId": "down"}, {"cardId": "left"}, {"cardId": "stride", "values": {"direction": "up", "count": "n2"}}
+  ]
+}

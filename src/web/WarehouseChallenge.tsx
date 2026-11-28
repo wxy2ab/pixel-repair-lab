@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState, type ComponentProps } from 'react'
+import { useCallback, useEffect, useEffectEvent, useLayoutEffect, useRef, useState, type ComponentProps } from 'react'
 import { initialSnapshot, moveGridPlayer } from '../engine/snapshot'
-import type { Direction, GridLevel, GridSnapshot, Locale, RunIssue } from '../shared/types'
-import { warehouseParked, warehousePushDestination } from '../shared/warehouse'
+import type { Direction, GridLevel, GridSnapshot, Locale, Position, RunIssue } from '../shared/types'
+import { warehouseParked, warehousePushDestination, warehouseTapRoute } from '../shared/warehouse'
 import { useArenaConsole } from './ArenaConsole'
 import { MapShortcutGuide } from './ArenaMapShortcuts'
 import { ArenaMapWorkspace } from './ArenaMapWorkspace'
@@ -20,6 +20,7 @@ const arrows = {
   down: ['↓', '向下', 'Move down'], right: ['→', '向右', 'Move right'],
 } as const
 const pathDirections: Record<string, Direction> = { u: 'up', d: 'down', l: 'left', r: 'right' }
+const autoWalkStepMs = 220
 const keys = new Map<string, Direction>([['ArrowUp', 'up'], ['ArrowDown', 'down'], ['ArrowLeft', 'left'], ['ArrowRight', 'right']])
 type Props = ComponentProps<typeof GridLesson>
 type ManualTurn = { state: GridSnapshot; pushes: number; direction?: Direction }
@@ -64,6 +65,8 @@ export default function WarehouseChallenge(props: Props) {
   const [soundOn, setSoundOn] = useState(warehouseSoundEnabled)
   const trail = useTrailPreference()
   const consoleControl = useArenaConsole()
+  const remainingWalk = useRef<Direction[]>([])
+  const stopWalk = useCallback(() => { remainingWalk.current = [] }, [])
 
   function save(next: GridChallengeDraft) {
     draft.current = next
@@ -76,22 +79,24 @@ export default function WarehouseChallenge(props: Props) {
 
   function switchControls(next: typeof controls) {
     if (next === controls) return
+    stopWalk()
     challenge?.onStart()
     setControls(next)
     savePlay(next, draft.current.warehouse?.path ?? '')
   }
 
   function restart() {
+    stopWalk()
     challenge?.onStart()
     setIssue(undefined)
     setTurns(restoreTurns(level, ''))
     savePlay('direct', '')
   }
 
-  function move(direction: Direction) {
+  function takeStep(direction: Direction) {
     if (won) return
     const next = advance(level, last, direction)
-    if ('code' in next) { setIssue(next); return }
+    if ('code' in next) { stopWalk(); setIssue(next); return }
     const updated = [...turns, next]
     setIssue(undefined)
     setTurns(updated)
@@ -99,6 +104,7 @@ export default function WarehouseChallenge(props: Props) {
     const priorPath = (draft.current.warehouse?.path ?? '').slice(0, last.state.turn)
     savePlay('direct', complete ? '' : priorPath + direction[0])
     if (complete) {
+      stopWalk()
       const frames = updated.slice(1).map(({ state, direction }) => ({ state, value: direction, line: 0, action: 'move' as const }))
       onWin()
       soundWarehouseCue('complete')
@@ -108,7 +114,45 @@ export default function WarehouseChallenge(props: Props) {
     }
   }
 
+  function move(direction: Direction) {
+    stopWalk()
+    takeStep(direction)
+  }
+
+  function tapCell(cell: Position) {
+    stopWalk()
+    if (won) return
+    if (cell.x === last.state.player.x && cell.y === last.state.player.y) {
+      setIssue(undefined)
+      return
+    }
+    const [first, ...rest] = warehouseTapRoute(level.tiles, last.state, cell)
+    if (!first) {
+      setIssue({ code: 'noWalkingRoute' })
+      return
+    }
+    remainingWalk.current = rest
+    takeStep(first)
+  }
+
+  // Start the next step only after the previous position has reached the board and draft.
+  const continueWalk = useEffectEvent(() => {
+    const direction = remainingWalk.current.shift()
+    if (direction) takeStep(direction)
+  })
+  useLayoutEffect(() => {
+    if (!remainingWalk.current.length) return
+    const timer = window.setTimeout(continueWalk, autoWalkStepMs)
+    const onVisibilityChange = () => { if (document.hidden) stopWalk() }
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    return () => {
+      window.clearTimeout(timer)
+      document.removeEventListener('visibilitychange', onVisibilityChange)
+    }
+  }, [last, stopWalk])
+
   function undo() {
+    stopWalk()
     if (won || !last.state.turn) return
     setIssue(undefined)
     setTurns(turns.slice(0, -1))
@@ -130,7 +174,7 @@ export default function WarehouseChallenge(props: Props) {
     <div className="warehouse-challenge__header">{switches}{soundControl}</div>
     {controls === 'program' ? <GridLesson {...props} initialDraft={draft.current} onDraftChange={save} mapModeControl={soundControl} /> :
       <ArenaMapWorkspace locale={locale} title={level.title[locale]} consoleControl={consoleControl} hasConsole={false}
-        touchControl={{ move }} modeControl={<>{switches}{soundControl}</>} shortcutHelp={<MapShortcutGuide locale={locale} />}>
+        touchControl={{ move, tap: tapCell, onDeactivate: stopWalk }} modeControl={<>{switches}{soundControl}</>} shortcutHelp={<MapShortcutGuide locale={locale} />}>
         <div className="play-column"><section className="panel board-panel">
           <Board level={level} locale={locale} snapshot={last.state} trail={trail.visible ? turns.map(turn => turn.state.player) : undefined}
             warehouseArrival={arrival} activity={issue ? { action: 'move', token: issue, failed: true } : last.direction ? { action: 'move', token: last, value: last.direction } : undefined} />
