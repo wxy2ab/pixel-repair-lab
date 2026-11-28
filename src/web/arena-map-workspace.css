@@ -15,12 +15,40 @@
   aspect-ratio: 1.85;
   max-height: min(780px, 75dvh);
 }
+.arena-map-workspace:not([data-map-fullscreen]) .station-viewport {
+  container: inline-map / inline-size;
+}
 .arena-map-controls {
+  order: -1;
+  flex: 1 0 100%;
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #344b5a;
+}
+.arena-map-display-actions, .arena-touch-map-only {
+  display: flex;
+  align-items: center;
   gap: 6px;
-  margin-inline-start: auto;
+}
+.arena-touch-map-only { color: #c7e7e2; font-weight: 650; font-size: .84rem; }
+.arena-touch-map-only svg { color: #87d9bb; }
+.station-tools > .arena-inline-tools-toggle { display: none; }
+.arena-map-compact-label { display: none; }
+.arena-map-controls .arena-touch-switch {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  border-radius: 9px;
+  background: #0e1e2a;
+}
+.arena-map-controls .arena-touch-switch button[aria-pressed="true"] {
+  color: #e1fff0;
+  background: #28564b;
+  box-shadow: inset 0 0 0 1px #518c78;
 }
 .arena-keyboard-switch, .arena-touch-switch {
   align-items: center;
@@ -45,10 +73,7 @@
 .arena-keyboard-switch button[aria-pressed="true"], .arena-touch-switch button[aria-pressed="true"] { background: #2d574f; color: #ceffea; }
 .arena-keyboard-switch button:disabled, .arena-touch-switch button:disabled { opacity: .5; }
 .arena-touch-switch > span { padding-inline: 5px; font-size: .76rem; color: #cee1ed; }
-@media not (any-pointer: coarse) {
-  .arena-touch-switch:not([data-touchscreen]) { display: none; }
-}
-.station-tools .arena-map-controls > button {
+.station-tools .arena-map-display-actions > button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -61,7 +86,7 @@
   color: #d8e7f3;
   white-space: nowrap;
 }
-.station-tools .arena-map-controls > .arena-map-size-toggle,
+.station-tools .arena-map-display-actions > .arena-map-size-toggle,
 .arena-map-controls .arena-console-toggle[aria-expanded="true"] {
   background: #1b393b;
   border-color: #598e88;
@@ -117,24 +142,45 @@
   min-height: 32px;
   padding: 4px;
 }
-@media (max-width: 750px) {
-  .station-tools .arena-map-controls > button {
-    min-height: 38px;
-    gap: 4px;
-    padding-inline: 7px;
-    font-size: .8125rem;
+@container inline-map (max-width: 680px) {
+  .station-tools { justify-content: flex-start; }
+  .station-tools .arena-map-controls { gap: 4px; padding-bottom: 6px; flex-wrap: wrap; }
+  .station-tools .arena-map-display-actions { margin-inline-start: auto; gap: 4px; }
+  .station-tools .arena-touch-switch button { min-height: 44px; padding-inline: 7px; font-size: .81rem; }
+  .station-tools .arena-map-display-actions button { min-width: 44px; min-height: 44px; }
+  .station-tools > .arena-inline-tools-toggle {
+    order: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    margin-inline-start: auto;
+    padding-inline: 10px;
+    border-color: #3c5865;
+    color: #d2e6e9;
+    font-size: .82rem;
   }
+  .arena-inline-tools-toggle[aria-expanded="true"] { background: #25453f; }
+  .station-tools > :is(.station-lens, .station-camera, .arena-attack-speed, .arena-keyboard-switch) { order: 1; }
+  .station-tools:has(> .arena-map-controls:not([data-tools-open])) > :is(.station-lens, .station-camera, .arena-attack-speed, .arena-keyboard-switch) { display: none; }
+  .station-tools:has(> .arena-map-controls[data-tools-open]) > .arena-inline-tools-toggle { margin-inline: auto 0; }
 }
-.arena-map-bar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
+@container inline-map (max-width: 410px) {
+  .arena-map-display-actions button > span { display: none; }
+  .station-tools .arena-map-display-actions button {
+    flex-direction: column;
+    gap: 1px;
+    padding: 2px 4px;
+  }
+  .arena-map-display-actions .arena-map-compact-label { display: inline; font-size: .68rem; line-height: 1.2; }
 }
-.arena-map-bar > button { display: inline-flex; gap: 6px; align-items: center; justify-content: center; }
-.arena-map-bar .arena-map-size-toggle { border-color: #598e88; background: #1b393b; color: #cefff0; }
-.arena-map-bar > button[aria-expanded="true"] { background: #28524f; color: #cffff0; border-color: #70b5a3; }
-
+@container inline-map (max-width: 350px) {
+  .arena-map-controls .arena-touch-switch { padding: 2px; gap: 1px; }
+  .arena-map-controls .arena-touch-switch > span { padding-inline: 2px; }
+  .station-tools .arena-map-controls .arena-touch-switch button { padding-inline: 5px; }
+  .arena-map-controls .arena-touch-switch button > span { display: none; }
+  .arena-map-controls .arena-touch-switch .arena-map-compact-label { display: inline; font: inherit; }
+}
 html:has(.arena-map-workspace[data-map-fullscreen]) { overflow: hidden; scrollbar-gutter: auto; }
 .arena-map-workspace[data-map-fullscreen] {
   --map-gap: clamp(6px, 1vw, 14px);
@@ -162,25 +208,65 @@ html:has(.arena-map-workspace[data-map-fullscreen]) { overflow: hidden; scrollba
   position: absolute;
   inset: 0 0 auto;
   z-index: 6;
-  display: flex;
-  flex-wrap: wrap;
-  min-height: 47px;
-  padding: max(6px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) 6px max(10px, env(safe-area-inset-left));
-  border-bottom: 1px solid #395267;
-  background: #112230;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: clamp(6px, 1vw, 16px);
+  min-height: 54px;
+  padding: max(5px, env(safe-area-inset-top)) max(var(--map-gap), env(safe-area-inset-right)) 5px max(var(--map-gap), env(safe-area-inset-left));
+  border-bottom: 1px solid #4b656e;
+  background: linear-gradient(105deg, #17363b, #152a38 38%, #122330);
+  box-shadow: 0 2px 10px #07142355;
   color: #eaf4fb;
 }
-.arena-map-bar > .arena-map-title {
-  margin-inline-end: auto;
+.arena-map-identity, .arena-map-settings, .arena-map-utilities, .arena-map-modes,
+.arena-map-mode-panel, .arena-map-utilities button, .arena-map-mode-toggle, .arena-map-camera-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.arena-map-identity { min-width: 0; gap: 9px; }
+.arena-map-emblem {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  border: 1px solid #4b7d75;
+  color: #a4efc9;
+  background: #214943;
+}
+.arena-map-title {
   overflow: hidden;
   min-width: 0;
-  max-width: 45%;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 1rem;
+  font-size: clamp(.86rem, 1.25vw, 1.05rem);
 }
-.arena-map-bar > .segmented { margin: 0 7px 0 0; }
+.arena-map-settings .segmented, .arena-map-mode-panel .segmented { margin: 0; width: auto; }
+.arena-map-utilities { grid-column: 3; justify-content: end; border-inline-start: 1px solid #425b64; padding-inline-start: clamp(6px, 1vw, 14px); }
+.arena-map-utilities button, .arena-map-mode-toggle, .arena-map-camera-toggle {
+  justify-content: center;
+  padding: 5px 9px;
+  min-height: 36px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: #d5e6ea;
+  font-size: .84rem;
+  white-space: nowrap;
+}
+.arena-map-utilities .arena-map-size-toggle { border-color: #4c686f; background: #213d47; }
 .arena-map-bar button { white-space: nowrap; }
+.arena-map-bar button[aria-expanded="true"], .arena-map-camera-toggle[aria-expanded="true"] {
+  background: #2a504b; color: #deffed; border-color: #74b5a0;
+}
+.arena-map-utilities button:hover, .arena-map-mode-toggle:hover, .arena-map-camera-toggle:hover { background: #284651; color: white; }
+.arena-map-mode-toggle, .arena-map-camera-toggle { display: none; }
+.arena-map-mode-toggle svg { display: none; }
+.arena-map-chevron { width: 6px; height: 6px; margin: -3px 2px 0; border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
+button[aria-expanded="true"] > .arena-map-chevron { transform: rotate(225deg); margin-top: 3px; }
 
 /* Keep the original scene mounted while its surrounding panels become a report drawer. */
 .arena-map-workspace.arena-layout[data-console][data-map-fullscreen] > .play-column {
@@ -278,8 +364,9 @@ html:has(.arena-map-workspace[data-map-fullscreen]) { overflow: hidden; scrollba
   pointer-events: none;
 }
 .arena-map-health { color: #a3e7bb; font: 650 .8rem var(--mono); }
+.arena-map-workspace[data-map-fullscreen]:has(.warehouse-readout:not([hidden])) .board-legend .turn-display { display: none; }
 .arena-map-workspace[data-map-fullscreen] > .arena-console,
-.arena-map-keys {
+.arena-map-keys, .arena-map-mode-panel {
   position: absolute;
   z-index: 3;
   top: var(--map-panel-top);
@@ -295,9 +382,10 @@ html:has(.arena-map-workspace[data-map-fullscreen]) { overflow: hidden; scrollba
   box-shadow: 0 6px 24px #07142299;
 }
 .arena-map-keys { width: min(23rem, calc(100% - var(--map-gap) * 2)); padding: .8rem 1rem; }
+.arena-map-mode-panel { left: var(--map-gap); right: auto; width: max-content; max-width: calc(100% - 2 * var(--map-gap)); flex-wrap: wrap; gap: 10px; padding: 10px; }
 .arena-map-keys > .arena-keyboard-switch { display: none; }
-@media (any-pointer: coarse) and (not (any-pointer: fine)) and ((max-width: 600px) or (max-height: 480px)) {
-  .arena-map-bar:has(.arena-touch-switch):has([aria-controls]) > .arena-keyboard-switch { display: none; }
+@media (max-width: 700px), (any-pointer: coarse) and (max-height: 480px), (max-width: 1000px) and (any-pointer: coarse) {
+  .arena-map-bar:has(.arena-map-key-help) .arena-map-settings:has(.arena-touch-switch) > .arena-keyboard-switch { display: none; }
   .arena-map-workspace:has(.arena-touch-switch) > .arena-map-keys > .arena-keyboard-switch {
     display: inline-flex;
     margin-bottom: .65rem;
@@ -323,7 +411,34 @@ html:has(.arena-map-workspace[data-map-fullscreen]) { overflow: hidden; scrollba
   bottom: max(6px, env(safe-area-inset-bottom));
   transform: translateX(-50%);
   max-width: calc(100% - 2 * var(--map-gap));
-  background: #162938f7;
+  border-color: #48626d;
+  background: linear-gradient(180deg, #1c3340f9, #142835fa);
+}
+.arena-map-workspace[data-map-fullscreen]:has(.arena-turn-hud) .play-toolbar:not([data-folded]) .play-toolbar__fold { left: 8px; right: auto; }
+.arena-map-workspace[data-map-fullscreen] .play-toolbar:not([data-folded]):has(.warehouse-readout:not([hidden])) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 5px 8px;
+}
+.arena-map-workspace[data-map-fullscreen] .play-toolbar:has(.warehouse-readout:not([hidden])) .play-toolbar__status {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.arena-map-workspace[data-map-fullscreen] .play-toolbar:has(.warehouse-readout:not([hidden])) .play-toolbar__actions {
+  grid-column: 1 / -1;
+  padding-top: 5px;
+  border-top: 1px solid #38525c;
+}
+.arena-map-workspace[data-map-fullscreen] .play-toolbar:not([data-folded]):has(.warehouse-readout:not([hidden])) .play-toolbar__fold {
+  position: static;
+  grid-column: 2;
+  grid-row: 1;
+  min-height: 30px;
+  border: 0;
+  border-radius: 5px;
+  background: #233e4a;
 }
 .arena-map-workspace[data-map-fullscreen] > .arena-map-outcome {
   position: absolute;
@@ -359,14 +474,129 @@ html:has(.arena-map-workspace[data-map-fullscreen]) { overflow: hidden; scrollba
   display: inline-grid; flex: none; place-items: center; width: 1.55em; aspect-ratio: 1;
   background: #89e9b9; color: #143329; border-radius: 50%;
 }
+@media (min-width: 701px) and (max-width: 1150px) {
+  .arena-map-utilities :is(.arena-map-size-toggle, .arena-map-key-help) span,
+  .arena-map-modes .warehouse-sound span { display: none; }
+}
+@media (min-width: 701px) and (max-width: 960px) {
+  .arena-map-workspace[data-map-fullscreen] .arena-map-bar { column-gap: 6px; }
+  .arena-map-bar .segmented button { font-size: .78rem; padding-inline: 6px; }
+  .arena-map-emblem { display: none; }
+}
+@media (max-width: 700px) {
+  .arena-map-workspace[data-map-fullscreen] .arena-map-bar { grid-template-columns: minmax(0, 1fr) auto; gap: 0 8px; }
+  .arena-map-identity { gap: 7px; }
+  .arena-map-emblem { width: 26px; height: 26px; border-radius: 7px; }
+  .arena-map-utilities { grid-column: 2; grid-row: 1; padding-inline-start: 0; border: 0; gap: 2px; }
+  .arena-map-utilities :is(.arena-map-size-toggle, .arena-map-key-help) span { display: none; }
+  .arena-map-utilities :is(.arena-map-size-toggle, .arena-map-key-help) { width: 40px; }
+  .arena-map-settings {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 3px 7px;
+    margin-top: 3px;
+    padding-top: 3px;
+    border-top: 1px solid #37515c;
+  }
+  .arena-map-modes { display: none; }
+  .arena-map-settings > .segmented { padding: 2px; }
+  .arena-map-mode-toggle { display: inline-flex; }
+  .arena-map-mode-toggle { border-color: #486570; background: #203942; }
+  .arena-map-bar .segmented button { min-height: 36px; padding: 3px 6px; font-size: .8rem; }
+}
+@media (max-width: 365px) {
+  .arena-map-mode-toggle { min-width: 44px; }
+  .arena-map-mode-toggle svg { display: block; }
+  .arena-map-mode-toggle span:not(.arena-map-chevron), .arena-map-bar .arena-touch-switch > span { display: none; }
+}
+@media (max-width: 700px), (max-width: 1024px) and (max-height: 480px) {
+  .arena-map-camera-toggle {
+    display: inline-flex;
+    position: absolute;
+    z-index: 2;
+    top: var(--map-panel-top);
+    left: var(--map-gap);
+    min-height: 44px;
+    border-color: #547183;
+    background: #142b38f5;
+    box-shadow: 0 3px 12px #07142355;
+  }
+  .arena-map-workspace[data-map-fullscreen] .station-tools { display: none; }
+  .arena-map-workspace[data-map-fullscreen][data-map-drawer="camera"] .station-tools {
+    display: flex;
+    top: calc(var(--map-gap) + 50px);
+    max-height: calc(100% - 50px - var(--map-gap) - var(--map-toolbar-space));
+    overflow: auto;
+  }
+  .arena-map-workspace[data-map-fullscreen]:is([data-console="open"], [data-map-drawer="report"], [data-map-drawer="keys"], [data-map-drawer="mode"]) .arena-map-camera-toggle { visibility: hidden; }
+  /* Fit the scene itself. Both renderers then use the same unobstructed
+     rectangle for framing, cell picking and minimap coordinates. */
+  .arena-map-workspace[data-map-fullscreen] {
+    --map-dock-space: calc(var(--map-toolbar-space) + 30px);
+  }
+  .arena-map-workspace[data-map-fullscreen]:has(.play-toolbar[data-folded], .warehouse-readout:not([hidden])) {
+    --map-dock-space: var(--map-toolbar-space);
+  }
+  .arena-map-workspace[data-map-fullscreen] > .play-column .station-viewport {
+    display: grid;
+    grid-template: minmax(50px, max-content) minmax(0, 1fr) var(--map-dock-space) / minmax(0, 1fr);
+  }
+  .arena-map-workspace.arena-layout[data-map-fullscreen] .station-stage,
+  .arena-map-workspace[data-map-fullscreen] [data-view="2d"] > .station-flat-board {
+    position: relative;
+    inset: auto;
+    grid-area: 2 / 1;
+  }
+  .arena-map-workspace[data-map-fullscreen] .station-caption { display: none; }
+  .arena-map-workspace[data-map-fullscreen] .station-caption:has(.station-inspection) { display: flex; }
+}
+@media (max-height: 480px) and (max-width: 1024px) and (orientation: landscape) {
+  .arena-map-workspace[data-map-fullscreen] > .play-column .station-viewport {
+    grid-template: minmax(0, 1fr) var(--map-dock-space) / minmax(0, 1fr) clamp(145px, 20vw, 172px);
+  }
+  .arena-map-workspace.arena-layout[data-map-fullscreen] .station-stage,
+  .arena-map-workspace[data-map-fullscreen] [data-view="2d"] > .station-flat-board { grid-area: 1 / 1; }
+  .arena-map-camera-toggle { left: auto; right: var(--map-gap); }
+  .arena-map-workspace[data-map-fullscreen][data-map-drawer="camera"] .station-tools { left: auto; right: var(--map-gap); }
+  .arena-map-workspace[data-map-fullscreen] .board-panel .arena-turn-hud { left: var(--map-gap); right: auto; }
+  .arena-map-workspace[data-map-fullscreen]:has(.arena-turn-hud) .play-toolbar:not([data-folded]) .play-toolbar__fold { left: auto; right: 8px; }
+  .arena-map-workspace[data-map-fullscreen] .play-toolbar:has(.play-toolbar__step):not([data-folded]) { width: max-content; }
+}
+@media (max-width: 700px) and (max-height: 650px) and (orientation: portrait) {
+  /* Keep the clock and directional pads within reach while the less frequent
+     replay/program actions can scroll through the same dock. */
+  .arena-map-workspace[data-map-fullscreen] .play-toolbar:has(.arena-combat-pad) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 4px 8px;
+    max-height: 34dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  .arena-map-workspace[data-map-fullscreen] .play-toolbar:has(.arena-combat-pad) .arena-clock { grid-area: 1 / 1; margin: 0; }
+  .arena-map-workspace[data-map-fullscreen] .play-toolbar:has(.arena-combat-pad) .play-toolbar__fold {
+    grid-area: 1 / 2;
+    position: static;
+    min-height: 31px;
+    border-radius: 6px;
+  }
+  .arena-map-workspace[data-map-fullscreen] .arena-combat-pad { grid-column: 1 / -1; margin: 0; padding: 2px 0; }
+  .arena-map-workspace[data-map-fullscreen] .arena-combat-utility { grid-template-columns: repeat(2, minmax(0, auto)); }
+  .arena-map-workspace[data-map-fullscreen] .arena-combat-utility button:first-child { grid-column: span 2; }
+  .arena-map-workspace[data-map-fullscreen] .play-toolbar:has(.arena-combat-pad) .play-toolbar__actions { grid-column: 1 / -1; }
+}
 @media (max-width: 600px) {
-  .arena-map-workspace[data-map-fullscreen] .arena-map-bar { gap: 3px 5px; padding-inline: 7px; }
-  .arena-map-bar > .arena-map-title { flex: 1 1 0; max-width: none; font-size: .85rem; }
-  .arena-map-bar > .segmented { margin: 0; }
-  .arena-map-bar > button, .arena-map-bar .segmented button { min-height: 32px; padding: 3px 6px; font-size: .78rem; }
-  .arena-map-bar > button svg { width: 14px; }
-  .arena-map-workspace[data-map-fullscreen] .arena-map-size-toggle { width: 34px; }
-  .arena-map-workspace[data-map-fullscreen] .arena-map-size-toggle span { display: none; }
+  .arena-map-workspace[data-map-fullscreen] .play-toolbar__actions:not(:has(.warehouse-pad)) {
+    flex-wrap: wrap;
+  }
+  .arena-map-workspace[data-map-fullscreen] .play-toolbar:not([data-folded]) .play-toolbar__actions:not(:has(.warehouse-pad)) > button {
+    flex: 1 0 auto;
+    white-space: nowrap;
+  }
   .arena-map-workspace[data-map-fullscreen] > .arena-console {
     width: min(100% - var(--map-gap) * 2, 26rem);
     max-height: min(35dvh, calc(100% - var(--map-panel-top) - var(--map-toolbar-space)));

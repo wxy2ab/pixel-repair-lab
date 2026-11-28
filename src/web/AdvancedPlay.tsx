@@ -11,6 +11,7 @@ import { useArenaFinishPresentation, useArenaTurnPresentation } from './useArena
 import { ArenaObservationBoard } from './ArenaObservationBoard'
 import { ArenaConsolePanel, ArenaConsoleToggle, useArenaConsole, type ArenaConsoleControl } from './ArenaConsole'
 import { ArenaMapWorkspace } from './ArenaMapWorkspace'
+import { arenaStartMode } from './arenaMatchProgress'
 import type { ArenaKeyboardMode } from './ArenaMapMode'
 import { ArenaMapOutcome, MapShortcutGuide } from './ArenaMapShortcuts'
 import { hasProgramCommands } from './MapObservation'
@@ -24,7 +25,7 @@ import { CodeField } from './CodeField'
 import { AlgorithmRunToolbar, type AlgorithmDebugCursor } from './AlgorithmRunToolbar'
 import { ExecutionSource } from './ExecutionSource'
 import { PlayToolbar, useTrailPreference } from './PlayToolbar'
-import { RealtimeArena, starterArenaPolicy } from './RealtimeArena'
+import { RealtimeArena, starterArenaPolicy, type ArenaBoardState } from './RealtimeArena'
 import { CourseHelperPicker } from './CourseHelperPicker'
 import { ChallengeFailureReview, type ChallengeReviewData } from './ChallengeFailureReview'
 import { arenaFailureReview } from './challengeGameReview'
@@ -277,7 +278,7 @@ export function ArenaPlay({ initialDraft, onDraftChange, initialTimedCheckpoint,
   const { level, locale, challenge, initialArenaMode } = props
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const [draft, setDraft] = useState(() => ({
-    mode: initialArenaMode ?? initialDraft?.mode ?? 'relaxed',
+    mode: arenaStartMode(challenge ? level : undefined, initialDraft, initialArenaMode),
     source: initialDraft?.source ?? level.starterCode,
     policy: initialDraft?.policy ?? starterArenaPolicy,
   }))
@@ -288,8 +289,8 @@ export function ArenaPlay({ initialDraft, onDraftChange, initialTimedCheckpoint,
   const [keyboardMode, setKeyboardMode] = useState<ArenaKeyboardMode>('map')
   const touchMove = useRef<((direction: Direction) => void) | null>(null)
   const moveWithTouch = useCallback((direction: Direction) => touchMove.current?.(direction), [])
-  const [readOnlyMap, setReadOnlyMap] = useState(false)
-  const keyboardViewOnly = timed && readOnlyMap
+  const [boardState, setBoardState] = useState<ArenaBoardState>('match')
+  const keyboardViewOnly = timed && boardState === 'preview'
   const effectiveKeyboardMode = keyboardViewOnly ? 'map' : keyboardMode
 
   function updateDraft(next: typeof draft) {
@@ -337,15 +338,15 @@ export function ArenaPlay({ initialDraft, onDraftChange, initialTimedCheckpoint,
     </CommandDesk>
     <ArenaMapWorkspace locale={locale} consoleControl={consoleControl} title={level.title[locale]}
       keyboardControl={{ mode: effectiveKeyboardMode, choose: chooseKeyboard, viewOnly: keyboardViewOnly, playerTitle }}
-      touchControl={{ move: moveWithTouch, activePlayer: timed, viewOnly: readOnlyMap, onChoosePlayer: () => changePace('timed') }}
+      touchControl={{ move: moveWithTouch, activePlayer: timed, viewOnly: boardState !== 'match', onChoosePlayer: () => changePace('timed') }}
       modeControl={paceControl} shortcutHelp={<MapShortcutGuide locale={locale} keyboardMode={effectiveKeyboardMode} viewOnly={keyboardViewOnly} combat={Boolean(level.combat)} />}>
     {timed
-      ? <RealtimeArena {...props} touchMove={touchMove} onReadOnlyMapChange={setReadOnlyMap} consoleControl={consoleControl} code={draft.policy} setCode={policy => updateDraft({ ...draft, policy })}
+      ? <RealtimeArena {...props} touchMove={touchMove} onBoardStateChange={setBoardState} consoleControl={consoleControl} code={draft.policy} setCode={policy => updateDraft({ ...draft, policy })}
         initialCheckpoint={timedCheckpoint.current} onCheckpointChange={onTimedCheckpointChange && (checkpoint => {
           timedCheckpoint.current = checkpoint
           onTimedCheckpointChange(checkpoint)
         })} />
-      : <RelaxedArena {...props} onReadOnlyMapChange={setReadOnlyMap} consoleControl={consoleControl} code={draft.source} setCode={source => updateDraft({ ...draft, source })}
+      : <RelaxedArena {...props} onBoardStateChange={setBoardState} consoleControl={consoleControl} code={draft.source} setCode={source => updateDraft({ ...draft, source })}
         initialReplayProgress={replayProgress.current} onReplayProgressChange={onReplayProgressChange && (progress => {
           replayProgress.current = progress
           onReplayProgressChange(progress)
@@ -354,12 +355,12 @@ export function ArenaPlay({ initialDraft, onDraftChange, initialTimedCheckpoint,
   </>
 }
 
-function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, code, setCode, challenge, consoleControl, onReadOnlyMapChange,
+function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, code, setCode, challenge, consoleControl, onBoardStateChange,
   initialReplayProgress, onReplayProgressChange }: ArenaProps & {
   code: string; setCode: (code: string) => void;
   initialReplayProgress?: ArenaReplayProgress; onReplayProgressChange?: (value?: ArenaReplayProgress) => void;
   consoleControl: ArenaConsoleControl;
-  onReadOnlyMapChange: (value: boolean) => void;
+  onBoardStateChange: (state: ArenaBoardState) => void;
 }) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const [session, setSession] = useState<{ result: ArenaResult; runMap: number; source: string; input?: ArenaReplayInput }>()
@@ -371,9 +372,9 @@ function RelaxedArena({ level, locale, onComplete, onMistake, personal, course, 
   const readOnlyMap = observing || mapIndex > 0
   useLayoutEffect(() => {
     if (!readOnlyMap) return
-    onReadOnlyMapChange(true)
-    return () => onReadOnlyMapChange(false)
-  }, [readOnlyMap, onReadOnlyMapChange])
+    onBoardStateChange('preview')
+    return () => onBoardStateChange('match')
+  }, [readOnlyMap, onBoardStateChange])
   const viewedMap = useRef(0)
   const mapSteps = useRef(new Map<number, number>())
   const [savedProgress] = useState(() => initialReplayProgress)

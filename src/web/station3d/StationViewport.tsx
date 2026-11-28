@@ -10,6 +10,7 @@ import { ArenaAttackSpeedControl } from '../ArenaAttackSpeed'
 import { arenaBoardInView } from '../arenaBoardVisibility'
 import { ArenaMapControlsContext, isWorkspaceShortcut, useArenaKeyboardMode, useArenaMapMode, useArenaTouchMove, useArenaTouchTap } from '../ArenaMapMode'
 import { useMapCameraControls } from './useMapCameraControls'
+import { useMapTouchGestures } from './useMapTouchGestures'
 import { useBoardTouchMove } from './useBoardTouchMove'
 import { StationMinimap } from './StationMinimap'
 import { cargoLabel } from '../WarehouseTiles'
@@ -84,14 +85,21 @@ export function StationViewport({ frame, locale, batteries = false, children, on
   const keyboardMode = useArenaKeyboardMode()
   const inspectWithKeys = keyboardMode !== 'player'
   const workspaceControls = useContext(ArenaMapControlsContext)
+  const inlineMap = Boolean(workspaceControls)
+  const hasMapCamera = mapNavigation || inlineMap
   const showOverview = useCallback(() => setCameraMode('overview'), [])
   const [footprint, setFootprint] = useState<Position[]>([])
   const updateFootprint = useCallback((points: Position[]) => {
     setFootprint(previous => previous.length === points.length && previous.every((p, i) =>
       Math.abs(p.x - points[i].x) < .001 && Math.abs(p.y - points[i].y) < .001) ? previous : points)
   }, [])
-  const mapCamera = useMapCameraControls(mapNavigation, inspectWithKeys, view, canvas, engine, showOverview,
+  const mapCamera = useMapCameraControls(mapNavigation, inlineMap, inspectWithKeys, view, canvas, engine, showOverview,
     frame.tiles[0].length, frame.tiles.length, updateFootprint)
+  const surfaceRef = view === '3d' ? canvas : mapCamera.flat
+  useMapTouchGestures(surfaceRef, hasMapCamera && !touchMove, mapCamera.pan, mapCamera.zoom, point => {
+    if (view === '3d') engine.current?.pick(point.x, point.y)
+    // Flat tiles already receive their native tap as a click.
+  })
   function tapBoard(x: number, y: number) {
     const target = document.elementFromPoint(x, y)
     const surface = view === '3d' ? canvas.current : mapCamera.flat.current
@@ -99,9 +107,9 @@ export function StationViewport({ frame, locale, batteries = false, children, on
     const cell = view === '3d' ? engine.current?.cellAt(x, y) : flatCellAt(target)
     if (cell) touchTap?.(cell)
   }
-  useBoardTouchMove(view === '3d' ? canvas : mapCamera.flat, mapNavigation && (view === '2d' || ready) ? touchMove : null,
+  useBoardTouchMove(surfaceRef, view === '2d' || ready ? touchMove : null, hasMapCamera,
     view === '3d' ? (dx, dy) => engine.current?.swipeDirection(dx, dy) : undefined, touchTap ? tapBoard : undefined)
-  const inspectFlat = Boolean(keyboardMode || mapNavigation || frame.devices?.length || frame.arenaBuffs || frame.warehouse)
+  const inspectFlat = Boolean(keyboardMode || hasMapCamera || frame.devices?.length || frame.arenaBuffs || frame.warehouse)
   const flatInteractive = view === '2d' && inspectFlat
   const inspected = cell && frame.tiles[cell.y]?.[cell.x] !== undefined ? cell : undefined
   const selectionOnOpen = useRef<Position | undefined>(undefined)
@@ -109,7 +117,7 @@ export function StationViewport({ frame, locale, batteries = false, children, on
 
   useLayoutEffect(() => {
     if (!onSurfaceVisible) return
-    const surface = view === '3d' ? canvas.current : mapNavigation ? mapCamera.flat.current : mapCamera.flat.current?.querySelector<HTMLElement>('.tilemap')
+    const surface = view === '3d' ? canvas.current : hasMapCamera ? mapCamera.flat.current : mapCamera.flat.current?.querySelector<HTMLElement>('.tilemap')
     if (!surface || (view === '3d' && !ready)) {
       onSurfaceVisible(false)
       return
@@ -137,7 +145,7 @@ export function StationViewport({ frame, locale, batteries = false, children, on
       document.removeEventListener('visibilitychange', publish)
       onSurfaceVisible(false)
     }
-  }, [view, ready, mapNavigation, mapCamera.flat, onSurfaceVisible])
+  }, [view, ready, hasMapCamera, mapCamera.flat, onSurfaceVisible])
 
   useLayoutEffect(() => {
     latest.current = frame
@@ -145,9 +153,9 @@ export function StationViewport({ frame, locale, batteries = false, children, on
   }, [frame])
 
   useLayoutEffect(() => {
-    const mode = engine.current?.setMapNavigation(mapNavigation)
+    const mode = engine.current?.setMapNavigation(mapNavigation, inlineMap)
     if (mode) setCameraMode(mode)
-  }, [mapNavigation, ready])
+  }, [mapNavigation, inlineMap, ready])
 
   useEffect(() => {
     if (view !== '3d' || !canvas.current) return
@@ -228,7 +236,7 @@ export function StationViewport({ frame, locale, batteries = false, children, on
     { label: t('向右旋转', 'Rotate right'), mark: '↷', action: () => engine.current?.rotate(Math.PI / 6) },
     { label: t('拉远', 'Zoom out'), mark: '−', action: () => mapCamera.zoom(1 / 1.2) },
     { label: t('拉近', 'Zoom in'), mark: '+', action: () => mapCamera.zoom(1.2) },
-    { label: mapNavigation ? t('适应全图', 'Fit map') : t('复位镜头', 'Reset camera'), mark: '⌖', action: mapNavigation ? mapCamera.fit : () => engine.current?.resetCamera() },
+    { label: mapNavigation ? t('适应全图', 'Fit map') : t('复位镜头', 'Reset camera'), mark: '⌖', action: mapNavigation || view === '2d' ? mapCamera.fit : () => engine.current?.resetCamera() },
   ]
   function chooseCamera(mode: StationCamera) {
     if (!engine.current || mode === cameraMode) return
@@ -242,7 +250,8 @@ export function StationViewport({ frame, locale, batteries = false, children, on
     : mapNavigation ? t('地图，W A S D 平移', ' map. Pan with W A S D')
       : t('棋盘，方向键查看格子', ' board. Use arrow keys to inspect cells'))
 
-  return <div className="station-viewport" data-view={view} data-map-navigation={mapNavigation || undefined} data-warehouse={frame.warehouse ? true : undefined}
+  return <div className="station-viewport" data-view={view} data-map-navigation={mapNavigation || undefined} data-inline-map={inlineMap || undefined} data-touch-player={touchMove ? true : undefined}
+    data-warehouse={frame.warehouse ? true : undefined}
     data-camera={view === '3d' ? cameraMode : undefined} data-ready={view === '3d' && ready}>
     <div className="station-tools">
       <div className="station-view-switch" role="group" aria-label={t('棋盘视图', 'Board view')}>
@@ -252,7 +261,7 @@ export function StationViewport({ frame, locale, batteries = false, children, on
         <button type="button" disabled={!ready} aria-pressed={cameraMode === 'overview'} onClick={() => chooseCamera('overview')}>{t('现场全景', 'Overview')}</button>
         <button type="button" disabled={!ready} aria-pressed={cameraMode === 'follow'} onClick={() => chooseCamera('follow')}>{t('跟随芽芽', 'Follow Sprout')}</button>
       </div>}
-      {(view === '3d' || mapNavigation) && <div className="station-camera" role="group" aria-label={t('镜头控制', 'Camera controls')}>
+      {(view === '3d' || hasMapCamera) && <div className="station-camera" role="group" aria-label={t('镜头控制', 'Camera controls')}>
         {(view === '3d' ? tools : tools.slice(2)).map(tool => <button key={tool.mark} type="button" aria-label={tool.label} title={tool.label}
           disabled={view === '3d' && !ready} onClick={tool.action}>{tool.mark}</button>)}
       </div>}
@@ -271,7 +280,7 @@ export function StationViewport({ frame, locale, batteries = false, children, on
     <div ref={mapCamera.flat} className={view === '3d' ? 'station-flat-board station-flat-board--accessible' : 'station-flat-board'}
       role={flatInteractive ? 'group' : undefined} tabIndex={flatInteractive ? 0 : undefined}
       aria-label={flatInteractive ? boardLabel : undefined}
-      aria-describedby={flatInteractive && touchMove ? hintId : undefined}
+      aria-describedby={flatInteractive ? hintId : undefined}
       data-inspectable={flatInteractive || undefined} onKeyDown={flatInteractive ? event => navigateGrid(event.nativeEvent) : undefined}
       onClick={flatInteractive ? event => {
         const cell = flatCellAt(event.target)
@@ -284,8 +293,10 @@ export function StationViewport({ frame, locale, batteries = false, children, on
       }} />}
     {(view === '3d' || flatInteractive) && <div className="station-caption">
       <span id={hintId}>{touchTap ? t('点空地走过去 · 点相邻箱子或滑动推箱', 'Tap floor to walk · Tap a neighboring crate or swipe to push')
-        : mapNavigation && touchMove ? t('滑动让芽芽走一格', 'Swipe to move Sprout one square')
-        : mapNavigation ? t('拖动平移 · 点 ＋ 或 − 缩放', 'Drag to pan · Tap + or − to zoom') : view === '3d' ? t('拖动旋转 · 点选格子', 'Drag to rotate · Tap a cell') : t(frame.warehouse ? '点选格子' : '点格子查看机关', 'Tap a cell to inspect it')}</span>
+        : touchMove ? t('滑动让芽芽走一格', 'Swipe to move Sprout one square')
+        : hasMapCamera ? <><span className="station-touch-hint">{t('单指平移 · 双指缩放', 'Drag to pan · Pinch to zoom')}</span>
+          <span className="station-pointer-hint">{view === '3d' && inlineMap ? t('拖动旋转 · 点选格子', 'Drag to rotate · Click a cell') : t('拖动平移 · 点 ＋ 或 − 缩放', 'Drag to pan · Click + or − to zoom')}</span></>
+          : view === '3d' ? t('拖动旋转 · 点选格子', 'Drag to rotate · Tap a cell') : t(frame.warehouse ? '点选格子' : '点格子查看机关', 'Tap a cell to inspect it')}</span>
       {inspected && <span className="station-inspection" role="status" data-testid="station-cell-inspection">
         <b>({inspected.x}, {inspected.y})</b> {cellContents(frame, inspected, locale, batteries)}
       </span>}

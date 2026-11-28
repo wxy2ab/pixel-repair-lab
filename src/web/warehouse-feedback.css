@@ -40,13 +40,6 @@
   .warehouse-receipt { gap: .45rem; padding: .5rem; }
   .warehouse-pads__lights i { width: .72rem; height: .72rem; }
 }
-@media (max-width: 600px) {
-  .warehouse-challenge .arena-map-bar > .arena-map-title { flex: 1 0 100%; max-width: 100%; }
-  .warehouse-challenge .arena-map-bar > .warehouse-play-modes { margin-inline-end: auto; }
-  .warehouse-challenge .arena-map-bar > .warehouse-sound { min-width: 32px; justify-content: center; }
-  .warehouse-challenge .arena-map-bar > .warehouse-sound span { display: none; }
-}
-
 .warehouse-receipt > .victory-action { flex: 1 1 10rem; }
 @media (max-width: 600px) {
   .warehouse-receipt > .victory-action { order: 1; flex-basis: 100%; }

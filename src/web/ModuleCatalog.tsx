@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import type { Level, Locale } from '../shared/types'
 import { challengeZoneId } from '../shared/coursePrerequisites'
-import { readArenaMatch, type ArenaMatchMode } from './arenaMatchProgress'
+import { arenaStartMode, readArenaMatch, type ArenaMatchMode } from './arenaMatchProgress'
 import { ChallengeCatalog } from './ChallengeCatalog'
 import { supportsChallengeDraft, type ChallengeDraft } from './challengeDraft'
 import { ContinueChallenge } from './ContinueChallenge'
@@ -51,7 +51,7 @@ export function ModuleCatalog({ groups, levels, completed, lastLesson, locale, c
   }
   const resumeLevel = continuation?.status === 'resume' ? continuation.target?.level : undefined
   const savedDraft = resumeLevel?.kind === 'arena' ? readDraft(resumeLevel) : undefined
-  const arenaMode = resumeLevel?.kind === 'arena' ? savedDraft?.kind === 'arena' ? savedDraft.mode : 'relaxed' : undefined
+  const arenaMode = resumeLevel?.kind === 'arena' ? arenaStartMode(resumeLevel, savedDraft) : undefined
   const hasArenaMatch = resumeLevel?.kind === 'arena' && arenaMode !== undefined && Boolean(readArenaMatch(resumeLevel, arenaMode))
   const sections = [
     ...learningCourses.map(course => ({ id: course.id, title: course.name, icon: course.icon, course, modules: modulesForCourse(course, moduleGroups) })),

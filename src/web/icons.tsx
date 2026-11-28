@@ -1,4 +1,6 @@
 const paths = {
+  touch: <><path d="M7.5 10V4.7a1.4 1.4 0 0 1 2.8 0v4.5l.8-.2a1.7 1.7 0 0 1 2 .6 1.9 1.9 0 0 1 2.5.9c1.6-.3 2.4.8 2.1 2.4l-.7 3.3a3 3 0 0 1-3 2.3h-2.5a4 4 0 0 1-3-1.4l-4.4-5a1.4 1.4 0 0 1 1.9-2Z" /></>,
+  sliders: <><path d="M3 6h6m4 0h4M3 14h2m4 0h8" /><circle cx="11" cy="6" r="2" /><circle cx="7" cy="14" r="2" /></>,
   modules: <><rect x="2.5" y="2.5" width="6" height="6" rx="1.6" /><rect x="11.5" y="2.5" width="6" height="6" rx="1.6" /><rect x="2.5" y="11.5" width="6" height="6" rx="1.6" /><rect x="11.5" y="11.5" width="6" height="6" rx="1.6" /></>,
   challenge: <><path d="M4.5 17.5v-15" /><path d="M4.5 3.5h9.8l-2 3.4 2 3.4H4.5" /></>,
   record: <><path d="M4 5h12M4 10h12M4 15h7" /><path d="m13.2 15 1.6 1.6 3-3.4" /></>,

@@ -32,11 +32,12 @@ import { HintSteps } from './HintSteps'
 import './realtimeArena.css'
 
 export const starterArenaPolicy = 'def decide(state):\n    return "wait"\n'
+export type ArenaBoardState = 'match' | 'preview' | 'finished'
 
 type Props = {
   consoleControl: ArenaConsoleControl
   touchMove: RefObject<((direction: Direction) => void) | null>
-  onReadOnlyMapChange: (value: boolean) => void
+  onBoardStateChange: (state: ArenaBoardState) => void
   level: ArenaLevel
   locale: Locale
   onComplete: () => void
@@ -164,7 +165,7 @@ export function RealtimeArena(props: Props) {
     initialCheckpoint={attempt.index === 0 ? props.initialCheckpoint : undefined} reset={reset} />
 }
 
-function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course, code, setCode, challenge, initialCheckpoint, onCheckpointChange, reset, consoleControl, initialPolicy, onReadOnlyMapChange, touchMove }: Props & {
+function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course, code, setCode, challenge, initialCheckpoint, onCheckpointChange, reset, consoleControl, initialPolicy, onBoardStateChange, touchMove }: Props & {
   reset: (initialPolicy?: string) => void; initialPolicy?: string
 }) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
@@ -220,18 +221,19 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
   }, [frame, presentation.inFlight])
   const showResult = phase === 'done' && !presentation.inFlight
   useArenaFinishPresentation(level.id, phase === 'done' && presentation.inFlight)
+  const boardState: ArenaBoardState = readOnlyMap ? 'preview' : phase === 'done' || phase === 'failed' ? 'finished' : 'match'
   const playerControls = keyboardMode === 'player' && !readOnlyMap
-  const touchControls = touchEnabled && !readOnlyMap
+  const touchControls = touchEnabled && boardState === 'match'
   const preparingFresh = phase === 'preparing' && !initialCheckpoint && initialPolicy === undefined
   const canOpenManually = !policyPending && (preparingFresh || phase === 'ready')
   const policyCursor = usePolicyPlayback(policyStep, phase === 'paused' || readOnlyMap)
   const review = showResult && result && !result.won ? arenaFailureReview(result) : undefined
 
   useLayoutEffect(() => {
-    if (!readOnlyMap) return
-    onReadOnlyMapChange(true)
-    return () => onReadOnlyMapChange(false)
-  }, [readOnlyMap, onReadOnlyMapChange])
+    if (boardState === 'match') return
+    onBoardStateChange(boardState)
+    return () => onBoardStateChange('match')
+  }, [boardState, onBoardStateChange])
 
   useLayoutEffect(() => {
     const opening = openingMove.current

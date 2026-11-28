@@ -59,10 +59,12 @@ export function ArenaConsoleToggle({ control, locale }: { control: ArenaConsoleC
       })
     }
   }
-  return <button type="button" id={control.id + '-toggle'} className="subtle-button arena-console-toggle" aria-controls={control.id}
+  const label = control.open ? tr(locale, '收起控制台', 'Hide console') : tr(locale, '弹出控制台', 'Show console')
+  return <button type="button" id={control.id + '-toggle'} className="subtle-button arena-console-toggle" aria-controls={control.id} title={label} aria-label={label}
     aria-expanded={control.open} onClick={toggle} data-testid="arena-console-toggle">
     <Icon name={control.open ? 'collapse' : 'expand'} size={17} />
-    {control.open ? tr(locale, '收起控制台', 'Hide console') : tr(locale, '弹出控制台', 'Show console')}
+    <span>{label}</span>
+    {!control.mapMode && <small aria-hidden="true" className="arena-map-compact-label">{tr(locale, '控制台', 'Code')}</small>}
   </button>
 }
 

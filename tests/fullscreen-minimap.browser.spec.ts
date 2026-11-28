@@ -41,6 +41,7 @@ async function expectFlatCenter(page: Page, x: number, y: number) {
 }
 
 test('the flat minimap shows live positions, follows a flying parcel and recenters on the current player', async ({ page }) => {
+  test.slow() // Ten replay turns run before checking the camera.
   await openLevel(page, 'challenge-kite-mail-scramble')
   const program = [...Array<string>(6).fill('move("up")'), 'pick()', ...Array<string>(3).fill('guard()')].join('\n')
   await page.getByRole('textbox', { name: '编写 Python', exact: true }).fill(program)
@@ -143,7 +144,10 @@ test.describe('touch minimap', () => {
     const minimap = await enterMap(page)
     await expect(minimap).toBeInViewport({ ratio: 1 })
     await expect(markerAt(page, 'target', 3, 1)).toHaveCount(1)
+    const camera = page.getByRole('button', { name: '镜头', exact: true })
+    await camera.tap()
     await page.getByRole('button', { name: '拉近', exact: true }).tap()
+    await camera.tap()
     const point = await screenPointForCell(minimap, 5, 2)
     await page.touchscreen.tap(point.x, point.y)
     await expectFlatCenter(page, 5, 2)
@@ -161,12 +165,30 @@ test.describe('touch minimap', () => {
     await enterMap(page)
     await page.getByRole('button', { name: '开始', exact: true }).tap()
     await expect(page.locator('[data-arena-action="shoot-right"]')).toBeVisible()
+    await page.getByRole('button', { name: '暂停对局', exact: true }).tap()
     await page.getByTestId('arena-console-toggle').tap()
     const back = page.getByRole('button', { name: '回到芽芽', exact: true })
+    const dialog = page.getByRole('dialog')
     for (const viewport of [{ width: 844, height: 390 }, { width: 320, height: 568 }]) {
       await page.setViewportSize(viewport)
-      await expect(back).toBeInViewport({ ratio: 1 })
-      await back.tap({ trial: true })
+      for (const button of [back, dialog.getByRole('button', { name: '退出全屏', exact: true }),
+        dialog.getByRole('button', { name: '操作地图', exact: true }), dialog.getByTestId('arena-console-toggle'),
+        dialog.getByRole('button', { name: '继续对局', exact: true })]) {
+        await expect(button).toBeInViewport({ ratio: 1 })
+        await button.tap({ trial: true })
+      }
     }
+    await dialog.getByTestId('arena-console-toggle').tap()
+    await expect(dialog.getByRole('group', { name: '键盘控制对象', exact: true })).toBeHidden()
+    const modes = dialog.getByRole('button', { name: '玩法', exact: true })
+    const touch = dialog.getByRole('group', { name: '触控操作', exact: true })
+    const inputRow = await touch.boundingBox()
+    const modeButton = await modes.boundingBox()
+    if (!inputRow || !modeButton) throw new Error('The compact input row is missing')
+    expect(modeButton.y).toBeLessThan(inputRow.y + inputRow.height)
+    expect(inputRow.y).toBeLessThan(modeButton.y + modeButton.height)
+    await modes.tap()
+    await expect(dialog.getByRole('button', { name: '紧张', exact: true })).toHaveAttribute('aria-pressed', 'true')
+    await modes.tap()
   })
 })
