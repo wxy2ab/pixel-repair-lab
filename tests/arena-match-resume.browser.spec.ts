@@ -68,11 +68,15 @@ test('a timed match restores the exact checkpoint and waits for an explicit resu
   await page.waitForTimeout(1_950)
   await expect(turn).toHaveText('回合 1/20')
   await expect(timer).toHaveAttribute('value', frozen!)
+  await page.getByRole('button', { name: '保存步骤到代码' }).click()
+  // The next pickup is queued in this checkpoint. Only the first move has played.
+  await expect(page.locator('#realtime-python')).toHaveValue(/actions = \[\s*"right",\s*\]/)
   await page.getByRole('button', { name: '学习模块', exact: true }).click()
   const home = page.getByRole('region', { name: '继续闯关', exact: true })
   await expect(home.getByTestId('saved-arena-match')).toBeVisible()
   await home.locator(`[data-continue-challenge="${arenaId}"]`).click()
   await expect(timer).toHaveAttribute('value', frozen!)
+  await expect(page.locator('#realtime-python')).toHaveValue(/actions = \[\s*"right",\s*\]/)
   await resume.click()
   await expect(turn).toHaveText('回合 2/20')
   expect(await page.evaluate(key =>

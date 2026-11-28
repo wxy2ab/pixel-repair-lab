@@ -13,5 +13,5 @@
 @media (max-width: 600px) {
   .warehouse-challenge .play-toolbar:has(.warehouse-pad) .play-toolbar__actions { display: grid; grid-template-columns: auto 1fr 1fr; }
   .warehouse-pad { grid-row: span 2; grid-template-rows: repeat(2, 2.75rem); grid-template-columns: repeat(3, 2.75rem); }
-  .warehouse-challenge .play-toolbar:has(.warehouse-pad) .play-toolbar__trail { grid-column: span 2; }
+  .warehouse-challenge .play-toolbar:has(.warehouse-pad) .play-toolbar__actions > button { min-width: 0; white-space: normal; }
 }

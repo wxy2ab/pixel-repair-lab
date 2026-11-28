@@ -4,9 +4,10 @@ import { Icon } from './icons'
 import { tr } from './text'
 import { arenaBoardInView, arenaBoardSurface } from './arenaBoardVisibility'
 
-export function useArenaConsole(storageKey = 'pixel-repair-lab:arena-console') {
+export function useArenaConsole(storageKey = 'pixel-repair-lab:arena-console', initiallyOpen = false) {
   const id = useId()
   const [standardOpen, setStandardOpen] = useState(() => {
+    if (initiallyOpen) return true
     try { return localStorage.getItem(storageKey) !== 'hidden' } catch { return true }
   })
   const [mapConsoleOpen, setMapConsoleOpen] = useState<boolean | null>(null)

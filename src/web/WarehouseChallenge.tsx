@@ -10,6 +10,7 @@ import type { GridChallengeDraft } from './challengeDraft'
 import { gridGoalReplayEvidence } from './goalReplayEvidence'
 import { GridLesson } from './GridLesson'
 import { PlayToolbar, useTrailPreference } from './PlayToolbar'
+import { SaveMovesToCode } from './SaveMovesToCode'
 import { useWarehouseArrival, warehouseDeliveryText, WarehousePads, WarehouseReceipt } from './WarehouseFeedback'
 import { armWarehouseSound, soundWarehouseCue, toggleWarehouseSound, warehouseSoundEnabled } from './warehouseSound'
 import { runIssueText, tr } from './text'
@@ -55,6 +56,7 @@ export default function WarehouseChallenge(props: Props) {
   const t = (zh: string, en: string) => tr(locale, zh, en)
   const draft = useRef<GridChallengeDraft>(props.initialDraft ?? { kind: 'grid', mode: 'cards', cards: [] })
   const [controls, setControls] = useState(draft.current.warehouse?.controls ?? 'direct')
+  const [revealEditor, setRevealEditor] = useState(false)
   const [turns, setTurns] = useState(() => restoreTurns(level, draft.current.warehouse?.path ?? ''))
   const [issue, setIssue] = useState<RunIssue>()
   const last = turns.at(-1)!
@@ -77,12 +79,14 @@ export default function WarehouseChallenge(props: Props) {
     save({ ...draft.current, warehouse: { controls: nextControls, path } })
   }
 
-  function switchControls(next: typeof controls) {
+  function switchControls(next: typeof controls, source?: string) {
     if (next === controls) return
     stopWalk()
     challenge?.onStart()
+    setRevealEditor(source !== undefined)
     setControls(next)
-    savePlay(next, draft.current.warehouse?.path ?? '')
+    save({ ...draft.current, ...(source !== undefined && { source, mode: 'python' }),
+      warehouse: { controls: next, path: draft.current.warehouse?.path ?? '' } })
   }
 
   function restart() {
@@ -172,7 +176,7 @@ export default function WarehouseChallenge(props: Props) {
   </button>
   return <div className="warehouse-challenge" onPointerDownCapture={armWarehouseSound} onKeyDownCapture={armWarehouseSound}>
     <div className="warehouse-challenge__header">{switches}{soundControl}</div>
-    {controls === 'program' ? <GridLesson {...props} initialDraft={draft.current} onDraftChange={save} mapModeControl={soundControl} /> :
+    {controls === 'program' ? <GridLesson {...props} initialDraft={draft.current} onDraftChange={save} mapModeControl={soundControl} revealEditor={revealEditor} /> :
       <ArenaMapWorkspace locale={locale} title={level.title[locale]} consoleControl={consoleControl} hasConsole={false}
         touchControl={{ move, tap: tapCell, onDeactivate: stopWalk }} modeControl={<>{switches}{soundControl}</>} shortcutHelp={<MapShortcutGuide locale={locale} />}>
         <div className="play-column"><section className="panel board-panel">
@@ -190,6 +194,9 @@ export default function WarehouseChallenge(props: Props) {
           {!won && <><MovePad locale={locale} onMove={move} won={won} />
             <button type="button" className="subtle-button" disabled={!last.state.turn} onClick={undo}>{t('撤销一步', 'Undo move')}</button></>}
           <button type="button" className="subtle-button" disabled={!last.state.turn && !issue} onClick={restart}>{won ? t('再推一次', 'Push again') : t('重新开始', 'Restart')}</button>
+          <SaveMovesToCode locale={locale} disabled={!last.state.turn} draft={draft.current.source}
+            getCode={() => turns.slice(1).map(turn => `move("${turn.direction}")`).join('\n')}
+            onSave={source => switchControls('program', source)} />
         </PlayToolbar>
       </ArenaMapWorkspace>}
   </div>
