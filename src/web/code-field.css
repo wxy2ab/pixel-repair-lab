@@ -60,3 +60,10 @@
 .command-desk .code-field:has(.machine-source) .code-field__hint { color: var(--desk-muted, #455e72); }
 @media (max-width: 670px) { .code-field__hint { display: none; } }
 @media (hover: none) { .code-field__hint { display: none; } }
+.code-field__touch-tools { display: none; }
+@media (any-pointer: coarse) {
+  .code-field__touch-tools { display: flex; flex-wrap: wrap; gap: 6px; }
+  .code-field__touch-tools button { min-height: 44px; }
+  .code-field, .code-field:has(.machine-source) { --code-size: 16px; }
+  .code-field .code-field__frame .code-field__input { font-size: var(--code-size); line-height: var(--code-leading); }
+}

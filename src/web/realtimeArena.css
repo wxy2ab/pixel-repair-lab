@@ -118,3 +118,7 @@
   .arena-combat-utility button { min-height: 27px; }
   .arena-layout .play-toolbar__actions > button { overflow-wrap: anywhere; }
 }
+.play-toolbar > .arena-manual-actions { margin-block: 4px 7px; }
+@media (any-pointer: coarse) {
+  .arena-combat-pad button, .arena-manual-actions button { min-height: 44px; }
+}

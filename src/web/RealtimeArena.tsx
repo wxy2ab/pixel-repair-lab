@@ -497,7 +497,13 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
   }[phase]
 
   const acceptsActions = phase === 'playing' && !readOnlyMap
-  const showPad = Boolean(level.combat && acceptsActions)
+  const showPad = acceptsActions && (Boolean(level.combat) || consoleControl.mapMode)
+  const manualActions = <div className="arena-manual-actions" role="group" aria-label={t('下一回合动作', 'Action for the next turn')}>
+    {commands.map(command => <button key={command.action} type="button" className="subtle-button" aria-pressed={queued === command.action}
+      onClick={() => queueAction(command.action)}>
+      <b aria-hidden="true">{command.icon}</b>{t(command.zh, command.en)}
+    </button>)}
+  </div>
   const hasDraftPolicy = Boolean(code.trim()) && code.trim() !== starterArenaPolicy.trim()
   const draftStartsMatch = hasDraftPolicy && code !== disabledDraft
   let policyStatus = t('尚未启用策略', 'No active policy')
@@ -522,12 +528,7 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
           </p>
           {clock && !showPad && <TurnTimer clock={clock} locale={locale} />}
           {frame && policyStep && policyCursor.count > 0 && <PolicyPlayback step={policyStep} frame={frame} cursor={policyCursor} locale={locale} />}
-          {phase === 'playing' && !level.combat && <div className="arena-manual-actions" role="group" aria-label={t('下一回合动作', 'Action for the next turn')}>
-            {commands.map(command => <button key={command.action} type="button" className="subtle-button" aria-pressed={queued === command.action}
-              onClick={() => queueAction(command.action)}>
-              <b aria-hidden="true">{command.icon}</b>{t(command.zh, command.en)}
-            </button>)}
-          </div>}
+          {acceptsActions && !showPad && manualActions}
         </div>}
       </ArenaBoard>
       {!preview && review && <ChallengeFailureReview review={review} onRetry={resetMatch} />}
@@ -575,7 +576,7 @@ function RealtimeMatch({ level, locale, onComplete, onMistake, personal, course,
     </CommandDesk></ArenaConsolePanel>
     <PlayToolbar locale={locale} trail={trail} quickActions={showPad && <>
       {clock && <TurnTimer clock={clock} locale={locale} />}
-      <CombatPad locale={locale} queued={queued} choose={queueAction} />
+      {level.combat ? <CombatPad locale={locale} queued={queued} choose={queueAction} /> : manualActions}
     </>}>
       {observing ? <button type="button" className="primary-button" onClick={() => setObserving(false)}>{t('返回对局', 'Return to match')}</button> : <>
         {!preview && (canStart || phase === 'preparing' || phase === 'starting') && <button type="button" className="primary-button" disabled={!canStart || policyPending} onClick={event => {

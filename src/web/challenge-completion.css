@@ -111,3 +111,8 @@
 .challenge-goal-result dt { color: #cadaea; font-size: 13px; }
 .challenge-goal-result dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
 .challenge-goal-result p { margin: 5px 0 0; color: #e2edf5; font-size: 13px; }
+.challenge-completion-heading > button { margin-inline-start: auto; }
+@media (max-width: 600px) {
+  .challenge-completion-heading { display: grid; grid-template-columns: auto minmax(0, 1fr); }
+  .challenge-completion-heading > button { grid-column: 1 / -1; width: 100%; min-height: 44px; }
+}

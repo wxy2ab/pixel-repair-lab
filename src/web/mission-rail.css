@@ -1,5 +1,5 @@
 /* Only the lesson workspace reserves a column for the full or compact directory. */
-@media (min-width: 671px) {
+@media (min-width: 1025px) {
   .app-main--missions[data-rail-mode="compact"] { grid-template-columns: 56px minmax(0, 1fr); }
   .app-main--missions[data-rail-mode="hidden"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; }
   .app-main--missions:not([data-rail-mode="pinned"]) > .content > * { max-width: 1560px; }
@@ -136,7 +136,8 @@
 .mission-rail__dialog .mission-rail__body { overscroll-behavior: contain; }
 .mission-rail__dialog .mission-rail__toolbar { padding-top: max(10px, env(safe-area-inset-top)); }
 html:has(.mission-rail__dialog[open]) { overflow: hidden; }
-@media (max-width: 670px) {
+@media (max-width: 1024px) {
+  .app-main--missions { display: block; }
   .mission-rail__open, .mission-rail__action { min-height: 44px; }
   .mission-rail__launcher { padding-top: 8px; }
 }

@@ -99,3 +99,14 @@
   }
   .completion-feedback__dismiss { width: 32px; height: 32px; }
 }
+.completion-feedback > .victory-action { grid-column: 1 / -1; }
+html:has(.arena-map-workspace[data-map-fullscreen]) .completion-feedback > .victory-action { display: none; }
+/* The interactive result and its next button stay clear of the milestone announcement. */
+html:has(.arena-map-workspace[data-map-fullscreen]) .completion-feedback {
+  inset-block-start: auto;
+  inset-block-end: calc(var(--play-toolbar-height, 54px) + max(14px, env(safe-area-inset-bottom)));
+}
+@media (any-pointer: coarse) {
+  .completion-feedback { grid-template-columns: 42px minmax(0, 1fr) 44px; }
+  .completion-feedback__dismiss { width: 44px; height: 44px; }
+}

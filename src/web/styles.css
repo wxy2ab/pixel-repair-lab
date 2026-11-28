@@ -289,8 +289,29 @@ code, pre { font-family: var(--mono); }
   .loading[role='status']::before { animation-duration: 2.4s; }
 }
 @media (max-width: 670px) {
-  /* Five destinations fit one row on a phone once the icons step aside. */
-  .top-nav { justify-content: space-between; }
-  .top-nav button { padding: 6px 7px; font-size: 13px; }
-  .top-nav button > span { display: none; }
+  .top-nav {
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    gap: 2px;
+  }
+  .top-nav button {
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    min-height: 48px;
+    padding: 4px 2px;
+    font-size: 12px;
+    line-height: 1.15;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .top-nav button svg { width: 17px; height: 17px; }
+}
+@media (any-pointer: coarse) {
+  :is(button, select, summary, label) { -webkit-tap-highlight-color: #6be8bb33; }
+  :is(button, select, summary) { touch-action: manipulation; }
+  .top-nav button, .language-switch button, .mission-group .mission-list button,
+  .primary-button, .subtle-button, .icon-button { min-height: 44px; }
+  .language-switch button, .icon-button { min-width: 44px; }
 }

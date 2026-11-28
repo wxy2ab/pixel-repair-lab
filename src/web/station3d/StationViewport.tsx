@@ -265,7 +265,7 @@ export function StationViewport({ frame, locale, batteries = false, children, on
         if (focusMap) (view === '2d' ? mapCamera.flat.current : canvas.current)?.focus({ preventScroll: true })
       }} />}
     {(view === '3d' || flatInteractive) && <div className="station-caption">
-      <span id={hintId}>{mapNavigation ? t('拖动平移 · 滚轮缩放', 'Drag to pan · Scroll to zoom') : view === '3d' ? t('拖动旋转 · 点选格子', 'Drag to rotate · Tap a cell') : t(frame.warehouse ? '点选格子' : '点格子查看机关', 'Tap a cell to inspect it')}</span>
+      <span id={hintId}>{mapNavigation ? t('拖动平移 · 点 ＋ 或 − 缩放', 'Drag to pan · Tap + or − to zoom') : view === '3d' ? t('拖动旋转 · 点选格子', 'Drag to rotate · Tap a cell') : t(frame.warehouse ? '点选格子' : '点格子查看机关', 'Tap a cell to inspect it')}</span>
       {inspected && <span className="station-inspection" role="status" data-testid="station-cell-inspection">
         <b>({inspected.x}, {inspected.y})</b> {cellContents(frame, inspected, locale, batteries)}
       </span>}

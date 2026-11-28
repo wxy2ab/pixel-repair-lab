@@ -3,7 +3,7 @@ import type { GridSnapshot, Locale, Position, Warehouse } from '../shared/types'
 import { warehouseParked, warehousePushDestination } from '../shared/warehouse'
 import type { WarehouseArrival } from './station3d/types'
 import { useArenaMapMode } from './ArenaMapMode'
-import { useVisibleMapWin } from './FullscreenVictory'
+import { MapVictoryAction } from './VictoryAction'
 import { soundWarehouseCue } from './warehouseSound'
 import { tr } from './text'
 import './warehouse-feedback.css'
@@ -59,15 +59,15 @@ export function WarehouseReceipt({ locale, crates, moves, pushes, hasSummary }: 
   locale: Locale; crates: number; moves: number; pushes: number; hasSummary: boolean
 }) {
   const fullscreen = useArenaMapMode()
-  useVisibleMapWin(fullscreen)
-  return <div role="status" className="warehouse-receipt" data-testid="warehouse-receipt">
+  return <div className="warehouse-receipt" data-testid="warehouse-receipt">
     <svg viewBox="0 0 52 52" className="warehouse-receipt__seal" fill="none" aria-hidden="true">
       <path d="m26 2 6 3.2 6.8.8 3 6.1 4.9 4.8-.7 6.8 1.8 6.6-4.3 5.4-2.4 6.4-6.6 1.7-5.6 3.9-6.6-2-6.8.3-4.5-5.1-5.9-3.4-.3-6.9L2 26l3.2-6-.1-6.8 5.5-4.1 3.7-5.7 6.8.3Z" fill="#efc476"/>
       <circle cx="26" cy="25" r="16" stroke="#66461c" strokeWidth="1.6" strokeDasharray="2 2"/>
       <path d="m17 25 6 6 12-14" stroke="#3b351d" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
-    <div><strong>{tr(locale, '整仓交付！', 'Shipment complete!')}</strong>
+    <div role="status"><strong>{tr(locale, '整仓交付！', 'Shipment complete!')}</strong>
       <span>{warehouseDeliveryText(crates, moves, pushes)[locale]}</span></div>
+    <MapVictoryAction />
     {hasSummary && !fullscreen && <button type="button" className="text-button" onClick={() => {
       const summary = document.getElementById('challenge-completion-title')?.closest<HTMLElement>('.challenge-completion')
       summary?.focus({ preventScroll: true })
