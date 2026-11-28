@@ -124,6 +124,10 @@ test('challenge filters intersect and distinguish preparation modules from indiv
   await difficulty.selectOption({ label: '超难' })
   await expect.poll(filteredIds).toEqual(warehouses.map(level => level.id).sort())
   await expect(cards.first().locator('.challenge-difficulty')).toHaveText('超难')
+  const preview = cards.first().locator('.challenge-preview-map')
+  for (const tile of ['wall', 'start', 'box', 'target']) {
+    await expect(preview.locator(`path[data-tile="${tile}"]`)).toBeVisible()
+  }
 })
 
 test('recommendations depend on full prerequisite completion and omit cleared challenges', async ({ page, request }) => {
