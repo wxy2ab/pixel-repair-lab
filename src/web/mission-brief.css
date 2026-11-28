@@ -38,6 +38,7 @@
 .mission-brief__facts li[data-difficulty='starter'] { border-color: #3f8a70; background: #1c4036; color: #b6f6dc; }
 .mission-brief__facts li[data-difficulty='intermediate'] { border-color: #5a70a8; background: #26335a; color: #cfdcff; }
 .mission-brief__facts li[data-difficulty='advanced'] { border-color: #9a6a3c; background: #4a3220; color: #ffdcae; }
+.mission-brief__facts li[data-difficulty='expert'] { border-color: #9765aa; background: #493154; color: #f0d0ff; }
 .mission-brief__tools { display: flex; gap: 2px; margin-inline-start: auto; }
 .mission-brief__tools .text-button { min-height: 30px; padding: 3px 8px; border-radius: 7px; white-space: nowrap; }
 .mission-brief__tools .text-button:hover { background: #24364f; }

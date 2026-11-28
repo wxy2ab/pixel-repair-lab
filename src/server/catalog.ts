@@ -8,6 +8,7 @@ import { shortChallengeLinkIssues } from '../shared/shortChallenges'
 import { MAX_LEVEL_BYTES, parseLevel } from '../shared/validate'
 
 export const levelsDirectory = join(projectDirectory, 'levels')
+const catalogBatchSize = 32
 
 type LevelFile = { source: string; level: Level }
 type Scan = { entries: LevelFile[]; issues: Issue[] }
@@ -48,7 +49,12 @@ export async function scanLevels(directory = levelsDirectory): Promise<Scan> {
       .filter(entry => entry.isFile() && entry.name.toLowerCase().endsWith('.json'))
       .map(entry => entry.name)
       .sort()
-    const scans = await Promise.all(files.map(name => readLevelFile(join(directory, name), `levels/${name}`)))
+    const scans: Scan[] = []
+    // A packaged installation can contain more levels than the OS allows open files.
+    for (let start = 0; start < files.length; start += catalogBatchSize) {
+      const batch = files.slice(start, start + catalogBatchSize)
+      scans.push(...await Promise.all(batch.map(name => readLevelFile(join(directory, name), `levels/${name}`))))
+    }
     const entries = scans.flatMap(scan => scan.entries)
     const issues = scans.flatMap(scan => scan.issues)
     const ids = new Map<string, number>()

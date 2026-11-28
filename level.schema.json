@@ -51,7 +51,7 @@
       "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]*$"
     },
     "difficulty": {
-      "enum": ["starter", "intermediate", "advanced"]
+      "enum": ["starter", "intermediate", "advanced", "expert"]
     },
     "prerequisites": {
       "type": "array",

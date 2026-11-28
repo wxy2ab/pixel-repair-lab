@@ -4,11 +4,11 @@ import { cardsToPython } from '../src/shared/cards'
 import { gridOffsets } from '../src/shared/gridDevices'
 import type { Catalog, Direction, GridLevel } from '../src/shared/types'
 
-async function advancedWarehouses(request: APIRequestContext) {
+async function warehouses(request: APIRequestContext, difficulty: 'advanced' | 'expert') {
   const { levels, issues } = await (await request.get('/api/levels')).json() as Catalog
   expect(issues).toEqual([])
   const pack = levels.filter((level): level is GridLevel => level.kind === 'grid' && !!level.warehouse
-    && level.unit?.id === 'challenge-zone' && level.difficulty === 'advanced')
+    && level.unit?.id === 'challenge-zone' && level.difficulty === difficulty)
   expect(pack.length).toBeGreaterThanOrEqual(90)
   return pack.sort((a, b) => a.order - b.order)
 }
@@ -22,7 +22,7 @@ async function openRoute(page: Page, level: GridLevel) {
 
 test('warehouse buttons, arrows and undo restore real box positions, resume a draft and earn one route win', async ({ page, request }) => {
   test.setTimeout(90000)
-  const [level] = await advancedWarehouses(request)
+  const [level] = await warehouses(request, 'advanced')
   const answer = runProgram(level, cardsToPython(level.cards, level.solutionCards))
   expect(answer.won).toBe(true)
   let cell = level.start
@@ -69,7 +69,7 @@ test('warehouse buttons, arrows and undo restore real box positions, resume a dr
 
 test('the final warehouse can be cleared with the same moves in Python and reopened in direct play', async ({ page, request }) => {
   test.setTimeout(90000)
-  const level = (await advancedWarehouses(request)).at(-1)!
+  const level = (await warehouses(request, 'expert')).at(-1)!
   await openRoute(page, level)
   await page.getByRole('button', { name: '指令卡 / Python' }).click()
   await page.getByRole('tab', { name: 'Python', exact: true }).click()
@@ -86,7 +86,7 @@ test('the final warehouse can be cleared with the same moves in Python and reope
 })
 
 test('landing feedback follows a real forward push in both control modes and stays quiet on undo or rewind', async ({ page, request }) => {
-  const [base] = await advancedWarehouses(request)
+  const [base] = await warehouses(request, 'advanced')
   const level: GridLevel = {
     ...base, tiles: ['#######', '#.....#', '#.....#', '#.....#', '#######'], start: { x: 1, y: 2 },
     warehouse: { boxes: [{ x: 2, y: 2 }, { x: 2, y: 3 }], targets: [{ x: 3, y: 2 }, { x: 3, y: 3 }] },

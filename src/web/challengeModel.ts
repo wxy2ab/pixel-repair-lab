@@ -6,7 +6,7 @@ import type { LearningGroup } from './roadmapModel'
 
 export const challengeTypes = ['grid', 'warehouse', 'arena', 'algorithm', 'systems', 'data', 'vision', 'ai', 'other'] as const
 export type ChallengeType = typeof challengeTypes[number]
-export const challengeDifficulties = ['starter', 'intermediate', 'advanced'] as const satisfies readonly ChallengeDifficulty[]
+export const challengeDifficulties = ['starter', 'intermediate', 'advanced', 'expert'] as const satisfies readonly ChallengeDifficulty[]
 
 export const challengeTypeLabels: Record<ChallengeType, Localized> = {
   grid: { zh: '网格解谜', en: 'Grid puzzles' },
@@ -24,6 +24,7 @@ export const challengeDifficultyLabels: Record<ChallengeDifficulty, Localized> =
   starter: { zh: '入门', en: 'Starter' },
   intermediate: { zh: '进阶', en: 'Intermediate' },
   advanced: { zh: '高难', en: 'Advanced' },
+  expert: { zh: '超难', en: 'Expert' },
 }
 
 type CourseFilter = { unitId: string; topicId?: string }
