@@ -8,7 +8,7 @@ import type { StationCamera, StationFrame } from './types'
 import { StationActionCue } from '../StationActionCue'
 import { ArenaAttackSpeedControl } from '../ArenaAttackSpeed'
 import { arenaBoardInView } from '../arenaBoardVisibility'
-import { ArenaMapControlsContext, isWorkspaceShortcut, useArenaKeyboardMode, useArenaMapMode, useArenaTouchMove } from '../ArenaMapMode'
+import { ArenaMapControlsContext, isWorkspaceShortcut, useArenaKeyboardMode, useArenaMapMode, useArenaTouchMove, useArenaTouchTap } from '../ArenaMapMode'
 import { useMapCameraControls } from './useMapCameraControls'
 import { useBoardTouchMove } from './useBoardTouchMove'
 import { StationMinimap } from './StationMinimap'
@@ -22,6 +22,11 @@ let graphicsUnavailable = false
 function preferredView(): View {
   if (graphicsUnavailable) return '2d'
   try { return localStorage.getItem(viewKey) === '2d' ? '2d' : '3d' } catch { return '3d' }
+}
+
+function flatCellAt(target: EventTarget | null) {
+  const tile = target instanceof Element && target.closest<HTMLElement>('.tile[data-x][data-y]')
+  if (tile) return { x: Number(tile.dataset.x), y: Number(tile.dataset.y) }
 }
 
 function cellContents(frame: StationFrame, cell: Position, locale: Locale, batteries: boolean) {
@@ -75,6 +80,7 @@ export function StationViewport({ frame, locale, batteries = false, children, on
   const hintId = useId()
   const mapNavigation = useArenaMapMode()
   const touchMove = useArenaTouchMove()
+  const touchTap = useArenaTouchTap()
   const keyboardMode = useArenaKeyboardMode()
   const inspectWithKeys = keyboardMode !== 'player'
   const workspaceControls = useContext(ArenaMapControlsContext)
@@ -86,8 +92,15 @@ export function StationViewport({ frame, locale, batteries = false, children, on
   }, [])
   const mapCamera = useMapCameraControls(mapNavigation, inspectWithKeys, view, canvas, engine, showOverview,
     frame.tiles[0].length, frame.tiles.length, updateFootprint)
+  function tapBoard(x: number, y: number) {
+    const target = document.elementFromPoint(x, y)
+    const surface = view === '3d' ? canvas.current : mapCamera.flat.current
+    if (!target || !surface?.contains(target)) return
+    const cell = view === '3d' ? engine.current?.cellAt(x, y) : flatCellAt(target)
+    if (cell) touchTap?.(cell)
+  }
   useBoardTouchMove(view === '3d' ? canvas : mapCamera.flat, mapNavigation && (view === '2d' || ready) ? touchMove : null,
-    view === '3d' ? (dx, dy) => engine.current?.swipeDirection(dx, dy) : undefined)
+    view === '3d' ? (dx, dy) => engine.current?.swipeDirection(dx, dy) : undefined, touchTap ? tapBoard : undefined)
   const inspectFlat = Boolean(keyboardMode || mapNavigation || frame.devices?.length || frame.arenaBuffs || frame.warehouse)
   const flatInteractive = view === '2d' && inspectFlat
   const inspected = cell && frame.tiles[cell.y]?.[cell.x] !== undefined ? cell : undefined
@@ -261,8 +274,8 @@ export function StationViewport({ frame, locale, batteries = false, children, on
       aria-describedby={flatInteractive && touchMove ? hintId : undefined}
       data-inspectable={flatInteractive || undefined} onKeyDown={flatInteractive ? event => navigateGrid(event.nativeEvent) : undefined}
       onClick={flatInteractive ? event => {
-        const tile = event.target instanceof Element && event.target.closest<HTMLElement>('.tile[data-x][data-y]')
-        if (tile) setCell({ x: Number(tile.dataset.x), y: Number(tile.dataset.y) })
+        const cell = flatCellAt(event.target)
+        if (cell) setCell(cell)
       } : undefined}>{flatContent}</div>
     {mapNavigation && <StationMinimap frame={frame} locale={locale} footprint={footprint}
       ready={view === '2d' || ready} onCenter={(cell, focusMap?: boolean) => {
@@ -270,7 +283,8 @@ export function StationViewport({ frame, locale, batteries = false, children, on
         if (focusMap) (view === '2d' ? mapCamera.flat.current : canvas.current)?.focus({ preventScroll: true })
       }} />}
     {(view === '3d' || flatInteractive) && <div className="station-caption">
-      <span id={hintId}>{mapNavigation && touchMove ? t('滑动让芽芽走一格', 'Swipe to move Sprout one square')
+      <span id={hintId}>{touchTap ? t('点空地走过去 · 点相邻箱子或滑动推箱', 'Tap floor to walk · Tap a neighboring crate or swipe to push')
+        : mapNavigation && touchMove ? t('滑动让芽芽走一格', 'Swipe to move Sprout one square')
         : mapNavigation ? t('拖动平移 · 点 ＋ 或 − 缩放', 'Drag to pan · Tap + or − to zoom') : view === '3d' ? t('拖动旋转 · 点选格子', 'Drag to rotate · Tap a cell') : t(frame.warehouse ? '点选格子' : '点格子查看机关', 'Tap a cell to inspect it')}</span>
       {inspected && <span className="station-inspection" role="status" data-testid="station-cell-inspection">
         <b>({inspected.x}, {inspected.y})</b> {cellContents(frame, inspected, locale, batteries)}

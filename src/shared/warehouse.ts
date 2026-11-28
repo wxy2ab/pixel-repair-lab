@@ -1,4 +1,26 @@
-import type { GridSnapshot, Position, RunFrame } from './types'
+import { breadthFirstReference } from './breadthFirstLesson'
+import type { Direction, GridSnapshot, Position, RunFrame } from './types'
+
+function stepDirection(dx: number, dy: number): Direction {
+  if (dx !== 0) return dx > 0 ? 'right' : 'left'
+  return dy > 0 ? 'down' : 'up'
+}
+
+export function warehouseTapRoute(tiles: string[], { player, boxes }: Pick<GridSnapshot, 'player' | 'boxes'>, target: Position): Direction[] {
+  const dx = target.x - player.x, dy = target.y - player.y
+  if (tiles[target.y]?.[target.x] !== '.' || (dx === 0 && dy === 0)) return []
+  if (Math.abs(dx) + Math.abs(dy) === 1) return [stepDirection(dx, dy)]
+
+  // Walking to a distant cell keeps every crate in its current place.
+  const walkable = tiles.slice()
+  for (const { x, y } of boxes ?? []) {
+    if (x === target.x && y === target.y) return []
+    const row = walkable[y]
+    walkable[y] = row.slice(0, x) + '#' + row.slice(x + 1)
+  }
+  const { path } = breadthFirstReference({ tiles: walkable, start: [player.x, player.y], goal: [target.x, target.y] })
+  return path.slice(1).map(([x, y], i) => stepDirection(x - path[i][0], y - path[i][1]))
+}
 
 export function warehouseParked(boxes: readonly Position[], targets: readonly Position[]): number {
   return targets.filter(target => boxes.some(box => box.x === target.x && box.y === target.y)).length
